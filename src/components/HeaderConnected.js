@@ -1,25 +1,34 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
-import { LinkContainer } from 'react-router-bootstrap'
-import { Button, Container, Grid } from '@material-ui/core';
-import { useWeb3React, UnsupportedChainIdError } from '@web3-react/core'
-import ButtonMateMask from '../components/ButtonMateMask';
+import {LinkContainer} from 'react-router-bootstrap'
+import {Button, Container, Grid} from '@material-ui/core';
+import {useWeb3React, UnsupportedChainIdError} from '@web3-react/core'
+import ButtonMetaMask from '../components/ButtonMetaMask';
+import {makeStyles} from '@material-ui/core/styles';
+import Header from '../components/Header';
 
+
+const styles = makeStyles({
+    helloDiv: {
+        color: 'black',
+            marginRight: '56px'
+    }
+});
 
 const HeaderNotConnected = () => {
     const web3Context = useWeb3React();
-    const { chainId, account, error, active } = web3Context;
+    const {chainId, account, error, active} = web3Context;
+    const classes = styles();
     return (
         <div id="app-header">
-            <Grid direction="row" container={true}>
-                <Grid direction="column" lg={9}>
-                    <span>[LOGO HERE]</span>
+            <Header>
+                <Grid container>
+                    <ButtonMetaMask/>
 
-                    <span>Hello, {account} from chain {chainId}</span>
                 </Grid>
-                <Grid direction="column" lg={3} alignItems={'flex-end'}>
-                    <ButtonMateMask/>
-                </Grid>
+            </Header>
+            <Grid container justify="flex-end">
+                <div className={classes.helloDiv}>Hello, {account} from chain {chainId}</div>
             </Grid>
         </div>
     )

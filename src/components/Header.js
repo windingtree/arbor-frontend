@@ -10,7 +10,6 @@ import {useWeb3React, UnsupportedChainIdError} from '@web3-react/core'
 
 const styles = makeStyles({
     header: {
-        background: 'linear-gradient(45deg, #black 30%, #FF8E53 90%)',
         border: 0,
         color: 'white',
         padding: '36px 56px'
@@ -21,7 +20,7 @@ const styles = makeStyles({
     headerText: {
         color: 'black'
     },
-    searchButton: {
+    searchButton: { //FIXME refactor/use proper icon
         position: 'relative',
         top: '5px'
     },

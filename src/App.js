@@ -18,6 +18,7 @@ const theme = createMuiTheme({
             main: '#fff9f8',
         }
     },
+    spacing: 5
 });
 
 function App() {

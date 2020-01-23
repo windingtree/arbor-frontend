@@ -9,6 +9,7 @@ import Dashboard from './screens/Dashboard';*/
 import AuthenticatedRoute from "./layouts/AuthenticatedRoute";
 import UnauthenticatedRoute from "./layouts/UnauthenticatedRoute";
 import DefaultRoute from "./layouts/DefaultRoute";
+import Organizations from "./screens/Organizations";
 
 const Routes = () => {
     return(
@@ -16,6 +17,7 @@ const Routes = () => {
             {/*<AuthenticatedRoute path={`/dashboard`} component={Dashboard} />
             <UnauthenticatedRoute path={`/login`} component={Login} />*/}
             <DefaultRoute path={`/`} exact component={Home} />
+            <DefaultRoute path={`/organizations`} exact component={Organizations} />
             <DefaultRoute component={NotFound} />
         </Switch>
     );

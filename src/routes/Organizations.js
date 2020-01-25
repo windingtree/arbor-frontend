@@ -1,7 +1,6 @@
 import React from "react";
-import ListGroup from 'react-bootstrap/ListGroup';
 
-import {Container, Grid} from '@material-ui/core';
+import {Container} from '@material-ui/core';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import OrgIdGridItem from '../components/OrgIdGridItem';

@@ -3,7 +3,6 @@ import {Card, Badge, Grid, Button} from '@material-ui/core';
 
 import {makeStyles} from '@material-ui/core/styles';
 
-
 const styles = makeStyles({
     orgIdGrid: {
         padding: '28px'
@@ -50,10 +49,10 @@ const SubOrganizationCard = (props) => {
 
 
 const OrgIdGridItem = (props) => {
-    const {name, address, isSub, subs, segment, trustLevel} = props;
+    const {name, address, isSub, subs, trustLevel} = props;
     const classes = styles();
     console.log("isSub:" + isSub);
-    const firstFourSubs = subs.slice(0, 4);
+    // const firstFourSubs = subs.slice(0, 4);
     return (
         <Card className={classes.orgIdGrid}>
             <Grid justify="space-between" container>

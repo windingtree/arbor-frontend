@@ -1,5 +1,5 @@
 import React from 'react';
-import OrgIdGridItem from "./OrgIdGridItem";
+import OrgIdGridItem from "../components/OrgIdGridItem";
 import { storiesOf } from '@storybook/react';
 import { withKnobs, boolean, number, text } from '@storybook/addon-knobs';
 

@@ -1,15 +1,15 @@
 import React from "react";
 import { Switch } from 'react-router-dom';
 // SCREENS
-import Home from './screens/Home';
-import NotFound from './screens/NotFound';
+import Home from './Home';
+import NotFound from './NotFound';
 /*import Login from './screens/Login';
 import Dashboard from './screens/Dashboard';*/
 // ROUTES LAYOUTS
-import AuthenticatedRoute from "./layouts/AuthenticatedRoute";
-import UnauthenticatedRoute from "./layouts/UnauthenticatedRoute";
-import DefaultRoute from "./layouts/DefaultRoute";
-import Organizations from "./screens/Organizations";
+// import AuthenticatedRoute from "../layouts(rewrite-all-to-RootRoutes)/AuthenticatedRoute";
+// import UnauthenticatedRoute from "../layouts(rewrite-all-to-RootRoutes)/UnauthenticatedRoute";
+import DefaultRoute from "../layouts(rewrite-all-to-RootRoutes)/DefaultRoute";
+import Organizations from "./Organizations";
 
 const Routes = () => {
     return(

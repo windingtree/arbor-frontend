@@ -1,11 +1,10 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
-import {LinkContainer} from 'react-router-bootstrap'
-import {Button, Container, Grid} from '@material-ui/core';
-import {useWeb3React, UnsupportedChainIdError} from '@web3-react/core'
+import {Grid} from '@material-ui/core';
+import {useWeb3React} from '@web3-react/core'
 import ButtonMetaMask from '../components/ButtonMetaMask';
 import {makeStyles} from '@material-ui/core/styles';
-import Header from '../components/Header';
+import Header from './Header';
 
 
 const styles = makeStyles({
@@ -17,7 +16,7 @@ const styles = makeStyles({
 
 const HeaderNotConnected = () => {
     const web3Context = useWeb3React();
-    const {chainId, account, error, active} = web3Context;
+    const {chainId, account} = web3Context;
     const classes = styles();
     return (
         <div id="app-header">

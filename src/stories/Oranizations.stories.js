@@ -1,7 +1,7 @@
 import React from 'react';
-import Organizations from '../screens/Organizations';
+import Organizations from '../routes/Organizations';
 import { storiesOf } from '@storybook/react';
-import { withKnobs, boolean, number, text, array } from '@storybook/addon-knobs';
+import { withKnobs} from '@storybook/addon-knobs';
 
 const mockOrgs = [{address: "1"},{address: "2"},{address: "3"}];
 

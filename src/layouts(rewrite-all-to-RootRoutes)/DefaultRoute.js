@@ -1,12 +1,13 @@
 import React from "react";
-import {Route, Redirect} from "react-router-dom";
+import {Route} from "react-router-dom";
 import {useWeb3React} from '@web3-react/core';
 import HeaderNotConnected from '../components/HeaderNotConnected';
 import HeaderConnected from '../components/HeaderConnected';
+import Footer from '../components/Footer';
 
 const DefaultRoute = ({ component: Component, ...rest }) => {
     const web3Context = useWeb3React();
-    const { activate, deactivate, active } = web3Context;
+    const { active } = web3Context;
 
     return (
         <Route {...rest} render={matchProps => (
@@ -19,7 +20,7 @@ const DefaultRoute = ({ component: Component, ...rest }) => {
                     }
                 </div>
                 <Component {...matchProps} />
-                <div className="Footer">Footer</div>
+                <Footer/>
             </div>
         )}/>
     )

@@ -23,10 +23,9 @@ class Home extends Component {
       <Container>
         <OrgsGridList>
           {
-            data.map(item => (
-              <Grid item xs={3}>
+            data.map((item, index) => (
+              <Grid item xs={3} key={index.toString()}>
                 <OrgsGridItem
-                  key={item.orgid}
                   id={item.orgid}
                 />
               </Grid>

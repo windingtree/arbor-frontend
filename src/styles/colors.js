@@ -1,15 +1,17 @@
 export default {
   primary: {
     white: '#fff',
-    black: '#42424F',
+    black: '#2E2E31',
     accent: '#F58F7F'
   },
   secondary: {
     yellow: '#FFB36B'
   },
   greyScale: {
+    darkest: '#42424F',
     dark: '#5E666A',
     common: '#8F999F',
-    light: '#FCF8F5'
+    light: '#D9DBE1',
+    lightest: '#FEFEFE'
   }
 }

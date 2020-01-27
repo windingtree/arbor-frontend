@@ -1,21 +1,33 @@
 import React from 'react';
-
-import { Card, CardContent, CardMedia, Typography } from '@material-ui/core';
+import PropTypes from 'prop-types';
+import {Box, Card, CardContent, CardMedia, Grid, Typography} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
-import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined';
+import ButtonCommon from './Button';
+
+import DefaultImage from '../assets/images/default-image.jpg';
+import CopyIcon from '../assets/SvgIconsComponents/CopyIcon';
+import TrustLevelIcon from '../assets/SvgIconsComponents/TrustLevelIcon';
+import EntityTrustLevelIcon from '../assets/SvgIconsComponents/EntityTrustLevelIcon';
+
 import colors from '../styles/colors';
 
 const styles = makeStyles({
   item: {
     borderRadius: '8px',
-    boxShadow: '0 0 20px rgba(188, 194, 211, 0.25)'
+    border: '1px solid',
+    borderColor: colors.greyScale.lightest,
+    boxShadow: '0 0 20px rgba(188, 194, 211, 0.25)',
+  },
+  itemSubOrg: {
+    borderColor: colors.greyScale.light,
+    boxShadow: '0 4px 12px rgba(10, 23, 51, 0.04)',
   },
   itemImg: {
     position: 'relative',
     width: '100%',
     height: '100px',
-    backgroundColor: colors.greyScale.common
+    borderRadius: '4px',
+    overflow: 'hidden',
   },
   itemMarksWrapper: {
     position: 'relative',
@@ -23,23 +35,22 @@ const styles = makeStyles({
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingTop: '8px',
-    paddingBottom: '8px',
+    padding: '8px 0',
   },
   itemMark: {
     position: 'relative',
     display: 'inline-block',
+    fontFamily: 'Inter',
+    fontSize: '12px',
+    lineHeight: 1.2,
     backgroundColor: colors.primary.black,
     color: colors.primary.white,
     borderRadius: '4px',
     marginRight: '8px',
-    paddingTop: '5px',
-    paddingBottom: '5px',
-    paddingLeft: '12px',
-    paddingRight: '12px',
+    padding: '5px 12px',
   },
   itemMarkType: {
-    backgroundColor: colors.primary.accent
+    backgroundColor: colors.primary.accent,
   },
   idInfoWrapper: {
     position: 'relative',
@@ -47,8 +58,7 @@ const styles = makeStyles({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: '8px',
-    paddingBottom: '8px',
+    padding: '8px 0',
   },
   idInfoItem: {
     position: 'relative',
@@ -56,14 +66,93 @@ const styles = makeStyles({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  id: {
+    fontFamily: 'Inter',
+    fontSize: '14px',
+    fontWeight: 400,
+    lineHeight: 1.2,
+    color: colors.greyScale.darkest
+  },
+  subtitle: {
+    fontFamily: 'Inter',
+    fontSize: '12px',
+    color: colors.greyScale.common,
+    opacity: .7
+  },
+  copyButton: {
+    padding: '4px',
+    minWidth: 'auto',
+    backgroundColor: 'transparent',
+    marginLeft: '6px'
+  },
   iconCopy: {
+    width: '12.8px',
+    height: '12.8px',
     color: colors.primary.accent,
-    marginLeft: '6px',
   },
   icon: {
+    width: '16px',
+    height: '16px',
     color: colors.secondary.yellow,
-  }
-
+    marginRight: '6px'
+  },
+  trustLevelValue: {
+    fontFamily: 'Inter',
+    fontWeight: 600,
+    color: colors.greyScale.darkest,
+    fontSize: '14px',
+    lineHeight: 1.2,
+  },
+  itemName: {
+    fontFamily: 'Inter',
+    fontSize: '16px',
+    lineHeight: 1.2,
+    color: colors.greyScale.darkest,
+  },
+  legalEntityInfo: {
+    padding: '8px 16px',
+    borderTop: '1px solid',
+    borderTopColor: colors.greyScale.light,
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  entityTitle: {
+    fontFamily: 'Inter',
+    fontSize: '12px',
+    fontWeight: 400,
+    lineHeight: 1.2,
+    color: colors.primary.black
+  },
+  entityIcon: {
+    width: '12px',
+    height: '12px',
+    color: colors.greyScale.common,
+    marginRight: '4px'
+  },
+  entityTrustLevel: {
+    fontFamily: 'Inter',
+    color: colors.greyScale.darkest,
+    fontSize: '12px',
+    lineHeight: 1.2
+  },
+  entitySubOrgsWrapper: {
+    paddingTop: '0'
+  },
+  entitySubOrgsList: {
+    position: 'relative',
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    paddingTop: '10px'
+  },
+  entitySubOrgItem: {
+    width: '20px',
+    height: '20px',
+    borderRadius: '50%',
+    marginRight: '8px',
+    backgroundColor: colors.primary.black
+  },
 });
 
 export default function OrgsGridItem(props) {
@@ -71,50 +160,103 @@ export default function OrgsGridItem(props) {
   const {
     id,
     img = null,
-    subOrg = true,
+    isSub = false,
     type = 'Hotel',
     trustLevel = '4',
     name = 'Default Organization',
+    subs = ['1', 'a', '0xkk'],
+    entityName = 'Default Corp.',
+    entityTrustLevel = '5'
   } = props;
 
+  const arrayFromId = Array.from(id);
+  arrayFromId.splice(4, 34, '...');
+  const hiddenId = arrayFromId.join('');
+
   return (
-    <Card className={classes.item}>
+    <Card className={isSub ? [classes.item, classes.itemSubOrg].join(' ') : classes.item}>
       <CardContent>
         {
-          img ? <CardMedia image={img.src}/> : <div className={classes.itemImg}/>
+          img ? <CardMedia image={img.src} className={classes.itemImg}/> : <CardMedia label={'Organization picture'} image={DefaultImage} className={classes.itemImg}/>
         }
         {
-          subOrg && (
+          isSub && (
             <div className={classes.itemMarksWrapper}>
               <div>
-                <p className={classes.itemMark}>SubOrg</p>
+                <Typography variant={'subtitle2'} className={classes.itemMark}>SubOrg</Typography>
               </div>
               <div>
-                <p className={[classes.itemMark, classes.itemMarkType].join(' ')}>
+                <Typography variant={'subtitle2'} className={[classes.itemMark, classes.itemMarkType].join(' ')}>
                   {type}
-                </p>
+                </Typography>
               </div>
             </div>
           )
         }
         <div className={classes.idInfoWrapper}>
           <div className={classes.idInfoItem}>
-            <Typography variant={'subtitle2'}>
-              {'ID: '} <Typography variant={'caption'}>{id.slice(0, 9)}</Typography>
+            <Typography variant={'subtitle2'} className={classes.id}>
+              ID: <Typography variant={'caption'} className={classes.subtitle}>{hiddenId}</Typography>
             </Typography>
-            <FileCopyOutlinedIcon className={classes.iconCopy}/>
+            <ButtonCommon
+              onClick={() => console.log(id)} //TODO add functionality to copy id to clipboard
+              className={classes.copyButton}
+            >
+              <CopyIcon viewBox={'0 0 16 16'} className={classes.iconCopy}/>
+            </ButtonCommon>
           </div>
           <div className={classes.idInfoItem}>
-            <VerifiedUserIcon className={classes.icon}/>
-            <Typography variant={'subtitle2'}>
+            <TrustLevelIcon viewBox={'0 0 16 16'} className={classes.icon}/>
+            <Typography variant={'subtitle2'} className={classes.trustLevelValue}>
               {trustLevel}
             </Typography>
           </div>
         </div>
-        <Typography variant={'h6'}>
+        <Typography variant={'h6'} className={classes.itemName} gutterBottom>
           {name}
         </Typography>
       </CardContent>
+      {
+        isSub ? (
+          <Box className={classes.legalEntityInfo}>
+            <Typography variant={'subtitle2'} className={classes.entityTitle}>
+              Legal entity: <Typography variant={'caption'} className={classes.subtitle}>{entityName}</Typography>
+            </Typography>
+            <div className={classes.idInfoItem}>
+              <EntityTrustLevelIcon viewBox={'0 0 12 12'} className={classes.entityIcon}/>
+              <Typography variant={'subtitle2'} className={classes.entityTrustLevel}>
+                {entityTrustLevel}
+              </Typography>
+            </div>
+          </Box>
+        ) : (
+          <CardContent className={classes.entitySubOrgsWrapper}>
+            <Typography variant={'subtitle2'} className={classes.entityTitle}>Include {subs.length} SubOrgs:</Typography>
+            <Grid container className={classes.entitySubOrgsList}>
+              {
+                subs.map((item, index) => {
+                  let arrayOfColors = [ colors.primary.black, colors.primary.accent, colors.secondary.yellow];
+                  return (
+                    <Grid item key={index.toString()} className={classes.entitySubOrgItem} style={{ backgroundColor: arrayOfColors[index] }}/>
+                  )
+                })
+              }
+            </Grid>
+          </CardContent>
+        )
+      }
     </Card>
   )
 }
+
+OrgsGridItem.propTypes = {
+  id: PropTypes.string.isRequired,
+  img: PropTypes.string,
+  isSub: PropTypes.array,
+  type: PropTypes.string,
+  trustLevel: PropTypes.number,
+  name: PropTypes.string,
+  subs: PropTypes.array,
+  entityName: PropTypes.string,
+  entityTrustLevel: PropTypes.number
+};

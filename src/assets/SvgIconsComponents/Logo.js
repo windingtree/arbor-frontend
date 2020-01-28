@@ -12,8 +12,8 @@ export default function Logo(props) {
       <path d="M86.2491 23.2904H83.5071V12.6643H86.2491V13.22C87.0801 12.722 88.0529 12.4355 89.0914 12.4355C89.4426 12.4355 89.7858 12.4679 90.1188 12.5307L89.4376 15.0571C89.3242 15.044 89.2088 15.0369 89.0914 15.0369C87.7279 15.0369 86.5821 15.964 86.2491 17.2232V23.2904Z" fill="#42424F"/>
       <defs>
         <linearGradient id="paint0_linear" x1="-1.28426" y1="28.787" x2="30.2676" y2="6.66818" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#BD4EAF"/>
-          <stop offset="1" stop-color="#FCB871"/>
+          <stop stopColor="#BD4EAF"/>
+          <stop offset="1" stopColor="#FCB871"/>
         </linearGradient>
       </defs>
     </SvgIcon>

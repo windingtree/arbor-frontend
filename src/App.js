@@ -3,12 +3,10 @@ import {BrowserRouter as Router} from 'react-router-dom';
 import {Provider} from 'react-redux';
 import {Web3ReactProvider} from '@web3-react/core';
 import {createMuiTheme} from '@material-ui/core/styles';
-import Routes from './routes/Routes';
+import RootRouter from './routes/RootRouter';
 import { MuiThemeProvider } from '@material-ui/core/styles'
 import store from './redux/store';
-import history from './redux/history';
 import getLibrary from './web3/getLibrary'
-
 
 const theme = createMuiTheme({
     palette: {
@@ -27,9 +25,7 @@ function App() {
         <Web3ReactProvider getLibrary={getLibrary}>
             <Provider store={store}>
                 <MuiThemeProvider theme={theme}>
-                    <Router history={history}>
-                        <Routes/>
-                    </Router>
+                    <RootRouter/>
                 </MuiThemeProvider>
             </Provider>
         </Web3ReactProvider>

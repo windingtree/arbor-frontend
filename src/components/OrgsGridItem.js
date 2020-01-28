@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Box, Card, CardContent, CardMedia, Grid, Typography} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import Ellipsis from 'react-dotdotdot';
+
 import ButtonCommon from './Button';
 
 import DefaultImage from '../assets/images/default-image.jpg';
@@ -103,9 +105,10 @@ const styles = makeStyles({
     fontSize: '14px',
     lineHeight: 1.2,
   },
-  itemName: {
+  itemNameWrapper: {
     fontFamily: 'Inter',
     fontSize: '16px',
+    fontWeight: 500,
     lineHeight: 1.2,
     color: colors.greyScale.darkest,
   },
@@ -114,8 +117,17 @@ const styles = makeStyles({
     borderTop: '1px solid',
     borderTopColor: colors.greyScale.light,
     display: 'flex',
-    justifyContent: 'space-between',
+    justifyContent: 'stretch',
     alignItems: 'center'
+  },
+  entityInfoItem: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    width: '10%'
+  },
+  entityTitleWrapper: {
+    width: '90%',
   },
   entityTitle: {
     fontFamily: 'Inter',
@@ -137,23 +149,34 @@ const styles = makeStyles({
     lineHeight: 1.2
   },
   entitySubOrgsWrapper: {
-    paddingTop: '0'
+    paddingTop: '0',
   },
   entitySubOrgsList: {
     position: 'relative',
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingTop: '10px'
+    maxHeight: '48px',
+    overflow: 'hidden',
+    marginTop: '10px',
   },
   entitySubOrgItem: {
-    width: '20px',
-    height: '20px',
+    width: '22px',
+    height: '22px',
     borderRadius: '50%',
-    marginRight: '8px',
-    marginBottom: '8px',
+    marginRight: '4px',
+    marginBottom: '4px',
     backgroundColor: colors.primary.black
   },
+  entitySubOrgItemEllipsis: {
+    width: '26px',
+    height: '24px',
+    display: 'block',
+    background: 'linear-gradient(to right, transparent, white)',
+    position: 'absolute',
+    bottom: 0,
+    right: 0
+  }
 });
 
 export default function OrgsGridItem(props) {
@@ -164,13 +187,17 @@ export default function OrgsGridItem(props) {
     isSub = false,
     type = 'Hotel',
     trustLevel = '4',
-    name = 'Default Organization',
-    subs = ['1', 'a', '0xkk'],
-    entityName = 'Default Corp.',
+    name = 'Default Organization with extremely long long long long name',
+    subs = ['1', 'a', '0xkk', 'f', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '5'],
+    entityName = 'Default Corporation',
     entityTrustLevel = '5'
   } = props;
 
   const hiddenId = `${id.substr(0,4)}...${id.substr(-4,4)}`;
+
+  const copyTextToClipboard = (str) => {
+    navigator.clipboard.writeText(str).then(resolve =>  resolve);
+  };
 
   return (
     <Card className={isSub ? [classes.item, classes.itemSubOrg].join(' ') : classes.item}>
@@ -181,14 +208,10 @@ export default function OrgsGridItem(props) {
         {
           isSub && (
             <div className={classes.itemMarksWrapper}>
-              <div>
-                <Typography variant={'subtitle2'} className={classes.itemMark}>SubOrg</Typography>
-              </div>
-              <div>
-                <Typography variant={'subtitle2'} className={[classes.itemMark, classes.itemMarkType].join(' ')}>
-                  {type}
-                </Typography>
-              </div>
+              <Typography variant={'subtitle2'} className={classes.itemMark}>SubOrg</Typography>
+              <Typography variant={'subtitle2'} className={[classes.itemMark, classes.itemMarkType].join(' ')}>
+                {type}
+              </Typography>
             </div>
           )
         }
@@ -198,7 +221,7 @@ export default function OrgsGridItem(props) {
               ID: <Typography variant={'caption'} className={classes.subtitle}>{hiddenId}</Typography>
             </Typography>
             <ButtonCommon
-              onClick={() => console.log(id)} //TODO add functionality to copy id to clipboard
+              onClick={() => copyTextToClipboard(id)}
               className={classes.copyButton}
             >
               <CopyIcon viewBox={'0 0 16 16'} className={classes.iconCopy}/>
@@ -211,17 +234,21 @@ export default function OrgsGridItem(props) {
             </Typography>
           </div>
         </div>
-        <Typography variant={'h6'} className={classes.itemName} gutterBottom>
-          {name}
-        </Typography>
+        <div className={classes.itemNameWrapper}>
+          <Ellipsis clamp={2}>
+            {name}
+          </Ellipsis>
+        </div>
       </CardContent>
       {
         isSub ? (
           <Box className={classes.legalEntityInfo}>
-            <Typography variant={'subtitle2'} className={classes.entityTitle}>
-              Legal entity: <Typography variant={'caption'} className={classes.subtitle}>{entityName}</Typography>
-            </Typography>
-            <div className={classes.idInfoItem}>
+            <div className={classes.entityTitleWrapper}>
+              <Typography variant={'subtitle2'} className={classes.entityTitle} noWrap>
+                Legal entity: <Typography variant={'caption'} className={classes.subtitle}>{entityName}</Typography>
+              </Typography>
+            </div>
+            <div className={classes.entityInfoItem}>
               <EntityTrustLevelIcon viewBox={'0 0 12 12'} className={classes.entityIcon}/>
               <Typography variant={'subtitle2'} className={classes.entityTrustLevel}>
                 {entityTrustLevel}
@@ -236,15 +263,20 @@ export default function OrgsGridItem(props) {
             <Grid container className={classes.entitySubOrgsList}>
               {
                 subs.map((item, index) => {
-                  let arrayOfColors = [ colors.primary.black, colors.primary.accent, colors.secondary.yellow];
+                  let arrayOfColors = [ colors.primary.black, colors.primary.accent, colors.secondary.yellow ];
                   return (
                     <Grid item key={index.toString()} className={classes.entitySubOrgItem} style={{ backgroundColor: arrayOfColors[index] }}/>
                   )
                 })
               }
+              <div className={classes.entitySubOrgItemEllipsis}/>
             </Grid>
           </CardContent>
-        ) : null
+        ) : (
+          <CardContent className={classes.entitySubOrgsWrapper} style={{ marginBottom: '40px', }}>
+            <Typography variant={'subtitle2'} className={classes.entityTitle}>Does not include SubOrg</Typography>
+          </CardContent>
+        )
       }
     </Card>
   )
@@ -259,5 +291,5 @@ OrgsGridItem.propTypes = {
   name: PropTypes.string,
   subs: PropTypes.arrayOf(PropTypes.object),
   entityName: PropTypes.string,
-  entityTrustLevel: PropTypes.number
+  entityTrustLevel: PropTypes.number,
 };

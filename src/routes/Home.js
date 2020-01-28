@@ -21,7 +21,7 @@ class Home extends Component {
 
     return (
       <Container>
-        <OrgsGridList spacing={3}>
+        <OrgsGridList spacing={3} style={{ justifyContent: 'center' }}>
           {
             data.map((item, index) => (
               <Grid item key={index.toString()} style={{ minWidth: '264px', maxWidth: '288px' }}>

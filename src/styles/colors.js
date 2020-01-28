@@ -5,7 +5,8 @@ export default {
     accent: '#F58F7F'
   },
   secondary: {
-    yellow: '#FFB36B'
+    yellow: '#FFB36B',
+    pink: '#FB719A',
   },
   greyScale: {
     darkest: '#42424F',

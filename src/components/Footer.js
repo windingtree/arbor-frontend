@@ -1,20 +1,24 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
-import {LinkContainer} from 'react-router-bootstrap'
+import Logo from '../assets/SvgIconsComponents/Logo';
 import {Button, Container, Grid, Link} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 
-
 const styles = makeStyles({
     footer: {
-        background: 'black',
+        background: 'white',
         border: 0,
-        color: 'white',
+        color: 'black',
         padding: '36px 56px',
+        marginTop: '20px',
         '& span': {
             marginBottom: '15px',
             marginRight: '5px'
         }
+    },
+    logo: {
+        width: '89px',
+        height: '32px'
     },
     iconRow: {
         flexDirection: 'row',
@@ -37,7 +41,9 @@ export default function Footer(props) {
     return (
         <div id="app-footer" className={classes.footer}>
             <Grid container direction="row">
-                <Grid xs={2}>Logo</Grid>
+                <Grid xs={2}>
+                    <Logo viewBox={'0 0 90 32'} className={classes.logo}/>
+                </Grid>
                 <Grid container xs={10}>
                     <Grid container>
                         <Grid container direction="column" item xs={3}>

@@ -6,7 +6,7 @@ export default function OrgsGridList(props) {
   const { children, spacing } = props;
 
   return (
-    <Grid container spacing={spacing}>
+    <Grid container spacing={spacing} {...props}>
       {children}
     </Grid>
   )

@@ -17,10 +17,9 @@ storiesOf( 'ORG ID/Grid Item', module)
     const entityName = text('Legal entity name', 'Default corp.');
     const entityTrustLevel = number('Entity Trust level', 5) ;
 
-    //TODO: find how add fonts to storybook
     return (
      <Grid container>
-       <Grid item xs={3}>
+       <Grid item style={{ minWidth: '264px', maxWidth: '288px' }}>
          <OrgsGridItem
            id={id}
            isSub={isSub}

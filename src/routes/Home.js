@@ -21,10 +21,10 @@ class Home extends Component {
 
     return (
       <Container>
-        <OrgsGridList>
+        <OrgsGridList spacing={3}>
           {
             data.map((item, index) => (
-              <Grid item xs={3} key={index.toString()}>
+              <Grid item key={index.toString()} style={{ minWidth: '264px', maxWidth: '288px' }}>
                 <OrgsGridItem
                   id={item.orgid}
                 />

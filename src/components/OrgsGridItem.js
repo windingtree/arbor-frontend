@@ -91,7 +91,7 @@ const styles = makeStyles({
     color: colors.primary.accent,
   },
   icon: {
-    width: '16px',
+    width: '13px',
     height: '16px',
     color: colors.secondary.yellow,
     marginRight: '6px'
@@ -125,7 +125,7 @@ const styles = makeStyles({
     color: colors.primary.black
   },
   entityIcon: {
-    width: '12px',
+    width: '10px',
     height: '12px',
     color: colors.greyScale.common,
     marginRight: '4px'
@@ -151,6 +151,7 @@ const styles = makeStyles({
     height: '20px',
     borderRadius: '50%',
     marginRight: '8px',
+    marginBottom: '8px',
     backgroundColor: colors.primary.black
   },
 });
@@ -169,9 +170,7 @@ export default function OrgsGridItem(props) {
     entityTrustLevel = '5'
   } = props;
 
-  const arrayFromId = Array.from(id);
-  arrayFromId.splice(4, 34, '...');
-  const hiddenId = arrayFromId.join('');
+  const hiddenId = `${id.substr(0,4)}...${id.substr(-4,4)}`;
 
   return (
     <Card className={isSub ? [classes.item, classes.itemSubOrg].join(' ') : classes.item}>
@@ -230,6 +229,8 @@ export default function OrgsGridItem(props) {
             </div>
           </Box>
         ) : (
+          subs.length !== 0
+        ) ? (
           <CardContent className={classes.entitySubOrgsWrapper}>
             <Typography variant={'subtitle2'} className={classes.entityTitle}>Include {subs.length} SubOrgs:</Typography>
             <Grid container className={classes.entitySubOrgsList}>
@@ -243,7 +244,7 @@ export default function OrgsGridItem(props) {
               }
             </Grid>
           </CardContent>
-        )
+        ) : null
       }
     </Card>
   )
@@ -254,9 +255,9 @@ OrgsGridItem.propTypes = {
   img: PropTypes.string,
   isSub: PropTypes.array,
   type: PropTypes.string,
-  trustLevel: PropTypes.number,
+  trustLevel: PropTypes.string,
   name: PropTypes.string,
-  subs: PropTypes.array,
+  subs: PropTypes.arrayOf(PropTypes.object),
   entityName: PropTypes.string,
   entityTrustLevel: PropTypes.number
 };

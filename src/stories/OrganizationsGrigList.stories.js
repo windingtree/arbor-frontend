@@ -21,163 +21,165 @@ storiesOf('ORG ID/Grid Item', module)
     const entityTrustLevel2 = number('Entity Trust level', 5) ;
 
     return (
-      <Grid container spacing={3}  justify="center" alignItems="flex-start" >
-        <Grid item style={{ width: '264px' }}>
-          <OrgsGridItem
-            id={'0xnfjrfh774854nre7ns8r8f8fd'}
-            isSub={isSub}
-            type={'Hotel'}
-            trustLevel={'4'}
-            name={'Extremely very enormous and long default organization name with lot of characters'}
-            subs={subs}
-            entityName={'entityName'}
-            entityTrustLevel={'4'}
-          />
+      <Container>
+        <Grid container spacing={3}  justify="center" alignItems="flex-start" >
+          <Grid item style={{ width: '264px' }}>
+            <OrgsGridItem
+              id={'0xnfjrfh774854nre7ns8r8f8fd'}
+              isSub={isSub}
+              type={'Hotel'}
+              trustLevel={'4'}
+              name={'Extremely very enormous and long default organization name with lot of characters'}
+              subs={subs}
+              entityName={'entityName'}
+              entityTrustLevel={'4'}
+            />
+          </Grid>
+          <Grid item style={{ width: '264px' }}>
+            <OrgsGridItem
+              id={id2}
+              isSub={isSub2}
+              type={type2}
+              trustLevel={trustLevel2}
+              name={name2}
+              subs={subs2}
+              entityName={entityName2}
+              entityTrustLevel={entityTrustLevel2}
+            />
+          </Grid>
+          <Grid item style={{ width: '264px' }}>
+            <OrgsGridItem
+              id={'0xnfjrfh774854nre7ns8r8f8fd'}
+              isSub={false}
+              type={'Hotel'}
+              trustLevel={'4'}
+              name={'organization names'}
+              subs={['1', ]}
+              entityName={'entityName'}
+              entityTrustLevel={'4'}
+            />
+          </Grid>
+          <Grid item style={{ width: '264px' }}>
+            <OrgsGridItem
+              id={'0xnfjrfh774854nre7ns8r8f8fd'}
+              isSub={false}
+              type={'Hotel'}
+              trustLevel={'4'}
+              name={'organization name'}
+              subs={[]}
+              entityName={'entityName'}
+              entityTrustLevel={'4'}
+            />
+          </Grid>
+          <Grid item style={{ width: '264px' }}>
+            <OrgsGridItem
+              id={'0xnfjrfh774854nre7ns8r8f8fd'}
+              isSub={isSub}
+              type={'Hotel'}
+              trustLevel={'4'}
+              name={'Extremely very enormous and long default organization name with lot of characters'}
+              subs={subs}
+              entityName={'entityName'}
+              entityTrustLevel={'4'}
+            />
+          </Grid>
+          <Grid item style={{ width: '264px' }}>
+            <OrgsGridItem
+              id={'0xnfjrfh774854nre7ns8r8f8fd'}
+              isSub={isSub}
+              type={'Hotel'}
+              trustLevel={'4'}
+              name={'Extremely very enormous and long default organization name'}
+              subs={['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', ]}
+              entityName={'entityName'}
+              entityTrustLevel={'4'}
+            />
+          </Grid>
+          <Grid item style={{ width: '264px' }}>
+            <OrgsGridItem
+              id={'0xnfjrfh774854nre7ns8r8f8fd'}
+              isSub={isSub}
+              type={'Hotel'}
+              trustLevel={'4'}
+              name={'Extremely very enormous and long default organization name with lot of characters'}
+              subs={subs}
+              entityName={'entityName'}
+              entityTrustLevel={'4'}
+            />
+          </Grid>
+          <Grid item style={{ width: '264px' }}>
+            <OrgsGridItem
+              id={'0xnfjrfh774854nre7ns8r8f8fd'}
+              isSub={isSub}
+              type={'Hotel'}
+              trustLevel={'4'}
+              name={'Extremely very enormous and long default organization name with lot of characters'}
+              subs={subs}
+              entityName={'entityName'}
+              entityTrustLevel={'4'}
+            />
+          </Grid>
+          <Grid item style={{ width: '264px' }}>
+            <OrgsGridItem
+              id={'0xnfjrfh774854nre7ns8r8f8fd'}
+              isSub={isSub}
+              type={'Hotel'}
+              trustLevel={'4'}
+              name={'Extremely very enormous and long default organization name with lot of characters'}
+              subs={subs}
+              entityName={'entityName'}
+              entityTrustLevel={'4'}
+            />
+          </Grid>
+          <Grid item style={{ width: '264px' }}>
+            <OrgsGridItem
+              id={'0xnfjrfh774854nre7ns8r8f8fd'}
+              isSub={isSub}
+              type={'Hotel'}
+              trustLevel={'4'}
+              name={'Extremely very enormous and long default organization name with lot of characters'}
+              subs={subs}
+              entityName={'entityName'}
+              entityTrustLevel={'4'}
+            />
+          </Grid>
+          <Grid item style={{ width: '264px' }}>
+            <OrgsGridItem
+              id={'0xnfjrfh774854nre7ns8r8f8fd'}
+              isSub={isSub}
+              type={'Hotel'}
+              trustLevel={'4'}
+              name={'Extremely very enormous and long default organization name with lot of characters'}
+              subs={subs}
+              entityName={'entityName'}
+              entityTrustLevel={'4'}
+            />
+          </Grid>
+          <Grid item style={{ width: '264px' }}>
+            <OrgsGridItem
+              id={'0xnfjrfh774854nre7ns8r8f8fd'}
+              isSub={isSub}
+              type={'Hotel'}
+              trustLevel={'4'}
+              name={'Extremely very enormous and long default organization name with lot of characters'}
+              subs={subs}
+              entityName={'entityName'}
+              entityTrustLevel={'4'}
+            />
+          </Grid>
+          <Grid item style={{ width: '264px' }}>
+            <OrgsGridItem
+              id={'0xnfjrfh774854nre7ns8r8f8fd'}
+              isSub={isSub}
+              type={'Hotel'}
+              trustLevel={'4'}
+              name={'Extremely very enormous and long default organization name'}
+              subs={['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', ]}
+              entityName={'entityName'}
+              entityTrustLevel={'4'}
+            />
+          </Grid>
         </Grid>
-        <Grid item style={{ width: '264px' }}>
-          <OrgsGridItem
-            id={id2}
-            isSub={isSub2}
-            type={type2}
-            trustLevel={trustLevel2}
-            name={name2}
-            subs={subs2}
-            entityName={entityName2}
-            entityTrustLevel={entityTrustLevel2}
-          />
-        </Grid>
-        <Grid item style={{ width: '264px' }}>
-          <OrgsGridItem
-            id={'0xnfjrfh774854nre7ns8r8f8fd'}
-            isSub={false}
-            type={'Hotel'}
-            trustLevel={'4'}
-            name={'organization names'}
-            subs={['1', ]}
-            entityName={'entityName'}
-            entityTrustLevel={'4'}
-          />
-        </Grid>
-        <Grid item style={{ width: '264px' }}>
-          <OrgsGridItem
-            id={'0xnfjrfh774854nre7ns8r8f8fd'}
-            isSub={false}
-            type={'Hotel'}
-            trustLevel={'4'}
-            name={'organization name'}
-            subs={[]}
-            entityName={'entityName'}
-            entityTrustLevel={'4'}
-          />
-        </Grid>
-        <Grid item style={{ width: '264px' }}>
-          <OrgsGridItem
-            id={'0xnfjrfh774854nre7ns8r8f8fd'}
-            isSub={isSub}
-            type={'Hotel'}
-            trustLevel={'4'}
-            name={'Extremely very enormous and long default organization name with lot of characters'}
-            subs={subs}
-            entityName={'entityName'}
-            entityTrustLevel={'4'}
-          />
-        </Grid>
-        <Grid item style={{ width: '264px' }}>
-          <OrgsGridItem
-            id={'0xnfjrfh774854nre7ns8r8f8fd'}
-            isSub={isSub}
-            type={'Hotel'}
-            trustLevel={'4'}
-            name={'Extremely very enormous and long default organization name'}
-            subs={['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', ]}
-            entityName={'entityName'}
-            entityTrustLevel={'4'}
-          />
-        </Grid>
-        <Grid item style={{ width: '264px' }}>
-          <OrgsGridItem
-            id={'0xnfjrfh774854nre7ns8r8f8fd'}
-            isSub={isSub}
-            type={'Hotel'}
-            trustLevel={'4'}
-            name={'Extremely very enormous and long default organization name with lot of characters'}
-            subs={subs}
-            entityName={'entityName'}
-            entityTrustLevel={'4'}
-          />
-        </Grid>
-        <Grid item style={{ width: '264px' }}>
-          <OrgsGridItem
-            id={'0xnfjrfh774854nre7ns8r8f8fd'}
-            isSub={isSub}
-            type={'Hotel'}
-            trustLevel={'4'}
-            name={'Extremely very enormous and long default organization name with lot of characters'}
-            subs={subs}
-            entityName={'entityName'}
-            entityTrustLevel={'4'}
-          />
-        </Grid>
-        <Grid item style={{ width: '264px' }}>
-          <OrgsGridItem
-            id={'0xnfjrfh774854nre7ns8r8f8fd'}
-            isSub={isSub}
-            type={'Hotel'}
-            trustLevel={'4'}
-            name={'Extremely very enormous and long default organization name with lot of characters'}
-            subs={subs}
-            entityName={'entityName'}
-            entityTrustLevel={'4'}
-          />
-        </Grid>
-        <Grid item style={{ width: '264px' }}>
-          <OrgsGridItem
-            id={'0xnfjrfh774854nre7ns8r8f8fd'}
-            isSub={isSub}
-            type={'Hotel'}
-            trustLevel={'4'}
-            name={'Extremely very enormous and long default organization name with lot of characters'}
-            subs={subs}
-            entityName={'entityName'}
-            entityTrustLevel={'4'}
-          />
-        </Grid>
-        <Grid item style={{ width: '264px' }}>
-          <OrgsGridItem
-            id={'0xnfjrfh774854nre7ns8r8f8fd'}
-            isSub={isSub}
-            type={'Hotel'}
-            trustLevel={'4'}
-            name={'Extremely very enormous and long default organization name with lot of characters'}
-            subs={subs}
-            entityName={'entityName'}
-            entityTrustLevel={'4'}
-          />
-        </Grid>
-        <Grid item style={{ width: '264px' }}>
-          <OrgsGridItem
-            id={'0xnfjrfh774854nre7ns8r8f8fd'}
-            isSub={isSub}
-            type={'Hotel'}
-            trustLevel={'4'}
-            name={'Extremely very enormous and long default organization name with lot of characters'}
-            subs={subs}
-            entityName={'entityName'}
-            entityTrustLevel={'4'}
-          />
-        </Grid>
-        <Grid item style={{ width: '264px' }}>
-          <OrgsGridItem
-            id={'0xnfjrfh774854nre7ns8r8f8fd'}
-            isSub={isSub}
-            type={'Hotel'}
-            trustLevel={'4'}
-            name={'Extremely very enormous and long default organization name'}
-            subs={['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', ]}
-            entityName={'entityName'}
-            entityTrustLevel={'4'}
-          />
-        </Grid>
-      </Grid>
+      </Container>
     )
   });

@@ -12,19 +12,21 @@ storiesOf('ORG ID/Grid Item', module)
     const subs = ['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1',  ];
 
     return (
-      <Grid container>
-        <Grid item style={{ width: '264px' }}>
-          <OrgsGridItem
-            id={'0xnfjrfh774854nre7ns8r8f8fd'}
-            isSub={isSub}
-            type={'Hotel'}
-            trustLevel={'4'}
-            name={'Extremely very enormous and long default organization name with lot of characters'}
-            subs={subs}
-            entityName={'entityName'}
-            entityTrustLevel={'4'}
-          />
+      <Container>
+        <Grid container>
+          <Grid item style={{ width: '264px' }}>
+            <OrgsGridItem
+              id={'0xnfjrfh774854nre7ns8r8f8fd'}
+              isSub={isSub}
+              type={'Hotel'}
+              trustLevel={'4'}
+              name={'Extremely very enormous and long default organization name with lot of characters'}
+              subs={subs}
+              entityName={'entityName'}
+              entityTrustLevel={'4'}
+            />
+          </Grid>
         </Grid>
-      </Grid>
+      </Container>
     )
   });

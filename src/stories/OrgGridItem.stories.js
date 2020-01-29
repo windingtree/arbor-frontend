@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid } from '@material-ui/core';
+import { Grid, Container } from '@material-ui/core';
 import { storiesOf } from '@storybook/react';
 import {withKnobs, text, boolean, number, array} from '@storybook/addon-knobs';
 
@@ -18,20 +18,22 @@ storiesOf( 'ORG ID/Grid Item', module)
     const entityTrustLevel = number('Entity Trust level', 5) ;
 
     return (
-     <Grid container>
-       <Grid item style={{ width: '264px' }}>
-         <OrgsGridItem
-           id={id}
-           isSub={isSub}
-           type={type}
-           trustLevel={trustLevel}
-           name={name}
-           subs={subs}
-           entityName={entityName}
-           entityTrustLevel={entityTrustLevel}
-         />
+     <Container>
+       <Grid container>
+         <Grid item style={{ width: '264px' }}>
+           <OrgsGridItem
+             id={id}
+             isSub={isSub}
+             type={type}
+             trustLevel={trustLevel}
+             name={name}
+             subs={subs}
+             entityName={entityName}
+             entityTrustLevel={entityTrustLevel}
+           />
+         </Grid>
        </Grid>
-     </Grid>
+     </Container>
     );
   });
 

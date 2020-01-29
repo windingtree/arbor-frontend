@@ -48,7 +48,7 @@ const SubOrganizationCard = (props) => {
 };
 
 
-const OrgIdGridItem = (props) => {
+const OrgsListItem = (props) => {
     const {name, address, isSub, subs, trustLevel} = props;
     const classes = styles();
     console.log("isSub:" + isSub);
@@ -85,4 +85,4 @@ const OrgIdGridItem = (props) => {
     )
 };
 
-export default OrgIdGridItem;
+export default OrgsListItem;

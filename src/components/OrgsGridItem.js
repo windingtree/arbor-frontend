@@ -20,7 +20,7 @@ const styles = makeStyles({
     height: '287px',
     borderRadius: '8px',
     border: '1px solid',
-    borderColor: colors.greyScale.lightest,
+    borderColor: colors.greyScale.lighter,
     boxSizing: 'border-box',
     boxShadow: '0 0 20px rgba(188, 194, 211, 0.25)',
   },

@@ -1,18 +1,15 @@
-import React, { Component } from 'react';
+import React from 'react';
+// import { Route, Switch, Link, useRouteMatch } from 'react-router-dom';
 import { Container, Typography } from '@material-ui/core';
 
-class Directories extends Component {
-  constructor(props) {
-    super(props);
-  }
+import Directory from './Directory';
 
-  render() {
-    return (
-      <Container>
-        <Typography variant={'h2'}>Directories</Typography>
-      </Container>
-    )
-  }
+function Directories(props){
+  return (
+    <Container>
+      <Typography variant={'h2'}>Directories</Typography>
+    </Container>
+  )
 }
 
 export default Directories;

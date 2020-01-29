@@ -9,7 +9,7 @@ function Authorization() {
     <Switch>
       <Route exact path="/authorization/signin" component={SignIn} />
       <Route exact path="/authorization/register" component={Registration} />
-      <Redirect path="/authorization/" to="/authorization/signin" />
+      <Redirect exact path="/authorization" to="/authorization/signin" />
     </Switch>
   )
 }

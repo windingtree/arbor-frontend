@@ -15,9 +15,13 @@ import colors from '../styles/colors';
 
 const styles = makeStyles({
   item: {
+    position: 'relative',
+    width: '100%',
+    height: '287px',
     borderRadius: '8px',
     border: '1px solid',
     borderColor: colors.greyScale.lightest,
+    boxSizing: 'border-box',
     boxShadow: '0 0 20px rgba(188, 194, 211, 0.25)',
   },
   itemSubOrg: {
@@ -110,9 +114,15 @@ const styles = makeStyles({
     fontSize: '16px',
     fontWeight: 500,
     lineHeight: 1.2,
+    height: '38px',
+    overflow: 'hidden',
     color: colors.greyScale.darkest,
   },
   legalEntityInfo: {
+    position: 'absolute',
+    bottom: '0',
+    left: '0',
+    width: '216px',
     padding: '8px 16px',
     borderTop: '1px solid',
     borderTopColor: colors.greyScale.light,
@@ -127,7 +137,7 @@ const styles = makeStyles({
     width: '10%'
   },
   entityTitleWrapper: {
-    width: '90%',
+    width: '88%',
   },
   entityTitle: {
     fontFamily: 'Inter',
@@ -149,28 +159,23 @@ const styles = makeStyles({
     lineHeight: 1.2
   },
   entitySubOrgsWrapper: {
-    paddingTop: '0',
+    padding: '0 12px 12px 12px',
   },
   entitySubOrgsList: {
     position: 'relative',
-    display: 'flex',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
     maxHeight: '48px',
     overflow: 'hidden',
     marginTop: '10px',
   },
   entitySubOrgItem: {
-    width: '22px',
-    height: '22px',
+    width: '20px',
+    height: '20px',
     borderRadius: '50%',
-    marginRight: '4px',
-    marginBottom: '4px',
-    backgroundColor: colors.primary.black
+    backgroundColor: colors.primary.black,
   },
   entitySubOrgItemEllipsis: {
-    width: '26px',
-    height: '24px',
+    width: '20px',
+    height: '50%',
     display: 'block',
     background: 'linear-gradient(to right, transparent, white)',
     position: 'absolute',
@@ -185,7 +190,7 @@ export default function OrgsGridItem(props) {
     id,
     img = null,
     isSub = false,
-    type = 'Hotel',
+    type = 'Travel Agency',
     trustLevel = '4',
     name = 'Default Organization with extremely long long long long name',
     subs = ['1', 'a', '0xkk', 'f', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '5'],
@@ -199,9 +204,16 @@ export default function OrgsGridItem(props) {
     navigator.clipboard.writeText(str).then(resolve =>  resolve);
   };
 
+  const bgColorsForTypes = {
+    'Hotel': colors.primary.accent,
+    'Airline': colors.secondary.yellow,
+    'Travel Agency': colors.secondary.pink,
+    'Insurance': colors.greyScale.common,
+  };
+
   return (
     <Card className={isSub ? [classes.item, classes.itemSubOrg].join(' ') : classes.item}>
-      <CardContent>
+      <CardContent style={{ padding: '12px' }}>
         {
           img ? <CardMedia image={img.src} className={classes.itemImg}/> : <CardMedia label={'Organization picture'} image={DefaultImage} className={classes.itemImg}/>
         }
@@ -209,9 +221,13 @@ export default function OrgsGridItem(props) {
           isSub && (
             <div className={classes.itemMarksWrapper}>
               <Typography variant={'subtitle2'} className={classes.itemMark}>SubOrg</Typography>
-              <Typography variant={'subtitle2'} className={[classes.itemMark, classes.itemMarkType].join(' ')}>
-                {type}
-              </Typography>
+              {
+                type && (
+                  <Typography variant={'subtitle2'} className={classes.itemMark} style={{ backgroundColor: bgColorsForTypes[type] }}>
+                    {type}
+                  </Typography>
+                )
+              }
             </div>
           )
         }
@@ -258,20 +274,33 @@ export default function OrgsGridItem(props) {
         ) : (
           subs.length !== 0
         ) ? (
-          <CardContent className={classes.entitySubOrgsWrapper}>
+          <div className={classes.entitySubOrgsWrapper}>
             <Typography variant={'subtitle2'} className={classes.entityTitle}>Include {subs.length} SubOrgs:</Typography>
-            <Grid container className={classes.entitySubOrgsList}>
+            <Grid container spacing={1} justify="flex-start" alignItems="center" className={classes.entitySubOrgsList}>
               {
                 subs.map((item, index) => {
                   let arrayOfColors = [ colors.primary.black, colors.primary.accent, colors.secondary.yellow ];
+                  const bgColor = (index) => {
+                    if(+index === 0) {
+                      return arrayOfColors[0]
+                    } else if((+index + 1) % 3 === 0) {
+                      return arrayOfColors[2]
+                    } else if((+index + 2) % 3 === 0) {
+                      return arrayOfColors[1]
+                    } else {
+                      return arrayOfColors[0]
+                    }
+                  };
                   return (
-                    <Grid item key={index.toString()} className={classes.entitySubOrgItem} style={{ backgroundColor: arrayOfColors[index] }}/>
+                    <Grid item key={index.toString()}>
+                      <div className={classes.entitySubOrgItem} style={{ backgroundColor: bgColor(index) }}/>
+                    </Grid>
                   )
                 })
               }
               <div className={classes.entitySubOrgItemEllipsis}/>
             </Grid>
-          </CardContent>
+          </div>
         ) : (
           <CardContent className={classes.entitySubOrgsWrapper} style={{ marginBottom: '40px', }}>
             <Typography variant={'subtitle2'} className={classes.entityTitle}>Does not include SubOrg</Typography>

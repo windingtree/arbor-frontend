@@ -19,7 +19,7 @@ storiesOf( 'ORG ID/Grid Item', module)
 
     return (
      <Grid container>
-       <Grid item style={{ minWidth: '264px', maxWidth: '288px' }}>
+       <Grid item style={{ width: '264px' }}>
          <OrgsGridItem
            id={id}
            isSub={isSub}

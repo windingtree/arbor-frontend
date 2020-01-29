@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid } from '@material-ui/core';
+import { Grid, Container } from '@material-ui/core';
 import { storiesOf } from '@storybook/react';
 import {withKnobs, text, boolean, number, array} from '@storybook/addon-knobs';
 
@@ -21,8 +21,8 @@ storiesOf('ORG ID/Grid Item', module)
     const entityTrustLevel2 = number('Entity Trust level', 5) ;
 
     return (
-      <Grid container spacing={2}>
-        <Grid item style={{ minWidth: '264px', maxWidth: '288px' }}>
+      <Grid container spacing={3}  justify="center" alignItems="flex-start" >
+        <Grid item style={{ width: '264px' }}>
           <OrgsGridItem
             id={'0xnfjrfh774854nre7ns8r8f8fd'}
             isSub={isSub}
@@ -34,7 +34,7 @@ storiesOf('ORG ID/Grid Item', module)
             entityTrustLevel={'4'}
           />
         </Grid>
-        <Grid item style={{ minWidth: '264px', maxWidth: '288px' }}>
+        <Grid item style={{ width: '264px' }}>
           <OrgsGridItem
             id={id2}
             isSub={isSub2}
@@ -46,7 +46,7 @@ storiesOf('ORG ID/Grid Item', module)
             entityTrustLevel={entityTrustLevel2}
           />
         </Grid>
-        <Grid item style={{ minWidth: '264px', maxWidth: '288px' }}>
+        <Grid item style={{ width: '264px' }}>
           <OrgsGridItem
             id={'0xnfjrfh774854nre7ns8r8f8fd'}
             isSub={false}
@@ -58,7 +58,7 @@ storiesOf('ORG ID/Grid Item', module)
             entityTrustLevel={'4'}
           />
         </Grid>
-        <Grid item style={{ minWidth: '264px', maxWidth: '288px' }}>
+        <Grid item style={{ width: '264px' }}>
           <OrgsGridItem
             id={'0xnfjrfh774854nre7ns8r8f8fd'}
             isSub={false}
@@ -70,7 +70,7 @@ storiesOf('ORG ID/Grid Item', module)
             entityTrustLevel={'4'}
           />
         </Grid>
-        <Grid item style={{ minWidth: '264px', maxWidth: '288px' }}>
+        <Grid item style={{ width: '264px' }}>
           <OrgsGridItem
             id={'0xnfjrfh774854nre7ns8r8f8fd'}
             isSub={isSub}
@@ -82,7 +82,7 @@ storiesOf('ORG ID/Grid Item', module)
             entityTrustLevel={'4'}
           />
         </Grid>
-        <Grid item style={{ minWidth: '264px', maxWidth: '288px' }}>
+        <Grid item style={{ width: '264px' }}>
           <OrgsGridItem
             id={'0xnfjrfh774854nre7ns8r8f8fd'}
             isSub={isSub}
@@ -94,7 +94,7 @@ storiesOf('ORG ID/Grid Item', module)
             entityTrustLevel={'4'}
           />
         </Grid>
-        <Grid item style={{ minWidth: '264px', maxWidth: '288px' }}>
+        <Grid item style={{ width: '264px' }}>
           <OrgsGridItem
             id={'0xnfjrfh774854nre7ns8r8f8fd'}
             isSub={isSub}
@@ -106,7 +106,7 @@ storiesOf('ORG ID/Grid Item', module)
             entityTrustLevel={'4'}
           />
         </Grid>
-        <Grid item style={{ minWidth: '264px', maxWidth: '288px' }}>
+        <Grid item style={{ width: '264px' }}>
           <OrgsGridItem
             id={'0xnfjrfh774854nre7ns8r8f8fd'}
             isSub={isSub}
@@ -118,7 +118,7 @@ storiesOf('ORG ID/Grid Item', module)
             entityTrustLevel={'4'}
           />
         </Grid>
-        <Grid item style={{ minWidth: '264px', maxWidth: '288px' }}>
+        <Grid item style={{ width: '264px' }}>
           <OrgsGridItem
             id={'0xnfjrfh774854nre7ns8r8f8fd'}
             isSub={isSub}
@@ -130,7 +130,7 @@ storiesOf('ORG ID/Grid Item', module)
             entityTrustLevel={'4'}
           />
         </Grid>
-        <Grid item style={{ minWidth: '264px', maxWidth: '288px' }}>
+        <Grid item style={{ width: '264px' }}>
           <OrgsGridItem
             id={'0xnfjrfh774854nre7ns8r8f8fd'}
             isSub={isSub}
@@ -142,7 +142,7 @@ storiesOf('ORG ID/Grid Item', module)
             entityTrustLevel={'4'}
           />
         </Grid>
-        <Grid item style={{ minWidth: '264px', maxWidth: '288px' }}>
+        <Grid item style={{ width: '264px' }}>
           <OrgsGridItem
             id={'0xnfjrfh774854nre7ns8r8f8fd'}
             isSub={isSub}
@@ -154,7 +154,7 @@ storiesOf('ORG ID/Grid Item', module)
             entityTrustLevel={'4'}
           />
         </Grid>
-        <Grid item style={{ minWidth: '264px', maxWidth: '288px' }}>
+        <Grid item style={{ width: '264px' }}>
           <OrgsGridItem
             id={'0xnfjrfh774854nre7ns8r8f8fd'}
             isSub={isSub}
@@ -166,7 +166,7 @@ storiesOf('ORG ID/Grid Item', module)
             entityTrustLevel={'4'}
           />
         </Grid>
-        <Grid item style={{ minWidth: '264px', maxWidth: '288px' }}>
+        <Grid item style={{ width: '264px' }}>
           <OrgsGridItem
             id={'0xnfjrfh774854nre7ns8r8f8fd'}
             isSub={isSub}

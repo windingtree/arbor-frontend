@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid } from '@material-ui/core';
+import { Grid, Container } from '@material-ui/core';
 import { storiesOf } from '@storybook/react';
 import {withKnobs, boolean} from '@storybook/addon-knobs';
 
@@ -9,11 +9,11 @@ storiesOf('ORG ID/Grid Item', module)
   .addDecorator(withKnobs)
   .add('Long Long Long Grid Item', () => {
     const isSub = boolean('is SubOrganization', false);
-    const subs = ['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1', ];
+    const subs = ['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1',  ];
 
     return (
       <Grid container>
-        <Grid item style={{ minWidth: '264px', maxWidth: '288px' }}>
+        <Grid item style={{ width: '264px' }}>
           <OrgsGridItem
             id={'0xnfjrfh774854nre7ns8r8f8fd'}
             isSub={isSub}

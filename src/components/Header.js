@@ -114,7 +114,7 @@ export default function Header(props) {
                                 </NavLink>
                             </div>
                             {
-                                !isAuthenticated ? (
+                                isAuthenticated ? (
                                   <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                       <NavLink
                                         to={'/trust'}

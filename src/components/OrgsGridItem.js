@@ -11,6 +11,7 @@ import CopyIcon from '../assets/SvgIconsComponents/CopyIcon';
 import TrustLevelIcon from '../assets/SvgIconsComponents/TrustLevelIcon';
 import EntityTrustLevelIcon from '../assets/SvgIconsComponents/EntityTrustLevelIcon';
 
+import { copyStrToClipboard, strCenterEllipsis } from '../utils/helpers';
 import colors from '../styles/colors';
 
 const styles = makeStyles({
@@ -19,14 +20,13 @@ const styles = makeStyles({
     width: '100%',
     height: '287px',
     borderRadius: '8px',
-    border: '1px solid',
-    borderColor: colors.greyScale.lighter,
+    border: `1px solid ${colors.greyScale.lightest}`,
     boxSizing: 'border-box',
-    boxShadow: '0 0 20px rgba(188, 194, 211, 0.25)',
+    boxShadow: '0 0 20px rgba(188, 194, 211, 0.25), 0px 0px 2px rgba(188, 194, 211, 0.25)',
   },
   itemSubOrg: {
-    borderColor: colors.greyScale.light,
-    boxShadow: '0 4px 12px rgba(10, 23, 51, 0.04)',
+    borderColor: colors.greyScale.lighter,
+    boxShadow: '0px 4px 12px rgba(10, 23, 51, 0.04), 0 4px 12px rgba(10, 23, 51, 0.04)',
   },
   itemImg: {
     position: 'relative',
@@ -66,10 +66,10 @@ const styles = makeStyles({
     alignItems: 'center',
     padding: '8px 0',
   },
-  idInfoItem: {
+  idInfo: {
     position: 'relative',
     display: 'flex',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
   },
   id: {
@@ -122,10 +122,9 @@ const styles = makeStyles({
     position: 'absolute',
     bottom: '0',
     left: '0',
-    width: '216px',
+    width: '220px',
     padding: '8px 16px',
-    borderTop: '1px solid',
-    borderTopColor: colors.greyScale.light,
+    borderTop: `1px solid ${colors.greyScale.light}`,
     display: 'flex',
     justifyContent: 'stretch',
     alignItems: 'center'
@@ -198,11 +197,7 @@ export default function OrgsGridItem(props) {
     entityTrustLevel = '5'
   } = props;
 
-  const hiddenId = `${id.substr(0,4)}...${id.substr(-4,4)}`;
-
-  const copyTextToClipboard = (str) => {
-    navigator.clipboard.writeText(str).then(resolve =>  resolve);
-  };
+  const hiddenId = strCenterEllipsis(id);
 
   const bgColorsForTypes = {
     'Hotel': colors.primary.accent,
@@ -232,18 +227,18 @@ export default function OrgsGridItem(props) {
           )
         }
         <div className={classes.idInfoWrapper}>
-          <div className={classes.idInfoItem}>
+          <div className={classes.idInfo}>
             <Typography variant={'subtitle2'} className={classes.id}>
               ID: <Typography variant={'caption'} className={classes.subtitle}>{hiddenId}</Typography>
             </Typography>
             <ButtonCommon
-              onClick={() => copyTextToClipboard(id)}
+              onClick={() => copyStrToClipboard(id)}
               className={classes.copyButton}
             >
               <CopyIcon viewBox={'0 0 16 16'} className={classes.iconCopy}/>
             </ButtonCommon>
           </div>
-          <div className={classes.idInfoItem}>
+          <div className={classes.idInfo}>
             <TrustLevelIcon viewBox={'0 0 16 16'} className={classes.icon}/>
             <Typography variant={'subtitle2'} className={classes.trustLevelValue}>
               {trustLevel}
@@ -314,11 +309,11 @@ export default function OrgsGridItem(props) {
 OrgsGridItem.propTypes = {
   id: PropTypes.string.isRequired,
   img: PropTypes.string,
-  isSub: PropTypes.array,
+  isSub: PropTypes.bool,
   type: PropTypes.string,
   trustLevel: PropTypes.string,
   name: PropTypes.string,
   subs: PropTypes.arrayOf(PropTypes.object),
   entityName: PropTypes.string,
-  entityTrustLevel: PropTypes.number,
+  entityTrustLevel: PropTypes.string,
 };

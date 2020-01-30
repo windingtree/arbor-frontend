@@ -108,7 +108,7 @@ export default function Header(props) {
                                     <SearchIcon
                                       width={'14px'}
                                       height={'14px'}
-                                      viewBox={'0 0 14px 14px'}
+                                      viewBox={'0 0 14 14'}
                                       className={classes.searchIcon}
                                     />
                                 </NavLink>

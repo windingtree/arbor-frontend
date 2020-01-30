@@ -41,10 +41,10 @@ export default function Footer(props) {
     return (
         <div id="app-footer" className={classes.footer}>
             <Grid container direction="row">
-                <Grid xs={2}>
+                <Grid item xs={2}>
                     <Logo viewBox={'0 0 90 32'} className={classes.logo}/>
                 </Grid>
-                <Grid container xs={10}>
+                <Grid container item xs={10}>
                     <Grid container>
                         <Grid container direction="column" item xs={3}>
                             <h3>Solutions</h3>

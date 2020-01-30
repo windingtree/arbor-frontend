@@ -13,7 +13,8 @@ export default {
     dark: '#5E666A',
     common: '#8F999F',
     light: '#D9DBE1',
-    lighter: '#FAFBFC',
+    lighter: '#E6E7EB',
+    moreLighter: '#FAFBFC',
     lightest: '#EFEFEF'
   }
 }

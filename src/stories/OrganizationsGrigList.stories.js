@@ -22,7 +22,7 @@ storiesOf('ORG ID/Grid Item', module)
 
     return (
       <Container>
-        <Grid container spacing={3}  justify="center" alignItems="flex-start" >
+        <Grid container spacing={3} justify="flex-start" alignItems="flex-start" >
           <Grid item style={{ width: '264px' }}>
             <OrgsGridItem
               id={'0xnfjrfh774854nre7ns8r8f8fd'}

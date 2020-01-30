@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-// import { Route, Switch, useRouteMatch } from 'react-router-dom';
-import {Container, Grid, Typography} from '@material-ui/core';
+import {Container, Grid} from '@material-ui/core';
 
 import OrgsGridList from '../components/OrgsGridList';
 import OrgsGridItem from '../components/OrgsGridItem';

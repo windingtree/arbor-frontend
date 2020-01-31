@@ -7,9 +7,9 @@ import Ellipsis from 'react-dotdotdot';
 import ButtonCommon from './Button';
 
 import DefaultImage from '../assets/images/default-image.jpg';
-import CopyIcon from '../assets/SvgIconsComponents/CopyIcon';
-import TrustLevelIcon from '../assets/SvgIconsComponents/TrustLevelIcon';
-import EntityTrustLevelIcon from '../assets/SvgIconsComponents/EntityTrustLevelIcon';
+import CopyIcon from '../assets/SvgComponents/CopyIcon';
+import TrustLevelIcon from '../assets/SvgComponents/TrustLevelIcon';
+import EntityTrustLevelIcon from '../assets/SvgComponents/EntityTrustLevelIcon';
 
 import { copyStrToClipboard, strCenterEllipsis } from '../utils/helpers';
 import colors from '../styles/colors';

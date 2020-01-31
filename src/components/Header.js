@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link as RouterLink, NavLink } from 'react-router-dom';
+import history from '../redux/history';
 import {Grid, Box, Typography} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
-import Logo from '../assets/SvgIconsComponents/Logo';
-import SearchIcon from '../assets/SvgIconsComponents/SearchIcon';
-import HomeIcon from '../assets/SvgIconsComponents/HomeIcon';
+import Logo from '../assets/SvgComponents/Logo';
+import SearchIcon from '../assets/SvgComponents/SearchIcon';
+import HomeIcon from '../assets/SvgComponents/HomeIcon';
 import ButtonCommon from './Button';
 
 import colors from '../styles/colors';
@@ -149,29 +150,25 @@ export default function Header(props) {
                                 ) : (
                                   <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center'}}>
                                       <ButtonCommon
-                                        onClick={() => null}
+                                        onClick={() => history.push('/authorization/register')}
                                         className={classes.authButton}
                                         style={{
                                             backgroundImage: 'unset',
                                             borderColor: 'transparent'
                                         }}
                                       >
-                                          <RouterLink to={'/authorization/register'} style={{ textDecoration: 'none' }}>
-                                              <Typography variant={'subtitle2'} noWrap className={classes.buttonTitle} style={{ color: colors.primary.black }}>
-                                                  Sign Up
-                                              </Typography>
-                                          </RouterLink>
+                                          <Typography variant={'subtitle2'} noWrap className={classes.buttonTitle} style={{ color: colors.primary.black }}>
+                                              Sign Up
+                                          </Typography>
                                       </ButtonCommon>
                                       <ButtonCommon
-                                        onClick={() => null}
+                                        onClick={() => history.push('/authorization/signin')}
                                         className={classes.authButton}
                                         style={{ marginLeft: '20px' }}
                                       >
-                                          <RouterLink to={'/authorization/signin'} style={{ textDecoration: 'none' }}>
-                                              <Typography variant={'subtitle2'} noWrap className={classes.buttonTitle}>
-                                                  Sign In
-                                              </Typography>
-                                          </RouterLink>
+                                          <Typography variant={'subtitle2'} noWrap className={classes.buttonTitle}>
+                                              Sign In
+                                          </Typography>
                                       </ButtonCommon>
                                   </div>
                                 )

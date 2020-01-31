@@ -14,6 +14,7 @@ import Directories from './Directories';
 import Directory from './Directory';
 import Organization from './Organization';
 import Authorization from './Authorization/Authorization';
+import Trust from './Trust/Trust';
 import TOS from './TOS'
 import FAQ from './FAQ';
 import PrivacyPolicy from './PrivacyPolicy';
@@ -23,21 +24,14 @@ import PrivateRoute from '../components/PrivateRoute';
 import Wizard from './Wizard/Wizard';
 import Profile from './Profile';
 
-import { Container } from '@material-ui/core';
-import Trust from './Trust/Trust';
-
 class RootRouter extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     const { isAuth } = this.props;
 
     return (
       <Router history={history}>
         <Header isAuthenticated={isAuth}/>
-        <Container style={{ minHeight: '100vh', width: '100%', overflow: 'hidden', padding: '20px 0' }}>
+        <div style={{ minHeight: '100vh', width: '100%', overflow: 'hidden', padding: '20px 0' }}>
           <Switch>
             <Route exact path='/' component={Home}/>
             <Route exact path='/directories' render={routeProps => <Directories {...routeProps}/>} />
@@ -61,7 +55,7 @@ class RootRouter extends Component {
               <Redirect to='/404' />
             </Route>
           </Switch>
-        </Container>
+        </div>
         <Footer />
       </Router>
     )

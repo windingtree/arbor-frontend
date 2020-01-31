@@ -6,6 +6,7 @@ export default {
   },
   secondary: {
     yellow: '#FFB36B',
+    cyan: '#419D9A',
     pink: '#FB719A',
   },
   greyScale: {

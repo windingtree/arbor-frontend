@@ -1,5 +1,4 @@
 import React from 'react';
-import {BrowserRouter as Router} from 'react-router-dom';
 import {Provider} from 'react-redux';
 import {Web3ReactProvider} from '@web3-react/core';
 import {createMuiTheme} from '@material-ui/core/styles';

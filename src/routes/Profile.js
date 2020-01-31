@@ -3,10 +3,6 @@ import { Container, Typography } from '@material-ui/core';
 import OrgsListItem from '../components/OrgsListItem';
 
 class Profile extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     const mockOrgs =
       [

@@ -8,10 +8,6 @@ import OrgsGridItem from '../components/OrgsGridItem';
 import {fetchAllOrganizations} from '../ducks/fetchOrganizations';
 
 class Search extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     this.props.fetchAllOrganizations();
   }

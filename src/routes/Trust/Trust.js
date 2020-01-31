@@ -1,6 +1,5 @@
 import React from "react";
 import { Switch, Route } from 'react-router-dom';
-import { Container, Typography } from '@material-ui/core';
 
 import TrustGeneral from './TrustGeneral';
 import TrustSocial from './TrustSocial';

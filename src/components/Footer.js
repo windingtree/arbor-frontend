@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
-import Logo from '../assets/SvgIconsComponents/Logo';
-import {Button, Container, Grid, Link} from '@material-ui/core';
+import Logo from '../assets/SvgComponents/Logo';
+import {Grid} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 
 const styles = makeStyles({

@@ -1,17 +1,16 @@
 import React from "react";
 import {Card, CardContent, CardMedia, Grid, Typography, Collapse} from '@material-ui/core';
-
 import { makeStyles } from '@material-ui/core/styles';
-import CopyIcon from '../assets/SvgIconsComponents/CopyIcon';
-import TrustLevelIcon from '../assets/SvgIconsComponents/TrustLevelIcon';
-import ChevronCircleIcon from '../assets/SvgIconsComponents/ChevronCircleIcon';
+import CopyIcon from '../assets/SvgComponents/CopyIcon';
+import TrustLevelIcon from '../assets/SvgComponents/TrustLevelIcon';
+import ChevronCircleIcon from '../assets/SvgComponents/ChevronCircleIcon';
 import ButtonCommon from './Button';
+import OrgsGridList from './OrgsGridList';
+import OrgsGridItem from './OrgsGridItem';
 
 import { copyStrToClipboard, strCenterEllipsis } from '../utils/helpers';
 
 import colors from '../styles/colors';
-import OrgsGridList from './OrgsGridList';
-import OrgsGridItem from './OrgsGridItem';
 
 const styles = makeStyles({
   item: {

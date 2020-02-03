@@ -6,9 +6,11 @@ export default {
   },
   secondary: {
     yellow: '#FFB36B',
+    yellowLight: '#FBF3E9',
     cyan: '#419D9A',
     green: '#98CCB0',
     pink: '#FB719A',
+    peach: '#F0806E'
   },
   greyScale: {
     darkest: '#42424F',
@@ -18,5 +20,11 @@ export default {
     lighter: '#E6E7EB',
     moreLighter: '#FAFBFC',
     lightest: '#EFEFEF'
+  },
+  social: {
+    facebook: '#4873C3',
+    telegram: '#0088CC',
+    twitter: '#00ACEE',
+    linkedin: '#3177B0'
   }
 }

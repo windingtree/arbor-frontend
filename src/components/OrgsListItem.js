@@ -36,7 +36,7 @@ const styles = makeStyles({
     fontSize: '18px',
     fontWeight: 500,
     lineHeight: 1.2,
-    color: colors.primary.black,
+    color: colors.greyScale.darkest,
     marginBottom: '7px'
   },
   idInfo: {
@@ -62,7 +62,7 @@ const styles = makeStyles({
   iconCopy: {
     width: '12.8px',
     height: '12.8px',
-    color: colors.primary.accent,
+    color: colors.secondary.green,
   },
   icon: {
     width: '13px',
@@ -128,76 +128,11 @@ const styles = makeStyles({
 export default function OrgsListItem(props) {
   const classes = styles();
   const {
-    id = '0xnfjrfh774854nre7ns8r8f8fd',
-    img = null,
-    name = 'Default Organization',
-    trustLevel = '5',
-    subs = [
-      {
-        id: '0x67jrfh774854nre7ns8r8f85g',
-        entityName: name,
-        subName: 'Default subOrg',
-        isSub: true,
-        type: 'Travel Agency',
-        entityTrustLevel: trustLevel
-      },
-      {
-        id: '0x67jrfh774854nre7ns8r8f6ig',
-        entityName: name,
-        subName: 'Default subOrg with very long name',
-        isSub: true,
-        type: 'Hotel',
-        entityTrustLevel: trustLevel
-      },
-      {
-        id: '0x67jrfh774854nre7ns8r8fmju',
-        entityName: name,
-        subName: 'Default subOrg',
-        isSub: true,
-        type: 'Travel Agency',
-        entityTrustLevel: trustLevel
-      },
-      {
-        id: '0x67jrfh774854nre7ns8r8f88o',
-        entityName: name,
-        subName: 'Default subOrg',
-        isSub: true,
-        type: 'Insurance',
-        entityTrustLevel: trustLevel
-      },
-      {
-        id: '0x67jrfh774854nre7ns8r8f54f',
-        entityName: name,
-        subName: 'Suuuuuubbbooooooorg',
-        isSub: true,
-        type: 'Hotel',
-        entityTrustLevel: trustLevel
-      },
-      {
-        id: '0x67jrfh774854nre7ns8r8fnh6',
-        entityName: name,
-        subName: 'Default subOrg',
-        isSub: true,
-        type: 'Travel Agency',
-        entityTrustLevel: trustLevel
-      },
-      {
-        id: '0x67jrfh774854nre7ns8r8fgd3',
-        entityName: name,
-        subName: 'Default subOrg',
-        isSub: true,
-        type: 'Airline',
-        entityTrustLevel: trustLevel
-      },
-      {
-        id: '0x67jrfh774854nre7ns8r8f77g',
-        entityName: name,
-        subName: 'Default subOrg',
-        isSub: true,
-        type: 'Insurance',
-        entityTrustLevel: trustLevel
-      },
-    ],
+    id,
+    img,
+    name,
+    trustLevel,
+    subs,
     isOpen,
     handleOpenSubs
   } = props;
@@ -295,4 +230,77 @@ export default function OrgsListItem(props) {
       </CardContent>
     </Card>
   )
+};
+
+OrgsListItem.defaultProps = {
+  id: '0xnfjrfh774854nre7ns8r8f8fd',
+  img: null,
+  name: 'Default Organization',
+  trustLevel: '5',
+  subs: [
+    {
+      id: '0x67jrfh774854nre7ns8r8f85g',
+      entityName: 'Default Organization',
+      subName: 'Default subOrg',
+      isSub: true,
+      type: 'Travel Agency',
+      entityTrustLevel: '5'
+    },
+    {
+      id: '0x67jrfh774854nre7ns8r8f6ig',
+      entityName: 'Default Organization',
+      subName: 'Default subOrg with very long name',
+      isSub: true,
+      type: 'Hotel',
+      entityTrustLevel: '5'
+    },
+    {
+      id: '0x67jrfh774854nre7ns8r8fmju',
+      entityName: 'Default Organization',
+      subName: 'Default subOrg',
+      isSub: true,
+      type: 'Travel Agency',
+      entityTrustLevel: '5'
+    },
+    {
+      id: '0x67jrfh774854nre7ns8r8f88o',
+      entityName: 'Default Organization',
+      subName: 'Default subOrg',
+      isSub: true,
+      type: 'Insurance',
+      entityTrustLevel: '5'
+    },
+    {
+      id: '0x67jrfh774854nre7ns8r8f54f',
+      entityName: 'Default Organization',
+      subName: 'Suuuuuubbbooooooorg',
+      isSub: true,
+      type: 'Hotel',
+      entityTrustLevel: '5'
+    },
+    {
+      id: '0x67jrfh774854nre7ns8r8fnh6',
+      entityName: 'Default Organization',
+      subName: 'Default subOrg',
+      isSub: true,
+      type: 'Travel Agency',
+      entityTrustLevel: '5'
+    },
+    {
+      id: '0x67jrfh774854nre7ns8r8fgd3',
+      entityName: 'Default Organization',
+      subName: 'Default subOrg',
+      isSub: true,
+      type: 'Airline',
+      entityTrustLevel: '5'
+    },
+    {
+      id: '0x67jrfh774854nre7ns8r8f77g',
+      entityName: 'Default Organization',
+      subName: 'Default subOrg',
+      isSub: true,
+      type: 'Insurance',
+      entityTrustLevel: '5'
+    },
+  ],
 };

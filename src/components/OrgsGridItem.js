@@ -94,7 +94,7 @@ const styles = makeStyles({
   iconCopy: {
     width: '12.8px',
     height: '12.8px',
-    color: colors.primary.accent,
+    color: colors.secondary.green,
   },
   icon: {
     width: '13px',
@@ -187,14 +187,14 @@ export default function OrgsGridItem(props) {
   const classes = styles();
   const {
     id,
-    img = null,
-    isSub = false,
-    type = 'Travel Agency',
-    trustLevel = '4',
-    name = 'Default Organization with extremely long long long long name',
-    subs = ['1', 'a', '0xkk', 'f', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '5'],
-    entityName = 'Default Corporation',
-    entityTrustLevel = '5'
+    img,
+    isSub,
+    type,
+    trustLevel,
+    name,
+    subs,
+    entityName,
+    entityTrustLevel,
   } = props;
 
   const hiddenId = strCenterEllipsis(id);
@@ -316,4 +316,15 @@ OrgsGridItem.propTypes = {
   subs: PropTypes.arrayOf(PropTypes.object),
   entityName: PropTypes.string,
   entityTrustLevel: PropTypes.string,
+};
+
+OrgsGridItem.defaultProps = {
+  img: null,
+  isSub: false,
+  type: 'Travel Agency',
+  trustLevel: '4',
+  name: 'Default Organization with extremely long long long long name',
+  subs: ['1', 'a', '0xkk', 'f', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '5'],
+  entityName: 'Default Corporation',
+  entityTrustLevel: '5'
 };

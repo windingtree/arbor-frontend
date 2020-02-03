@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import history from '../redux/history';
 import { Container, Typography, Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
@@ -49,6 +49,7 @@ const styles = makeStyles({
 });
 
 export default function Organization(props) {
+  const [isOpen, toggleOpen] = useState(false);
   const classes = styles();
   const {
     prevDirectoryName = 'hotels'
@@ -89,7 +90,10 @@ export default function Organization(props) {
             }
           </Box>
         </Container>
-        <OrgProfileView/>
+        <OrgProfileView
+          isOpen={isOpen}
+          toggleOpen={toggleOpen}
+        />
       </div>
   )
 }

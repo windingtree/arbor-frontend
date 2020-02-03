@@ -4,7 +4,7 @@ import { Container, Grid, Typography, Box } from '@material-ui/core';
 import { ArrowForward } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
 
-import RegisterIllustration from '../../assets/SvgComponents/RegisterIllustration';
+import RegisterIllustration from '../../assets/SvgComponents/registration-illustration.svg';
 import ButtonCommon from '../../components/Button';
 
 import colors from '../../styles/colors';
@@ -92,7 +92,7 @@ const  Registration = ({props}) => {
     <Container>
       <Grid container justify={'space-between'} alignItems={'center'}>
         <Grid item className={classes.itemContainer}>
-          <RegisterIllustration viewBox={'0 0 557 490'} className={classes.illustration}/>
+          <img src={RegisterIllustration} alt={'Register-illustration'} className={classes.illustration}/>
         </Grid>
         <Grid item className={classes.itemContainer}>
           <Box>

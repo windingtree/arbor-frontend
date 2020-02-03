@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Grid, Typography, Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
-import LoginIllustration from '../../assets/SvgComponents/LoginIllustration';
+import LoginIllustration from '../../assets/SvgComponents/login-illustration.svg';
 import ButtonCommon from '../../components/Button';
 
 import colors from '../../styles/colors';
@@ -75,7 +75,7 @@ const SignIn = ({props}) => {
     <Container className={classes.container}>
       <Grid container justify={'space-between'} alignItems={'center'}>
         <Grid item className={classes.itemContainer}>
-          <LoginIllustration viewBox={'0 0 684 454'} className={classes.illustration}/>
+          <img src={LoginIllustration} alt={'Login illustration'} className={classes.illustration}/>
         </Grid>
         <Grid item className={classes.itemContainer}>
           <Box>

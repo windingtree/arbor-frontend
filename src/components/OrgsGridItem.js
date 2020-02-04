@@ -4,14 +4,12 @@ import {Box, Card, CardContent, CardMedia, Grid, Typography} from '@material-ui/
 import { makeStyles } from '@material-ui/core/styles';
 import Ellipsis from 'react-dotdotdot';
 
-import ButtonCommon from './Button';
+import CopyIdComponent from './CopyIdComponent';
 
 import DefaultImage from '../assets/images/default-image.jpg';
-import CopyIcon from '../assets/SvgComponents/CopyIcon';
 import TrustLevelIcon from '../assets/SvgComponents/TrustLevelIcon';
 import EntityTrustLevelIcon from '../assets/SvgComponents/EntityTrustLevelIcon';
 
-import { copyStrToClipboard, strCenterEllipsis } from '../utils/helpers';
 import colors from '../styles/colors';
 
 const styles = makeStyles({
@@ -46,7 +44,6 @@ const styles = makeStyles({
   itemMark: {
     position: 'relative',
     display: 'inline-block',
-    fontFamily: 'Inter',
     fontSize: '12px',
     lineHeight: 1.2,
     backgroundColor: colors.primary.black,
@@ -66,35 +63,11 @@ const styles = makeStyles({
     alignItems: 'center',
     padding: '8px 0',
   },
-  idInfo: {
+  trustLevelInfo: {
     position: 'relative',
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
-  },
-  id: {
-    fontFamily: 'Inter',
-    fontSize: '14px',
-    fontWeight: 400,
-    lineHeight: 1.2,
-    color: colors.greyScale.darkest
-  },
-  subtitle: {
-    fontFamily: 'Inter',
-    fontSize: '12px',
-    color: colors.greyScale.common,
-    opacity: .7
-  },
-  copyButton: {
-    padding: '4px',
-    minWidth: 'auto',
-    backgroundColor: 'transparent',
-    marginLeft: '6px'
-  },
-  iconCopy: {
-    width: '12.8px',
-    height: '12.8px',
-    color: colors.secondary.green,
   },
   icon: {
     width: '13px',
@@ -103,14 +76,12 @@ const styles = makeStyles({
     marginRight: '6px'
   },
   trustLevelValue: {
-    fontFamily: 'Inter',
     fontWeight: 600,
     color: colors.greyScale.darkest,
     fontSize: '14px',
     lineHeight: 1.2,
   },
   itemNameWrapper: {
-    fontFamily: 'Inter',
     fontSize: '16px',
     fontWeight: 500,
     lineHeight: 1.2,
@@ -139,7 +110,6 @@ const styles = makeStyles({
     width: '88%',
   },
   entityTitle: {
-    fontFamily: 'Inter',
     fontSize: '12px',
     fontWeight: 400,
     lineHeight: 1.2,
@@ -152,7 +122,6 @@ const styles = makeStyles({
     marginRight: '4px'
   },
   entityTrustLevel: {
-    fontFamily: 'Inter',
     color: colors.greyScale.darkest,
     fontSize: '12px',
     lineHeight: 1.2
@@ -197,8 +166,6 @@ export default function OrgsGridItem(props) {
     entityTrustLevel,
   } = props;
 
-  const hiddenId = strCenterEllipsis(id);
-
   const bgColorsForTypes = {
     'Hotel': colors.primary.accent,
     'Airline': colors.secondary.yellow,
@@ -227,18 +194,8 @@ export default function OrgsGridItem(props) {
           )
         }
         <div className={classes.idInfoWrapper}>
-          <div className={classes.idInfo}>
-            <Typography variant={'subtitle2'} className={classes.id}>
-              ID: <Typography variant={'caption'} className={classes.subtitle}>{hiddenId}</Typography>
-            </Typography>
-            <ButtonCommon
-              onClick={() => copyStrToClipboard(id)}
-              className={classes.copyButton}
-            >
-              <CopyIcon viewBox={'0 0 16 16'} className={classes.iconCopy}/>
-            </ButtonCommon>
-          </div>
-          <div className={classes.idInfo}>
+          <CopyIdComponent id={id} leftElement={'ID: '}/>
+          <div className={classes.trustLevelInfo}>
             <TrustLevelIcon viewBox={'0 0 16 16'} className={classes.icon}/>
             <Typography variant={'subtitle2'} className={classes.trustLevelValue}>
               {trustLevel}
@@ -324,7 +281,7 @@ OrgsGridItem.defaultProps = {
   type: 'Travel Agency',
   trustLevel: '4',
   name: 'Default Organization with extremely long long long long name',
-  subs: ['1', 'a', '0xkk', 'f', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '5'],
+  subs: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, ],
   entityName: 'Default Corporation',
   entityTrustLevel: '5'
 };

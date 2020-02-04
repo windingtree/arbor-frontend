@@ -22,7 +22,6 @@ const styles = makeStyles({
     paddingBottom: '20px'
   },
   screenTitle: {
-    fontFamily: 'Inter',
     fontSize: '40px',
     fontWeight: 500,
     lineHeight: 1.2,
@@ -40,7 +39,6 @@ const styles = makeStyles({
     paddingTop: '20px'
   },
   subtitle: {
-    fontFamily: 'Inter',
     fontSize: '16px',
     fontWeight: 400,
     lineHeight: 1.45,
@@ -56,7 +54,6 @@ const styles = makeStyles({
     borderRadius: '6px'
   },
   buttonLabel: {
-    fontFamily: 'Inter',
     fontSize: '16px',
     fontWeight: 600,
     lineHeight: 1.2,
@@ -68,7 +65,6 @@ const styles = makeStyles({
     marginTop: '80px'
   },
   link: {
-    fontFamily: 'Inter',
     fontSize: '14px',
     fontWeight: 400,
     lineHeight: 1,

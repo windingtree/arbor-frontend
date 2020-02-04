@@ -1,16 +1,15 @@
 import React from "react";
 import {Card, CardContent, CardMedia, Grid, Typography, Collapse} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import CopyIcon from '../assets/SvgComponents/CopyIcon';
+
 import TrustLevelIcon from '../assets/SvgComponents/TrustLevelIcon';
 import ChevronCircleIcon from '../assets/SvgComponents/ChevronCircleIcon';
 import ButtonCommon from './Button';
 import OrgsGridList from './OrgsGridList';
 import OrgsGridItem from './OrgsGridItem';
 
-import { copyStrToClipboard, strCenterEllipsis } from '../utils/helpers';
-
 import colors from '../styles/colors';
+import CopyIdComponent from './CopyIdComponent';
 
 const styles = makeStyles({
   item: {
@@ -32,37 +31,11 @@ const styles = makeStyles({
     marginLeft: '12px'
   },
   itemName: {
-    fontFamily: 'Inter',
     fontSize: '18px',
     fontWeight: 500,
     lineHeight: 1.2,
     color: colors.greyScale.darkest,
     marginBottom: '7px'
-  },
-  idInfo: {
-    position: 'relative',
-    display: 'flex',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    top: '4px'
-  },
-  label: {
-    fontFamily: 'Inter',
-    fontSize: '14px',
-    fontWeight: 400,
-    lineHeight: 1.2,
-    color: colors.greyScale.common
-  },
-  copyButton: {
-    padding: '4px',
-    minWidth: 'auto',
-    backgroundColor: 'transparent',
-    marginLeft: '6px'
-  },
-  iconCopy: {
-    width: '12.8px',
-    height: '12.8px',
-    color: colors.secondary.green,
   },
   icon: {
     width: '13px',
@@ -71,7 +44,6 @@ const styles = makeStyles({
     margin: '0 6px 0 9px'
   },
   trustLevelValue: {
-    fontFamily: 'Inter',
     fontSize: '14px',
     fontWeight: 600,
     lineHeight: 1.1,
@@ -85,7 +57,6 @@ const styles = makeStyles({
     textTransform: 'none'
   },
   buttonTitle: {
-    fontFamily: 'Inter',
     fontSize: '14px',
     fontWeight: 500,
     lineHeight: 1.2,
@@ -99,7 +70,6 @@ const styles = makeStyles({
     marginTop: '10px',
   },
   subOrgsLabel: {
-    fontFamily: 'Inter',
     fontSize: '14px',
     fontWeight: 500,
     lineHeight: 1.2,
@@ -137,8 +107,6 @@ export default function OrgsListItem(props) {
     handleOpenSubs
   } = props;
 
-  const hiddenId = strCenterEllipsis(id);
-
   return (
     <Card className={classes.item}>
       <CardContent style={{ padding: '20px' }}>
@@ -151,17 +119,7 @@ export default function OrgsListItem(props) {
             }
             <div className={classes.itemInfo}>
               <Typography variant={'subtitle2'} className={classes.itemName} noWrap>{name}</Typography>
-              <div className={classes.idInfo}>
-                <Typography variant={'caption'} className={classes.label}>
-                  ID: {hiddenId}
-                </Typography>
-                <ButtonCommon
-                  onClick={() => copyStrToClipboard(id)}
-                  className={classes.copyButton}
-                >
-                  <CopyIcon viewBox={'0 0 16 16'} className={classes.iconCopy}/>
-                </ButtonCommon>
-              </div>
+              <CopyIdComponent id={id} leftElement={'ID: '}/>
             </div>
           </Grid>
           <Grid item container alignItems={'flex-end'} justify={'space-between'} direction={'column'}>

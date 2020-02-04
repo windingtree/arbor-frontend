@@ -19,7 +19,6 @@ const styles = makeStyles({
     alignItems: 'center'
   },
   buttonLabel: {
-    fontFamily: 'Inter',
     fontSize: '14px',
     fontWeight: 500,
     lineHeight: 1,
@@ -82,7 +81,7 @@ export default function Organization(props) {
                   <ButtonCommon onClick={() => null} className={classes.itemActionButton}>
                     <Typography variant={'caption'} className={classes.buttonLabel}>
                       <EditIcon viewBox={'0 0 14 14 '} className={[classes.itemActionButtonIcon, classes.editIcon].join(' ')}/>
-                      Edit organization
+                      Edit organization profile
                     </Typography>
                   </ButtonCommon>
                 </div>

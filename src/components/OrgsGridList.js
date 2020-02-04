@@ -13,6 +13,6 @@ export default function OrgsGridList(props) {
 }
 
 OrgsGridList.propTypes = {
-  children: PropTypes.arrayOf(PropTypes.element).isRequired,
+  children: PropTypes.any,
   spacing: PropTypes.number
 };

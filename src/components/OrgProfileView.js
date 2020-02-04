@@ -1,14 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Container, Typography, Collapse, Box } from '@material-ui/core';
+import { Grid, Container, Typography, Collapse, Fade } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-
+//Icons
 import InfoIcon from '../assets/SvgComponents/InfoIcon';
 import TrustLevelIcon from '../assets/SvgComponents/TrustLevelIcon';
+import EntityTrustLevelIcon from '../assets/SvgComponents/EntityTrustLevelIcon';
 import StageIcon from '../assets/SvgComponents/StageIcon';
 import DefaultImage from '../assets/images/default-image.jpg';
-import ButtonCommon from './Button';
-import CopyIcon from '../assets/SvgComponents/CopyIcon';
 import TwitterIcon from '@material-ui/icons/Twitter';
 import TelegramSocialIcon from '../assets/SvgComponents/TelegramSocialIcon';
 import FacebookIcon from '@material-ui/icons/Facebook';
@@ -18,11 +17,16 @@ import LinkedInIcon from '@material-ui/icons/LinkedIn';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import MaximizeIcon from '../assets/SvgComponents/MaximizeIcon';
 import MinimizeIcon from '../assets/SvgComponents/MinimizeIcon';
-import DetailsIllustration from '../assets/SvgComponents/detailsIllustration.svg'
+import DetailsIllustration from '../assets/SvgComponents/detailsIllustration.svg';
+import VpnKeyIcon from '@material-ui/icons/VpnKey';
+//Components
+import OrgsGridList from './OrgsGridList';
+import OrgsGridItem from './OrgsGridItem';
+import ButtonCommon from './Button';
+import AddSubOrgCard from './AddSubOrgCard';
+import CopyIdComponent from './CopyIdComponent';
 
-import { strCenterEllipsis ,copyStrToClipboard } from '../utils/helpers';
 import colors from '../styles/colors';
-import EntityTrustLevelIcon from '../assets/SvgComponents/EntityTrustLevelIcon';
 
 const styles = makeStyles({
   itemTrustInfoContainer: {
@@ -39,13 +43,13 @@ const styles = makeStyles({
     backgroundColor: colors.primary.white,
     color: colors.greyScale.common,
     border: `1px solid ${colors.greyScale.lightest}`,
-    padding: '0 20px'
+    padding: '0 23px'
   },
   itemStage: {
     backgroundColor: colors.secondary.green,
     borderColor: colors.secondary.green,
     color: colors.primary.white,
-    marginLeft: '10px'
+    marginLeft: '10px',
   },
   infoIcon: {
     width: '16px',
@@ -53,7 +57,6 @@ const styles = makeStyles({
     marginRight: '6px'
   },
   itemTrustInfoTitle: {
-    fontFamily: 'Inter',
     fontSize: '14px',
     fontWeight: 400,
     lineHeight: 1.2
@@ -69,7 +72,6 @@ const styles = makeStyles({
     margin: '0 6px 0 10px'
   },
   trustLevelValue: {
-    fontFamily: 'Inter',
     fontSize: '14px',
     fontWeight: 600,
     lineHeight: 1,
@@ -85,10 +87,11 @@ const styles = makeStyles({
   },
   orgImageWrapper: {
     position: 'relative',
-    width: '460px',
-    height: '200px',
+    width: '448px',
+    height: '190px',
     overflow: 'hidden',
-    borderRadius: '4px'
+    borderRadius: '4px',
+    marginRight: '54px'
   },
   orgImage: {
     position: 'absolute',
@@ -97,35 +100,10 @@ const styles = makeStyles({
     transform: 'translate(-50%, -50%)',
     width: '100%',
   },
-  orgIdInfoWrapper: {
-    display: 'flex',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
-  orgIdInfoTitle: {
-    fontFamily: 'Inter',
-    fontSize: '12px',
-    fontWeight: 500,
-    lineHeight: 1.1,
-    color: colors.greyScale.dark,
-  },
-  orgId: {
-    fontWeight: 400,
-    color: colors.greyScale.common,
-  },
-  copyButton: {
-    minWidth: 'auto'
-  },
-  iconCopy: {
-    width: '16px',
-    height: '16px',
-    color: colors.secondary.green,
-  },
   orgNameWrapper: {
     width: '100%',
   },
   orgName: {
-    fontFamily: 'Inter',
     fontSize: '24px',
     fontWeight: 500,
     lineHeight: 1.2,
@@ -135,7 +113,6 @@ const styles = makeStyles({
     margin: '30px 0 23px 0'
   },
   orgAddress: {
-    fontFamily: 'Inter',
     fontSize: '14px',
     fontWeight: 400,
     lineHeight: 1.3,
@@ -156,7 +133,6 @@ const styles = makeStyles({
     margin: '5px 0'
   },
   orgInfoFieldTitle: {
-    fontFamily: 'Inter',
     fontSize: '14px',
     fontWeight: 500,
     lineHeight: 1.3,
@@ -180,7 +156,6 @@ const styles = makeStyles({
     marginRight: '4px'
   },
   entityValue: {
-    fontFamily: 'Inter',
     color: colors.greyScale.darkest,
     fontSize: '12px',
     lineHeight: 1.2
@@ -192,7 +167,6 @@ const styles = makeStyles({
     marginTop: '60px'
   },
   socialLink: {
-    fontFamily: 'Inter',
     fontSize: '16px',
     lineHeight: 1.03,
     fontWeight: 500,
@@ -231,8 +205,12 @@ const styles = makeStyles({
   iconLinkedin: {
     color: colors.social.linkedin,
   },
+  hideDetailsButtonWrapper: {
+    position: 'absolute',
+    bottom: '83px',
+    right: '0'
+  },
   toggleOpenDetailsButton: {
-    fontFamily: 'Inter',
     fontSize: '16px',
     fontWeight: 500,
     lineHeight: 1.03,
@@ -264,7 +242,6 @@ const styles = makeStyles({
   details: {
     position: 'relative',
     width: '70%',
-    fontFamily: 'Inter',
     fontSize: '16px',
     lineHeight: 1.7,
     fontWeight: 400,
@@ -284,8 +261,88 @@ const styles = makeStyles({
     left: '0',
     width: '20%',
     height: '4px',
-    background: 'linear-gradient(88.72deg, #EC6F95 0.94%, #FCB871 100%)'
-  }
+    background: 'linear-gradient(88.72deg, #EC6F95 0.94%, #FCB871 100%)',
+  },
+  subsWrapper: {
+    width: '100%',
+    backgroundColor: colors.greyScale.moreLighter
+  },
+  subsContent: {
+    paddingTop: '60px',
+    paddingBottom: '60px',
+  },
+  subsTitle: {
+    fontSize: '24px',
+    fontWeight: 500,
+    lineHeight: 1.2,
+    color: colors.greyScale.darkest,
+    marginBottom: '20px'
+  },
+  agentsContent: {
+    position: 'relative',
+    fontWeight: 400,
+    fontSize: '14px',
+    lineHeight: 1.2,
+    color: colors.greyScale.dark,
+    padding: '60px 0'
+  },
+  agentsTitleWrapper: {
+    fontSize: '24px',
+    fontWeight: 500,
+    color: colors.greyScale.darkest,
+    marginBottom: '20px'
+  },
+  agentsSubtitle: {
+    fontSize: '16px',
+    lineHeight: 1.4
+  },
+  ownerInfoWrapper: {
+    margin: '30px 0'
+  },
+  ownerInfo: {
+    marginTop: '10px'
+  },
+  agentTitle: {
+    fontWeight: 500,
+    fontSize: '18px',
+    color: colors.greyScale.darkest,
+  },
+  keyIcon: {
+    fontSize: 'large',
+    color: colors.greyScale.common,
+    verticalAlign: 'sub',
+    opacity: .5,
+    marginRight: '14px'
+  },
+  buttonWrapper: {
+    width: '100%',
+    margin: '20px 0'
+  },
+  button: {
+    width: '100%',
+    position: 'relative',
+    fontSize: '16px',
+    fontWeight: 500,
+    color: colors.secondary.cyan,
+    lineHeight: 1.2,
+    textTransform: 'none',
+    boxShadow: '0px 0px 20px rgba(189, 191, 203, 0.25), 0px 0px 2px rgba(188, 194, 211, 0.25)',
+    backgroundColor: colors.primary.white,
+    borderRadius: '8px',
+    padding: '20px 0'
+  },
+  agentItemWrapper: {
+    padding: '10px 0',
+    borderBottom: `1px solid ${colors.greyScale.lightest}`,
+  },
+  deleteAgentButton: {
+    fontSize: '14px',
+    fontWeight: 500,
+    lineHeight: 1.3,
+    float: 'right',
+    color: colors.secondary.peach,
+    textTransform: 'none',
+  },
 });
 
 export default function OrgProfileView(props) {
@@ -309,9 +366,8 @@ export default function OrgProfileView(props) {
     isOpen,
     toggleOpen,
     details,
+    agents
   } = props;
-
-  const hiddenId = strCenterEllipsis(id);
 
   return (
     <div>
@@ -332,28 +388,20 @@ export default function OrgProfileView(props) {
             ) : null
           }
         </div>
-        <Grid container className={classes.orgMainInfoWrapper}>
-          <Grid item style={{ width: '40%' }}>
+        <Grid container className={classes.orgMainInfoWrapper} wrap={'nowrap'}>
+          <Grid item>
             <div className={classes.orgImageWrapper}>
               {
                 img ? (
-                    <img className={classes.orgImage} src={img} alt={'Organization image'}/>
+                    <img className={classes.orgImage} src={img} alt={'Organization'}/>
                 ): (
-                    <img className={classes.orgImage} src={DefaultImage} alt={'Organization image'}/>
+                    <img className={classes.orgImage} src={DefaultImage} alt={'Organization'}/>
                 )
               }
             </div>
           </Grid>
-          <Grid item style={{ width: '60%' }}>
-            <div className={classes.orgIdInfoWrapper}>
-              <Typography variant={'caption'} className={classes.orgIdInfoTitle}>
-                {'Org ID: '}
-                <Typography variant={'inherit'} className={classes.orgId}>{hiddenId}</Typography>
-              </Typography>
-              <ButtonCommon onClick={() => copyStrToClipboard(id)} className={classes.copyButton}>
-                <CopyIcon viewBox={'0 0 16 16'} className={classes.iconCopy}/>
-              </ButtonCommon>
-            </div>
+          <Grid item>
+            <CopyIdComponent id={id} leftElement={'Org ID: '} fontWeight={500}/>
             <div className={classes.orgNameWrapper}>
               <Typography variant={'h6'} className={classes.orgName} noWrap>{name}</Typography>
             </div>
@@ -463,22 +511,15 @@ export default function OrgProfileView(props) {
             })
           }
         </div>
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <ButtonCommon onClick={() => toggleOpen(!isOpen)} className={classes.toggleOpenDetailsButton}>
-            <Typography variant={'inherit'}>
-              {
-                isOpen ? 'Hide' : 'Show'
-              } organization details
-              {
-                isOpen ? (
-                  <MinimizeIcon viewBox={'0 0 20 20'} className={classes.iconToggleDetailsOpen}/>
-                ) : (
-                  <MaximizeIcon viewBox={'0 0 20 20'} className={classes.iconToggleDetailsOpen}/>
-                )
-              }
-            </Typography>
-          </ButtonCommon>
-        </div>
+        <Fade in={!isOpen}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <ButtonCommon onClick={() => toggleOpen(!isOpen)} className={classes.toggleOpenDetailsButton}>
+              <Typography variant={'inherit'}>
+                Show organization details <MaximizeIcon viewBox={'0 0 20 20'} className={classes.iconToggleDetailsOpen}/>
+              </Typography>
+            </ButtonCommon>
+          </div>
+        </Fade>
       </Container>
       <Collapse in={isOpen} className={classes.detailsContainer}>
         <Container className={classes.detailsContent}>
@@ -488,10 +529,117 @@ export default function OrgProfileView(props) {
             <div className={classes.line}/>
           </div>
           <img src={DetailsIllustration} alt={'Details illustration'} className={classes.detailsIllustration}/>
+          <div className={classes.hideDetailsButtonWrapper}>
+            <ButtonCommon onClick={() => toggleOpen(!isOpen)} className={classes.toggleOpenDetailsButton}>
+              <Typography variant={'inherit'}>
+                Hide organization details <MinimizeIcon viewBox={'0 0 20 20'} className={classes.iconToggleDetailsOpen}/>
+              </Typography>
+            </ButtonCommon>
+          </div>
         </Container>
       </Collapse>
+      {
+        subs.length !== 0 ? (
+          <div className={classes.subsWrapper}>
+            <Container className={classes.subsContent}>
+              <Typography variant={'h6'} className={classes.subsTitle}>
+                Sub organizations ({subs.length})
+              </Typography>
+              <OrgsGridList spacing={2}>
+                {
+                  subs.map((item, index) => {
+                    return (
+                      <Grid item key={index.toString()} style={{ width: '264px' }}>
+                        <OrgsGridItem
+                          id={item.id}
+                          isSub={item.isSub}
+                          type={item.type}
+                          entityName={name}
+                          entityTrustLevel={trustLevel}
+                          name={item.subName}
+                        />
+                      </Grid>
+                    )
+                  })
+                }
+                <Grid item style={{ width: '264px' }}>
+                  <AddSubOrgCard/>
+                </Grid>
+              </OrgsGridList>
+            </Container>
+          </div>
+        ) : null
+      }
       <Container>
-        <div>manage agents</div>
+        <div className={classes.agentsContent}>
+          <div className={classes.agentsTitleWrapper}>
+            <Typography variant={'inherit'}>Manage owners and agents</Typography>
+          </div>
+          <div>
+            <Typography variant={'inherit'} className={classes.agentsSubtitle}>
+              Assign agents that could act on behalf of your organization. You can add public keys of your employees (or devices) that will be able to sign and encrypt communication on behalf of your organization
+            </Typography>
+          </div>
+          <div className={classes.ownerInfoWrapper}>
+            <Typography variant={'inherit'} className={classes.agentTitle}>Owner</Typography>
+            <div className={classes.ownerInfo}>
+              <CopyIdComponent
+                id={id}
+                leftElement={(<VpnKeyIcon className={classes.keyIcon}/>)}
+                fontSize={'14px'}
+                color={colors.greyScale.dark}
+              />
+            </div>
+          </div>
+          <div className={classes.agentsListContainer}>
+            <div className={classes.agentInfoWrapper}>
+              <Typography variant={'inherit'} className={classes.agentTitle}>Agents</Typography>
+            </div>
+            <div className={classes.buttonWrapper}>
+              <ButtonCommon onClick={() => console.log('add agent')} className={classes.button}>
+                <Typography variant={'inherit'}>+ Add Agent key</Typography>
+              </ButtonCommon>
+            </div>
+            {
+              agents.length !== 0 ? (
+                <div>
+                  <ul>
+                    {
+                      agents.map((item, index) => {
+                        return (
+                          <li key={index.toString()} className={classes.agentItemWrapper}>
+                            <Grid container justify={'space-between'} alignItems={'center'}>
+                              <Grid item xs={2}>
+                                <CopyIdComponent
+                                  id={item.id}
+                                  leftElement={(<VpnKeyIcon className={classes.keyIcon}/>)}
+                                  fontSize={'14px'}
+                                  color={colors.greyScale.dark}
+                                />
+                              </Grid>
+                              <Grid item xs={8}>
+                                <Typography>{item.comment}</Typography>
+                              </Grid>
+                              <Grid item xs={2}>
+                                <ButtonCommon onClick={() => console.log('delete agent')} className={classes.deleteAgentButton}>
+                                  <Typography variant={'inherit'}>Delete agent key</Typography>
+                                </ButtonCommon>
+                              </Grid>
+                            </Grid>
+                          </li>
+                        )
+                      })
+                    }
+                  </ul>
+                </div>
+              ) : (
+                <div>
+                  <Typography>You have no agents</Typography>
+                </div>
+              )
+            }
+          </div>
+        </div>
       </Container>
     </div>
   )
@@ -516,19 +664,15 @@ OrgProfileView.defaultProps = {
   subs: [
     {
       id: '0x67jrfh774854nre7ns8r8f85g',
-      entityName: 'Default Organization',
       subName: 'Default subOrg',
       isSub: true,
       type: 'Travel Agency',
-      entityTrustLevel: '5'
     },
     {
       id: '0x67jrfh774854nre7ns8r8f6ig',
-      entityName: 'Default Organization',
       subName: 'Default subOrg with very long name',
       isSub: true,
       type: 'Hotel',
-      entityTrustLevel: '5'
     },
   ],
   isSub: false,
@@ -555,5 +699,23 @@ OrgProfileView.defaultProps = {
   details: {
     title: 'Details. User title example',
     text: 'Located just a few steps from some of the oldest and most precious ruins in Rome, including the Colosseum and the Roman Forum, offering 5 star service boasts charming views of the Campidoglio, Palatin Hill, Roman Forum, Venice Square. It\'s the only luxury residence in Rome which actually houses Roman ruins inside it. At the entrance, a passageway leads you to a Cryptoporticus, an exquisite stone gallery with engravings that can be traced back to 2,000 years ago. The five star service accommodations are carefully decorated in a modern style and are luxuriously furnished. On the roof terrace you can enjoy free snacks from 17:00 to 20:00. This inn is pet friendly.'
-  }
+  },
+  agents: [
+    {
+      id: '0xcdmfkfkslamsmssmooc55dc8dcdf',
+      comment: 'Default agent'
+    },
+    {
+      id: '0xcdmfkfkslamsmssmooc557fjfnde4',
+      comment: 'Default agent'
+    },
+    {
+      id: '0xcdmfkfkslamsmssmooc55dh54ddcf',
+      comment: ''
+    },
+    {
+      id: '0xcdmfkfkslamsmssmooc55dcdmk6fd',
+      comment: 'Nice guy'
+    },
+  ]
 };

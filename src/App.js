@@ -16,7 +16,55 @@ const theme = createMuiTheme({
             main: '#fff9f8',
         }
     },
-    spacing: 5
+    spacing: 5,
+    overrides: {
+        MuiTypography: {
+            h1: {
+                fontFamily: 'Inter',
+                letterSpacing: '-0.0068em'
+            },
+            h2: {
+                fontFamily: 'Inter',
+                letterSpacing: '-0.0068em'
+            },
+            h3: {
+                fontFamily: 'Inter',
+                letterSpacing: '-0.0068em'
+            },
+            h4: {
+                fontFamily: 'Inter',
+                letterSpacing: '-0.0068em'
+            },
+            h5: {
+                fontFamily: 'Inter',
+                letterSpacing: '-0.0068em'
+            },
+            h6: {
+                fontFamily: 'Inter',
+                letterSpacing: '-0.0068em'
+            },
+            subtitle1: {
+                fontFamily: 'Inter',
+                letterSpacing: '-0.0068em',
+            },
+            subtitle2: {
+                fontFamily: 'Inter',
+                letterSpacing: '-0.0068em',
+            },
+            caption: {
+                fontFamily: 'Inter',
+                letterSpacing: '-0.0068em'
+            }
+        },
+        MuiContainer: {
+            maxWidthLg: {
+                '@media (min-width: 1280px)': {
+                    maxWidth: '1146px'
+                }
+            }
+        }
+
+    }
 });
 
 function App() {

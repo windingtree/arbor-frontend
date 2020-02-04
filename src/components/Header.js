@@ -13,9 +13,7 @@ import colors from '../styles/colors';
 
 const styles = makeStyles({
   header: {
-    border: 0,
-    color: 'white',
-    borderBottom: '1px solid #EFEFEF'
+    borderBottom: `1px solid ${colors.greyScale.lightest}`
   },
   logo: {
     width: '89px',
@@ -51,10 +49,10 @@ const styles = makeStyles({
   },
   activeNavLink: {
     borderTopColor: colors.primary.accent,
-    backgroundImage: 'linear-gradient(35.28deg, rgba(236, 111, 149, 0.1) 0%, rgba(252, 184, 113, 0.1) 100%)',
+    backgroundImage: colors.gradients.orangeDegOpacity,
   },
   authButton: {
-    backgroundImage: 'linear-gradient(35.28deg, #EC6F95 0%, #FCB871 100%)',
+    backgroundImage: colors.gradients.orange,
     boxShadow: '0 2px 12px rgba(12, 64, 78, 0.1)',
     border: `1px solid ${colors.primary.accent}`,
     borderRadius: '6px'
@@ -73,16 +71,18 @@ export default function Header(props) {
   const classes = styles();
   const { isAuthenticated } = props;
 
+  const currentPage = history.location.pathname;
+
   return (
     <div id="app-header" className={classes.header}>
       <Container>
-        <Grid direction="row" container={true} justify={'space-between'} alignItems={'center'}>
-          <Grid item xs={4}>
+        <Grid container justify={'space-between'} alignItems={'center'}>
+          <Grid item xs={2}>
             <RouterLink to={'/'}>
               <Logo viewBox={'0 0 90 32'} className={classes.logo}/>
             </RouterLink>
           </Grid>
-          <Grid item xs={4} container={true} direction={"row"} justify={'space-between'} className={classes.navigationContainer}>
+          <Grid item xs={isAuthenticated ? 6 : 5} container justify={'space-between'} className={classes.navigationContainer}>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
                 <NavLink

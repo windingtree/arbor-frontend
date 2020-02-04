@@ -5,8 +5,7 @@ import history from '../redux/history';
 
 import { selectSignInStatus } from '../ducks/signIn';
 
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import DefaultRoute from '../components/DefaultRoute';
 //Common routes
 import Home from './Home';
 import Search from './Search';
@@ -30,33 +29,78 @@ class RootRouter extends Component {
 
     return (
       <Router history={history}>
-        <Header isAuthenticated={isAuth}/>
-        <div style={{ minHeight: '100vh', width: '100%', overflow: 'hidden', padding: '20px 0' }}>
-          <Switch>
-            <Route exact path='/' component={Home}/>
-            <Route exact path='/directories' render={routeProps => <Directories {...routeProps}/>} />
-            <Route path='/directories/:directory' render={routeProps => <Directory {...routeProps}/>} />
-            <Route path='/search' render={routeProps => <Search {...routeProps}/>} />
-            <Route path='/organization' component={Organization}/>
-            <Route path='/authorization' render={routeProps => <Authorization {...routeProps}/>} />
-            <Route path='/trust' render={routeProps => <Trust {...routeProps}/>} />
-            <Route path='/tos' render={routeProps => <TOS {...routeProps}/>} />
-            <Route path='/privacy-policy' render={routeProps => <PrivacyPolicy {...routeProps}/>} />
-            <Route path='/faq' render={routeProps => <FAQ {...routeProps}/>} />
-            <PrivateRoute
-              isAuthenticated={isAuth}
-              path='/my-organizations/'
-              component={Profile}
-            />
-            <Route path='/my-organizations/wizard' component={Wizard}/>
-            <Route path='/my-organizations/:orgId' render={routeProps => <Organization {...routeProps}/>}/>
-            <Route path='/404' component={NotFound}/>
-            <Route>
-              <Redirect to='/404' />
-            </Route>
-          </Switch>
-        </div>
-        <Footer />
+        <Switch>
+          <DefaultRoute
+            isAuthenticated={isAuth}
+            exact path='/'
+            component={Home}
+          />
+          <DefaultRoute
+            isAuthenticated={isAuth}
+            exact path='/directories'
+            component={Directories}
+          />
+          <DefaultRoute
+            isAuthenticated={isAuth}
+            path='/directories/:directory'
+            component={Directory}
+          />
+          <DefaultRoute
+            isAuthenticated={isAuth}
+            path='/search'
+            component={Search}
+          />
+          <DefaultRoute
+            isAuthenticated={isAuth}
+            path='/organization'
+            component={Organization}
+          />
+          <DefaultRoute
+            isAuthenticated={isAuth}
+            path='/authorization'
+            component={Authorization}
+          />
+          <DefaultRoute
+            isAuthenticated={isAuth}
+            path='/trust'
+            component={Trust}
+          />
+          <DefaultRoute
+            isAuthenticated={isAuth}
+            path='/tos'
+            component={TOS}
+          />
+          <DefaultRoute
+            isAuthenticated={isAuth}
+            path='/privacy-policy'
+            component={PrivacyPolicy}
+          />
+          <DefaultRoute
+            isAuthenticated={isAuth}
+            path='/faq'
+            component={FAQ}
+          />
+          <DefaultRoute
+            isAuthenticated={isAuth}
+            path='/my-organizations/wizard'
+            component={Wizard}
+          />
+          <DefaultRoute
+            isAuthenticated={isAuth}
+            path='/my-organizations/:orgId'
+            component={Organization}
+          />
+          <PrivateRoute
+            isAuthenticated={isAuth}
+            path='/my-organizations/'
+            component={Profile}
+          />
+          <Route
+            path='/404' component={NotFound}/>
+          <Route>
+            <Redirect to='/404' />
+          </Route>
+        </Switch>
       </Router>
     )
   }

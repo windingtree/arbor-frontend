@@ -1,13 +1,12 @@
 import React from 'react';
 import { Link as RouterLink, NavLink } from 'react-router-dom';
 import history from '../redux/history';
-import {Container, Grid, Typography} from '@material-ui/core';
+import { Container, Grid, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Logo from '../assets/SvgComponents/Logo';
 import SearchIcon from '../assets/SvgComponents/SearchIcon';
 import HomeIcon from '../assets/SvgComponents/HomeIcon';
-import ButtonCommon from './Button';
 
 import colors from '../styles/colors';
 
@@ -140,7 +139,7 @@ export default function Header(props) {
                   </div>
                 ) : (
                   <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center'}}>
-                    <ButtonCommon
+                    <Button
                       onClick={() => history.push('/authorization/register')}
                       className={classes.authButton}
                       style={{
@@ -151,8 +150,8 @@ export default function Header(props) {
                       <Typography variant={'subtitle2'} noWrap className={classes.buttonTitle} style={{ color: colors.primary.black }}>
                         Sign Up
                       </Typography>
-                    </ButtonCommon>
-                    <ButtonCommon
+                    </Button>
+                    <Button
                       onClick={() => history.push('/authorization/signin')}
                       className={classes.authButton}
                       style={{ marginLeft: '20px' }}
@@ -160,7 +159,7 @@ export default function Header(props) {
                       <Typography variant={'subtitle2'} noWrap className={classes.buttonTitle}>
                         Sign In
                       </Typography>
-                    </ButtonCommon>
+                    </Button>
                   </div>
                 )
               }

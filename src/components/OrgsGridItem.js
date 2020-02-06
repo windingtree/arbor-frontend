@@ -121,7 +121,10 @@ const styles = makeStyles({
     fontSize: '12px',
     fontWeight: 400,
     lineHeight: 1.2,
-    color: colors.primary.black
+    color: colors.primary.black,
+    '& span': {
+      color: colors.greyScale.common
+    }
   },
   entityIcon: {
     width: '10px',
@@ -149,7 +152,7 @@ const styles = makeStyles({
     borderRadius: '50%',
     backgroundColor: colors.primary.black,
   },
-  entitySubOrgItemEllipsis: {
+  entitySubOrgOverflowOpacity: {
     width: '20px',
     height: '50%',
     display: 'block',
@@ -238,7 +241,7 @@ export default function OrgsGridItem(props) {
             <Box className={classes.legalEntityInfo}>
               <div className={classes.entityTitleWrapper}>
                 <Typography variant={'subtitle2'} className={classes.entityTitle} noWrap>
-                  Legal entity: <Typography variant={'caption'} className={classes.subtitle}>{entityName}</Typography>
+                  Legal entity: <Typography variant={'caption'}>{entityName}</Typography>
                 </Typography>
               </div>
               <div className={classes.entityInfoItem}>
@@ -275,7 +278,7 @@ export default function OrgsGridItem(props) {
                     )
                   })
                 }
-                <div className={classes.entitySubOrgItemEllipsis}/>
+                <div className={classes.entitySubOrgOverflowOpacity}/>
               </Grid>
             </div>
           ) : (

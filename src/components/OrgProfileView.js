@@ -1,8 +1,8 @@
 import React from 'react';
 import history from '../redux/history';
 import PropTypes from 'prop-types';
-import { Grid, Container, Typography, Collapse, Fade } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import { Grid, Container, Typography, Button, Collapse, Fade, Tooltip } from '@material-ui/core';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Ellipsis from 'react-dotdotdot';
 //Icons
 import InfoIcon from '../assets/SvgComponents/InfoIcon';
@@ -24,7 +24,6 @@ import VpnKeyIcon from '@material-ui/icons/VpnKey';
 //Components
 import CardsGridList from './CardsGridList';
 import OrgsGridItem from './OrgsGridItem';
-import ButtonCommon from './Button';
 import AddSubOrgCard from './AddSubOrgCard';
 import CopyIdComponent from './CopyIdComponent';
 
@@ -38,6 +37,7 @@ const styles = makeStyles({
     marginTop: '15px'
   },
   itemTrustInfoBase: {
+    position: 'relative',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -57,11 +57,23 @@ const styles = makeStyles({
     marginLeft: '11px',
     padding: '0 26px'
   },
+  tooltipRef: {
+    backgroundColor: 'transparent',
+    outline: 'none',
+    cursor: 'pointer'
+  },
   infoIcon: {
     width: '16px',
     height: '16px',
     marginRight: '6px',
-    marginLeft: '-7px'
+    marginLeft: '-7px',
+    opacity: .5,
+    color: colors.greyScale.common,
+    transition: `opacity .3s ease, color .3s ease`,
+    '&:hover': {
+      opacity: 1,
+      color: colors.secondary.green
+    }
   },
   itemTrustInfoTitle: {
     fontSize: '14px',
@@ -127,9 +139,10 @@ const styles = makeStyles({
     color: colors.greyScale.dark,
   },
   mapLink: {
+    fontWeight: 500,
     textDecoration: 'none',
     whiteSpace: 'nowrap',
-    color: colors.secondary.green,
+    color: colors.secondary.cyan,
   },
   orgInfoFieldsContainer: {
     display: 'flex',
@@ -358,6 +371,20 @@ const styles = makeStyles({
   },
 });
 
+const LightTooltip = withStyles({
+  tooltip: {
+    maxWidth: '240px',
+    backgroundColor: colors.primary.white,
+    boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
+    color: colors.greyScale.common,
+    fontSize: '12px',
+    fontWeight: 400,
+    lineHeight: 1.2,
+    padding: '12px',
+    boxSizing: 'border-box'
+  }
+})(Tooltip);
+
 export default function OrgProfileView(props) {
   const classes = styles();
   const {
@@ -390,7 +417,14 @@ export default function OrgProfileView(props) {
       <Container>
         <div className={classes.itemTrustInfoContainer}>
           <div className={classes.itemTrustInfoBase}>
-            <InfoIcon viewBox={'0 0 16 16'} className={classes.infoIcon}/>
+            <LightTooltip
+              title={'Your Trust level reflects the number of completed trust steps.'}
+              placement={'top-start'}
+            >
+              <button className={classes.tooltipRef}>
+                <InfoIcon viewBox={'0 0 16 16'} className={classes.infoIcon}/>
+              </button>
+            </LightTooltip>
             <Typography variant={'caption'} className={classes.itemTrustInfoTitle}>Trust level: </Typography>
             <TrustLevelIcon viewBox={'0 0 16 16'} className={classes.iconTrustLevel}/>
             <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{trustLevel}</Typography>
@@ -530,11 +564,11 @@ export default function OrgProfileView(props) {
         </div>
         <Fade in={!isOpen}>
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <ButtonCommon onClick={() => toggleOpen(!isOpen)} className={classes.toggleOpenDetailsButton}>
+            <Button onClick={() => toggleOpen(!isOpen)} className={classes.toggleOpenDetailsButton}>
               <Typography variant={'inherit'}>
                 Show organization details <MaximizeIcon viewBox={'0 0 20 20'} className={classes.iconToggleDetailsOpen}/>
               </Typography>
-            </ButtonCommon>
+            </Button>
           </div>
         </Fade>
       </Container>
@@ -547,11 +581,11 @@ export default function OrgProfileView(props) {
           </div>
           <img src={DetailsIllustration} alt={'Details illustration'} className={classes.detailsIllustration}/>
           <div className={classes.hideDetailsButtonWrapper}>
-            <ButtonCommon onClick={() => toggleOpen(!isOpen)} className={classes.toggleOpenDetailsButton}>
+            <Button onClick={() => toggleOpen(!isOpen)} className={classes.toggleOpenDetailsButton}>
               <Typography variant={'inherit'}>
                 Hide organization details <MinimizeIcon viewBox={'0 0 20 20'} className={classes.iconToggleDetailsOpen}/>
               </Typography>
-            </ButtonCommon>
+            </Button>
           </div>
         </Container>
       </Collapse>
@@ -613,9 +647,9 @@ export default function OrgProfileView(props) {
               <Typography variant={'inherit'} className={classes.agentTitle}>Agents</Typography>
             </div>
             <div className={classes.buttonWrapper}>
-              <ButtonCommon onClick={() => console.log('add agent')} className={classes.button}>
+              <Button onClick={() => console.log('add agent')} className={classes.button}>
                 <Typography variant={'inherit'}>+ Add Agent key</Typography>
-              </ButtonCommon>
+              </Button>
             </div>
             {
               agents.length !== 0 ? (
@@ -638,9 +672,9 @@ export default function OrgProfileView(props) {
                                 <Typography>{item.comment}</Typography>
                               </Grid>
                               <Grid item xs={2}>
-                                <ButtonCommon onClick={() => console.log('delete agent')} className={classes.deleteAgentButton}>
+                                <Button onClick={() => console.log('delete agent')} className={classes.deleteAgentButton}>
                                   <Typography variant={'inherit'}>Delete agent key</Typography>
-                                </ButtonCommon>
+                                </Button>
                               </Grid>
                             </Grid>
                           </li>

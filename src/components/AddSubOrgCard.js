@@ -1,9 +1,8 @@
 import React from 'react';
-import { Card, CardContent, Typography } from '@material-ui/core';
+import { Card, CardContent, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 import AddSubDiagramIcon from '../assets/SvgComponents/AddSubDiagramIcon';
-import ButtonCommon from './Button';
 
 import colors from '../styles/colors';
 
@@ -61,12 +60,12 @@ export default function AddSubOrgCard(props) {
             <AddSubDiagramIcon viewBox={'0 0 32 43'} className={classes.icon}/>
           </div>
           <div className={classes.buttonWrapper}>
-            <ButtonCommon
+            <Button
               className={classes.button}
               onClick={() => console.log('add sub')}
             >
               <Typography variant={'inherit'} noWrap>+ Add Sub-Organization</Typography>
-            </ButtonCommon>
+            </Button>
           </div>
         </div>
       </CardContent>

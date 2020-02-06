@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import history from '../redux/history';
-import { Container, Typography, Box } from '@material-ui/core';
+import { Container, Typography, Box, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
 import ArrowLeftIcon from '../assets/SvgComponents/ArrowLeftIcon';
 import EyeIcon from '../assets/SvgComponents/EyeIcon';
 import EditIcon from '../assets/SvgComponents/EditIcon';
 import OrgProfileView from '../components/OrgProfileView';
-import ButtonCommon from '../components/Button';
 
 import colors from '../styles/colors';
 
@@ -66,7 +65,7 @@ export default function Organization(props) {
         <Container>
           <Box className={classes.screenHeader}>
             <div className={classes.buttonWrapper}>
-              <ButtonCommon onClick={history.goBack}>
+              <Button onClick={history.goBack}>
                 <Typography variant={'caption'} className={classes.buttonLabel}>
                   <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
                   Back to all organizations
@@ -76,23 +75,23 @@ export default function Organization(props) {
                     ) : null
                   }
                 </Typography>
-              </ButtonCommon>
+              </Button>
             </div>
             {
               history.location.pathname === '/organization' ? (
                 <div>
-                  <ButtonCommon onClick={() => null}>
+                  <Button onClick={() => null}>
                     <Typography variant={'caption'} className={classes.buttonLabel}>
                       <EyeIcon viewBox={'0 0 16 12'} className={[classes.itemActionButtonIcon, classes.eyeIcon].join(' ')}/>
                       Public organization view
                     </Typography>
-                  </ButtonCommon>
-                  <ButtonCommon onClick={() => null} className={classes.itemActionButton}>
+                  </Button>
+                  <Button onClick={() => null} className={classes.itemActionButton}>
                     <Typography variant={'caption'} className={classes.buttonLabel}>
                       <EditIcon viewBox={'0 0 14 14 '} className={[classes.itemActionButtonIcon, classes.editIcon].join(' ')}/>
                       Edit organization profile
                     </Typography>
-                  </ButtonCommon>
+                  </Button>
                 </div>
               ) : null
             }

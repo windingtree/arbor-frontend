@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Typography, Grid } from '@material-ui/core';
+import { Container, Typography, Grid, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 //Components
 import DirectoryCard from '../components/DirectoryCardItem';
@@ -11,7 +11,6 @@ import InsuranceIllustration from '../assets/SvgComponents/Insurance-illustratio
 import TravelIllustration from '../assets/SvgComponents/travel-illustration.svg';
 
 import colors from '../styles/colors';
-import ButtonCommon from '../components/Button';
 
 const styles = makeStyles({
   content: {
@@ -92,9 +91,9 @@ function Directories(props){
               <Typography variant={'h3'} className={classes.addDirectoryTitle}>Your directory is missing? Let’s add it!</Typography>
             </div>
             <div className={classes.addDirectoryButtonWrapper}>
-              <ButtonCommon onClick={() => null}>
+              <Button onClick={() => null}>
                 <Typography variant={'inherit'} className={classes.addDirectoryButtonTitle}>Propose a new directory</Typography>
-              </ButtonCommon>
+              </Button>
             </div>
           </div>
         </div>

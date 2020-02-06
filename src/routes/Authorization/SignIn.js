@@ -1,9 +1,8 @@
 import React from 'react';
-import { Container, Grid, Typography, Box } from '@material-ui/core';
+import { Container, Grid, Typography, Box, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
 import LoginIllustration from '../../assets/SvgComponents/login-illustration.svg';
-import ButtonCommon from '../../components/Button';
 
 import colors from '../../styles/colors';
 
@@ -84,9 +83,9 @@ const SignIn = ({props}) => {
               <Typography variant={'subtitle2'} className={classes.subtitle}>Welcome back! Let’s get back to business. </Typography>
             </div>
             <div className={classes.buttonWrapper}>
-              <ButtonCommon onClick={() => console.log('metamask')} className={classes.button}>
+              <Button onClick={() => console.log('metamask')} className={classes.button}>
                 <Typography variant={'caption'} className={classes.buttonLabel}>Sign in</Typography>
-              </ButtonCommon>
+              </Button>
             </div>
           </Box>
         </Grid>

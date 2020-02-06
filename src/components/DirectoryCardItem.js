@@ -1,9 +1,7 @@
 import React from 'react';
 import history from '../redux/history';
-import { Card, CardContent, Typography } from '@material-ui/core';
+import { Card, CardContent, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-
-import ButtonCommon from './Button';
 
 import colors from '../styles/colors';
 
@@ -53,7 +51,7 @@ export default function DirectoryCard(props) {
 
   return (
     <Card className={classes.item}>
-      <ButtonCommon onClick={() => history.push(`/directories/${directoryName}`)} className={classes.cardButton}>
+      <Button onClick={() => history.push(`/directories/${directoryName}`)} className={classes.cardButton}>
         <CardContent className={classes.cardContent}>
           <div className={classes.directoryImageWrapper}>
             {
@@ -64,7 +62,7 @@ export default function DirectoryCard(props) {
           </div>
           <Typography variant={'subtitle2'} className={classes.directoryTitle}>{directoryTitle(directoryName)}</Typography>
         </CardContent>
-      </ButtonCommon>
+      </Button>
     </Card>
   )
 }

@@ -2,11 +2,10 @@ import React from 'react';
 import history from '../redux/history';
 import { Link as RouterLink } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import { Container, Grid, Typography } from '@material-ui/core';
+import { Container, Grid, Typography, Button } from '@material-ui/core';
 
 import Logo from '../assets/SvgComponents/Logo';
 import Illustration from '../assets/SvgComponents/404-illustration.svg';
-import ButtonCommon from '../components/Button';
 
 import colors from '../styles/colors';
 
@@ -72,9 +71,9 @@ export default function NotFound(props) {
                </Typography>
              </div>
              <div>
-               <ButtonCommon onClick={() => history.push('/')} className={classes.button}>
+               <Button onClick={() => history.push('/')} className={classes.button}>
                  <Typography variant={'subtitle2'} className={classes.buttonLabel}>Back to main page</Typography>
-               </ButtonCommon>
+               </Button>
              </div>
            </Grid>
            <Grid item>

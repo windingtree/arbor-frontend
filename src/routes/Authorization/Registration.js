@@ -1,11 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Container, Grid, Typography, Box } from '@material-ui/core';
+import { Container, Grid, Typography, Box, Button } from '@material-ui/core';
 import { ArrowForward } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
 
 import RegisterIllustration from '../../assets/SvgComponents/registration-illustration.svg';
-import ButtonCommon from '../../components/Button';
 
 import colors from '../../styles/colors';
 
@@ -104,9 +103,9 @@ const  Registration = ({props}) => {
               <Typography variant={'subtitle2'} className={classes.subtitle}>To start off, register with MetaMask - a browser extension that lets you create and manage your company profile in Arbor database.</Typography>
             </div>
             <div className={classes.buttonWrapper}>
-              <ButtonCommon onClick={() => console.log('metamask')} className={classes.button}>
+              <Button onClick={() => console.log('metamask')} className={classes.button}>
                 <Typography variant={'caption'} className={classes.buttonLabel}>Register with MetaMask</Typography>
-              </ButtonCommon>
+              </Button>
             </div>
             <div className={classes.linkWrapper}>
               <Link

@@ -1,15 +1,14 @@
 import React from "react";
-import {Card, CardContent, CardMedia, Grid, Typography, Collapse} from '@material-ui/core';
+import { Card, CardContent, CardMedia, Grid, Typography, Button, Collapse } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 import TrustLevelIcon from '../assets/SvgComponents/TrustLevelIcon';
 import ChevronCircleIcon from '../assets/SvgComponents/ChevronCircleIcon';
-import ButtonCommon from './Button';
+import CopyIdComponent from './CopyIdComponent';
 import CardsGridList from './CardsGridList';
 import OrgsGridItem from './OrgsGridItem';
 
 import colors from '../styles/colors';
-import CopyIdComponent from './CopyIdComponent';
 
 const styles = makeStyles({
   item: {
@@ -60,7 +59,7 @@ const styles = makeStyles({
     fontSize: '14px',
     fontWeight: 500,
     lineHeight: 1.2,
-    color: colors.primary.accent
+    color: colors.secondary.cyan
   },
   subOrgsContainer: {
     display: 'flex',
@@ -92,6 +91,19 @@ const styles = makeStyles({
   subOrgDropdown: {
     display: 'flex',
     justifyContent: 'space-between'
+  },
+  subsListWrapper: {
+    position: 'relative',
+    maxHeight: '310px',
+    overflow: 'hidden'
+  },
+  subsListOverflowOpacity: {
+    position: 'absolute',
+    bottom: '0',
+    right: '0',
+    height: '100%',
+    width: '264px',
+    background: 'linear-gradient(to right, transparent, white)',
   }
 });
 
@@ -132,12 +144,12 @@ export default function OrgsListItem(props) {
               <Typography variant={'caption'} className={classes.trustLevelValue}>{trustLevel}</Typography>
             </div>
             <div className={classes.addSubOrgButtonWrapper}>
-              <ButtonCommon
+              <Button
                 onClick={() => console.log('add org')}
                 className={classes.addSubOrgButton}
               >
                 <Typography variant={'caption'} className={classes.buttonTitle} noWrap>+ Add sub organization</Typography>
-              </ButtonCommon>
+              </Button>
             </div>
           </Grid>
         </Grid>
@@ -148,7 +160,7 @@ export default function OrgsListItem(props) {
                 <Typography variant={'inherit'} className={classes.subOrgsLabel}>
                   Suborganizations ({subs.length})
                 </Typography>
-                <ButtonCommon
+                <Button
                   onClick={handleOpenSubs}
                   className={classes.openSubOrgsButton}
                 >
@@ -162,25 +174,28 @@ export default function OrgsListItem(props) {
                       transform: isOpen ? 'rotate(180deg)' : 'rotate(0)'
                     }}
                   />
-                </ButtonCommon>
+                </Button>
               </div>
               <Collapse in={isOpen}>
-                <CardsGridList spacing={2} justify="flex-start" alignItems="flex-start" style={{ marginTop: '12px' }}>
-                  {
-                    subs.map((item, index) => (
-                      <Grid item key={index.toString()} style={{ width: '264px' }}>
-                        <OrgsGridItem
-                          id={item.id}
-                          isSub={item.isSub}
-                          entityName={item.entityName}
-                          name={item.subName}
-                          entityTrustLevel={item.entityTrustLevel}
-                          type={item.type}
-                        />
-                      </Grid>
-                    ))
-                  }
-                </CardsGridList>
+                <div className={classes.subsListWrapper}>
+                  <CardsGridList spacing={2} justify="flex-start" alignItems="flex-start" style={{ marginTop: '12px' }}>
+                    {
+                      subs.map((item, index) => (
+                        <Grid item key={index.toString()} style={{ width: '264px' }}>
+                          <OrgsGridItem
+                            id={item.id}
+                            isSub={item.isSub}
+                            entityName={item.entityName}
+                            name={item.subName}
+                            entityTrustLevel={item.entityTrustLevel}
+                            type={item.type}
+                          />
+                        </Grid>
+                      ))
+                    }
+                  </CardsGridList>
+                  <div className={classes.subsListOverflowOpacity}/>
+                </div>
               </Collapse>
             </div>
           ) : null

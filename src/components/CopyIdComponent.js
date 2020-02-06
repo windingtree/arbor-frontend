@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Tooltip, Typography, ClickAwayListener, Button } from '@material-ui/core';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 
-import ButtonCommon from './Button';
 import CopyIcon from '../assets/SvgComponents/CopyIcon';
 import { strCenterEllipsis, copyStrToClipboard } from '../utils/helpers';
 import colors from '../styles/colors';
@@ -35,9 +34,39 @@ const styles = makeStyles({
   },
 });
 
+const LightTooltip = withStyles({
+  tooltip: {
+    maxWidth: '240px',
+    backgroundColor: colors.primary.white,
+    boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
+    color: colors.secondary.cyan,
+    fontSize: '12px',
+    fontWeight: 400,
+    lineHeight: 1.2,
+    padding: '10px',
+    boxSizing: 'border-box',
+    whiteSpace: 'nowrap'
+  }
+})(Tooltip);
+
 export default function CopyIdComponent(props) {
   const classes = styles();
   const { leftElement, id, fontWeight, fontSize, color } = props;
+
+  const [open, setOpen] = useState(false);
+
+  const handleTooltipClose = () => {
+    setOpen(false);
+  };
+
+  const handleTooltipOpen = () => {
+    setOpen(true);
+  };
+
+  function copyIdWithFeedback(str) {
+    handleTooltipOpen();
+    return copyStrToClipboard(str)
+  }
 
   const hiddenId = strCenterEllipsis(id);
 
@@ -46,12 +75,31 @@ export default function CopyIdComponent(props) {
       <Typography variant={'subtitle2'} className={classes.id} style={{ fontWeight: fontWeight, fontSize: fontSize }}>
         {leftElement} <Typography variant={'inherit'} className={classes.subtitle} style={{ color: color }}>{hiddenId}</Typography>
       </Typography>
-      <ButtonCommon
-        onClick={() => copyStrToClipboard(id)}
-        className={classes.copyButton}
+      <ClickAwayListener
+        onClickAway={handleTooltipClose}
       >
-        <CopyIcon viewBox={'0 0 16 16'} className={classes.iconCopy}/>
-      </ButtonCommon>
+        <div>
+          <LightTooltip
+            PopperProps={{
+              disablePortal: true,
+            }}
+            onClose={handleTooltipClose}
+            open={open}
+            disableFocusListener
+            disableHoverListener
+            disableTouchListener
+            title={'ID copied to clipboard'}
+            placement={'top-start'}
+          >
+            <Button
+              onClick={() => copyIdWithFeedback(id)}
+              className={classes.copyButton}
+            >
+              <CopyIcon viewBox={'0 0 16 16'} className={classes.iconCopy}/>
+            </Button>
+          </LightTooltip>
+        </div>
+      </ClickAwayListener>
     </div>
   )
 }

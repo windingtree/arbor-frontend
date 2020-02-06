@@ -52,7 +52,7 @@ class RootRouter extends Component {
           />
           <DefaultRoute
             isAuthenticated={isAuth}
-            path='/organization'
+            path='/organization/:orgId'
             component={Organization}
           />
           <DefaultRoute

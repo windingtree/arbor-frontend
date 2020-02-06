@@ -17,7 +17,7 @@ class Search extends Component {
 
     return (
       <Container>
-        <CardsGridList spacing={3} justify="center" alignItems="center">
+        <CardsGridList spacing={2} justify="flex-start" alignItems="flex-start">
           {
             data.map((item, index) => (
               <Grid item key={index.toString()} style={{ width: '264px' }}>

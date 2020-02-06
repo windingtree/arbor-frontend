@@ -1,4 +1,5 @@
 import React from 'react';
+import history from '../redux/history';
 import PropTypes from 'prop-types';
 import { Grid, Container, Typography, Collapse, Fade } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
@@ -360,26 +361,29 @@ const styles = makeStyles({
 export default function OrgProfileView(props) {
   const classes = styles();
   const {
-    id,
     stage,
-    trustLevel,
-    img,
-    name,
-    address,
     tel,
     web,
     email,
     verified,
     subs,
-    isSub,
-    entityName,
-    entityTrustLevel,
     social,
     isOpen,
     toggleOpen,
     details,
     agents
   } = props;
+
+  const {
+    id,
+    trustLevel,
+    img,
+    name,
+    address,
+    isSub,
+    entityName,
+    entityTrustLevel,
+  } = history.location.state;
 
   return (
     <div>

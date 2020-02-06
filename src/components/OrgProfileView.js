@@ -30,6 +30,10 @@ import CopyIdComponent from './CopyIdComponent';
 import colors from '../styles/colors';
 
 const styles = makeStyles({
+  itemMainInfo: {
+    position: 'relative',
+    paddingBottom: '58px'
+  },
   itemTrustInfoContainer: {
     display: 'flex',
     justifyContent: 'flex-start',
@@ -118,6 +122,16 @@ const styles = makeStyles({
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: '100%',
+  },
+  idInfoContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  publicTrustLevelWrapper: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center'
   },
   orgNameWrapper: {
     width: '100%',
@@ -230,6 +244,11 @@ const styles = makeStyles({
   },
   iconLinkedin: {
     color: colors.social.linkedin,
+  },
+  toggleOpenDetailsButtonContainer: {
+    position: 'absolute',
+    right: '0',
+    bottom: '14px',
   },
   hideDetailsButtonWrapper: {
     position: 'absolute',
@@ -412,32 +431,38 @@ export default function OrgProfileView(props) {
     entityTrustLevel,
   } = history.location.state;
 
+  const ownOrganization = history.location.pathname === '/my-organizations/:orgId';
+
   return (
     <div>
-      <Container>
-        <div className={classes.itemTrustInfoContainer}>
-          <div className={classes.itemTrustInfoBase}>
-            <LightTooltip
-              title={'Your Trust level reflects the number of completed trust steps.'}
-              placement={'top-start'}
-            >
-              <button className={classes.tooltipRef}>
-                <InfoIcon viewBox={'0 0 16 16'} className={classes.infoIcon}/>
-              </button>
-            </LightTooltip>
-            <Typography variant={'caption'} className={classes.itemTrustInfoTitle}>Trust level: </Typography>
-            <TrustLevelIcon viewBox={'0 0 16 16'} className={classes.iconTrustLevel}/>
-            <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{trustLevel}</Typography>
-          </div>
-          {
-            !isSub ? (
-              <div className={[classes.itemTrustInfoBase, classes.itemStage].join(' ')}>
-                <StageIcon viewBox={'0 0 20 20'} className={classes.stageIcon}/>
-                <Typography variant={'caption'} className={[classes.itemTrustInfoTitle, classes.itemStageTitle].join(' ')}>{stage}</Typography>
+      <Container className={classes.itemMainInfo}>
+        {
+          ownOrganization && (
+            <div className={classes.itemTrustInfoContainer}>
+              <div className={classes.itemTrustInfoBase}>
+                <LightTooltip
+                  title={'Your Trust level reflects the number of completed trust steps.'}
+                  placement={'top-start'}
+                >
+                  <button className={classes.tooltipRef}>
+                    <InfoIcon viewBox={'0 0 16 16'} className={classes.infoIcon}/>
+                  </button>
+                </LightTooltip>
+                <Typography variant={'caption'} className={classes.itemTrustInfoTitle}>Trust level: </Typography>
+                <TrustLevelIcon viewBox={'0 0 16 16'} className={classes.iconTrustLevel}/>
+                <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{trustLevel}</Typography>
               </div>
-            ) : null
-          }
-        </div>
+              {
+                !isSub ? (
+                  <div className={[classes.itemTrustInfoBase, classes.itemStage].join(' ')}>
+                    <StageIcon viewBox={'0 0 20 20'} className={classes.stageIcon}/>
+                    <Typography variant={'caption'} className={[classes.itemTrustInfoTitle, classes.itemStageTitle].join(' ')}>{stage}</Typography>
+                  </div>
+                ) : null
+              }
+            </div>
+          )
+        }
         <Grid container className={classes.orgMainInfoWrapper} wrap={'nowrap'}>
           <Grid item>
             <div className={classes.orgImageWrapper}>
@@ -451,7 +476,18 @@ export default function OrgProfileView(props) {
             </div>
           </Grid>
           <Grid item>
-            <CopyIdComponent id={id} leftElement={'Org ID: '} fontWeight={500}/>
+            <div className={classes.idInfoContainer}>
+              <CopyIdComponent id={id} leftElement={'Org ID: '} fontWeight={500}/>
+              {
+                ownOrganization || (
+                  <div className={classes.publicTrustLevelWrapper}>
+                    <Typography variant={'caption'} className={classes.itemTrustInfoTitle} style={{ color: colors.greyScale.common }}>Trust level: </Typography>
+                    <TrustLevelIcon viewBox={'0 0 16 16'} className={classes.iconTrustLevel}/>
+                    <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{trustLevel}</Typography>
+                  </div>
+                )
+              }
+            </div>
             <div className={classes.orgNameWrapper}>
               <Typography variant={'h6'} className={classes.orgName} noWrap>{name}</Typography>
             </div>
@@ -562,39 +598,58 @@ export default function OrgProfileView(props) {
             })
           }
         </div>
-        <Fade in={!isOpen}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button onClick={() => toggleOpen(!isOpen)} className={classes.toggleOpenDetailsButton}>
-              <Typography variant={'inherit'}>
-                Show organization details <MaximizeIcon viewBox={'0 0 20 20'} className={classes.iconToggleDetailsOpen}/>
-              </Typography>
-            </Button>
-          </div>
-        </Fade>
+        {
+          ownOrganization && (
+            <Fade in={!isOpen}>
+              <div className={classes.toggleOpenDetailsButtonContainer}>
+                <Button onClick={() => toggleOpen(!isOpen)} className={classes.toggleOpenDetailsButton}>
+                  <Typography variant={'inherit'}>
+                    Show organization details <MaximizeIcon viewBox={'0 0 20 20'} className={classes.iconToggleDetailsOpen}/>
+                  </Typography>
+                </Button>
+              </div>
+            </Fade>
+          )
+        }
       </Container>
-      <Collapse in={isOpen} className={classes.detailsContainer}>
-        <Container className={classes.detailsContent}>
-          <div className={classes.details}>
-            <Typography variant={'inherit'} className={classes.detailsTitle}>{details.title}</Typography>
-            <Typography variant={'inherit'}>{details.text}</Typography>
-            <div className={classes.line}/>
+      {
+        ownOrganization ? (
+          <Collapse in={isOpen} className={classes.detailsContainer}>
+            <Container className={classes.detailsContent}>
+              <div className={classes.details}>
+                <Typography variant={'inherit'} className={classes.detailsTitle}>{details.title}</Typography>
+                <Typography variant={'inherit'}>{details.text}</Typography>
+                <div className={classes.line}/>
+              </div>
+              <img src={DetailsIllustration} alt={'Details illustration'} className={classes.detailsIllustration}/>
+              <div className={classes.hideDetailsButtonWrapper}>
+                <Button onClick={() => toggleOpen(!isOpen)} className={classes.toggleOpenDetailsButton}>
+                  <Typography variant={'inherit'}>
+                    Hide organization details <MinimizeIcon viewBox={'0 0 20 20'} className={classes.iconToggleDetailsOpen}/>
+                  </Typography>
+                </Button>
+              </div>
+            </Container>
+          </Collapse>
+        ) : (
+          <div className={classes.detailsContainer}>
+            <Container className={classes.detailsContent}>
+              <div className={classes.details}>
+                <Typography variant={'inherit'} className={classes.detailsTitle}>{details.title}</Typography>
+                <Typography variant={'inherit'}>{details.text}</Typography>
+                <div className={classes.line}/>
+              </div>
+              <img src={DetailsIllustration} alt={'Details illustration'} className={classes.detailsIllustration}/>
+            </Container>
           </div>
-          <img src={DetailsIllustration} alt={'Details illustration'} className={classes.detailsIllustration}/>
-          <div className={classes.hideDetailsButtonWrapper}>
-            <Button onClick={() => toggleOpen(!isOpen)} className={classes.toggleOpenDetailsButton}>
-              <Typography variant={'inherit'}>
-                Hide organization details <MinimizeIcon viewBox={'0 0 20 20'} className={classes.iconToggleDetailsOpen}/>
-              </Typography>
-            </Button>
-          </div>
-        </Container>
-      </Collapse>
+        )
+      }
       {
         subs.length !== 0 ? (
           <div className={classes.subsWrapper}>
             <Container className={classes.subsContent}>
               <Typography variant={'h6'} className={classes.subsTitle}>
-                Sub organizations ({subs.length})
+                Organizational units ({subs.length})
               </Typography>
               <CardsGridList spacing={2}>
                 {
@@ -613,85 +668,93 @@ export default function OrgProfileView(props) {
                     )
                   })
                 }
-                <Grid item style={{ width: '264px' }}>
-                  <AddSubOrgCard/>
-                </Grid>
+                {
+                  ownOrganization && (
+                    <Grid item style={{ width: '264px' }}>
+                      <AddSubOrgCard/>
+                    </Grid>
+                  )
+                }
               </CardsGridList>
             </Container>
           </div>
         ) : null
       }
-      <Container>
-        <div className={classes.agentsContent}>
-          <div className={classes.agentsTitleWrapper}>
-            <Typography variant={'inherit'}>Manage owners and agents</Typography>
-          </div>
-          <div>
-            <Typography variant={'inherit'} className={classes.agentsSubtitle}>
-              Assign agents that could act on behalf of your organization. You can add public keys of your employees (or devices) that will be able to sign and encrypt communication on behalf of your organization
-            </Typography>
-          </div>
-          <div className={classes.ownerInfoWrapper}>
-            <Typography variant={'inherit'} className={classes.agentTitle}>Owner</Typography>
-            <div className={classes.ownerInfo}>
-              <CopyIdComponent
-                id={id}
-                leftElement={(<VpnKeyIcon className={classes.keyIcon}/>)}
-                fontSize={'14px'}
-                color={colors.greyScale.dark}
-              />
-            </div>
-          </div>
-          <div className={classes.agentsListContainer}>
-            <div className={classes.agentInfoWrapper}>
-              <Typography variant={'inherit'} className={classes.agentTitle}>Agents</Typography>
-            </div>
-            <div className={classes.buttonWrapper}>
-              <Button onClick={() => console.log('add agent')} className={classes.button}>
-                <Typography variant={'inherit'}>+ Add Agent key</Typography>
-              </Button>
-            </div>
-            {
-              agents.length !== 0 ? (
-                <div>
-                  <ul>
-                    {
-                      agents.map((item, index) => {
-                        return (
-                          <li key={index.toString()} className={classes.agentItemWrapper}>
-                            <Grid container justify={'space-between'} alignItems={'center'}>
-                              <Grid item xs={2}>
-                                <CopyIdComponent
-                                  id={item.id}
-                                  leftElement={(<VpnKeyIcon className={classes.keyIcon}/>)}
-                                  fontSize={'14px'}
-                                  color={colors.greyScale.dark}
-                                />
-                              </Grid>
-                              <Grid item xs={8}>
-                                <Typography>{item.comment}</Typography>
-                              </Grid>
-                              <Grid item xs={2}>
-                                <Button onClick={() => console.log('delete agent')} className={classes.deleteAgentButton}>
-                                  <Typography variant={'inherit'}>Delete agent key</Typography>
-                                </Button>
-                              </Grid>
-                            </Grid>
-                          </li>
-                        )
-                      })
-                    }
-                  </ul>
+      {
+        ownOrganization && (
+          <Container>
+            <div className={classes.agentsContent}>
+              <div className={classes.agentsTitleWrapper}>
+                <Typography variant={'inherit'}>Manage owners and agents</Typography>
+              </div>
+              <div>
+                <Typography variant={'inherit'} className={classes.agentsSubtitle}>
+                  Assign agents that could act on behalf of your organization. You can add public keys of your employees (or devices) that will be able to sign and encrypt communication on behalf of your organization
+                </Typography>
+              </div>
+              <div className={classes.ownerInfoWrapper}>
+                <Typography variant={'inherit'} className={classes.agentTitle}>Owner</Typography>
+                <div className={classes.ownerInfo}>
+                  <CopyIdComponent
+                    id={id}
+                    leftElement={(<VpnKeyIcon className={classes.keyIcon}/>)}
+                    fontSize={'14px'}
+                    color={colors.greyScale.dark}
+                  />
                 </div>
-              ) : (
-                <div>
-                  <Typography>You have no agents</Typography>
+              </div>
+              <div className={classes.agentsListContainer}>
+                <div className={classes.agentInfoWrapper}>
+                  <Typography variant={'inherit'} className={classes.agentTitle}>Agents</Typography>
                 </div>
-              )
-            }
-          </div>
-        </div>
-      </Container>
+                <div className={classes.buttonWrapper}>
+                  <Button onClick={() => console.log('add agent')} className={classes.button}>
+                    <Typography variant={'inherit'}>+ Add Agent key</Typography>
+                  </Button>
+                </div>
+                {
+                  agents.length !== 0 ? (
+                    <div>
+                      <ul>
+                        {
+                          agents.map((item, index) => {
+                            return (
+                              <li key={index.toString()} className={classes.agentItemWrapper}>
+                                <Grid container justify={'space-between'} alignItems={'center'}>
+                                  <Grid item xs={2}>
+                                    <CopyIdComponent
+                                      id={item.id}
+                                      leftElement={(<VpnKeyIcon className={classes.keyIcon}/>)}
+                                      fontSize={'14px'}
+                                      color={colors.greyScale.dark}
+                                    />
+                                  </Grid>
+                                  <Grid item xs={8}>
+                                    <Typography>{item.comment}</Typography>
+                                  </Grid>
+                                  <Grid item xs={2}>
+                                    <Button onClick={() => console.log('delete agent')} className={classes.deleteAgentButton}>
+                                      <Typography variant={'inherit'}>Delete agent key</Typography>
+                                    </Button>
+                                  </Grid>
+                                </Grid>
+                              </li>
+                            )
+                          })
+                        }
+                      </ul>
+                    </div>
+                  ) : (
+                    <div>
+                      <Typography>You have no agents</Typography>
+                    </div>
+                  )
+                }
+              </div>
+            </div>
+          </Container>
+        )
+      }
     </div>
   )
 }

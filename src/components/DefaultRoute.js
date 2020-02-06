@@ -10,7 +10,7 @@ const DefaultRoute = ({ component: Component, ...rest }) => {
       render={props => (
         <div style={{ height: '100%', width: '100%', overflow: 'hidden' }}>
           <Header isAuthenticated={props.isAuthenticated}/>
-          <div style={{ minHeight: '100vh', width: '100%' }}>
+          <div style={{ minHeight: '70vh', width: '100%' }}>
             <Component {...props}/>
           </div>
           <Footer/>

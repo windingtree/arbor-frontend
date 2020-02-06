@@ -21,7 +21,7 @@ import MinimizeIcon from '../assets/SvgComponents/MinimizeIcon';
 import DetailsIllustration from '../assets/SvgComponents/detailsIllustration.svg';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 //Components
-import OrgsGridList from './OrgsGridList';
+import CardsGridList from './CardsGridList';
 import OrgsGridItem from './OrgsGridItem';
 import ButtonCommon from './Button';
 import AddSubOrgCard from './AddSubOrgCard';
@@ -558,7 +558,7 @@ export default function OrgProfileView(props) {
               <Typography variant={'h6'} className={classes.subsTitle}>
                 Sub organizations ({subs.length})
               </Typography>
-              <OrgsGridList spacing={2}>
+              <CardsGridList spacing={2}>
                 {
                   subs.map((item, index) => {
                     return (
@@ -578,7 +578,7 @@ export default function OrgProfileView(props) {
                 <Grid item style={{ width: '264px' }}>
                   <AddSubOrgCard/>
                 </Grid>
-              </OrgsGridList>
+              </CardsGridList>
             </Container>
           </div>
         ) : null

@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import TrustLevelIcon from '../assets/SvgComponents/TrustLevelIcon';
 import ChevronCircleIcon from '../assets/SvgComponents/ChevronCircleIcon';
 import ButtonCommon from './Button';
-import OrgsGridList from './OrgsGridList';
+import CardsGridList from './CardsGridList';
 import OrgsGridItem from './OrgsGridItem';
 
 import colors from '../styles/colors';
@@ -165,7 +165,7 @@ export default function OrgsListItem(props) {
                 </ButtonCommon>
               </div>
               <Collapse in={isOpen}>
-                <OrgsGridList spacing={2} justify="flex-start" alignItems="flex-start" style={{ marginTop: '12px' }}>
+                <CardsGridList spacing={2} justify="flex-start" alignItems="flex-start" style={{ marginTop: '12px' }}>
                   {
                     subs.map((item, index) => (
                       <Grid item key={index.toString()} style={{ width: '264px' }}>
@@ -180,7 +180,7 @@ export default function OrgsListItem(props) {
                       </Grid>
                     ))
                   }
-                </OrgsGridList>
+                </CardsGridList>
               </Collapse>
             </div>
           ) : null

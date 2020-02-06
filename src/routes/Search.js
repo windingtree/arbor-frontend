@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {Container, Grid} from '@material-ui/core';
 
-import OrgsGridList from '../components/OrgsGridList';
+import CardsGridList from '../components/CardsGridList';
 import OrgsGridItem from '../components/OrgsGridItem';
 
 import {fetchAllOrganizations} from '../ducks/fetchOrganizations';
@@ -17,7 +17,7 @@ class Search extends Component {
 
     return (
       <Container>
-        <OrgsGridList spacing={3} justify="center" alignItems="center">
+        <CardsGridList spacing={3} justify="center" alignItems="center">
           {
             data.map((item, index) => (
               <Grid item key={index.toString()} style={{ width: '264px' }}>
@@ -27,7 +27,7 @@ class Search extends Component {
               </Grid>
             ))
           }
-        </OrgsGridList>
+        </CardsGridList>
       </Container>
     );
   }

@@ -16,7 +16,11 @@ const styles = makeStyles({
     width: '100%',
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
+    paddingTop: '19px'
+  },
+  buttonWrapper: {
+    marginLeft: '-8px'
   },
   buttonLabel: {
     fontSize: '14px',
@@ -30,7 +34,7 @@ const styles = makeStyles({
     height: '12px',
     verticalAlign: 'bottom',
     color: colors.primary.black,
-    marginRight: '10px'
+    marginRight: '11px'
   },
   eyeIcon: {
     width: '15px',
@@ -40,10 +44,13 @@ const styles = makeStyles({
     width: '14px',
     height: '14px'
   },
+  itemActionButton: {
+    marginLeft: '20px'
+  },
   itemActionButtonIcon: {
     verticalAlign: 'bottom',
     color: colors.primary.black,
-    marginRight: '4px'
+    marginRight: '9px'
   },
 });
 
@@ -56,26 +63,28 @@ export default function Organization(props) {
 
   return (
       <div>
-        <Container style={{ paddingBottom: '20px'}}>
+        <Container>
           <Box className={classes.screenHeader}>
-            <ButtonCommon onClick={history.goBack}>
-              <Typography variant={'caption'} className={classes.buttonLabel}>
-                <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
-                Back to all organizations
-                {
-                  history.location.pathname === '/directories' ? (
-                    <span>in {prevDirectoryName}</span>
-                  ) : null
-                }
-              </Typography>
-            </ButtonCommon>
+            <div className={classes.buttonWrapper}>
+              <ButtonCommon onClick={history.goBack}>
+                <Typography variant={'caption'} className={classes.buttonLabel}>
+                  <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
+                  Back to all organizations
+                  {
+                    history.location.pathname === '/directories' ? (
+                      <span>in {prevDirectoryName}</span>
+                    ) : null
+                  }
+                </Typography>
+              </ButtonCommon>
+            </div>
             {
               history.location.pathname === '/organization' ? (
                 <div>
-                  <ButtonCommon onClick={() => null} className={classes.itemActionButton}>
+                  <ButtonCommon onClick={() => null}>
                     <Typography variant={'caption'} className={classes.buttonLabel}>
                       <EyeIcon viewBox={'0 0 16 12'} className={[classes.itemActionButtonIcon, classes.eyeIcon].join(' ')}/>
-                      Public profile view
+                      Public organization view
                     </Typography>
                   </ButtonCommon>
                   <ButtonCommon onClick={() => null} className={classes.itemActionButton}>

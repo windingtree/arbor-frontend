@@ -71,8 +71,6 @@ export default function Header(props) {
   const classes = styles();
   const { isAuthenticated } = props;
 
-  const currentPage = history.location.pathname;
-
   return (
     <div id="app-header" className={classes.header}>
       <Container>

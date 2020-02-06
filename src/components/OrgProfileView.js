@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Grid, Container, Typography, Collapse, Fade } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
+import Ellipsis from 'react-dotdotdot';
 //Icons
 import InfoIcon from '../assets/SvgComponents/InfoIcon';
 import TrustLevelIcon from '../assets/SvgComponents/TrustLevelIcon';
@@ -33,6 +34,7 @@ const styles = makeStyles({
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
+    marginTop: '15px'
   },
   itemTrustInfoBase: {
     display: 'flex',
@@ -43,18 +45,22 @@ const styles = makeStyles({
     backgroundColor: colors.primary.white,
     color: colors.greyScale.common,
     border: `1px solid ${colors.greyScale.lightest}`,
-    padding: '0 23px'
+    padding: '0 22px'
   },
   itemStage: {
     backgroundColor: colors.secondary.green,
     borderColor: colors.secondary.green,
     color: colors.primary.white,
-    marginLeft: '10px',
+    width: '270px',
+    boxSizing: 'border-box',
+    marginLeft: '11px',
+    padding: '0 26px'
   },
   infoIcon: {
     width: '16px',
     height: '16px',
-    marginRight: '6px'
+    marginRight: '6px',
+    marginLeft: '-7px'
   },
   itemTrustInfoTitle: {
     fontSize: '14px',
@@ -69,7 +75,7 @@ const styles = makeStyles({
     width: '13px',
     height: '16px',
     color: colors.secondary.yellow,
-    margin: '0 6px 0 10px'
+    margin: '0 4px 0 14px'
   },
   trustLevelValue: {
     fontSize: '14px',
@@ -80,18 +86,18 @@ const styles = makeStyles({
   stageIcon: {
     width: '20px',
     height: '20px',
-    marginRight: '10px'
+    marginRight: '12px'
   },
   orgMainInfoWrapper: {
     padding: '20px 0',
   },
   orgImageWrapper: {
     position: 'relative',
-    width: '448px',
-    height: '190px',
+    width: '450px',
+    height: '200px',
     overflow: 'hidden',
     borderRadius: '4px',
-    marginRight: '54px'
+    marginRight: '56px'
   },
   orgImage: {
     position: 'absolute',
@@ -102,6 +108,7 @@ const styles = makeStyles({
   },
   orgNameWrapper: {
     width: '100%',
+    marginTop: '7px'
   },
   orgName: {
     fontSize: '24px',
@@ -110,16 +117,17 @@ const styles = makeStyles({
     color: colors.greyScale.darkest,
   },
   orgAddressWrapper: {
-    margin: '30px 0 23px 0'
+    margin: '24px 0 23px 0'
   },
   orgAddress: {
     fontSize: '14px',
     fontWeight: 400,
-    lineHeight: 1.3,
+    lineHeight: 1.5,
     color: colors.greyScale.dark,
   },
   mapLink: {
     textDecoration: 'none',
+    whiteSpace: 'nowrap',
     color: colors.secondary.green,
   },
   orgInfoFieldsContainer: {
@@ -164,7 +172,7 @@ const styles = makeStyles({
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginTop: '60px'
+    marginTop: '42px'
   },
   socialLink: {
     fontSize: '16px',
@@ -173,16 +181,20 @@ const styles = makeStyles({
     color: colors.greyScale.darkest,
     textDecoration: 'none',
     textTransform: 'capitalize',
-    marginRight: '20px',
+    marginRight: '29px',
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center'
   },
   socialIcon: {
+    fontSize: 'large',
     marginRight: '10px'
   },
   iconFacebook: {
     color: colors.social.facebook,
+  },
+  iconVerify: {
+    margin: '0 0 0 8px'
   },
   iconTelegram: {
     width: '18px',
@@ -408,9 +420,10 @@ export default function OrgProfileView(props) {
             <div className={classes.orgAddressWrapper}>
               {
                 address ? (
-                  <Typography variant={'caption'} className={classes.orgAddress}>
-                    {address} <a href={'https://www.google.com.ua/maps/'} className={classes.mapLink}>show on the map</a>
-                  </Typography>
+                  <div>
+                    <Ellipsis clamp={2} tagName={'span'} className={classes.orgAddress}>{address}</Ellipsis>
+                    <a href={'https://www.google.com.ua/maps/'} className={classes.mapLink}>show on the map</a>
+                  </div>
                 ) : (
                   <Typography variant={'caption'} className={classes.orgAddress}>No address specified</Typography>
                 )
@@ -503,7 +516,7 @@ export default function OrgProfileView(props) {
                   <Typography variant={'inherit'}>{Object.keys(item)[0]}</Typography>
                   {
                     Object.values(item)[1] ? (
-                      <TrustLevelIcon viewBox={'0 0 16 16'} className={classes.iconTrustLevel}/>
+                      <TrustLevelIcon viewBox={'0 0 16 16'} className={[classes.iconTrustLevel, classes.iconVerify].join(' ')}/>
                     ) : null
                   }
                 </a>
@@ -656,7 +669,7 @@ OrgProfileView.defaultProps = {
   trustLevel: '1',
   img: null,
   name: 'Default organization',
-  address: 'Default address',
+  address: 'Default address with extremely long description and it will go on the second line',
   tel: '+33144385600',
   web: 'all.accor.com',
   email: 'all.accor@gmail.com',
@@ -681,7 +694,7 @@ OrgProfileView.defaultProps = {
   social: [
     {
       facebook: 'https://facebook.com/',
-      verified: true
+      verified: false
     },
     {
       telegram: 'https://web.telegram.org/',

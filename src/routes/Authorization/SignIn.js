@@ -10,7 +10,7 @@ import colors from '../../styles/colors';
 const styles = makeStyles({
   container: {
     position: 'relative',
-    top: '60px'
+    padding: '74px 0 60px 0'
   },
   itemContainer: {
     width: '50%'
@@ -50,9 +50,9 @@ const styles = makeStyles({
     marginTop: '68px'
   },
   button: {
-    backgroundImage: 'linear-gradient(35.28deg, #EC6F95 0%, #FCB871 100%)',
+    backgroundImage: colors.gradients.green,
     boxShadow: '0 2px 12px rgba(12, 64, 78, 0.1)',
-    border: `1px solid ${colors.primary.accent}`,
+    border: `1px solid ${colors.secondary.cyan}`,
     borderRadius: '6px'
   },
   buttonLabel: {
@@ -75,7 +75,7 @@ const SignIn = ({props}) => {
           <img src={LoginIllustration} alt={'Login illustration'} className={classes.illustration}/>
         </Grid>
         <Grid item className={classes.itemContainer}>
-          <Box>
+          <Box style={{ width: '80%', margin: '0 auto' }}>
             <div className={classes.screenTitleWrapper}>
               <Typography variant={'h1'} className={classes.screenTitle}>Sign in with MetaMask</Typography>
               <div className={classes.line}/>

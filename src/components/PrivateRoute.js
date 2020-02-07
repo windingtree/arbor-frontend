@@ -1,5 +1,6 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router';
+import DefaultRoute from './DefaultRoute';
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   return (
@@ -7,7 +8,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
       {...rest}
       render={props =>
         props.isAuthenticated ? (
-          <Component {...props} />
+          <DefaultRoute isAuthenticated={props.isAuthenticated} component={Component} {...props} />
         ) : (
           <Redirect to={{ pathname: '/authorization', state: { from: props.location } }} />
         )

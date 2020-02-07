@@ -11,13 +11,13 @@ import WizardSuccess from './WizardSuccess';
 function Wizard(props){
   return (
     <Switch>
-      <Route path='/wizard/general' component={WizardGeneral}/>
-      <Route path='/wizard/details' component={WizardDetails}/>
-      <Route path='/wizard/hosting' component={WizardHosting}/>
-      <Route path='/wizard/metamask' component={WizardMetamask}/>
-      <Route path='/wizard/creating-in-progress' component={WizardCreating}/>
-      <Route path='/wizard/success' component={WizardSuccess}/>
-      <Redirect exact path='/wizard' to='/wizard/general'/>
+      <Route path='/my-organizations/wizard/general' component={WizardGeneral}/>
+      <Route path='/my-organizations/wizard/details' component={WizardDetails}/>
+      <Route path='/my-organizations/wizard/hosting' component={WizardHosting}/>
+      <Route path='/my-organizations/wizard/metamask' component={WizardMetamask}/>
+      <Route path='/my-organizations/wizard/creating-in-progress' component={WizardCreating}/>
+      <Route path='/my-organizations/wizard/success' component={WizardSuccess}/>
+      <Redirect exact path='/my-organizations/wizard' to='/my-organizations/wizard/general'/>
     </Switch>
   )
 }

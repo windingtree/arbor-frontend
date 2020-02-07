@@ -115,8 +115,8 @@ export default function OrgsListItem(props) {
     name,
     trustLevel,
     subs,
-    isOpen,
-    handleOpenSubs
+    isSubsOpen,
+    toggleSubsOpen
   } = props;
 
   return (
@@ -148,7 +148,7 @@ export default function OrgsListItem(props) {
                 onClick={() => console.log('add org')}
                 className={classes.addSubOrgButton}
               >
-                <Typography variant={'caption'} className={classes.buttonTitle} noWrap>+ Add sub organization</Typography>
+                <Typography variant={'caption'} className={classes.buttonTitle} noWrap>+ Add organizational unit</Typography>
               </Button>
             </div>
           </Grid>
@@ -158,10 +158,10 @@ export default function OrgsListItem(props) {
             <div>
               <div className={classes.subOrgsContainer}>
                 <Typography variant={'inherit'} className={classes.subOrgsLabel}>
-                  Suborganizations ({subs.length})
+                  Organizational units ({subs.length})
                 </Typography>
                 <Button
-                  onClick={handleOpenSubs}
+                  onClick={() => toggleSubsOpen(!isSubsOpen)}
                   className={classes.openSubOrgsButton}
                 >
                   <ChevronCircleIcon
@@ -171,12 +171,12 @@ export default function OrgsListItem(props) {
                       height: '16px',
                       color: colors.primary.accent,
                       transition: 'transform .5s ease',
-                      transform: isOpen ? 'rotate(180deg)' : 'rotate(0)'
+                      transform: isSubsOpen ? 'rotate(180deg)' : 'rotate(0)'
                     }}
                   />
                 </Button>
               </div>
-              <Collapse in={isOpen}>
+              <Collapse in={isSubsOpen}>
                 <div className={classes.subsListWrapper}>
                   <CardsGridList spacing={2} justify="flex-start" alignItems="flex-start" style={{ marginTop: '12px' }}>
                     {

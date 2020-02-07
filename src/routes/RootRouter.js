@@ -80,19 +80,19 @@ class RootRouter extends Component {
             path='/faq'
             component={FAQ}
           />
-          <DefaultRoute
+          <PrivateRoute
             isAuthenticated={isAuth}
             path='/my-organizations/wizard'
             component={Wizard}
           />
-          <DefaultRoute
+          <PrivateRoute
             isAuthenticated={isAuth}
             path='/my-organizations/:orgId'
             component={Organization}
           />
           <PrivateRoute
             isAuthenticated={isAuth}
-            path='/my-organizations/'
+            path='/my-organizations'
             component={Profile}
           />
           <Route

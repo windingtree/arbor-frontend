@@ -210,7 +210,7 @@ export default function OrgsGridItem(props) {
           {
             isSub && (
               <div className={classes.itemMarksWrapper}>
-                <Typography variant={'subtitle2'} className={classes.itemMark}>SubOrg</Typography>
+                <Typography variant={'subtitle2'} className={classes.itemMark}>Org Unit</Typography>
                 {
                   type && (
                     <Typography variant={'subtitle2'} className={classes.itemMark} style={{ backgroundColor: bgColorsForTypes[type] }}>

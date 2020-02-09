@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardMedia, Grid, Typography, Button, Collapse } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -18,6 +19,13 @@ const styles = makeStyles({
     border: `1px solid ${colors.greyScale.lightest}`,
     boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
     margin: '6px 0'
+  },
+  linkToProfileView: {
+    textTransform: 'none',
+    textDecoration: 'none',
+    textAlign: 'start',
+    backgroundColor: colors.primary.white,
+    outline: 'none',
   },
   itemImg: {
     width: '48px',
@@ -41,6 +49,9 @@ const styles = makeStyles({
     height: '16px',
     color: colors.secondary.yellow,
     margin: '0 6px 0 9px'
+  },
+  label: {
+    color: colors.greyScale.common
   },
   trustLevelValue: {
     fontSize: '14px',
@@ -115,6 +126,18 @@ export default function OrgsListItem(props) {
     name,
     trustLevel,
     subs,
+    isSub,
+    social,
+    stage,
+    tel,
+    web,
+    email,
+    verified,
+    address,
+    entityName,
+    entityTrustLevel,
+    details,
+    agents,
     isSubsOpen,
     toggleSubsOpen
   } = props;
@@ -122,37 +145,60 @@ export default function OrgsListItem(props) {
   return (
     <Card className={classes.item}>
       <CardContent style={{ padding: '20px' }}>
-        <Grid container justify="space-between" alignItems='flex-start' wrap='nowrap'>
-          <Grid item container wrap='nowrap' style={{ width: '85%' }}>
-            {
-              img ? (
-                <CardMedia label={'Organization picture'} image={img.src} className={classes.itemImg}/>
-              ) : <div className={classes.itemImg}/>
-            }
-            <div className={classes.itemInfo}>
-              <Typography variant={'subtitle2'} className={classes.itemName} noWrap>{name}</Typography>
-              <CopyIdComponent id={id} leftElement={'ID: '}/>
-            </div>
+        <Link to={{
+          pathname: `/my-organizations/${id}`,
+          state: {
+            id: id,
+            img: img,
+            isSub: isSub,
+            name: name,
+            trustLevel: trustLevel,
+            social: social,
+            verified: verified,
+            address: address,
+            subs: subs,
+            details: details,
+            agents: agents,
+            stage: stage,
+            tel: tel,
+            web: web,
+            email: email,
+            entityName: entityName,
+            entityTrustLevel: entityTrustLevel
+          }
+        }} className={classes.linkToProfileView}>
+          <Grid container justify="space-between" alignItems='flex-start' wrap='nowrap'>
+            <Grid item container wrap='nowrap' style={{ width: '85%' }}>
+              {
+                img ? (
+                  <CardMedia label={'Organization picture'} image={img.src} className={classes.itemImg}/>
+                ) : <div className={classes.itemImg}/>
+              }
+              <div className={classes.itemInfo}>
+                <Typography variant={'subtitle2'} className={classes.itemName} noWrap>{name}</Typography>
+                <CopyIdComponent id={id} leftElement={'ID: '}/>
+              </div>
+            </Grid>
+            <Grid item container alignItems={'flex-end'} justify={'space-between'} direction={'column'}>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <Typography variant={'caption'} className={classes.label}>Trust level: </Typography>
+                <TrustLevelIcon
+                  viewBox={'0 0 16 16'}
+                  className={classes.icon}
+                />
+                <Typography variant={'caption'} className={classes.trustLevelValue}>{trustLevel}</Typography>
+              </div>
+              <div className={classes.addSubOrgButtonWrapper}>
+                <Button
+                  onClick={() => console.log('add org')}
+                  className={classes.addSubOrgButton}
+                >
+                  <Typography variant={'caption'} className={classes.buttonTitle} noWrap>+ Add organizational unit</Typography>
+                </Button>
+              </div>
+            </Grid>
           </Grid>
-          <Grid item container alignItems={'flex-end'} justify={'space-between'} direction={'column'}>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <Typography variant={'caption'} className={classes.label}>Trust level: </Typography>
-              <TrustLevelIcon
-                viewBox={'0 0 16 16'}
-                className={classes.icon}
-              />
-              <Typography variant={'caption'} className={classes.trustLevelValue}>{trustLevel}</Typography>
-            </div>
-            <div className={classes.addSubOrgButtonWrapper}>
-              <Button
-                onClick={() => console.log('add org')}
-                className={classes.addSubOrgButton}
-              >
-                <Typography variant={'caption'} className={classes.buttonTitle} noWrap>+ Add organizational unit</Typography>
-              </Button>
-            </div>
-          </Grid>
-        </Grid>
+        </Link>
         {
           subs.length !== 0 ? (
             <div>
@@ -276,4 +322,6 @@ OrgsListItem.defaultProps = {
       entityTrustLevel: '5'
     },
   ],
+  isSub: false,
+
 };

@@ -1,7 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { useWeb3React } from '@web3-react/core';
-import { injected } from '../../web3/connectors';
 import { fetchSignInRequest } from '../../ducks/signIn';
 import { Container, Grid, Typography, Box, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';

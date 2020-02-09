@@ -1,7 +1,8 @@
 import { appName } from '../utils/constants';
+import history from '../redux/history';
+import GetWeb3 from '../redux/web3';
 import { createSelector } from 'reselect';
-import { put, takeLatest, all } from 'redux-saga/effects';
-
+import { all, call, put, takeLatest } from 'redux-saga/effects';
 /**
  * Constants
  * */
@@ -15,7 +16,7 @@ const initialState = {
   isFetching: false,
   isFetched: false,
   data: {},
-  isAuth: false, //TODO delete later, when user object with come with token
+  isAuthenticated: false,
   error: null
 };
 
@@ -30,7 +31,7 @@ export default function reducer( state = initialState, action ) {
       return Object.assign({}, state, {
         isFetching: true,
         isFetched: false,
-        isAuth: false,
+        isAuthenticated: false,
         error: null
       });
     case FETCH_SIGN_IN_SUCCESS:
@@ -38,19 +39,18 @@ export default function reducer( state = initialState, action ) {
         isFetching: false,
         isFetched: true,
         data: payload,
-        isAuth: true,
+        isAuthenticated: true,
         error: null
       });
     case FETCH_SIGN_IN_FAILURE:
       return Object.assign({}, state, {
         isFetching: false,
         isFetched: false,
-        isAuth: false,
+        isAuthenticated: false,
         error: error
       });
     default:
       return state
-
   }
 }
 
@@ -61,7 +61,7 @@ const stateSelector = state => state[moduleName];
 
 export const selectSignInStatus = createSelector(
   stateSelector,
-  signIn => signIn.isAuth
+  signIn => signIn.isAuthenticated
 );
 
 export const selectSignInError = createSelector(
@@ -96,10 +96,14 @@ function fetchSignInFailure(error) {
 /**
  * Sagas
  * */
-function* fetchSignInSaga({payload}) {
+function* fetchSignInSaga() {
   try {
-    //TODO add request to plugin
-    yield put(fetchSignInSuccess(payload));
+    yield call(GetWeb3);
+    const accounts = yield call(window.ethereum.enable);
+    const account = accounts[0];
+
+    yield put(fetchSignInSuccess(account));
+    yield call(history.push, { pathname: '/my-organizations' });
   } catch (error) {
     yield put(fetchSignInFailure(error));
   }

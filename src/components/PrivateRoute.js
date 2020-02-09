@@ -1,21 +1,25 @@
-import React from 'react';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Route, Redirect } from 'react-router';
+import { selectSignInStatus } from '../ducks/signIn';
 import DefaultRoute from './DefaultRoute';
 
-const PrivateRoute = ({ component: Component, ...rest }) => {
-  return (
-    <Route
-      {...rest}
-      render={props =>
-        props.isAuthenticated ? (
-          <DefaultRoute isAuthenticated={props.isAuthenticated} component={Component} {...props} />
-        ) : (
-          <Redirect to={{ pathname: '/authorization', state: { from: props.location } }} />
-        )
-      }
-    />
-  )
+class PrivateRoute extends Component {
+  render() {
+    if(!this.props.isAuthenticated) {
+      const renderComponent = () => <Redirect to={{ pathname: '/authorization'}}/>
+      return <Route {...this.props} component={renderComponent}/>
+    } else {
+      return <DefaultRoute {...this.props}/>
+    }
+  }
+}
+
+const mapStateToProps = state => {
+  return {
+    isAuthenticated: selectSignInStatus(state),
+  }
 };
 
-export default PrivateRoute;
+export default connect(mapStateToProps, null)(PrivateRoute);
 

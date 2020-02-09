@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { Container, Typography, Button, List } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-
+//Components
 import OrgsListItem from '../components/OrgsListItem';
-
+//Icons, images
 import EmptyListIllustration from '../assets/SvgComponents/empty-list-illustration.svg';
-
+//styles
 import colors from '../styles/colors';
 
 const styles = makeStyles({
+  rootContainer: {
+    paddingBottom: '40px'
+  },
   headingContainer: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -66,7 +69,7 @@ function Profile(props) {
   const { ownOrgs } = props;
 
   return (
-    <Container>
+    <Container className={classes.rootContainer}>
       <div className={classes.headingContainer}>
         <div className={classes.titleWrapper}>
           <Typography variant={'h2'} className={classes.title}>My organizations</Typography>

@@ -25,73 +25,73 @@ import Profile from './Profile';
 
 class RootRouter extends Component {
   render() {
-    const { isAuth } = this.props;
+    const { isAuthenticated } = this.props;
 
     return (
       <Router history={history}>
         <Switch>
           <DefaultRoute
-            isAuthenticated={isAuth}
+            isAuthenticated={isAuthenticated}
             exact path='/'
             component={Home}
           />
           <DefaultRoute
-            isAuthenticated={isAuth}
+            isAuthenticated={isAuthenticated}
             exact path='/directories'
             component={Directories}
           />
           <DefaultRoute
-            isAuthenticated={isAuth}
+            isAuthenticated={isAuthenticated}
             path='/directories/:directory'
             component={Directory}
           />
           <DefaultRoute
-            isAuthenticated={isAuth}
+            isAuthenticated={isAuthenticated}
             path='/search'
             component={Search}
           />
           <DefaultRoute
-            isAuthenticated={isAuth}
+            isAuthenticated={isAuthenticated}
             path='/organization/:orgId'
             component={Organization}
           />
           <DefaultRoute
-            isAuthenticated={isAuth}
+            isAuthenticated={isAuthenticated}
             path='/authorization'
             component={Authorization}
           />
           <DefaultRoute
-            isAuthenticated={isAuth}
+            isAuthenticated={isAuthenticated}
             path='/trust'
             component={Trust}
           />
           <DefaultRoute
-            isAuthenticated={isAuth}
+            isAuthenticated={isAuthenticated}
             path='/tos'
             component={TOS}
           />
           <DefaultRoute
-            isAuthenticated={isAuth}
+            isAuthenticated={isAuthenticated}
             path='/privacy-policy'
             component={PrivacyPolicy}
           />
           <DefaultRoute
-            isAuthenticated={isAuth}
+            isAuthenticated={isAuthenticated}
             path='/faq'
             component={FAQ}
           />
           <PrivateRoute
-            isAuthenticated={isAuth}
+            isAuthenticated={isAuthenticated}
             path='/my-organizations/wizard'
             component={Wizard}
           />
           <PrivateRoute
-            isAuthenticated={isAuth}
+            isAuthenticated={isAuthenticated}
             path='/my-organizations/:orgId'
             component={Organization}
           />
           <PrivateRoute
-            isAuthenticated={isAuth}
+            isAuthenticated={isAuthenticated}
             path='/my-organizations'
             component={Profile}
           />
@@ -108,7 +108,7 @@ class RootRouter extends Component {
 
 const mapStateToProps = state => {
   return {
-    isAuth: selectSignInStatus(state)
+    isAuthenticated: selectSignInStatus(state)
   }
 };
 

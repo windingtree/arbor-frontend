@@ -1,4 +1,8 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { useWeb3React } from '@web3-react/core';
+import { injected } from '../../web3/connectors';
+import { fetchSignInRequest } from '../../ducks/signIn';
 import { Container, Grid, Typography, Box, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
@@ -64,7 +68,7 @@ const styles = makeStyles({
   }
 });
 
-const SignIn = ({props}) => {
+const SignIn = (props) => {
   const classes = styles();
 
   return (
@@ -83,7 +87,7 @@ const SignIn = ({props}) => {
               <Typography variant={'subtitle2'} className={classes.subtitle}>Welcome back! Let’s get back to business. </Typography>
             </div>
             <div className={classes.buttonWrapper}>
-              <Button onClick={() => console.log('metamask')} className={classes.button}>
+              <Button onClick={props.fetchSignInRequest} className={classes.button}>
                 <Typography variant={'caption'} className={classes.buttonLabel}>Sign in</Typography>
               </Button>
             </div>
@@ -94,4 +98,8 @@ const SignIn = ({props}) => {
   )
 };
 
-export default SignIn;
+const mapDispatchToProps = {
+  fetchSignInRequest
+};
+
+export default connect(null, mapDispatchToProps)(SignIn);

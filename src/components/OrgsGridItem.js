@@ -176,6 +176,7 @@ export default function OrgsGridItem(props) {
     subs,
     entityName,
     entityTrustLevel,
+    error
   } = props;
 
   const bgColorsForTypes = {

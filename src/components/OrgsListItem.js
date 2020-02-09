@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import TrustLevelIcon from '../assets/SvgComponents/TrustLevelIcon';
 import ChevronCircleIcon from '../assets/SvgComponents/ChevronCircleIcon';
+import ImageErrorIcon from '../assets/SvgComponents/ImageErrorIcon';
 import CopyIdComponent from './CopyIdComponent';
 import CardsGridList from './CardsGridList';
 import OrgsGridItem from './OrgsGridItem';
@@ -33,6 +34,19 @@ const styles = makeStyles({
     borderRadius: '4px',
     background: colors.primary.black,
   },
+  itemImgError: {
+    width: '48px',
+    height: '48px',
+    borderRadius: '4px',
+    background: colors.primary.accent,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  itemImgErrorIcon: {
+    width: '22px',
+    height: '22px',
+  },
   itemInfo: {
     width: '80%',
     marginLeft: '12px'
@@ -41,8 +55,33 @@ const styles = makeStyles({
     fontSize: '18px',
     fontWeight: 500,
     lineHeight: 1.2,
-    color: colors.greyScale.darkest,
     marginBottom: '7px'
+  },
+  errorMessage: {
+    fontSize: '14px',
+    fontWeight: 500,
+    lineHeight: 1.2,
+    color: colors.greyScale.darkest
+  },
+  errorTimeToDeleting: {
+    fontSize: '12px',
+    fontWeight: 400,
+    lineHeight: 1.2,
+    color: colors.primary.accent
+  },
+  errorButton: {
+    position: 'relative',
+    top: '5px',
+    backgroundColor: colors.primary.accent,
+    borderRadius: '6px',
+    textTransform: 'none',
+  },
+  errorButtonLabel: {
+    fontSize: '12px',
+    fontWeight: 600,
+    lineHeight: 1.2,
+    color: colors.primary.white,
+    padding: '2px 12px'
   },
   icon: {
     width: '13px',
@@ -139,11 +178,14 @@ export default function OrgsListItem(props) {
     details,
     agents,
     isSubsOpen,
-    toggleSubsOpen
+    toggleSubsOpen,
+    error
   } = props;
 
   return (
-    <Card className={classes.item}>
+    <Card className={classes.item}
+          style={{ backgroundColor: error ? colors.secondary.error : colors.primary.white }}
+    >
       <CardContent style={{ padding: '20px' }}>
         <Link to={{
           pathname: `/my-organizations/${id}`,
@@ -172,35 +214,65 @@ export default function OrgsListItem(props) {
               {
                 img ? (
                   <CardMedia label={'Organization picture'} image={img.src} className={classes.itemImg}/>
+                ) : error ? (
+                  <div className={classes.itemImgError}>
+                    <ImageErrorIcon viewBow={'0 0 22 22'} className={classes.itemImgErrorIcon}/>
+                  </div>
                 ) : <div className={classes.itemImg}/>
               }
               <div className={classes.itemInfo}>
-                <Typography variant={'subtitle2'} className={classes.itemName} noWrap>{name}</Typography>
-                <CopyIdComponent id={id} leftElement={'ID: '}/>
-              </div>
-            </Grid>
-            <Grid item container alignItems={'flex-end'} justify={'space-between'} direction={'column'}>
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <Typography variant={'caption'} className={classes.label}>Trust level: </Typography>
-                <TrustLevelIcon
-                  viewBox={'0 0 16 16'}
-                  className={classes.icon}
-                />
-                <Typography variant={'caption'} className={classes.trustLevelValue}>{trustLevel}</Typography>
-              </div>
-              <div className={classes.addSubOrgButtonWrapper}>
-                <Button
-                  onClick={() => console.log('add org')}
-                  className={classes.addSubOrgButton}
+                <Typography
+                  variant={'subtitle2'}
+                  className={classes.itemName}
+                  style={{ color: error ? colors.primary.accent : colors.greyScale.darkest }}
+                  noWrap
                 >
-                  <Typography variant={'caption'} className={classes.buttonTitle} noWrap>+ Add organizational unit</Typography>
-                </Button>
+                  {name}
+                </Typography>
+                {
+                  error ? (
+                    <Typography variant={'subtitle2'} className={classes.errorMessage} noWrap>{error.message}</Typography>
+                  ) : (
+                    <CopyIdComponent id={id} leftElement={'ID: '}/>
+                  )
+                }
               </div>
             </Grid>
+            {
+              error ? (
+                <Grid item container alignItems={'flex-end'} justify={'space-between'} direction={'column'}>
+                  <Typography variant={'caption'} className={classes.errorTimeToDeleting}>
+                    Will be deleted in {error.time}
+                  </Typography>
+                  <Button onClick={() => 'try again'} className={classes.errorButton}>
+                    <Typography variant={'caption'} className={classes.errorButtonLabel}>Try again</Typography>
+                  </Button>
+                </Grid>
+              ) : (
+                <Grid item container alignItems={'flex-end'} justify={'space-between'} direction={'column'}>
+                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <Typography variant={'caption'} className={classes.label}>Trust level: </Typography>
+                    <TrustLevelIcon
+                      viewBox={'0 0 16 16'}
+                      className={classes.icon}
+                    />
+                    <Typography variant={'caption'} className={classes.trustLevelValue}>{trustLevel}</Typography>
+                  </div>
+                  <div className={classes.addSubOrgButtonWrapper}>
+                    <Button
+                      onClick={() => console.log('add org')}
+                      className={classes.addSubOrgButton}
+                    >
+                      <Typography variant={'caption'} className={classes.buttonTitle} noWrap>+ Add organizational unit</Typography>
+                    </Button>
+                  </div>
+                </Grid>
+              )
+            }
           </Grid>
         </Link>
         {
-          subs.length !== 0 ? (
+          !error ? subs.length !== 0 ? (
             <div>
               <div className={classes.subOrgsContainer}>
                 <Typography variant={'inherit'} className={classes.subOrgsLabel}>
@@ -244,7 +316,7 @@ export default function OrgsListItem(props) {
                 </div>
               </Collapse>
             </div>
-          ) : null
+          ) : null : null
         }
       </CardContent>
     </Card>
@@ -323,5 +395,9 @@ OrgsListItem.defaultProps = {
     },
   ],
   isSub: false,
-
+  error: false
+  // error: {
+  //   time: '2h: 20m: 5s',
+  //   message: 'Something went wrong and organisation was not created. We saved all you info and you can try again'
+  // }
 };

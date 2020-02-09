@@ -10,7 +10,8 @@ export default {
     cyan: '#419D9A',
     green: '#98CCB0',
     pink: '#FB719A',
-    peach: '#F0806E'
+    peach: '#F0806E',
+    error: '#FDE9E5'
   },
   greyScale: {
     darkest: '#42424F',

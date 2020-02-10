@@ -35,15 +35,17 @@ const styles = makeStyles({
     background: colors.primary.black,
   },
   itemImgError: {
+    position: 'relative',
     width: '48px',
     height: '48px',
     borderRadius: '4px',
     background: colors.primary.accent,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
   },
   itemImgErrorIcon: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
     width: '22px',
     height: '22px',
   },
@@ -63,7 +65,7 @@ const styles = makeStyles({
     lineHeight: 1.2,
     color: colors.greyScale.darkest
   },
-  errorTimeToDeleting: {
+  errorExpiresAt: {
     fontSize: '12px',
     fontWeight: 400,
     lineHeight: 1.2,
@@ -72,7 +74,8 @@ const styles = makeStyles({
   errorButton: {
     position: 'relative',
     top: '5px',
-    backgroundColor: colors.primary.accent,
+    backgroundImage: colors.gradients.orange,
+    border: `1px solid ${colors.primary.accent}`,
     borderRadius: '6px',
     textTransform: 'none',
   },
@@ -187,40 +190,63 @@ export default function OrgsListItem(props) {
           style={{ backgroundColor: error ? colors.secondary.error : colors.primary.white }}
     >
       <CardContent style={{ padding: '20px' }}>
-        <Link to={{
-          pathname: `/my-organizations/${id}`,
-          state: {
-            id: id,
-            img: img,
-            isSub: isSub,
-            name: name,
-            trustLevel: trustLevel,
-            social: social,
-            verified: verified,
-            address: address,
-            subs: subs,
-            details: details,
-            agents: agents,
-            stage: stage,
-            tel: tel,
-            web: web,
-            email: email,
-            entityName: entityName,
-            entityTrustLevel: entityTrustLevel
-          }
-        }} className={classes.linkToProfileView}>
-          <Grid container justify="space-between" alignItems='flex-start' wrap='nowrap'>
-            <Grid item container wrap='nowrap' style={{ width: '85%' }}>
+        <Grid container justify="space-between" alignItems='flex-start' wrap='nowrap'>
+          <Grid item container wrap='nowrap' style={{ width: '85%' }}>
+            <Link to={{
+              pathname: `/my-organizations/${id}`,
+              state: {
+                id: id,
+                img: img,
+                isSub: isSub,
+                name: name,
+                trustLevel: trustLevel,
+                social: social,
+                verified: verified,
+                address: address,
+                subs: subs,
+                details: details,
+                agents: agents,
+                stage: stage,
+                tel: tel,
+                web: web,
+                email: email,
+                entityName: entityName,
+                entityTrustLevel: entityTrustLevel
+              }
+            }} className={classes.linkToProfileView}>
               {
                 img ? (
                   <CardMedia label={'Organization picture'} image={img.src} className={classes.itemImg}/>
                 ) : error ? (
                   <div className={classes.itemImgError}>
-                    <ImageErrorIcon viewBow={'0 0 22 22'} className={classes.itemImgErrorIcon}/>
+                    <ImageErrorIcon viewbow={'0 0 22 22'} className={classes.itemImgErrorIcon}/>
                   </div>
                 ) : <div className={classes.itemImg}/>
               }
-              <div className={classes.itemInfo}>
+            </Link>
+            <div className={classes.itemInfo}>
+              <Link to={{
+                pathname: `/my-organizations/${id}`,
+                state: {
+                  id: id,
+                  img: img,
+                  isSub: isSub,
+                  name: name,
+                  trustLevel: trustLevel,
+                  social: social,
+                  verified: verified,
+                  address: address,
+                  subs: subs,
+                  details: details,
+                  agents: agents,
+                  stage: stage,
+                  tel: tel,
+                  web: web,
+                  email: email,
+                  entityName: entityName,
+                  entityTrustLevel: entityTrustLevel
+                }
+              }} className={classes.linkToProfileView}>
                 <Typography
                   variant={'subtitle2'}
                   className={classes.itemName}
@@ -229,48 +255,48 @@ export default function OrgsListItem(props) {
                 >
                   {name}
                 </Typography>
-                {
-                  error ? (
-                    <Typography variant={'subtitle2'} className={classes.errorMessage} noWrap>{error.message}</Typography>
-                  ) : (
-                    <CopyIdComponent id={id} leftElement={'ID: '}/>
-                  )
-                }
-              </div>
-            </Grid>
-            {
-              error ? (
-                <Grid item container alignItems={'flex-end'} justify={'space-between'} direction={'column'}>
-                  <Typography variant={'caption'} className={classes.errorTimeToDeleting}>
-                    Will be deleted in {error.time}
-                  </Typography>
-                  <Button onClick={() => 'try again'} className={classes.errorButton}>
-                    <Typography variant={'caption'} className={classes.errorButtonLabel}>Try again</Typography>
-                  </Button>
-                </Grid>
-              ) : (
-                <Grid item container alignItems={'flex-end'} justify={'space-between'} direction={'column'}>
-                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <Typography variant={'caption'} className={classes.label}>Trust level: </Typography>
-                    <TrustLevelIcon
-                      viewBox={'0 0 16 16'}
-                      className={classes.icon}
-                    />
-                    <Typography variant={'caption'} className={classes.trustLevelValue}>{trustLevel}</Typography>
-                  </div>
-                  <div className={classes.addSubOrgButtonWrapper}>
-                    <Button
-                      onClick={() => console.log('add org')}
-                      className={classes.addSubOrgButton}
-                    >
-                      <Typography variant={'caption'} className={classes.buttonTitle} noWrap>+ Add organizational unit</Typography>
-                    </Button>
-                  </div>
-                </Grid>
-              )
-            }
+              </Link>
+              {
+                error ? (
+                  <Typography variant={'subtitle2'} className={classes.errorMessage} noWrap>{error.message}</Typography>
+                ) : (
+                  <CopyIdComponent id={id} leftElement={'ID: '} style={{ zIndex: 100 }}/>
+                )
+              }
+            </div>
           </Grid>
-        </Link>
+          {
+            error ? (
+              <Grid item container alignItems={'flex-end'} justify={'space-between'} direction={'column'}>
+                <Typography variant={'caption'} className={classes.errorExpiresAt}>
+                  Will be deleted in {error.expiresAt}
+                </Typography>
+                <Button onClick={() => 'try again'} className={classes.errorButton}>
+                  <Typography variant={'caption'} className={classes.errorButtonLabel}>Try again</Typography>
+                </Button>
+              </Grid>
+            ) : (
+              <Grid item container alignItems={'flex-end'} justify={'space-between'} direction={'column'}>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <Typography variant={'caption'} className={classes.label}>Trust level: </Typography>
+                  <TrustLevelIcon
+                    viewBox={'0 0 16 16'}
+                    className={classes.icon}
+                  />
+                  <Typography variant={'caption'} className={classes.trustLevelValue}>{trustLevel}</Typography>
+                </div>
+                <div className={classes.addSubOrgButtonWrapper}>
+                  <Button
+                    onClick={() => console.log('add org')}
+                    className={classes.addSubOrgButton}
+                  >
+                    <Typography variant={'caption'} className={classes.buttonTitle} noWrap>+ Add organizational unit</Typography>
+                  </Button>
+                </div>
+              </Grid>
+            )
+          }
+        </Grid>
         {
           !error ? subs.length !== 0 ? (
             <div>
@@ -397,7 +423,7 @@ OrgsListItem.defaultProps = {
   isSub: false,
   error: false
   // error: {
-  //   time: '2h: 20m: 5s',
+  //   expiresAt: '2h: 20m: 5s',
   //   message: 'Something went wrong and organisation was not created. We saved all you info and you can try again'
   // }
 };

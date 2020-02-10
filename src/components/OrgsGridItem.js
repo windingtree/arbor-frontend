@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import {Box, Card, CardContent, CardMedia, Grid, Typography} from '@material-ui/core';
+import {Box, Card, CardContent, CardMedia, Button, Grid, Typography} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Ellipsis from 'react-dotdotdot';
 
@@ -10,6 +10,7 @@ import CopyIdComponent from './CopyIdComponent';
 import DefaultImage from '../assets/images/default-image.jpg';
 import TrustLevelIcon from '../assets/SvgComponents/TrustLevelIcon';
 import EntityTrustLevelIcon from '../assets/SvgComponents/EntityTrustLevelIcon';
+import ImageErrorIcon from '../assets/SvgComponents/ImageErrorIcon';
 
 import colors from '../styles/colors';
 
@@ -41,6 +42,22 @@ const styles = makeStyles({
     borderRadius: '4px',
     overflow: 'hidden',
   },
+  itemErrorImage: {
+    position: 'relative',
+    width: '100%',
+    height: '100px',
+    borderRadius: '4px',
+    overflow: 'hidden',
+    backgroundColor: colors.primary.accent
+  },
+  itemImgErrorIcon: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '37px',
+    height: '37px',
+  },
   itemMarksWrapper: {
     position: 'relative',
     width: '100%',
@@ -69,7 +86,7 @@ const styles = makeStyles({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '8px 0',
+    paddingTop: '8px',
   },
   trustLevelInfo: {
     position: 'relative',
@@ -95,7 +112,14 @@ const styles = makeStyles({
     lineHeight: 1.2,
     height: '38px',
     overflow: 'hidden',
+    paddingTop: '8px'
+  },
+  errorMessageWrapper: {
+    fontSize: '14px',
+    fontWeight: 500,
+    lineHeight: 1.2,
     color: colors.greyScale.darkest,
+    paddingTop: '5px',
   },
   legalEntityInfo: {
     position: 'absolute',
@@ -160,7 +184,35 @@ const styles = makeStyles({
     position: 'absolute',
     bottom: 0,
     right: 0
-  }
+  },
+  errorInfoWrapper: {
+    position: 'relative',
+    top: '10px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '0 12px 12px 12px'
+  },
+  errorExpiresAt: {
+    fontSize: '12px',
+    fontWeight: 400,
+    lineHeight: 1.2,
+    color: colors.primary.accent
+  },
+  errorButton: {
+    position: 'relative',
+    backgroundImage: colors.gradients.orange,
+    border: `1px solid ${colors.primary.accent}`,
+    borderRadius: '6px',
+    textTransform: 'none',
+  },
+  errorButtonLabel: {
+    fontSize: '12px',
+    fontWeight: 600,
+    lineHeight: 1.2,
+    color: colors.primary.white,
+    padding: '2px 4px',
+  },
 });
 
 export default function OrgsGridItem(props) {
@@ -187,108 +239,161 @@ export default function OrgsGridItem(props) {
   };
 
   return (
-    <Card className={isSub ? [classes.item, classes.itemSubOrg].join(' ') : classes.item}>
-      <Link to={{
-        pathname: `/organization/${id}`,
-        state: {
-          id: id,
-          img: img,
-          isSub: isSub,
-          name: name,
-          trustLevel: trustLevel,
-          type: type,
-          address: address,
-          subs: subs,
-          entityName: entityName,
-          entityTrustLevel: entityTrustLevel
-        }
-      }} className={classes.linkToProfileView}
-      >
-        <CardContent style={{ padding: '12px' }}>
-          {
-            img ? <CardMedia image={img.src} className={classes.itemImg}/> : <CardMedia label={'Organization picture'} image={DefaultImage} className={classes.itemImg}/>
+    <Card className={isSub ? [classes.item, classes.itemSubOrg].join(' ') : classes.item} style={{ backgroundColor: error ? colors.secondary.error : colors.primary.white }}>
+      <CardContent style={{ padding: '12px' }}>
+        <Link to={{
+          pathname: `/organization/${id}`,
+          state: {
+            id: id,
+            img: img,
+            isSub: isSub,
+            name: name,
+            trustLevel: trustLevel,
+            type: type,
+            address: address,
+            subs: subs,
+            entityName: entityName,
+            entityTrustLevel: entityTrustLevel
           }
+        }} className={classes.linkToProfileView}
+        >
           {
-            isSub && (
-              <div className={classes.itemMarksWrapper}>
-                <Typography variant={'subtitle2'} className={classes.itemMark}>Org Unit</Typography>
-                {
-                  type && (
-                    <Typography variant={'subtitle2'} className={classes.itemMark} style={{ backgroundColor: bgColorsForTypes[type] }}>
-                      {type}
-                    </Typography>
-                  )
-                }
+            img ? (
+              <CardMedia image={img.src} className={classes.itemImg}/>
+            ) : error ? (
+              <div className={classes.itemErrorImage}>
+                <ImageErrorIcon viewbow={'0 0 22 22'} className={classes.itemImgErrorIcon}/>
               </div>
+            ) : (
+              <CardMedia label={'Organization picture'} image={DefaultImage} className={classes.itemImg}/>
             )
           }
-          <div className={classes.idInfoWrapper}>
-            <CopyIdComponent id={id} leftElement={'ID: '}/>
-            <div className={classes.trustLevelInfo}>
-              <TrustLevelIcon viewBox={'0 0 16 16'} className={classes.icon}/>
-              <Typography variant={'subtitle2'} className={classes.trustLevelValue}>
-                {trustLevel}
-              </Typography>
+        </Link>
+        {
+          !error ? isSub ? (
+            <div className={classes.itemMarksWrapper}>
+              <Typography variant={'subtitle2'} className={classes.itemMark}>Org Unit</Typography>
+              {
+                type && (
+                  <Typography variant={'subtitle2'} className={classes.itemMark} style={{ backgroundColor: bgColorsForTypes[type] }}>
+                    {type}
+                  </Typography>
+                )
+              }
             </div>
-          </div>
-          <div className={classes.itemNameWrapper}>
+          ) : null : null
+        }
+        {
+          !error ? (
+            <div className={classes.idInfoWrapper}>
+              <CopyIdComponent id={id} leftElement={'ID: '}/>
+              <div className={classes.trustLevelInfo}>
+                <TrustLevelIcon viewBox={'0 0 16 16'} className={classes.icon}/>
+                <Typography variant={'subtitle2'} className={classes.trustLevelValue}>
+                  {trustLevel}
+                </Typography>
+              </div>
+            </div>
+          ) : null
+        }
+        <Link to={{
+          pathname: `/organization/${id}`,
+          state: {
+            id: id,
+            img: img,
+            isSub: isSub,
+            name: name,
+            trustLevel: trustLevel,
+            type: type,
+            address: address,
+            subs: subs,
+            entityName: entityName,
+            entityTrustLevel: entityTrustLevel
+          }
+        }} className={classes.linkToProfileView}
+        >
+          <div className={classes.itemNameWrapper} style={{ color: error ? colors.primary.accent : colors.greyScale.darkest }}>
             <Ellipsis clamp={2}>
               {name}
             </Ellipsis>
           </div>
-        </CardContent>
+        </Link>
         {
-          isSub ? (
-            <Box className={classes.legalEntityInfo}>
-              <div className={classes.entityTitleWrapper}>
-                <Typography variant={'subtitle2'} className={classes.entityTitle} noWrap>
-                  Legal entity: <Typography variant={'caption'}>{entityName}</Typography>
-                </Typography>
-              </div>
-              <div className={classes.entityInfoItem}>
-                <EntityTrustLevelIcon viewBox={'0 0 12 12'} className={classes.entityIcon}/>
-                <Typography variant={'subtitle2'} className={classes.entityTrustLevel}>
-                  {entityTrustLevel}
-                </Typography>
-              </div>
-            </Box>
-          ) : (
-            subs.length !== 0
-          ) ? (
-            <div className={classes.entitySubOrgsWrapper}>
-              <Typography variant={'subtitle2'} className={classes.entityTitle}>Include {subs.length} SubOrgs:</Typography>
-              <Grid container spacing={1} justify="flex-start" alignItems="center" className={classes.entitySubOrgsList}>
-                {
-                  subs.map((item, index) => {
-                    let arrayOfColors = [ colors.primary.black, colors.primary.accent, colors.secondary.yellow ];
-                    const bgColor = (index) => {
-                      if(+index === 0) {
-                        return arrayOfColors[0]
-                      } else if((+index + 1) % 3 === 0) {
-                        return arrayOfColors[2]
-                      } else if((+index + 2) % 3 === 0) {
-                        return arrayOfColors[1]
-                      } else {
-                        return arrayOfColors[0]
-                      }
-                    };
-                    return (
-                      <Grid item key={index.toString()}>
-                        <div className={classes.entitySubOrgItem} style={{ backgroundColor: bgColor(index) }}/>
-                      </Grid>
-                    )
-                  })
-                }
-                <div className={classes.entitySubOrgOverflowOpacity}/>
-              </Grid>
+          error ? (
+            <div className={classes.errorMessageWrapper}>
+              <Ellipsis clamp={3}>
+                {error.message}
+              </Ellipsis>
             </div>
-          ) : (
-            <CardContent className={classes.entitySubOrgsWrapper} style={{ marginBottom: '40px', }}>
-              <Typography variant={'subtitle2'} className={classes.entityTitle}>Does not include SubOrg</Typography>
-            </CardContent>
-          )
+          ) : null
         }
-      </Link>
+      </CardContent>
+      {
+        !error ? isSub ? (
+          <Box className={classes.legalEntityInfo}>
+            <div className={classes.entityTitleWrapper}>
+              <Typography variant={'subtitle2'} className={classes.entityTitle} noWrap>
+                Legal entity: <Typography variant={'caption'}>{entityName}</Typography>
+              </Typography>
+            </div>
+            <div className={classes.entityInfoItem}>
+              <EntityTrustLevelIcon viewBox={'0 0 12 12'} className={classes.entityIcon}/>
+              <Typography variant={'subtitle2'} className={classes.entityTrustLevel}>
+                {entityTrustLevel}
+              </Typography>
+            </div>
+          </Box>
+        ) : (
+          subs.length !== 0
+        ) ? (
+          <div className={classes.entitySubOrgsWrapper}>
+            <Typography variant={'subtitle2'} className={classes.entityTitle}>Include {subs.length} SubOrgs:</Typography>
+            <Grid container spacing={1} justify="flex-start" alignItems="center" className={classes.entitySubOrgsList}>
+              {
+                subs.map((item, index) => {
+                  let arrayOfColors = [ colors.primary.black, colors.primary.accent, colors.secondary.yellow ];
+                  const bgColor = (index) => {
+                    if(+index === 0) {
+                      return arrayOfColors[0]
+                    } else if((+index + 1) % 3 === 0) {
+                      return arrayOfColors[2]
+                    } else if((+index + 2) % 3 === 0) {
+                      return arrayOfColors[1]
+                    } else {
+                      return arrayOfColors[0]
+                    }
+                  };
+                  return (
+                    <Grid item key={index.toString()}>
+                      <div className={classes.entitySubOrgItem} style={{ backgroundColor: bgColor(index) }}/>
+                    </Grid>
+                  )
+                })
+              }
+              <div className={classes.entitySubOrgOverflowOpacity}/>
+            </Grid>
+          </div>
+        ) : (
+          <CardContent className={classes.entitySubOrgsWrapper} style={{ marginBottom: '40px', }}>
+            <Typography variant={'subtitle2'} className={classes.entityTitle}>Does not include SubOrg</Typography>
+          </CardContent>
+        ) : null
+      }
+      {
+        error ? (
+          <div className={classes.errorInfoWrapper}>
+            <div>
+              <Typography variant={'subtitle2'} className={classes.errorExpiresAt}>
+                Will be deleted in
+                <div>{error.expiresAt}</div>
+              </Typography>
+            </div>
+            <Button className={classes.errorButton}>
+              <Typography variant={'caption'} className={classes.errorButtonLabel}>Try again</Typography>
+            </Button>
+          </div>
+        ) : null
+      }
     </Card>
   )
 }
@@ -308,7 +413,7 @@ OrgsGridItem.propTypes = {
 
 OrgsGridItem.defaultProps = {
   img: null,
-  isSub: false,
+  isSub: true,
   type: 'Travel Agency',
   address: '18 avenue de Suffren Entrée au 22 rue Jean Rey\n' +
     'Paris, France ',
@@ -316,5 +421,10 @@ OrgsGridItem.defaultProps = {
   name: 'Default Organization with extremely long long long long name',
   subs: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, ],
   entityName: 'Default Corporation',
-  entityTrustLevel: '5'
+  entityTrustLevel: '5',
+  error: false
+  // error: {
+  //   expiresAt: '2h : 20m : 05s',
+  //   message: 'Something went wrong and suborganisation was not created. We saved all you info for 2 hours',
+  // }
 };

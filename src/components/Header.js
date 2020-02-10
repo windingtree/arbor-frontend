@@ -12,6 +12,8 @@ import colors from '../styles/colors';
 
 const styles = makeStyles({
   header: {
+    backgroundColor: colors.primary.white,
+    zIndex: 100,
     borderBottom: `1px solid ${colors.greyScale.lightest}`
   },
   logo: {
@@ -29,7 +31,8 @@ const styles = makeStyles({
   },
   searchIcon: {
     fontSize: 'initial',
-    marginLeft: '10px'
+    marginLeft: '10px',
+    color: colors.primary.black
   },
   navLink: {
     textDecoration: 'none',

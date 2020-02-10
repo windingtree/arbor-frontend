@@ -13,6 +13,7 @@
     "@testing-library/user-event": "^7.1.2",
     "@web3-react/core": "^6.0.2",
     "@web3-react/injected-connector": "^6.0.3",
+    "formik": "^2.1.4",
     "history": "^4.10.1",
     "node-sass": "^4.13.1",
     "prop-types": "^15.7.2",

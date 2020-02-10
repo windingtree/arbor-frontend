@@ -56,9 +56,11 @@ const styles = makeStyles({
 export default function Organization(props) {
   const [isOpen, toggleOpen] = useState(false);
   const classes = styles();
+
   const {
-    prevDirectoryName = 'hotels'
-  } = props;
+    id,
+    prevDirectory
+  } = history.location.state;
 
   return (
       <div>
@@ -70,15 +72,13 @@ export default function Organization(props) {
                   <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
                   Back to all organizations
                   {
-                    history.location.pathname === '/directories' ? (
-                      <span>in {prevDirectoryName}</span>
-                    ) : null
+                    prevDirectory && <span>in {prevDirectory}</span>
                   }
                 </Typography>
               </Button>
             </div>
             {
-              history.location.pathname === '/organization' ? (
+              history.location.pathname !== `/organization/${id}` ? (
                 <div>
                   <Button onClick={() => null}>
                     <Typography variant={'caption'} className={classes.buttonLabel}>

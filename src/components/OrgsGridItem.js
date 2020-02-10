@@ -180,10 +180,10 @@ export default function OrgsGridItem(props) {
   } = props;
 
   const bgColorsForTypes = {
-    'Hotel': colors.primary.accent,
+    'Hotel': colors.secondary.green,
     'Airline': colors.secondary.yellow,
     'Travel Agency': colors.secondary.pink,
-    'Insurance': colors.greyScale.common,
+    'Insurance': colors.secondary.intenseGreen,
   };
 
   return (

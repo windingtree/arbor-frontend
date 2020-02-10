@@ -114,7 +114,6 @@ const styles = makeStyles({
     height: '200px',
     overflow: 'hidden',
     borderRadius: '4px',
-    marginRight: '56px'
   },
   orgImage: {
     position: 'absolute',
@@ -431,7 +430,7 @@ export default function OrgProfileView(props) {
     entityTrustLevel,
   } = history.location.state;
 
-  const ownOrganization = history.location.pathname === '/my-organizations/:orgId';
+  const ownOrganization = history.location.pathname === `/my-organizations/${id}`;
 
   return (
     <div>
@@ -464,7 +463,7 @@ export default function OrgProfileView(props) {
           )
         }
         <Grid container className={classes.orgMainInfoWrapper} wrap={'nowrap'}>
-          <Grid item>
+          <Grid item style={{ width: '44%' }}>
             <div className={classes.orgImageWrapper}>
               {
                 img ? (
@@ -475,7 +474,7 @@ export default function OrgProfileView(props) {
               }
             </div>
           </Grid>
-          <Grid item>
+          <Grid item style={{ width: '56%' }}>
             <div className={classes.idInfoContainer}>
               <CopyIdComponent id={id} leftElement={'Org ID: '} fontWeight={500}/>
               {

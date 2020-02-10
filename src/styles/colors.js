@@ -8,8 +8,9 @@ export default {
     yellow: '#FFB36B',
     yellowLight: '#FBF3E9',
     cyan: '#419D9A',
+    intenseGreen: '#3E9693',
     green: '#98CCB0',
-    pink: '#FB719A',
+    pink: '#D67499',
     peach: '#F0806E',
     error: '#FDE9E5'
   },

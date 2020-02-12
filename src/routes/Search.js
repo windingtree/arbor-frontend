@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Button, Container, Grid, TextField, InputAdornment, Typography } from '@material-ui/core';
+import { Container, Grid, Typography } from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 //actions
-import {fetchAllOrganizations} from '../ducks/fetchOrganizations';
-//Components and illustrations
-import SearchIcon from '../assets/SvgComponents/SearchIcon';
+import {fetchSearchOrganizations} from '../ducks/fetchOrganizations';
+//components
 import CardsGridList from '../components/CardsGridList';
 import OrgsGridItem from '../components/OrgsGridItem';
+import SearchComponent from '../components/SearchComponent';
+import Pagination from '../components/Pagination';
+//icons and illustrations
 import SearchIllustration from '../assets/SvgComponents/search-illustration.svg';
 import SearchNoResultsIllustration from '../assets/SvgComponents/search-no-result-illustration.svg';
 //styles
@@ -26,7 +28,8 @@ const styles = makeStyles({
   },
   searchHeader: {
     position: 'relative',
-    padding: '60px 0'
+    paddingTop: '60px',
+    paddingBottom: '60px',
   },
   searchTitle: {
     fontSize: '24px',
@@ -39,40 +42,6 @@ const styles = makeStyles({
     width: '70%',
     marginTop: '28px'
   },
-  searchInputWrapper: {
-    width: '70%',
-  },
-  searchInput: {
-    position: 'relative',
-    backgroundColor: colors.primary.white,
-    borderRadius: '8px 8px 0 0',
-    boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)'
-  },
-  searchInputIcon: {
-    width: '14px',
-    height: '14px',
-    color: colors.greyScale.common,
-    transition: 'color .2s cubic-bezier(0.0, 0, 0.2, 1) 0ms'
-  },
-  searchButtonWrapper: {
-    position: 'absolute',
-    bottom: '0',
-    right: '0',
-    zIndex: 2
-  },
-  searchButton: {
-    backgroundImage: colors.gradients.green,
-    border: `1px solid ${colors.secondary.cyan}`,
-    borderRadius: '8px',
-    textTransform: 'none',
-    padding: '14px 26px'
-  },
-  searchButtonLabel: {
-    fontSize: '16px',
-    fontWeight: 600,
-    lineHeight: 1.24,
-    color: colors.primary.white
-  },
   illustrationWrapper: {
     position: 'absolute',
     bottom: '-40px',
@@ -80,81 +49,135 @@ const styles = makeStyles({
   },
   gridListWrapper: {
     paddingTop: '40px'
-  }
+  },
+  paginationInfoContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    margin: '40px 0'
+  },
+  totalSearchResultsTitle: {
+    fontSize: '14px',
+    fontWeight: 400,
+    lineHeight: 1.42,
+    color: colors.greyScale.dark
+  },
+  paginationWrapper: {
+    marginRight: '60px',
+  },
 });
 
 function Search(props) {
   const classes = styles();
   const [searchValue, setSearchValue] = useState('');
-  const { organizations: { data, isFetched }, searchResults }  = props;
+  const [pageIndex, setPageIndex] = useState(0);
+  const [offset, setOffset] = useState(0);
+  const { searchResults: { data, pageCount, isFetched } }  = props;
 
   const handleSearch = event => {
     setSearchValue(event.target.value);
   };
 
   const searchTitle = () => {
-    if(!isFetched && searchResults.length === 0 || searchValue === '') {
+    if(!isFetched && data.length === 0 || searchValue === '') {
       return 'Search for ORG.ID'
-    } else if(isFetched && searchResults.length === 0) {
+    } else if(isFetched && data.length === 0) {
       return `Sorry, can’t find anything for "${searchValue}"`
     } else {
-      return `${searchResults.length} search results for "${searchValue}"`
+      return `${data.length} search results for "${searchValue}"`
     }
+  };
+
+  //TODO rewrite THIS. Expect to fetch each chunk from server on pageChange
+  let paginatedSearchResults = [];
+  let arr = [];
+  let arr2 = [];
+  let arr3 = [];
+  let arr4 = [];
+  let arr5 = [];
+  data.map(( item, index ) => {
+    if ( index < 12 ) {
+      arr.push(item);
+    }
+    if ( 12 <= index && index <= 23 ) {
+      arr2.push(item);
+    }
+    if ( 24 <= index && index <= 35) {
+      arr3.push(item);
+    }
+    if ( 36 <= index && index <= 47) {
+      arr4.push(item);
+    }
+    if ( 48 <= index) {
+      arr5.push(item);
+    }
+  });
+  paginatedSearchResults.push(arr, arr2, arr3, arr4, arr5);
+
+  const CardsList = () => {
+    let OrgCards = paginatedSearchResults[pageIndex].map((item, index) => {
+      return (
+        <Grid item key={index.toString()} style={{ width: '264px' }}>
+          <OrgsGridItem
+            id={item.orgid}
+          />
+        </Grid>
+      )
+    });
+
+    return (
+      <CardsGridList spacing={4} justify="flex-start" alignItems="flex-start">{OrgCards}</CardsGridList>
+    )
+  };
+
+  const handlePageClick = data => {
+    let selected = data.selected;
+
+    setPageIndex(selected);
+
+    // useEffect(() => {
+    //   setOffset(Math.ceil(selected * 12));
+    //   props.fetchNextPage(offset);
+    // });
   };
 
   return (
     <div>
-      <div className={isFetched && searchResults.length === 0 ? [classes.searchHeaderWrapper, classes.searchHeaderWrapperNoResults].join(' ') : classes.searchHeaderWrapper}>
+      <div className={isFetched && paginatedSearchResults.length === 0 ? [classes.searchHeaderWrapper, classes.searchHeaderWrapperNoResults].join(' ') : classes.searchHeaderWrapper}>
         <Container className={classes.searchHeader}>
           <div>
             <Typography variant={'h2'} className={classes.searchTitle}>
               {searchTitle()}
             </Typography>
             <div className={classes.searchForm}>
-              <div className={classes.searchInputWrapper}>
-                <TextField
-                  id={'search-input'}
-                  className={classes.searchInput}
-                  placeholder={`Search by organization name or ORG.ID`}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position={'start'}>
-                        <SearchIcon className={classes.searchInputIcon} viewBox={'0 0 14 14'}/>
-                      </InputAdornment>
-                    )
-                  }}
-                  fullWidth
-                  value={searchValue}
-                  onChange={handleSearch}
-                />
-              </div>
-              <div className={classes.searchButtonWrapper}>
-                <Button onClick={props.fetchAllOrganizations} className={classes.searchButton}>
-                  <Typography variant={'inherit'} className={classes.searchButtonLabel} noWrap>Find organization</Typography>
-                </Button>
-              </div>
+              <SearchComponent searchValue={searchValue} handleSearchValue={handleSearch} fetchSearchResult={props.fetchSearchOrganizations}/>
             </div>
           </div>
           <div className={classes.illustrationWrapper}>
-            <img src={isFetched && searchResults.length === 0 ? SearchNoResultsIllustration : SearchIllustration} alt={'illustration'}/>
+            <img src={isFetched && paginatedSearchResults.length === 0 ? SearchNoResultsIllustration : SearchIllustration} alt={'illustration'}/>
           </div>
         </Container>
       </div>
       {
-        isFetched ? searchResults.length !== 0 ? (
+        isFetched ? data.length !== 0 ? (
           <Container>
             <div className={classes.gridListWrapper}>
-              <CardsGridList spacing={2} justify="flex-start" alignItems="flex-start">
-                {
-                  data.map((item, index) => (
-                    <Grid item key={index.toString()} style={{ width: '264px' }}>
-                      <OrgsGridItem
-                        id={item.orgid}
+              <CardsList />
+              {
+                pageCount > 1 ? (
+                  <div className={classes.paginationInfoContainer}>
+                    <div>
+                      <Typography variant={'caption'} className={classes.totalSearchResultsTitle}>Search results: {data.length}</Typography>
+                    </div>
+                    <div className={classes.paginationWrapper}>
+                      <Pagination
+                        pageCount={pageCount}
+                        onPageChange={handlePageClick}
                       />
-                    </Grid>
-                  ))
-                }
-              </CardsGridList>
+                    </div>
+                  </div>
+                ) : null
+              }
             </div>
           </Container>
         ) : null: null
@@ -164,18 +187,17 @@ function Search(props) {
 }
 
 Search.defaultProps = {
-  searchResults: []
+  results: []
 };
 
 const mapStateToProps = state => {
   return {
-    organizations: state.organizations
+    searchResults: state.searchResults
   }
 };
 
 const mapDispatchToProps = {
-  fetchAllOrganizations
+  fetchSearchOrganizations
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Search);
-

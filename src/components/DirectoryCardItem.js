@@ -11,7 +11,18 @@ const styles = makeStyles({
     width: '100%',
     height: '168px',
     borderRadius: '6px',
-    boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)'
+    transition: 'background-color .3s ease, box-shadow .3s ease'
+  },
+  itemHome: {
+    height: '100px',
+    backgroundColor: 'transparent',
+    boxShadow: 'none',
+    '&:hover': {
+      boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
+      '& .MuiButton-root:hover': {
+        backgroundColor: colors.primary.white,
+      }
+    }
   },
   cardButton: {
     position: 'relative',
@@ -22,13 +33,23 @@ const styles = makeStyles({
     height: '100%',
     padding: '14px',
   },
+  homeCardContent: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   directoryTitle: {
     fontWeight: 500,
     fontSize: '16px',
     lineHeight: 1.45,
     color: colors.greyScale.dark,
     textTransform: 'capitalize',
-    marginTop: '10px'
+    marginTop: '10px',
+    whiteSpace: 'nowrap'
+  },
+  homeDirectoryTitle: {
+    marginTop: 0,
+    marginLeft: '10px'
   },
   directoryImageWrapper: {
     position: 'relative',
@@ -45,14 +66,14 @@ const styles = makeStyles({
 
 export default function DirectoryCard(props) {
   const classes = styles();
-  const { directoryName, directoryImage } = props;
+  const { directoryName, directoryImage, homeLayout = false } = props;
 
   const directoryTitle = str => str.split('-').join(' ');
 
   return (
-    <Card className={classes.item}>
+    <Card className={ homeLayout ? [classes.item, classes.itemHome].join(' ') : classes.item}>
       <Button onClick={() => history.push(`/directories/${directoryName}`)} className={classes.cardButton}>
-        <CardContent className={classes.cardContent}>
+        <CardContent className={homeLayout ? [classes.cardContent, classes.homeCardContent].join(' ') : classes.cardContent}>
           <div className={classes.directoryImageWrapper}>
             {
               directoryImage ? (
@@ -60,7 +81,7 @@ export default function DirectoryCard(props) {
               ) : null
             }
           </div>
-          <Typography variant={'subtitle2'} className={classes.directoryTitle}>{directoryTitle(directoryName)}</Typography>
+          <Typography variant={'subtitle2'} className={homeLayout ? [classes.directoryTitle, classes.homeDirectoryTitle].join(' ') : classes.directoryTitle}>{directoryTitle(directoryName)}</Typography>
         </CardContent>
       </Button>
     </Card>

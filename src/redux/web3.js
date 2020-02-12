@@ -11,7 +11,7 @@ const GetWeb3 = () => {
     } else {
       const provider = new Web3.providers.HttpProvider('localhost:3000');
       web3 = new Web3(provider);
-      console.log("No web3 instance injected, using Local web3.");
+      alert('Please, install MetaMask plugin at your browser extensions store and return to us');
       resolve(web3);
     }
   })

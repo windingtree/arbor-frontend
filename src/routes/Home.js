@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import history from '../redux/history';
 import { Link } from 'react-router-dom';
-import { Container, Typography, Grid, Card } from '@material-ui/core';
+import { Container, Typography, Grid, Card, CardContent } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import Ellipsis from 'react-dotdotdot';
 //components
 import SearchComponent from '../components/SearchComponent';
 //icons && illustrations
 import HomeSearchIllustration from '../assets/SvgComponents/home-search-illustration.svg';
-import WhatIfIllustration from '../assets/SvgComponents/what-if-illust.svg';
-import AirFinanceImage from '../assets/images/partner-air-france.png';
+import WhatIfIllustration from '../assets/SvgComponents/what-if-illustration.svg';
+import AirFinanceImage from '../assets/SvgComponents/partner-air-france.svg';
 import ERevMaxImage from '../assets/images/partner-erev-max.png';
 import NordicImage from '../assets/images/partner-nordic.png';
 import MachefertImage from '../assets/images/partner-machefert.png';
@@ -88,9 +89,9 @@ const styles = makeStyles({
     lineHeight: 1.55,
     color: colors.greyScale.dark,
   },
-  partnersWrapper: {
+  contentWrapper: {
     position: 'relative',
-    padding: '120px 0 130px 0'
+    padding: '120px 0'
   },
   partnerCard: {
     position: 'relative',
@@ -126,16 +127,107 @@ const styles = makeStyles({
   },
   directoriesContent: {
     padding: '64px',
+  },
+  useCasesInfoContainer: {
+    position: 'relative',
+    width: '40%'
+  },
+  useCasesControllers: {
+    marginTop: '36px'
+  },
+  controllerItem: {
+    position: 'relative',
+    left: '-12px',
+  },
+  activeController: {
+    '& button': {
+      color: colors.primary.accent
+    },
+    '& > span': {
+      width: '36px'
+    }
+  },
+  controllerButton: {
+    fontSize: '12px',
+    fontWeight: 600,
+    lineHeight: 1.1,
+    backgroundColor: 'transparent',
+    letterSpacing: '.009em',
+    outline: 'none',
+    textTransform: 'uppercase',
+    cursor: 'pointer',
+    color: colors.greyScale.common,
+    transition: 'color .3s ease'
+  },
+  controllerLine: {
+    display: 'inline-block',
+    verticalAlign: 'middle',
+    height: '2px',
+    width: '0',
+    marginRight: '12px',
+    backgroundColor: colors.primary.accent,
+    transition: 'width .3s ease'
+  },
+  useCasesCardContainer: {
+    position: 'relative',
+    width: '50%',
+  },
+  useCasesCard: {
+    width: '100%',
+    height: '304px',
+    backgroundColor: colors.primary.white,
+    borderRadius: '6px',
+    boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)'
+  },
+  useCaseTextWrapper: {
+    height: '140px',
+    paddingTop: '16px',
   }
 });
 
 function Home(props) {
   const classes = styles();
   const [searchValue, setSearchValue] = useState('');
+  const [activeUseCase, setActiveUseCase] = useState(0);
   const { directories } = props;
 
   const handleSearch = event => {
     setSearchValue(event.target.value);
+  };
+
+  const useCasesControllers = [
+    'AirFrance KLM',
+    'Hotels',
+    'airlines',
+    'Category 4',
+  ];
+
+  const renderUseCasesControllers = () => {
+    const controllers = useCasesControllers.map((item, index) => {
+      return (
+        <li className={index === activeUseCase ? classes.activeController : classes.controllerItem} key={index.toString()} style={{ margin: '8px 0' }}>
+          <span className={classes.controllerLine}/>
+          <button
+            className={classes.controllerButton}
+            onClick={handleChangeActiveUseCase}
+          >
+            {item}
+          </button>
+        </li>
+      )
+    });
+
+    return (
+      <ul className={classes.useCasesControllers}>{controllers}</ul>
+    )
+  };
+
+  const handleChangeActiveUseCase = (e) => {
+    const item = e.target.innerHTML;
+    const itemIndex = useCasesControllers.indexOf(item);
+
+    if (activeUseCase === itemIndex) return;
+    setActiveUseCase(itemIndex);
   };
 
   return (
@@ -178,7 +270,7 @@ function Home(props) {
         </Container>
       </div>
       <Container>
-        <div className={classes.partnersWrapper}>
+        <div className={classes.contentWrapper}>
           <Grid container justify={'space-between'} alignItems={'center'}>
             <Grid item container spacing={2} style={{ width: '42%' }}>
               <Grid item className={classes.partnerCardContainer}>
@@ -221,7 +313,7 @@ function Home(props) {
                 Directories we work with
               </Typography>
               <Link to={'/directories'} className={classes.navLinkToDirectories}>
-                Explore directories <ArrowLongIcon viewBow={'0 0 24 12'} className={classes.navLinkIcon}/>
+                Explore directories <ArrowLongIcon viewbow={'0 0 24 12'} className={classes.navLinkIcon}/>
               </Link>
             </div>
             <CardsGridList justify={'space-between'} alignItems={'flex-start'}>
@@ -240,6 +332,48 @@ function Home(props) {
               }
             </CardsGridList>
           </div>
+        </div>
+      </Container>
+      <Container>
+        <div className={classes.contentWrapper}>
+          <Grid container justify={'space-between'} alignItems={'center'}>
+            <Grid item className={classes.useCasesInfoContainer}>
+              <div>
+                <Typography variant={'h3'} className={classes.blockTitle}>Use cases</Typography>
+                <Typography variant={'subtitle1'} className={classes.blockSubtitle}>Take a look how other businesses use Arbor to work with each other.</Typography>
+              </div>
+              <div>
+                {renderUseCasesControllers()}
+              </div>
+            </Grid>
+            <Grid item className={classes.useCasesCardContainer}>
+              <Card className={classes.useCasesCard}>
+                <CardContent style={{ position: 'relative' }}>
+                  <img src={props.useCases[activeUseCase].logo} alt={'partner logo'}/>
+                  <div className={classes.useCaseTextWrapper}>
+                    <Typography variant={'subtitle2'} className={classes.blockSubtitle}>
+                      <Ellipsis clamp={5}>
+                        {props.useCases[activeUseCase].text}
+                      </Ellipsis>
+                    </Typography>
+                  </div>
+                  <div className={classes.statsContainer}>
+                    <div>
+                      {
+                        props.useCases[activeUseCase].info.map((item, index) => {
+                          return (
+                            <div key={index.toString()}>
+
+                            </div>
+                          )
+                        })
+                      }
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
         </div>
       </Container>
     </div>
@@ -263,6 +397,80 @@ Home.defaultProps = {
     {
       name: 'travel-agencies',
       image: TravelIllustration
+    },
+  ],
+  useCases: [
+    {
+      logo: AirFinanceImage,
+      text: 'I have been in sales and marketing for over 12 years and literally have NEVER liked one of the sales CRMs that I have used...and then HubSpot came along and waived their magic sales wand and made a CRM that is actually sales-minded and makes SENSE.',
+      info: [
+        {
+          count: 322,
+          label: 'followers on insta'
+        },
+        {
+          count: 1200,
+          label: 'followers on insta'
+        },
+        {
+          count: 750,
+          label: 'followers on insta'
+        },
+      ]
+    },
+    {
+      logo: ERevMaxImage,
+      text: 'NEVER liked one of the sales CRMs that I have used...and then HubSpot came along and waived their magic sales wand and made a CRM that is actually sales-minded and makes SENSE.',
+      info: [
+        {
+          count: 900,
+          label: 'followers on insta'
+        },
+        {
+          count: 650,
+          label: 'followers on insta'
+        },
+        {
+          count: 1000,
+          label: 'followers on insta'
+        },
+      ]
+    },
+    {
+      logo: NordicImage,
+      text: 'marketing for over 12 years and marketing for over 12 years and have been in have been in I have been in sales and marketing for over 12 years and literally have NEVER liked one of the sales CRMs that I have used...and then HubSpot came along and waived their magic sales wand and made a CRM that is actually sales-minded and makes SENSE.',
+      info: [
+        {
+          count: 550,
+          label: 'followers on insta'
+        },
+        {
+          count: 780,
+          label: 'followers on insta'
+        },
+        {
+          count: 800,
+          label: 'followers on insta'
+        },
+      ]
+    },
+    {
+      logo: MachefertImage,
+      text: '12 years marketing for over 12 years andI have been in sales and marketing for over 12 years and literally have NEVER liked one of the sales CRMs that I have used...and then HubSpot came along and waived their magic sales wand and made a CRM that is actually sales-minded and makes SENSE.',
+      info: [
+        {
+          count: 800,
+          label: 'followers on insta'
+        },
+        {
+          count: 800,
+          label: 'followers on insta'
+        },
+        {
+          count: 800,
+          label: 'followers on insta'
+        },
+      ]
     },
   ]
 };

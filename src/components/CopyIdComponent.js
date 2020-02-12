@@ -15,7 +15,6 @@ const styles = makeStyles({
     alignItems: 'center',
   },
   id: {
-    lineHeight: 1.2,
     color: colors.greyScale.dark
   },
   subtitle: {
@@ -42,7 +41,6 @@ const LightTooltip = withStyles({
     color: colors.secondary.cyan,
     fontSize: '12px',
     fontWeight: 400,
-    lineHeight: 1.2,
     padding: '10px',
     boxSizing: 'border-box',
     whiteSpace: 'nowrap'

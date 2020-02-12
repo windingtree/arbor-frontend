@@ -23,39 +23,48 @@ const theme = createMuiTheme({
     MuiTypography: {
       h1: {
         fontFamily: 'Inter',
-        letterSpacing: '-0.0068em'
+        letterSpacing: '-0.0068em',
+        lineHeight: 1.2,
       },
       h2: {
         fontFamily: 'Inter',
-        letterSpacing: '-0.0068em'
+        letterSpacing: '-0.0068em',
+        lineHeight: 1.2,
       },
       h3: {
         fontFamily: 'Inter',
-        letterSpacing: '-0.0068em'
+        letterSpacing: '-0.0068em',
+        lineHeight: 1.2,
       },
       h4: {
         fontFamily: 'Inter',
-        letterSpacing: '-0.0068em'
+        letterSpacing: '-0.0068em',
+        lineHeight: 1.2,
       },
       h5: {
         fontFamily: 'Inter',
-        letterSpacing: '-0.0068em'
+        letterSpacing: '-0.0068em',
+        lineHeight: 1.2,
       },
       h6: {
         fontFamily: 'Inter',
-        letterSpacing: '-0.0068em'
+        letterSpacing: '-0.0068em',
+        lineHeight: 1.2,
       },
       subtitle1: {
         fontFamily: 'Inter',
         letterSpacing: '-0.0068em',
+        lineHeight: 1.2,
       },
       subtitle2: {
         fontFamily: 'Inter',
         letterSpacing: '-0.0068em',
+        lineHeight: 1.2,
       },
       caption: {
         fontFamily: 'Inter',
-        letterSpacing: '-0.0068em'
+        letterSpacing: '-0.0068em',
+        lineHeight: 1.2,
       }
     },
     MuiContainer: {

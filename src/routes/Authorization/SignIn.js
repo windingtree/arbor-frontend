@@ -27,7 +27,6 @@ const styles = makeStyles({
   screenTitle: {
     fontSize: '40px',
     fontWeight: 500,
-    lineHeight: 1.2,
     color: colors.primary.black
   },
   line: {
@@ -59,7 +58,6 @@ const styles = makeStyles({
   buttonLabel: {
     fontSize: '16px',
     fontWeight: 600,
-    lineHeight: 1.2,
     color: colors.primary.white,
     textTransform: 'none',
     padding: '10px 20px'

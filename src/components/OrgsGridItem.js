@@ -70,7 +70,6 @@ const styles = makeStyles({
     position: 'relative',
     display: 'inline-block',
     fontSize: '12px',
-    lineHeight: 1.2,
     backgroundColor: colors.primary.black,
     color: colors.primary.white,
     borderRadius: '4px',
@@ -104,12 +103,10 @@ const styles = makeStyles({
     fontWeight: 600,
     color: colors.greyScale.darkest,
     fontSize: '14px',
-    lineHeight: 1.2,
   },
   itemNameWrapper: {
     fontSize: '16px',
     fontWeight: 500,
-    lineHeight: 1.2,
     height: '38px',
     overflow: 'hidden',
     paddingTop: '8px'
@@ -117,7 +114,6 @@ const styles = makeStyles({
   errorMessageWrapper: {
     fontSize: '14px',
     fontWeight: 500,
-    lineHeight: 1.2,
     color: colors.greyScale.darkest,
     paddingTop: '5px',
   },
@@ -144,7 +140,6 @@ const styles = makeStyles({
   entityTitle: {
     fontSize: '12px',
     fontWeight: 400,
-    lineHeight: 1.2,
     color: colors.primary.black,
     '& span': {
       color: colors.greyScale.common
@@ -159,7 +154,6 @@ const styles = makeStyles({
   entityTrustLevel: {
     color: colors.greyScale.darkest,
     fontSize: '12px',
-    lineHeight: 1.2
   },
   entitySubOrgsWrapper: {
     padding: '0 12px 12px 12px',
@@ -196,7 +190,6 @@ const styles = makeStyles({
   errorExpiresAt: {
     fontSize: '12px',
     fontWeight: 400,
-    lineHeight: 1.2,
     color: colors.primary.accent
   },
   errorButton: {
@@ -209,7 +202,6 @@ const styles = makeStyles({
   errorButtonLabel: {
     fontSize: '12px',
     fontWeight: 600,
-    lineHeight: 1.2,
     color: colors.primary.white,
     padding: '2px 4px',
   },

@@ -10,18 +10,19 @@ import SearchComponent from '../components/SearchComponent';
 import HomeSearchIllustration from '../assets/SvgComponents/home-search-illustration.svg';
 import WhatIfIllustration from '../assets/SvgComponents/what-if-illustration.svg';
 import AirFinanceImage from '../assets/SvgComponents/partner-air-france.svg';
-import ERevMaxImage from '../assets/images/partner-erev-max.png';
-import NordicImage from '../assets/images/partner-nordic.png';
-import MachefertImage from '../assets/images/partner-machefert.png';
+import ERevMaxImage from '../assets/SvgComponents/partner-erev-max.svg';
+import NordicImage from '../assets/SvgComponents/partner-nordic.svg';
+import MachefertImage from '../assets/SvgComponents/partner-machefert.svg';
 import ArrowLongIcon from '../assets/SvgComponents/ArrowLongIcon';
-//styles && colors
-import colors from '../styles/colors';
 import HotelIllustration from '../assets/SvgComponents/hotel-illustration.svg';
 import AirlineIllustration from '../assets/SvgComponents/plane-illustration.svg';
 import InsuranceIllustration from '../assets/SvgComponents/Insurance-illustration.svg';
 import TravelIllustration from '../assets/SvgComponents/travel-illustration.svg';
 import DirectoryCard from '../components/DirectoryCardItem';
 import CardsGridList from '../components/CardsGridList';
+import BuiltByIllustration from '../assets/SvgComponents/built-by-illustration.svg';
+//styles && colors
+import colors from '../styles/colors';
 
 const styles = makeStyles({
   searchContainer: {
@@ -36,19 +37,12 @@ const styles = makeStyles({
   searchTitle: {
     fontSize: '40px',
     fontWeight: 500,
-    lineHeight: 1.2,
     color: colors.greyScale.darkest,
     width: '50%'
   },
   subtitleWrapper: {
     width: '50%',
-    margin: '20px 0 30px 0',
-  },
-  subtitle: {
-    fontSize: '15px',
-    fontWeight: 400,
-    lineHeight: 1.6,
-    color: colors.greyScale.dark,
+    marginBottom: '30px',
   },
   searchForm: {
     position: 'relative',
@@ -81,13 +75,13 @@ const styles = makeStyles({
     fontWeight: 500,
     lineHeight: 1.14,
     color: colors.greyScale.darkest,
-    paddingBottom: '20px'
   },
   blockSubtitle: {
     fontSize: '16px',
     fontWeight: 400,
-    lineHeight: 1.55,
+    lineHeight: 1.6,
     color: colors.greyScale.dark,
+    paddingTop: '20px'
   },
   contentWrapper: {
     position: 'relative',
@@ -180,8 +174,50 @@ const styles = makeStyles({
     boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)'
   },
   useCaseTextWrapper: {
-    height: '140px',
     paddingTop: '16px',
+  },
+  statsContentWrapper: {
+    position: 'absolute',
+    bottom: '28px',
+    left: '28px',
+    width: 'calc(100% - 56px)'
+  },
+  statsContent: {
+    position: 'relative',
+    paddingTop: '14px',
+    boxSizing: 'border-box'
+  },
+  statsLine: {
+    position: 'absolute',
+    top: '0',
+    left: '0',
+    width: '60px',
+    height: '2px',
+    backgroundColor: colors.primary.accent
+  },
+  stats: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  statsItem: {},
+  statsItemCount: {
+    fontSize: '18px',
+    fontWeight: 500,
+    lineHeight: 1.3,
+    color: colors.greyScale.darkest,
+  },
+  statsItemLabel: {
+    fontSize: '12px',
+    fontWeight: 400,
+    color: colors.greyScale.dark
+  },
+  builtByContainer: {
+    backgroundColor: colors.secondary.yellowLight,
+  },
+  builtByContent: {
+    position: 'relative',
+    padding: '120px 0'
   }
 });
 
@@ -235,11 +271,11 @@ function Home(props) {
       <div className={classes.searchContainer}>
         <Container className={classes.searchContent}>
           <div>
-            <Typography variant={'h2'} className={classes.searchTitle}>
+            <Typography variant={'h1'} className={classes.searchTitle}>
               Find trusted partners for your business
             </Typography>
             <div className={classes.subtitleWrapper}>
-              <Typography variant={'subtitle1'} className={classes.subtitle}>
+              <Typography variant={'subtitle1'} className={classes.blockSubtitle}>
                 Arbor lets companies exchange trusted data with open source solutions. So you would know ho you are dealing with. It is designed to make Know-Your-Business (KYB) processes cheaper, faster, and more secure.
               </Typography>
             </div>
@@ -348,26 +384,30 @@ function Home(props) {
             </Grid>
             <Grid item className={classes.useCasesCardContainer}>
               <Card className={classes.useCasesCard}>
-                <CardContent style={{ position: 'relative' }}>
+                <CardContent style={{ position: 'relative', height: 'calc(100% - 56px)', padding: '28px' }}>
                   <img src={props.useCases[activeUseCase].logo} alt={'partner logo'}/>
                   <div className={classes.useCaseTextWrapper}>
                     <Typography variant={'subtitle2'} className={classes.blockSubtitle}>
-                      <Ellipsis clamp={5}>
+                      <Ellipsis clamp={4}>
                         {props.useCases[activeUseCase].text}
                       </Ellipsis>
                     </Typography>
                   </div>
-                  <div className={classes.statsContainer}>
-                    <div>
-                      {
-                        props.useCases[activeUseCase].info.map((item, index) => {
-                          return (
-                            <div key={index.toString()}>
-
-                            </div>
-                          )
-                        })
-                      }
+                  <div className={classes.statsContentWrapper}>
+                    <div className={classes.statsContent}>
+                      <div className={classes.statsLine}/>
+                      <div className={classes.stats}>
+                        {
+                          props.useCases[activeUseCase].info.map((item, index) => {
+                            return (
+                              <div key={index.toString()} className={classes.statsItem}>
+                                <Typography variant={'h5'} className={classes.statsItemCount}>{item.count}</Typography>
+                                <Typography variant={'caption'} className={classes.statsItemLabel} noWrap>{item.label}</Typography>
+                              </div>
+                            )
+                          })
+                        }
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -376,6 +416,34 @@ function Home(props) {
           </Grid>
         </div>
       </Container>
+      <div className={classes.builtByContainer}>
+        <Container>
+          <div className={classes.builtByContent}>
+            <Grid container justify={'space-between'} alignItems={'center'}>
+              <Grid item style={{ width: '45%' }}>
+                <Typography variant={'h3'} className={classes.blockTitle}>
+                  Built by community for community
+                </Typography>
+                <Typography variant={'subtitle1'} className={classes.blockSubtitle}>
+                  Arbor and its services are initiated by a non-profit foundation Winding Tree that drives the development of open-source protocols.
+                </Typography>
+                <Typography variant={'subtitle1'} className={classes.blockSubtitle}>
+                  All the processes and operations taking place on Arbor platform are based on Blockchain technology. It ensures full transparency and protects the members from any fraudulent activities.
+                </Typography>
+                <Typography variant={'subtitle1'} className={classes.blockSubtitle}>
+                  Arbor is not controlled by any particular individual or company. This means your data will never be sold to third parties and the service will remain non-commercial.
+                </Typography>
+                <Typography variant={'subtitle1'} className={classes.blockSubtitle}>
+                  Organizations of any size and from any industry can voluntary join Arbor community and get in contact with other members.
+                </Typography>
+              </Grid>
+              <Grid item style={{ width: '50%' }}>
+                <img src={BuiltByIllustration} alt={'illustration'}/>
+              </Grid>
+            </Grid>
+          </div>
+        </Container>
+      </div>
     </div>
   )
 }

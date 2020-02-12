@@ -34,7 +34,6 @@ const styles = makeStyles({
   searchTitle: {
     fontSize: '24px',
     fontWeight: 500,
-    lineHeight: 1.2,
     color: colors.greyScale.darkest
   },
   searchForm: {

@@ -62,7 +62,6 @@ const styles = makeStyles({
   buttonTitle: {
     fontSize: '12px',
     fontWeight: 600,
-    lineHeight: 1.2,
     color: colors.primary.white,
     textTransform: 'none',
     padding: '6px 12px'

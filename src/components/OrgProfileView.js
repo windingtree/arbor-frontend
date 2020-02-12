@@ -82,7 +82,6 @@ const styles = makeStyles({
   itemTrustInfoTitle: {
     fontSize: '14px',
     fontWeight: 400,
-    lineHeight: 1.2
   },
   itemStageTitle: {
     fontSize: '16px',
@@ -139,7 +138,6 @@ const styles = makeStyles({
   orgName: {
     fontSize: '24px',
     fontWeight: 500,
-    lineHeight: 1.2,
     color: colors.greyScale.darkest,
   },
   orgAddressWrapper: {
@@ -318,7 +316,6 @@ const styles = makeStyles({
   subsTitle: {
     fontSize: '24px',
     fontWeight: 500,
-    lineHeight: 1.2,
     color: colors.greyScale.darkest,
     marginBottom: '20px'
   },
@@ -326,7 +323,6 @@ const styles = makeStyles({
     position: 'relative',
     fontWeight: 400,
     fontSize: '14px',
-    lineHeight: 1.2,
     color: colors.greyScale.dark,
     padding: '60px 0'
   },
@@ -368,7 +364,6 @@ const styles = makeStyles({
     fontSize: '16px',
     fontWeight: 500,
     color: colors.secondary.cyan,
-    lineHeight: 1.2,
     textTransform: 'none',
     boxShadow: '0px 0px 20px rgba(189, 191, 203, 0.25), 0px 0px 2px rgba(188, 194, 211, 0.25)',
     backgroundColor: colors.primary.white,
@@ -397,7 +392,6 @@ const LightTooltip = withStyles({
     color: colors.greyScale.common,
     fontSize: '12px',
     fontWeight: 400,
-    lineHeight: 1.2,
     padding: '12px',
     boxSizing: 'border-box'
   }

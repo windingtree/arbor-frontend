@@ -56,19 +56,16 @@ const styles = makeStyles({
   itemName: {
     fontSize: '18px',
     fontWeight: 500,
-    lineHeight: 1.2,
     marginBottom: '7px'
   },
   errorMessage: {
     fontSize: '14px',
     fontWeight: 500,
-    lineHeight: 1.2,
     color: colors.greyScale.darkest
   },
   errorExpiresAt: {
     fontSize: '12px',
     fontWeight: 400,
-    lineHeight: 1.2,
     color: colors.primary.accent
   },
   errorButton: {
@@ -82,7 +79,6 @@ const styles = makeStyles({
   errorButtonLabel: {
     fontSize: '12px',
     fontWeight: 600,
-    lineHeight: 1.2,
     color: colors.primary.white,
     padding: '2px 12px'
   },
@@ -111,7 +107,6 @@ const styles = makeStyles({
   buttonTitle: {
     fontSize: '14px',
     fontWeight: 500,
-    lineHeight: 1.2,
     color: colors.secondary.cyan
   },
   subOrgsContainer: {
@@ -124,7 +119,6 @@ const styles = makeStyles({
   subOrgsLabel: {
     fontSize: '14px',
     fontWeight: 500,
-    lineHeight: 1.2,
     textTransform: 'none',
     color: colors.primary.black
   },

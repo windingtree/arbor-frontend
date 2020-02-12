@@ -10,7 +10,8 @@
 
 # production
 /build
-
+build.tar.gz
+/storybook-static
 
 npm-debug.log*
 yarn-debug.log*

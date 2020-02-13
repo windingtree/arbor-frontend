@@ -7,8 +7,13 @@ function TrustGeneral(props){
   return (
     <Container>
       <Typography variant={'h2'}>TrustGeneral</Typography>
-        <Link to={'/trust/ssl'}>trust ssl</Link><br />
-        <Link to={'/trust/website'}>trust website</Link>
+        <Link to={'/trust/ssl'}>
+            trust ssl
+        </Link>
+        <br/>
+        <Link to={'/trust/website'}>
+            trust website
+        </Link>
     </Container>
   )
 }

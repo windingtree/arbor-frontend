@@ -120,5 +120,5 @@ export const saga = function* () {
  * Api
  * */
 function ApiFetchSearchOrganizations(data) {
-  return callApi(`orgids/?page[number]=${data.page}&page[size]=${data.per_page}`);
+  return callApi(`orgids/?name=${data.value}&page[number]=${data.page}&page[size]=${data.per_page}`);
 }

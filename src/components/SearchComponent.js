@@ -45,14 +45,14 @@ const styles = makeStyles({
 
 export default function SearchComponent(props) {
   const classes = styles();
-  const { searchValue, handleSearchValue, fetchSearchResult } = props;
+  const { searchValue, handleSearchValue, fetchSearchResult, handleFocus } = props;
 
   return (
     <div className={classes.searchForm}>
       <div className={classes.searchInputWrapper}>
         <TextField
           id={'search-input'}
-          autoComplete={' '}
+          autoComplete={''}
           className={classes.searchInput}
           placeholder={`Search by organization name or ORG.ID`}
           InputProps={{
@@ -65,6 +65,7 @@ export default function SearchComponent(props) {
           fullWidth
           value={searchValue}
           onChange={handleSearchValue}
+          onFocus={handleFocus}
         />
       </div>
       <div className={classes.searchButtonWrapper}>

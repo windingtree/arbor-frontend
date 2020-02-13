@@ -132,12 +132,11 @@ function Search(props) {
 
   const handlePageClick = data => {
     let selected = data.selected;
-
-    props.fetchSearchOrganizations({page: selected + 1, per_page: per_page});
+    props.fetchSearchOrganizations({value: searchValue, page: selected + 1, per_page: per_page});
   };
 
   const fetchSearchResults = () => {
-    props.fetchSearchOrganizations({page: page, per_page: per_page});
+    props.fetchSearchOrganizations({value: searchValue, page: page, per_page: per_page});
   };
 
 
@@ -150,7 +149,12 @@ function Search(props) {
               {searchTitle()}
             </Typography>
             <div className={classes.searchForm}>
-              <SearchComponent searchValue={searchValue} handleSearchValue={handleSearch} fetchSearchResult={() => fetchSearchResults({page: page, per_page: per_page})}/>
+              <SearchComponent
+                searchValue={searchValue}
+                handleSearchValue={handleSearch}
+                fetchSearchResult={fetchSearchResults}
+                handleFocus={() => setSearchValue('')}
+              />
             </div>
           </div>
           <div className={classes.illustrationWrapper}>

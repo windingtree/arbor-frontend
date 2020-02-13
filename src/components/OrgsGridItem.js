@@ -75,6 +75,7 @@ const styles = makeStyles({
     borderRadius: '4px',
     marginRight: '8px',
     padding: '5px 12px',
+    textTransform: 'capitalize'
   },
   itemMarkType: {
     backgroundColor: colors.primary.accent,
@@ -224,10 +225,10 @@ export default function OrgsGridItem(props) {
   } = props;
 
   const bgColorsForTypes = {
-    'Hotel': colors.secondary.green,
-    'Airline': colors.secondary.yellow,
-    'Travel Agency': colors.secondary.pink,
-    'Insurance': colors.secondary.intenseGreen,
+    'hotel': colors.secondary.green,
+    'airline': colors.secondary.yellow,
+    'travel agency': colors.secondary.pink,
+    'insurance': colors.secondary.intenseGreen,
   };
 
   return (

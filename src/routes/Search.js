@@ -1,9 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { Container, Grid, Typography } from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 //actions
-import {fetchSearchOrganizations} from '../ducks/fetchOrganizations';
+import {
+  fetchSearchOrganizations,
+  isFetchedSelector,
+  metaSelector,
+  itemsSelector
+} from '../ducks/fetchSearchResults';
 //components
 import CardsGridList from '../components/CardsGridList';
 import OrgsGridItem from '../components/OrgsGridItem';
@@ -46,6 +51,13 @@ const styles = makeStyles({
     bottom: '-40px',
     right: '0'
   },
+  spinner: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    color: colors.primary.accent,
+  },
   gridListWrapper: {
     paddingTop: '40px'
   },
@@ -69,108 +81,97 @@ const styles = makeStyles({
 function Search(props) {
   const classes = styles();
   const [searchValue, setSearchValue] = useState('');
-  const [pageIndex, setPageIndex] = useState(0);
-  const [offset, setOffset] = useState(0);
-  const { searchResults: { data, pageCount, isFetched } }  = props;
+  const { items, meta: {page, per_page, total, pages}, isFetched }  = props;
 
   const handleSearch = event => {
     setSearchValue(event.target.value);
   };
 
   const searchTitle = () => {
-    if(!isFetched && data.length === 0 || searchValue === '') {
+    if(!isFetched || searchValue === '') {
       return 'Search for ORG.ID'
-    } else if(isFetched && data.length === 0) {
+    } else if(isFetched && total === 0) {
       return `Sorry, can’t find anything for "${searchValue}"`
     } else {
-      return `${data.length} search results for "${searchValue}"`
+      return `${total} search results for "${searchValue}"`
     }
   };
 
-  //TODO rewrite THIS. Expect to fetch each chunk from server on pageChange
-  let paginatedSearchResults = [];
-  let arr = [];
-  let arr2 = [];
-  let arr3 = [];
-  let arr4 = [];
-  let arr5 = [];
-  data.map(( item, index ) => {
-    if ( index < 12 ) {
-      arr.push(item);
-    }
-    if ( 12 <= index && index <= 23 ) {
-      arr2.push(item);
-    }
-    if ( 24 <= index && index <= 35) {
-      arr3.push(item);
-    }
-    if ( 36 <= index && index <= 47) {
-      arr4.push(item);
-    }
-    if ( 48 <= index) {
-      arr5.push(item);
-    }
-  });
-  paginatedSearchResults.push(arr, arr2, arr3, arr4, arr5);
-
   const CardsList = () => {
-    let OrgCards = paginatedSearchResults[pageIndex].map((item, index) => {
+    let OrgCards = items.map((item, index) => {
+      let parentName;
+      let parentTrustLevel;
+      if (item.parent !== null) {
+        parentName = item.parent.name;
+        parentTrustLevel = item.parent.proofsQty
+      } else {
+        parentName = null;
+        parentTrustLevel = null;
+      }
       return (
         <Grid item key={index.toString()} style={{ width: '264px' }}>
           <OrgsGridItem
             id={item.orgid}
+            img={item.avatar}
+            isSub={!!item.parent}
+            type={item.orgidType}
+            trustLevel={item.proofsQty}
+            name={item.name}
+            subs={item.subsidiaries}
+            entityName={parentName}
+            entityTrustLevel={parentTrustLevel}
           />
         </Grid>
       )
     });
 
     return (
-      <CardsGridList spacing={4} justify="flex-start" alignItems="flex-start">{OrgCards}</CardsGridList>
+      <CardsGridList spacing={3} justify="flex-start" alignItems="flex-start">{OrgCards}</CardsGridList>
     )
   };
 
   const handlePageClick = data => {
     let selected = data.selected;
 
-    setPageIndex(selected);
-
-    // useEffect(() => {
-    //   setOffset(Math.ceil(selected * 12));
-    //   props.fetchNextPage(offset);
-    // });
+    props.fetchSearchOrganizations({page: selected + 1, per_page: per_page});
   };
+
+  const fetchSearchResults = () => {
+    props.fetchSearchOrganizations({page: page, per_page: per_page});
+  };
+
 
   return (
     <div>
-      <div className={isFetched && paginatedSearchResults.length === 0 ? [classes.searchHeaderWrapper, classes.searchHeaderWrapperNoResults].join(' ') : classes.searchHeaderWrapper}>
+      <div className={isFetched && total === 0 ? [classes.searchHeaderWrapper, classes.searchHeaderWrapperNoResults].join(' ') : classes.searchHeaderWrapper}>
         <Container className={classes.searchHeader}>
           <div>
             <Typography variant={'h2'} className={classes.searchTitle}>
               {searchTitle()}
             </Typography>
             <div className={classes.searchForm}>
-              <SearchComponent searchValue={searchValue} handleSearchValue={handleSearch} fetchSearchResult={props.fetchSearchOrganizations}/>
+              <SearchComponent searchValue={searchValue} handleSearchValue={handleSearch} fetchSearchResult={() => fetchSearchResults({page: page, per_page: per_page})}/>
             </div>
           </div>
           <div className={classes.illustrationWrapper}>
-            <img src={isFetched && paginatedSearchResults.length === 0 ? SearchNoResultsIllustration : SearchIllustration} alt={'illustration'}/>
+            <img src={isFetched && total === 0 ? SearchNoResultsIllustration : SearchIllustration} alt={'illustration'}/>
           </div>
         </Container>
       </div>
       {
-        isFetched ? data.length !== 0 ? (
+        total !== 0 ? (
           <Container>
             <div className={classes.gridListWrapper}>
               <CardsList />
               {
-                pageCount > 1 ? (
+                total > per_page ? (
                   <div className={classes.paginationInfoContainer}>
                     <div>
-                      <Typography variant={'caption'} className={classes.totalSearchResultsTitle}>Search results: {data.length}</Typography>
+                      <Typography variant={'caption'} className={classes.totalSearchResultsTitle}>Search results: {total}</Typography>
                     </div>
                     <div className={classes.paginationWrapper}>
                       <Pagination
-                        pageCount={pageCount}
+                        pageCount={pages}
                         onPageChange={handlePageClick}
                       />
                     </div>
@@ -179,19 +180,17 @@ function Search(props) {
               }
             </div>
           </Container>
-        ) : null: null
+        ) : null
       }
     </div>
   );
 }
 
-Search.defaultProps = {
-  results: []
-};
-
 const mapStateToProps = state => {
   return {
-    searchResults: state.searchResults
+    items: itemsSelector(state),
+    meta: metaSelector(state),
+    isFetched: isFetchedSelector(state)
   }
 };
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import history from '../redux/history';
 import { Container, Typography, Button, List } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 //Components
@@ -76,7 +77,7 @@ function Profile(props) {
         {
           ownOrgs.length !== 0 && (
             <div>
-              <Button onClick={() => console.log('add org')} className={classes.button}>
+              <Button onClick={() => history.push('/my-organizations/wizard')} className={classes.button}>
                 <Typography variant={'subtitle2'} className={classes.buttonLabel}>+ Add organization</Typography>
               </Button>
             </div>
@@ -91,7 +92,7 @@ function Profile(props) {
               <div className={classes.emptyListTitleWrapper}>
                 <Typography variant={'subtitle2'} className={classes.emptyListTitle}>You don’t have any organizations yet. Let’s create one!</Typography>
               </div>
-              <Button onClick={() => console.log('add org')} className={classes.button}>
+              <Button onClick={() => history.push('/my-organizations/wizard')} className={classes.button}>
                 <Typography variant={'subtitle2'} className={classes.buttonLabel}>+ Add your first organization</Typography>
               </Button>
             </div>

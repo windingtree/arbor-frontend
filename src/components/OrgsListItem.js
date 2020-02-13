@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from 'react-router-dom';
+import history from '../redux/history';
 import { Card, CardContent, CardMedia, Grid, Typography, Button, Collapse } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -281,7 +282,7 @@ export default function OrgsListItem(props) {
                 </div>
                 <div className={classes.addSubOrgButtonWrapper}>
                   <Button
-                    onClick={() => console.log('add org')}
+                    onClick={() => history.push('/my-organizations/wizard')}
                     className={classes.addSubOrgButton}
                   >
                     <Typography variant={'caption'} className={classes.buttonTitle} noWrap>+ Add organizational unit</Typography>

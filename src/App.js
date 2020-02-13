@@ -1,10 +1,11 @@
 import React from 'react';
 import {Provider} from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
 import {Web3ReactProvider} from '@web3-react/core';
 import {createMuiTheme} from '@material-ui/core/styles';
 import RootRouter from './routes/RootRouter';
 import { MuiThemeProvider } from '@material-ui/core/styles'
-import store from './redux/store';
+import  store, { persistor } from './redux/store';
 import getLibrary from './web3/getLibrary'
 
 import colors from './styles/colors';
@@ -112,7 +113,9 @@ function App() {
     <Web3ReactProvider getLibrary={getLibrary}>
       <Provider store={store}>
         <MuiThemeProvider theme={theme}>
-          <RootRouter/>
+          <PersistGate loading={null} persistor={persistor}>
+            <RootRouter/>
+          </PersistGate>
         </MuiThemeProvider>
       </Provider>
     </Web3ReactProvider>

@@ -9,6 +9,7 @@ import SearchComponent from '../components/SearchComponent';
 //icons && illustrations
 import HomeSearchIllustration from '../assets/SvgComponents/home-search-illustration.svg';
 import WhatIfIllustration from '../assets/SvgComponents/what-if-illustration.svg';
+import Logo from '../assets/SvgComponents/Logo';
 import AirFinanceImage from '../assets/SvgComponents/partner-air-france.svg';
 import ERevMaxImage from '../assets/SvgComponents/partner-erev-max.svg';
 import NordicImage from '../assets/SvgComponents/partner-nordic.svg';
@@ -70,6 +71,9 @@ const styles = makeStyles({
     position: 'relative',
     width: '40%'
   },
+  blockTitleWrapper: {
+    width: '85%'
+  },
   blockTitle: {
     fontSize: '32px',
     fontWeight: 500,
@@ -82,6 +86,33 @@ const styles = makeStyles({
     lineHeight: 1.6,
     color: colors.greyScale.dark,
     paddingTop: '20px'
+  },
+  joinContainer: {
+    position: 'relative',
+    width: '100%',
+    backgroundColor: colors.greyScale.moreLighter
+  },
+  joinSlideBase: {
+    position: 'relative',
+    height: '540px',
+    width: '320px',
+    borderRadius: '32px',
+    boxShadow: '0px 4px 32px rgba(12, 64, 78, 0.08)',
+    padding: '28px 28px 18px 28px',
+    boxSizing: 'border-box',
+  },
+  joinSliderBaseLogo: {
+    width: '74px',
+    height: '26px'
+  },
+  joinSliderBaseLine: {
+    position: 'absolute',
+    bottom: '18px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    width: '120px',
+    height: '2px',
+    backgroundImage: colors.gradients.orangeDeg,
   },
   contentWrapper: {
     position: 'relative',
@@ -105,6 +136,9 @@ const styles = makeStyles({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  directoriesCardsContainer: {
+    marginTop: '20px'
   },
   navLinkToDirectories: {
     fontSize: '12px',
@@ -288,21 +322,42 @@ function Home(props) {
           </div>
         </Container>
       </div>
-      <div>
-        <Container>
-          <Grid container justify={'space-around'} alignItems={'center'} className={classes.kybChecksContent} wrap={'nowrap'}>
-            <Grid item className={classes.kybChecksImageWrapper}>
-              <img src={WhatIfIllustration} alt={'illustration'} className={classes.kybChecksIllustration}/>
-            </Grid>
-            <Grid item className={classes.kybChecksTextContainer}>
-              <Typography variant={'h3'} className={classes.blockTitle}>
-                Simplify routine KYB checks
-              </Typography>
-              <Typography variant={'subtitle2'} className={classes.blockSubtitle}>
-                Every organization in Arbor database has been validated via a secure process. It is transparent, decentralized and free of charge. Look for organizations across various industries in our database or join the community and get discovered by potential clients and partners.
-              </Typography>
-            </Grid>
+      <Container>
+        <Grid container justify={'space-around'} alignItems={'center'} className={classes.kybChecksContent} wrap={'nowrap'}>
+          <Grid item className={classes.kybChecksImageWrapper}>
+            <img src={WhatIfIllustration} alt={'illustration'} className={classes.kybChecksIllustration}/>
           </Grid>
+          <Grid item className={classes.kybChecksTextContainer}>
+            <Typography variant={'h3'} className={classes.blockTitle}>
+              Simplify routine KYB checks
+            </Typography>
+            <Typography variant={'subtitle2'} className={classes.blockSubtitle}>
+              Every organization in Arbor database has been validated via a secure process. It is transparent, decentralized and free of charge. Look for organizations across various industries in our database or join the community and get discovered by potential clients and partners.
+            </Typography>
+          </Grid>
+        </Grid>
+      </Container>
+      <div className={classes.joinContainer}>
+        <Container>
+          <div className={classes.contentWrapper}>
+            <Grid container justify={'space-between'} alignItems={'center'}>
+              <Grid item style={{ width: '45%' }}>
+                <div className={classes.blockTitleWrapper}>
+                  <Typography variant={'h3'} className={classes.blockTitle}>Join the registry of trusted organizations</Typography>
+                  <Typography variant={'subtitle1'} className={classes.blockSubtitle}>Become a member of Arbor community and find new partners for your business.</Typography>
+                </div>
+              </Grid>
+              <Grid item container justify={'space-between'} alignItems={'center'} style={{ width: '50%' }}>
+                <Grid item style={{ width: '60%' }}>
+                  <div className={classes.joinSlideBase}>
+                    <Logo viewBox={'0 0 90 32'} className={classes.joinSliderBaseLogo}/>
+                    <div className={classes.joinSliderBaseLine}/>
+                  </div>
+                </Grid>
+                <Grid item style={{ width: '30%' }}>pagination</Grid>
+              </Grid>
+            </Grid>
+          </div>
         </Container>
       </div>
       <Container>
@@ -352,7 +407,7 @@ function Home(props) {
                 Explore directories <ArrowLongIcon viewbow={'0 0 24 12'} className={classes.navLinkIcon}/>
               </Link>
             </div>
-            <CardsGridList justify={'space-between'} alignItems={'flex-start'}>
+            <CardsGridList justify={'space-between'} alignItems={'flex-start'} className={classes.directoriesCardsContainer}>
               {
                 directories.map((item, index) => {
                   return (

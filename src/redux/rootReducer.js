@@ -1,5 +1,5 @@
 import { combineReducers } from "redux";
-import fetchSearchOrganizations, { moduleName as searchModule } from '../ducks/fetchOrganizations';
+import fetchSearchOrganizations, { moduleName as searchModule } from '../ducks/fetchSearchResults';
 import fetchSignIn, { moduleName as signInModule } from '../ducks/signIn';
 
 

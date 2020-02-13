@@ -396,11 +396,11 @@ OrgsGridItem.propTypes = {
   isSub: PropTypes.bool,
   type: PropTypes.string,
   address: PropTypes.string,
-  trustLevel: PropTypes.string,
+  trustLevel: PropTypes.number,
   name: PropTypes.string,
-  subs: PropTypes.arrayOf(PropTypes.object),
+  subs: PropTypes.arrayOf(PropTypes.string),
   entityName: PropTypes.string,
-  entityTrustLevel: PropTypes.string,
+  entityTrustLevel: PropTypes.any,
 };
 
 OrgsGridItem.defaultProps = {

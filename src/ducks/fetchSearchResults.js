@@ -1,4 +1,5 @@
 import { appName } from '../utils/constants';
+import { createSelector } from 'reselect';
 import { all, takeEvery, call, put } from 'redux-saga/effects';
 import { callApi } from '../redux/api';
 
@@ -17,8 +18,11 @@ const FETCH_SEARCH_RESULTS_NEXT_PAGE_FAILURE = `${prefix}/FETCH_SEARCH_RESULTS_N
 const initialState = {
   isFetching: false,
   isFetched: false,
-  data: [],
-  pageCount: 0,
+  items: [],
+  meta: {
+    page: 1,
+    per_page: 12,
+  },
   error: null
 };
 
@@ -37,23 +41,12 @@ export default function reducer( state = initialState, action) {
         error: null
       });
     case FETCH_SEARCH_ORGANIZATIONS_SUCCESS:
-      const totalCount = payload.length;
-      const limit = 12;
-      const pageCount = Math.ceil(totalCount / limit);
-
       return Object.assign({}, state, {
         isFetching: false,
         isFetched: true,
-        data: payload,
-        pageCount: pageCount,
+        items: payload.data,
+        meta: payload.meta,
         error: null
-      });
-    case FETCH_SEARCH_RESULTS_NEXT_PAGE_SUCCESS:
-      return Object.assign({}, state, {
-        isFetching: false,
-        isFetched: true,
-        data: payload,
-        error: null,
       });
     case FETCH_SEARCH_ORGANIZATIONS_FAILURE:
     case FETCH_SEARCH_RESULTS_NEXT_PAGE_FAILURE:
@@ -70,13 +63,30 @@ export default function reducer( state = initialState, action) {
 /**
  * Selectors
  * */
+const stateSelector = state => state[moduleName];
+
+export const itemsSelector = createSelector(
+  stateSelector,
+  searchResults => searchResults.items
+);
+
+export const isFetchedSelector = createSelector(
+  stateSelector,
+  searchResults => searchResults.isFetched
+);
+
+export const metaSelector = createSelector(
+  stateSelector,
+  searchResults => searchResults.meta
+);
 
 /**
  * Actions
  * */
-export function fetchSearchOrganizations() {
+export function fetchSearchOrganizations(payload) {
   return {
     type: FETCH_SEARCH_ORGANIZATIONS_REQUEST,
+    payload
   }
 }
 
@@ -136,6 +146,6 @@ export const saga = function* () {
  * Api
  * */
 //TODO: replace with real api request
-function ApiFetchSearchOrganizations() {
-  return callApi('orgids/');
+function ApiFetchSearchOrganizations(data) {
+  return callApi(`orgids/?page[number]=${data.page}&page[size]=${data.size}`);
 }

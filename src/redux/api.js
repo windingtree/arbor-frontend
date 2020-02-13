@@ -16,7 +16,7 @@ export function* callApi(directory, method = 'GET', options) {
     if (responsePromise.errors) {
       throw responsePromise.errors[0];
     }
-    return responsePromise.data;
+    return responsePromise;
   } catch (error) {
     if (!!error && error.message) {
       throw error;

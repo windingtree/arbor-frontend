@@ -1,17 +1,17 @@
-import { logger } from 'redux-logger/src';
+import { applyMiddleware, createStore } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import { applyMiddleware, createStore } from "redux";
-import createSagaMiddleware from 'redux-saga';
+import logger from 'redux-logger';
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
+import createSagaMiddleware from 'redux-saga';
 
 import reducer from './rootReducer';
 import rootSaga from './rootSaga';
 
 const persistConfig = {
+  whitelist: ['signIn'],
   key: 'root',
   storage,
-  whitelist: []
 };
 
 const persistedReducer = persistReducer(persistConfig, reducer);
@@ -22,7 +22,7 @@ const middleware =
     ? composeWithDevTools(applyMiddleware(sagaMiddleware, logger))
     : applyMiddleware(sagaMiddleware);
 const store = createStore(persistedReducer, middleware);
-persistStore(store);
+export let persistor = persistStore(store);
 
 sagaMiddleware.run(rootSaga);
 

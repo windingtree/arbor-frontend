@@ -8,9 +8,7 @@ import TwitterIcon from '@material-ui/icons/Twitter';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import TelegramSocialIcon from '../assets/SvgComponents/TelegramSocialIcon';
 import MediumSocialIcon from '../assets/SvgComponents/MediumSocialIcon';
-import InstagramSocialIcon from '../assets/SvgComponents/InstagramSocialIcon';
 import GitHubIcon from '@material-ui/icons/GitHub';
-import LinkedInIcon from '@material-ui/icons/LinkedIn';
 
 import colors from '../styles/colors';
 
@@ -120,7 +118,9 @@ export default function Footer(props) {
               <Grid container direction="column" item xs={3}>
                 <Typography variant={'h4'} className={classes.columnTitle}>Contacts</Typography>
                 <Typography variant={'h6'} className={classes.columnItem} noWrap>Gubelstrasse 11, 6300 Zug, Switzerland</Typography>
-                <Typography variant={'h6'} className={classes.columnItem}>info@windingtree.com</Typography>
+                <a href={'mailto:info@windingtree.com'} className={classes.navLink}>
+                  <Typography variant={'h6'} className={classes.columnItem}>info@windingtree.com</Typography>
+                </a>
               </Grid>
             </Grid>
           </Grid>

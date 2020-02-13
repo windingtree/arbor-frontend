@@ -22,6 +22,9 @@ const styles = makeStyles({
       '& .MuiButton-root:hover': {
         backgroundColor: colors.primary.white,
       }
+    },
+    '& button': {
+      padding: '0'
     }
   },
   cardButton: {
@@ -37,6 +40,10 @@ const styles = makeStyles({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    padding: '16px',
+    '&:last-child': {
+      paddingBottom: '16px'
+    }
   },
   directoryTitle: {
     fontWeight: 500,

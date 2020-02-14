@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React from "react";
 import history from '../../redux/history';
 
 import {Container, Typography, Grid, Card, Box, Button} from '@material-ui/core';
@@ -153,7 +153,7 @@ const styles = makeStyles({
     },
 });
 
-function TrustSSL(props) {
+const TrustSSL = () => {
 
     const classes = styles();
 
@@ -252,7 +252,7 @@ function TrustSSL(props) {
                                         owner </Typography>
                                 </li>
                                 <li className={classes.partnersTextListItem}>
-                                    <spa className={classes.partnersTextListDot}/>
+                                    <span className={classes.partnersTextListDot}/>
                                     <Typography className={classes.partnersTextListTexts}>Exclusive domain
                                         ownership </Typography>
                                 </li>

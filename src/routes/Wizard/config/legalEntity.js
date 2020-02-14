@@ -1,4 +1,4 @@
-module.exports = [
+export const wizardConfig = [
   {
     type: 'step',
     name: 'General',
@@ -12,7 +12,7 @@ module.exports = [
           {
             type: 'select',
             name: 'Legal entity type',
-            values: [
+            options: [
               'private entrepreneur',
               'private company limited by shares or Ltd. (UK, Ireland and the Commonwealth)',
               'public limited company (UK, Ireland and the Commonwealth)',
@@ -50,7 +50,7 @@ module.exports = [
           {
             type: 'select',
             name: 'Country',
-            values: {
+            options: {
               'UA': 'Ukraine',
               'UK': 'United Kingdom',
               'US': 'United States'

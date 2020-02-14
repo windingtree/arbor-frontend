@@ -10,10 +10,6 @@ import trustTopIllustation from '../../assets/SvgComponents/lif-deposit-illustra
 import lifWithdrawIllustration from '../../assets/SvgComponents/lif-deposit-withdraw.svg';
 
 import insuranceIcon from '../../assets/SvgComponents/Insurance-illustration.svg';
-import symantecLogo from '../../assets/SvgComponents/partner-symantec.svg';
-import thawteLogo from '../../assets/SvgComponents/partner-thawte.svg';
-import geoTrustLogo from '../../assets/SvgComponents/partner-geotrust.svg';
-import comodoLogo from '../../assets/SvgComponents/partner-comodo.svg';
 import colors from '../../styles/colors';
 
 
@@ -220,8 +216,7 @@ const TrustLifStake = () => {
                                 your Metamask account. Líf deposit will automatically generate Lög tokens required for
                                 voting.
                             </Typography>
-                            <Button
-                                className={classes.buttonPurchaseWithdraw}>
+                            <Button className={classes.buttonPurchaseWithdraw}>
                                 <Typography variant={'subtitle2'} noWrap className={classes.buttonTitle}>
                                     Purchase Lif
                                 </Typography>
@@ -247,9 +242,7 @@ const TrustLifStake = () => {
                                 Your organization’s trust level will be decreased respectively.
                             </Typography>
                             <Box>
-                                <Button
-                                    className={classes.buttonPurchaseWithdraw}
-                                >
+                                <Button className={classes.buttonPurchaseWithdraw}>
                                     <Typography variant={'subtitle2'} noWrap className={classes.buttonTitle}>
                                         Withdraw your deposit
                                     </Typography>

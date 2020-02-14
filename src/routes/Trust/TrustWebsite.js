@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React from "react";
 import history from '../../redux/history';
 
 import {Container, Typography, Grid, Card, Box, Button} from '@material-ui/core';
@@ -132,7 +132,6 @@ const styles = makeStyles({
     },
     howTextListItem: {
         position: 'relative',
-        //marginBottom: '16px',
     },
     howListTexts: {
         marginLeft: '23px',
@@ -187,7 +186,7 @@ function TrustWebsite(props) {
                     <Grid item style={{width: '50%'}}>
                         <div><Typography className={classes.mainTitle} variant={'h1'}>Verify your website </Typography>
                             <Card className={classes.websiteAddressCard}>
-                                <img className={classes.websiteAddressGlobe} src={globeIconSvg}/>
+                                <img className={classes.websiteAddressGlobe} src={globeIconSvg} alt={"icon"}/>
                                 <Typography className={classes.link}>
                                     http://userwebsitexample.com/</Typography></Card>
                             <Typography className={classes.topSectionText}>Most users get acquainted with companies via
@@ -222,7 +221,7 @@ function TrustWebsite(props) {
                                         TXT file</Typography>
                                 </li>
 
-                                <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg}/></li>
+                                <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
 
 
                                 <li className={classes.howTextListItem}><span
@@ -231,7 +230,7 @@ function TrustWebsite(props) {
                                         server</Typography>
                                 </li>
 
-                                <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg}/></li>
+                                <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
 
 
                                 <li className={classes.howTextListItem}><span
@@ -241,20 +240,20 @@ function TrustWebsite(props) {
                                         root directory</Typography>
                                 </li>
 
-                                <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg}/></li>
+                                <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
 
 
                                 <li className={classes.howTextListItem}>
-                                    <spa className={classes.howListDot}/>
+                                    <span className={classes.howListDot}/>
                                     <Typography
                                         className={classes.howListTexts}><a className={classes.link} href="#">http(s)://example.com/org.id</a></Typography>
                                 </li>
 
-                                <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg}/></li>
+                                <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
 
 
                                 <li className={classes.howTextListItem}>
-                                    <spa className={classes.howListDot}/>
+                                    <span className={classes.howListDot}/>
                                     <Typography className={classes.howListTexts}>Congratulations, your website
                                         is
                                         verified!</Typography>
@@ -273,7 +272,7 @@ function TrustWebsite(props) {
                                         TXT file</Typography>
                                 </li>
 
-                                <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg}/></li>
+                                <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
 
 
                                 <li className={classes.howTextListItem}><span
@@ -282,17 +281,17 @@ function TrustWebsite(props) {
                                         appears</Typography>
                                 </li>
 
-                                <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg}/></li>
+                                <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
 
                                 <li className={classes.howTextListItem}><span
                                     className={classes.howListDot}/>
                                     <Typography className={classes.howListTexts}><a className={classes.link} href="#">http(s)://example.com/org.id</a></Typography>
                                 </li>
 
-                                <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg}/></li>
+                                <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
 
                                 <li className={classes.howTextListItem}>
-                                    <spa className={classes.howListDot}/>
+                                    <span className={classes.howListDot}/>
                                     <Typography className={classes.howListTexts}>Congratulations, your website
                                         is
                                         verified!</Typography>

@@ -9,6 +9,7 @@ import {makeStyles} from '@material-ui/core/styles';
 
 import verifyWebsiteSvg from '../../assets/SvgComponents/verify-your-website.svg';
 import globeIconSvg from '../../assets/SvgComponents/globe-icon.svg';
+import listPlaceholderSvg from '../../assets/SvgComponents/list-placeholder.svg';
 
 import colors from '../../styles/colors';
 
@@ -74,8 +75,8 @@ const styles = makeStyles({
     },
     illustrationWrapper: {
         position: 'absolute',
-        top: '98px',
-        right: '355px'
+        top: '93px',
+        right: '276px'
     },
     line: {
         display: 'inline-block',
@@ -103,10 +104,11 @@ const styles = makeStyles({
     },
     howSection: {
         padding: '125px 0 106px 0',
+        alignItems: 'center'
     },
     howWorksCardsWrapper: {
         display: 'flex',
-        marginTop: '35px',
+        marginTop: '30px',
         justifyContent: 'space-around'
     },
     howWorksCards: {
@@ -130,27 +132,35 @@ const styles = makeStyles({
     },
     howTextListItem: {
         position: 'relative',
-        marginBottom: '16px',
+        //marginBottom: '16px',
     },
     howListTexts: {
         marginLeft: '23px',
         fontWeight: 500,
-        fontSize: '14px',
-        lineHeight: '16px',
+        fontSize: '16px',
+        lineHeight: '28px',
         color: colors.greyScale.dark,
     },
+    howListPlaceholder: {
+        height: '15px',
+        marginLeft: '3px'
+    },
     downloadButton: {
+        display: 'block',
+        margin: '50px auto 0 auto',
+
         backgroundImage: colors.gradients.orange,
         boxShadow: '0 2px 12px rgba(12, 64, 78, 0.1)',
         border: `1px solid ${colors.primary.accent}`,
-        borderRadius: '6px'
+        borderRadius: '8px'
     },
     downloadButtonTitle: {
-        fontSize: '12px',
         fontWeight: 600,
+        fontSize: '16px',
+        lineHeight: '24px',
         color: colors.primary.white,
         textTransform: 'none',
-        padding: '6px 12px'
+        padding: '4px 14px'
     }
 });
 
@@ -211,22 +221,38 @@ function TrustWebsite(props) {
                                         download a
                                         TXT file</Typography>
                                 </li>
+
+                                <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg}/></li>
+
+
                                 <li className={classes.howTextListItem}><span
                                     className={classes.howListDot}/>
                                     <Typography className={classes.howListTexts}>Upload it to your
                                         server</Typography>
                                 </li>
+
+                                <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg}/></li>
+
+
                                 <li className={classes.howTextListItem}><span
                                     className={classes.howListDot}/>
                                     <Typography className={classes.howListTexts}>Make sure it's accessible from
                                         the
                                         root directory</Typography>
                                 </li>
+
+                                <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg}/></li>
+
+
                                 <li className={classes.howTextListItem}>
                                     <spa className={classes.howListDot}/>
                                     <Typography
-                                        className={classes.howListTexts}>http(s)://example.com/org.id</Typography>
+                                        className={classes.howListTexts}><a className={classes.link} href="#">http(s)://example.com/org.id</a></Typography>
                                 </li>
+
+                                <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg}/></li>
+
+
                                 <li className={classes.howTextListItem}>
                                     <spa className={classes.howListDot}/>
                                     <Typography className={classes.howListTexts}>Congratulations, your website
@@ -246,17 +272,25 @@ function TrustWebsite(props) {
                                         download a
                                         TXT file</Typography>
                                 </li>
+
+                                <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg}/></li>
+
+
                                 <li className={classes.howTextListItem}><span
                                     className={classes.howListDot}/>
                                     <Typography className={classes.howListTexts}>Paste info to DNS zone exactly as it
                                         appears</Typography>
                                 </li>
+
+                                <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg}/></li>
+
                                 <li className={classes.howTextListItem}><span
                                     className={classes.howListDot}/>
-                                    <Typography className={classes.howListTexts}>Make sure it's accessible from
-                                        the
-                                        root directory</Typography>
+                                    <Typography className={classes.howListTexts}><a className={classes.link} href="#">http(s)://example.com/org.id</a></Typography>
                                 </li>
+
+                                <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg}/></li>
+
                                 <li className={classes.howTextListItem}>
                                     <spa className={classes.howListDot}/>
                                     <Typography className={classes.howListTexts}>Congratulations, your website
@@ -266,13 +300,15 @@ function TrustWebsite(props) {
                             </ul>
                         </Card>
                     </Container>
+                </Container>
+                <Box>
                     <Button
                         className={classes.downloadButton}>
                         <Typography variant={'subtitle2'} noWrap className={classes.downloadButtonTitle}>
                             Download file
                         </Typography>
                     </Button>
-                </Container>
+                </Box>
             </Container>
         </div>
     )

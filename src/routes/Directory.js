@@ -114,7 +114,7 @@ function Directory(props) {
             <Button onClick={() => history.push('/directories')}>
               <Typography variant={'caption'} className={classes.buttonLabel}>
                 <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
-                Back to all organizations
+                Back to directories
               </Typography>
             </Button>
           </div>

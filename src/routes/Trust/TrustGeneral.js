@@ -14,6 +14,10 @@ function TrustGeneral(props){
         <Link to={'/trust/website'}>
             trust website
         </Link>
+        <br/>
+        <Link to={'/trust/lif-stake'}>
+            trust lif
+        </Link>
     </Container>
   )
 }

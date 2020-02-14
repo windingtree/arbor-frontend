@@ -88,6 +88,37 @@ export const wizardConfig = [
             schema: Joi.string().pattern(/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/, 'uri')
           }
         ]
+      },
+      {
+        name: 'Social media accounts',
+        type: 'section',
+        fields: [
+          {
+            name: 'Facebook',
+            type: 'input',
+            orgidJson: 'legalEntity.contacts[0].facebook',
+          },
+          {
+            name: 'Twitter',
+            type: 'input',
+            orgidJson: 'legalEntity.contacts[0].twitter',
+          },
+          {
+            name: 'Instagram',
+            type: 'input',
+            orgidJson: 'legalEntity.contacts[0].instagram',
+          },
+          {
+            name: 'social media #',
+            type: 'Field generator'
+          },
+          {
+            name: 'Logo',
+            type: 'image_link_with_upload',
+            description: 'Add a logo or any image that represents your organization. It will help you stand out in search results.',
+            helperText: 'Recommended dimensions: 908х400 (minimal: 454x200)\nFormat: JPG, PNG'
+          }
+        ]
       }
     ],
     cta: 'Next'
@@ -104,7 +135,7 @@ export const wizardConfig = [
         fields: [
           {
             name: 'Choose type of JSON hosting',
-            type: 'hosting_selector'
+            type: 'orgjd_json_link_with_upload'
           }
         ]
       }

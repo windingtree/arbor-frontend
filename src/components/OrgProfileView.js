@@ -154,6 +154,7 @@ const styles = makeStyles({
     textDecoration: 'none',
     whiteSpace: 'nowrap',
     color: colors.secondary.cyan,
+    marginLeft: '4px'
   },
   orgInfoFieldsContainer: {
     display: 'flex',
@@ -397,24 +398,12 @@ const LightTooltip = withStyles({
   }
 })(Tooltip);
 
-export default function OrgProfileView(props) {
+function OrgProfileView(props) {
   const classes = styles();
-  const {
-    stage,
-    tel,
-    web,
-    email,
-    verified,
-    subs,
-    social,
-    isOpen,
-    toggleOpen,
-    details,
-    agents
-  } = props;
 
   const {
     id,
+    subs,
     trustLevel,
     img,
     name,
@@ -422,7 +411,15 @@ export default function OrgProfileView(props) {
     isSub,
     entityName,
     entityTrustLevel,
-  } = history.location.state;
+    stage,
+    contacts,
+    verified,
+    social,
+    isOpen,
+    toggleOpen,
+    details,
+    agents
+  } = props;
 
   const ownOrganization = history.location.pathname === `/my-organizations/${id}`;
 
@@ -462,7 +459,7 @@ export default function OrgProfileView(props) {
               {
                 img ? (
                     <img className={classes.orgImage} src={img} alt={'Organization'}/>
-                ): (
+                ) : (
                     <img className={classes.orgImage} src={DefaultImage} alt={'Organization'}/>
                 )
               }
@@ -470,7 +467,7 @@ export default function OrgProfileView(props) {
           </Grid>
           <Grid item style={{ width: '56%' }}>
             <div className={classes.idInfoContainer}>
-              <CopyIdComponent id={id} leftElement={'Org ID: '} fontWeight={500}/>
+              <CopyIdComponent id={history.location.state.id} leftElement={'Org ID: '} fontWeight={500}/>
               {
                 ownOrganization || (
                   <div className={classes.publicTrustLevelWrapper}>
@@ -488,8 +485,11 @@ export default function OrgProfileView(props) {
               {
                 address ? (
                   <div>
-                    <Ellipsis clamp={2} tagName={'span'} className={classes.orgAddress}>{address}</Ellipsis>
-                    <a href={'https://www.google.com.ua/maps/'} className={classes.mapLink}>show on the map</a>
+                    <Ellipsis clamp={1} tagName={'span'} className={classes.orgAddress}>{address.street_address}</Ellipsis>
+                    <p className={classes.orgAddress}>
+                      {`${address.city}, ${address.locality}`}
+                      <a href={'https://www.google.com.ua/maps/'} className={classes.mapLink}>show on the map</a>
+                    </p>
                   </div>
                 ) : (
                   <Typography variant={'caption'} className={classes.orgAddress}>No address specified</Typography>
@@ -500,19 +500,19 @@ export default function OrgProfileView(props) {
               <div className={classes.orgInfoFieldWrapper}>
                 <Typography variant={'caption'} className={classes.orgInfoFieldTitle} noWrap>
                   {'Phone: '}
-                  <a href={`tel:${tel}`} className={classes.orgInfoField}>{tel}</a>
+                  <a href={`tel:${contacts.phone}`} className={classes.orgInfoField}>{contacts.phone}</a>
                 </Typography>
               </div>
               <div className={classes.orgInfoFieldWrapper}>
                 <Typography variant={'caption'} className={classes.orgInfoFieldTitle} noWrap>
                   {'Email: '}
-                  <a href={`mailto:${email}`} className={classes.orgInfoField}>{email}</a>
+                  <a href={`mailto:${contacts.email}`} className={classes.orgInfoField}>{contacts.email}</a>
                 </Typography>
               </div>
               <div className={classes.orgInfoFieldWrapper} style={{ width: '100%' }}>
                 <Typography variant={'caption'} className={classes.orgInfoFieldTitle} noWrap>
                   {'Website: '}
-                  <a href={web} target={'_blank'} className={classes.orgInfoField}>{web}</a>
+                  <a href={contacts.website} target={'_blank'} className={classes.orgInfoField}>{contacts.website}</a>
                   {
                     verified ? (
                       <TrustLevelIcon viewBox={'0 0 16 16'} className={classes.iconTrustLevel} style={{ verticalAlign: 'text-bottom' }}/>
@@ -650,12 +650,12 @@ export default function OrgProfileView(props) {
                     return (
                       <Grid item key={index.toString()} style={{ width: '264px' }}>
                         <OrgsGridItem
-                          id={item.id}
-                          isSub={item.isSub}
-                          type={item.type}
-                          entityName={name}
-                          entityTrustLevel={trustLevel}
-                          name={item.subName}
+                          id={item.orgid}
+                          isSub={!!item.parent}
+                          type={item.orgidType}
+                          entityName={item.parent.name}
+                          entityTrustLevel={item.parent.proofsQty}
+                          name={item.name}
                         />
                       </Grid>
                     )
@@ -754,7 +754,8 @@ export default function OrgProfileView(props) {
 
 OrgProfileView.propTypes = {
   id: PropTypes.string,
-  //TODO define prop types
+  address: PropTypes.object,
+  contacts: PropTypes.object,
 };
 
 OrgProfileView.defaultProps = {
@@ -826,3 +827,5 @@ OrgProfileView.defaultProps = {
     },
   ]
 };
+
+export default OrgProfileView;

@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import _ from 'lodash';
+import { connect } from 'react-redux';
+import { fetchOrganizationInfo, fetchOrganizationSubInfo, selectItem, selectSubs } from '../ducks/fetchOrganizationInfo';
 import history from '../redux/history';
 import { Container, Typography, Box, Button } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/core/styles';
 
 import ArrowLeftIcon from '../assets/SvgComponents/ArrowLeftIcon';
 import EyeIcon from '../assets/SvgComponents/EyeIcon';
@@ -53,54 +56,117 @@ const styles = makeStyles({
   },
 });
 
-export default function Organization(props) {
+function Organization(props) {
   const [isOpen, toggleOpen] = useState(false);
   const classes = styles();
 
-  const {
-    id,
-    prevDirectory
-  } = history.location.state;
+  const { id } = history.location.state;
+  const { item } = props;
+  let subOrgs = _.get(item, 'subsidiaries', []);
+
+  useEffect(() => {
+    props.fetchOrganizationInfo({ id: id });
+  }, [id]);
+
+  useEffect(() => {
+    subOrgs !== 0 && subOrgs !== null && subOrgs.map(sub => {
+      props.fetchOrganizationSubInfo({ id: sub });
+    })
+  }, [item.subsidiaries]);
+
+  const OrganizationProfile = () => {
+    let isEntity = item.parent ? 'entity' : 'legalEntity';
+    let location = _.get(item, `jsonContent.${isEntity}.locations[0].address`, {});
+    let contacts = _.get(item, `jsonContent.${isEntity}.contacts[0]`, {});
+
+    const social = [
+      {
+        facebook: contacts.facebook,
+        verified: item.isSocialFBProved
+      },
+      {
+        telegram: contacts.telegram,
+      },
+      {
+        twitter: contacts.twitter,
+        verified: item.isSocialTWProved
+      },
+      {
+        instagram: contacts.instagram,
+        verified: item.isSocialIGProved
+      },
+      {
+        linkedin: contacts.linkedin,
+        verified: item.isSocialLNProved
+      },
+    ];
+
+    return (
+      <OrgProfileView
+        id={item.id}
+        subs={props.subs}
+        trustLevel={item.proofsQty}
+        img={item.avatar}
+        name={item.name}
+        address={location}
+        contacts={contacts}
+        entityName={'parentName'}
+        entityTrustLevel={'parentTrustLevel'}
+        social={social}
+        isSub={!!item.parent}
+        isOpen={isOpen}
+        toggleOpen={toggleOpen}
+      />
+    )
+  };
 
   return (
-      <div>
-        <Container>
-          <Box className={classes.screenHeader}>
-            <div className={classes.buttonWrapper}>
-              <Button onClick={history.goBack}>
-                <Typography variant={'caption'} className={classes.buttonLabel}>
-                  <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
-                  Back to all organizations
-                  {
-                    prevDirectory && <span>in {prevDirectory}</span>
-                  }
-                </Typography>
-              </Button>
-            </div>
-            {
-              history.location.pathname !== `/organization/${id}` ? (
-                <div>
-                  <Button onClick={() => null}>
-                    <Typography variant={'caption'} className={classes.buttonLabel}>
-                      <EyeIcon viewBox={'0 0 16 12'} className={[classes.itemActionButtonIcon, classes.eyeIcon].join(' ')}/>
-                      Public organization view
-                    </Typography>
-                  </Button>
-                  <Button onClick={() => null} className={classes.itemActionButton}>
-                    <Typography variant={'caption'} className={classes.buttonLabel}>
-                      <EditIcon viewBox={'0 0 14 14 '} className={[classes.itemActionButtonIcon, classes.editIcon].join(' ')}/>
-                      Edit organization profile
-                    </Typography>
-                  </Button>
-                </div>
-              ) : null
-            }
-          </Box>
-        </Container>
-        <OrgProfileView
-          isOpen={isOpen}
-          toggleOpen={toggleOpen}
-        />
-      </div>
+    <div>
+      <Container>
+        <Box className={classes.screenHeader}>
+          <div className={classes.buttonWrapper}>
+            <Button onClick={history.goBack}>
+              <Typography variant={'caption'} className={classes.buttonLabel}>
+                <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
+                Back
+              </Typography>
+            </Button>
+          </div>
+          {
+            history.location.pathname !== `/organization/${id}` ? (
+              <div>
+                <Button onClick={() => null}>
+                  <Typography variant={'caption'} className={classes.buttonLabel}>
+                    <EyeIcon viewBox={'0 0 16 12'} className={[classes.itemActionButtonIcon, classes.eyeIcon].join(' ')}/>
+                    Public organization view
+                  </Typography>
+                </Button>
+                <Button onClick={() => null} className={classes.itemActionButton}>
+                  <Typography variant={'caption'} className={classes.buttonLabel}>
+                    <EditIcon viewBox={'0 0 14 14 '} className={[classes.itemActionButtonIcon, classes.editIcon].join(' ')}/>
+                    Edit organization profile
+                  </Typography>
+                </Button>
+              </div>
+            ) : null
+          }
+        </Box>
+      </Container>
+      <OrganizationProfile/>
+    </div>
   )
 }
+
+const mapStateToProps = state => {
+  return {
+    item: selectItem(state),
+    subs: selectSubs(state)
+  }
+};
+
+const mapDispatchToProps = {
+  fetchOrganizationInfo,
+  fetchOrganizationSubInfo
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Organization);

@@ -110,6 +110,7 @@ function Search(props) {
             type={item.orgidType}
             trustLevel={item.proofsQty}
             name={item.name}
+            parent={item.parent}
             subs={item.subsidiaries}
             entityName={parentName}
             entityTrustLevel={parentTrustLevel}

@@ -68,7 +68,7 @@ const styles = makeStyles({
 
 function Directories(props){
   const classes = styles();
-  const { items, meta: {page, per_page, total, pages}, isFetched, directories }  = props;
+  const { directories }  = props;
 
   return (
     <Container>

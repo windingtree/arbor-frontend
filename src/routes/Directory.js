@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 import {
   fetchSearchOrganizationsByType,
   isFetchedSelector,
@@ -66,7 +67,7 @@ const styles = makeStyles({
 
 function Directory(props) {
   const classes = styles();
-  const { items, meta: {page, per_page, total, pages} }  = props;
+  const { items, meta: { per_page, total, pages} }  = props;
 
   const CardsList = () => {
     let OrgCards = items.map((item, index) => {
@@ -108,46 +109,50 @@ function Directory(props) {
 
   return (
     <div>
-      <Container>
-        <div className={classes.screenHeader}>
-          <div className={classes.buttonWrapper}>
-            <Button onClick={() => history.push('/directories')}>
-              <Typography variant={'caption'} className={classes.buttonLabel}>
-                <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
-                Back to directories
-              </Typography>
-            </Button>
-          </div>
-        </div>
-        <div className={classes.titleWrapper}>
-          <Typography variant={'h2'} className={classes.directoryTitle}>
-            {props.match.params.directory + 's'}
-          </Typography>
-        </div>
-      </Container>
       {
-        total !== 0 ? (
-          <Container>
-            <div className={classes.gridListWrapper}>
-              <CardsList />
-              {
-                total > per_page ? (
-                  <div className={classes.paginationInfoContainer}>
-                    <div>
-                      <Typography variant={'caption'} className={classes.totalSearchResultsTitle}>ORG.ID in {props.match.params.directory + 's'}: {total}</Typography>
+        items.length === 0 ? (
+          <Redirect to={'/directories'}/>
+        ) : (
+          <div>
+            <Container>
+              <div className={classes.screenHeader}>
+                <div className={classes.buttonWrapper}>
+                  <Button onClick={() => history.push('/directories')}>
+                    <Typography variant={'caption'} className={classes.buttonLabel}>
+                      <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
+                      Back to directories
+                    </Typography>
+                  </Button>
+                </div>
+              </div>
+              <div className={classes.titleWrapper}>
+                <Typography variant={'h2'} className={classes.directoryTitle}>
+                  {props.match.params.directory + 's'}
+                </Typography>
+              </div>
+            </Container>
+            <Container>
+              <div className={classes.gridListWrapper}>
+                <CardsList />
+                {
+                  total > per_page ? (
+                    <div className={classes.paginationInfoContainer}>
+                      <div>
+                        <Typography variant={'caption'} className={classes.totalSearchResultsTitle}>ORG.ID in {props.match.params.directory + 's'}: {total}</Typography>
+                      </div>
+                      <div className={classes.paginationWrapper}>
+                        <Pagination
+                          pageCount={pages}
+                          onPageChange={handlePageClick}
+                        />
+                      </div>
                     </div>
-                    <div className={classes.paginationWrapper}>
-                      <Pagination
-                        pageCount={pages}
-                        onPageChange={handlePageClick}
-                      />
-                    </div>
-                  </div>
-                ) : null
-              }
-            </div>
-          </Container>
-        ) : null
+                  ) : null
+                }
+              </div>
+            </Container>
+          </div>
+        )
       }
     </div>
   )

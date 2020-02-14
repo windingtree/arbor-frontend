@@ -215,7 +215,6 @@ export default function OrgsGridItem(props) {
     img,
     isSub,
     type,
-    address,
     trustLevel,
     name,
     subs,
@@ -236,18 +235,7 @@ export default function OrgsGridItem(props) {
       <CardContent style={{ padding: '12px' }}>
         <Link to={{
           pathname: `/organization/${id}`,
-          state: {
-            id: id,
-            img: img,
-            isSub: isSub,
-            name: name,
-            trustLevel: trustLevel,
-            type: type,
-            address: address,
-            subs: subs,
-            entityName: entityName,
-            entityTrustLevel: entityTrustLevel
-          }
+          state: { id: id }
         }} className={classes.linkToProfileView}
         >
           {
@@ -291,18 +279,7 @@ export default function OrgsGridItem(props) {
         }
         <Link to={{
           pathname: `/organization/${id}`,
-          state: {
-            id: id,
-            img: img,
-            isSub: isSub,
-            name: name,
-            trustLevel: trustLevel,
-            type: type,
-            address: address,
-            subs: subs,
-            entityName: entityName,
-            entityTrustLevel: entityTrustLevel
-          }
+          state: { id: id }
         }} className={classes.linkToProfileView}
         >
           <div className={classes.itemNameWrapper} style={{ color: error ? colors.primary.accent : colors.greyScale.darkest }}>
@@ -397,9 +374,10 @@ OrgsGridItem.propTypes = {
   isSub: PropTypes.bool,
   type: PropTypes.string,
   address: PropTypes.string,
-  trustLevel: PropTypes.number,
+  trustLevel: PropTypes.any,
   name: PropTypes.string,
-  subs: PropTypes.arrayOf(PropTypes.string),
+  subs: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.string), PropTypes.arrayOf(PropTypes.object)]),
+  parent: PropTypes.object,
   entityName: PropTypes.string,
   entityTrustLevel: PropTypes.any,
 };

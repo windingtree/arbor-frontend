@@ -9,7 +9,7 @@ import reducer from './rootReducer';
 import rootSaga from './rootSaga';
 
 const persistConfig = {
-  whitelist: ['signIn', 'searchResults', 'wizard'],
+  whitelist: ['signIn', 'wizard'],
   key: 'root',
   storage,
 };

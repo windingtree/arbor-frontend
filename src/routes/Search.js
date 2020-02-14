@@ -51,13 +51,6 @@ const styles = makeStyles({
     bottom: '-40px',
     right: '0'
   },
-  spinner: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    color: colors.primary.accent,
-  },
   gridListWrapper: {
     paddingTop: '40px'
   },

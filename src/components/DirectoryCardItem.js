@@ -11,6 +11,7 @@ const styles = makeStyles({
     width: '100%',
     height: '168px',
     borderRadius: '6px',
+    boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
     transition: 'background-color .3s ease, box-shadow .3s ease'
   },
   itemHome: {
@@ -73,13 +74,13 @@ const styles = makeStyles({
 
 export default function DirectoryCard(props) {
   const classes = styles();
-  const { directoryName, directoryImage, homeLayout = false } = props;
+  const { directoryName, directoryImage, homeLayout = false, handleSearchByType } = props;
 
   const directoryTitle = str => str.split('-').join(' ');
 
   return (
     <Card className={ homeLayout ? [classes.item, classes.itemHome].join(' ') : classes.item}>
-      <Button onClick={() => history.push(`/directories/${directoryName}`)} className={classes.cardButton}>
+      <Button onClick={handleSearchByType} className={classes.cardButton}>
         <CardContent className={homeLayout ? [classes.cardContent, classes.homeCardContent].join(' ') : classes.cardContent}>
           <div className={classes.directoryImageWrapper}>
             {

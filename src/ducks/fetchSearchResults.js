@@ -2,6 +2,7 @@ import { appName } from '../utils/constants';
 import { createSelector } from 'reselect';
 import { all, takeEvery, call, put } from 'redux-saga/effects';
 import { callApi } from '../redux/api';
+import history from '../redux/history';
 
 /**
  * Constants
@@ -11,6 +12,9 @@ const prefix = `${appName}/${moduleName}`;
 const FETCH_SEARCH_ORGANIZATIONS_REQUEST = `${prefix}/FETCH_SEARCH_ORGANIZATIONS_REQUEST`;
 const FETCH_SEARCH_ORGANIZATIONS_SUCCESS = `${prefix}/FETCH_SEARCH_ORGANIZATIONS_SUCCESS`;
 const FETCH_SEARCH_ORGANIZATIONS_FAILURE = `${prefix}/FETCH_SEARCH_ORGANIZATIONS_FAILURE`;
+const FETCH_SEARCH_ORGANIZATIONS_BY_TYPE_REQUEST = `${prefix}/FETCH_SEARCH_ORGANIZATIONS_BY_TYPE_REQUEST`;
+const FETCH_SEARCH_ORGANIZATIONS_BY_TYPE_SUCCESS = `${prefix}/FETCH_SEARCH_ORGANIZATIONS_BY_TYPE_SUCCESS`;
+const FETCH_SEARCH_ORGANIZATIONS_BY_TYPE_FAILURE = `${prefix}/FETCH_SEARCH_ORGANIZATIONS_BY_TYPE_FAILURE`;
 
 const initialState = {
   isFetching: false,
@@ -31,12 +35,14 @@ export default function reducer( state = initialState, action) {
 
   switch(type) {
     case FETCH_SEARCH_ORGANIZATIONS_REQUEST:
+    case FETCH_SEARCH_ORGANIZATIONS_BY_TYPE_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
         isFetched: false,
         error: null
       });
     case FETCH_SEARCH_ORGANIZATIONS_SUCCESS:
+    case FETCH_SEARCH_ORGANIZATIONS_BY_TYPE_SUCCESS:
       return Object.assign({}, state, {
         isFetching: false,
         isFetched: true,
@@ -45,6 +51,7 @@ export default function reducer( state = initialState, action) {
         error: null
       });
     case FETCH_SEARCH_ORGANIZATIONS_FAILURE:
+    case FETCH_SEARCH_ORGANIZATIONS_BY_TYPE_FAILURE:
       return Object.assign({}, state, {
         isFetching: false,
         isFetched: false,
@@ -99,6 +106,27 @@ function fetchSearchOrganizationsFailure(error) {
   }
 }
 
+export function fetchSearchOrganizationsByType(payload) {
+  return {
+    type: FETCH_SEARCH_ORGANIZATIONS_BY_TYPE_REQUEST,
+    payload
+  }
+}
+
+function fetchSearchOrganizationsByTypeSuccess(payload) {
+  return {
+    type: FETCH_SEARCH_ORGANIZATIONS_BY_TYPE_SUCCESS,
+    payload
+  }
+}
+
+function fetchSearchOrganizationsByTypeFailure(error) {
+  return {
+    type: FETCH_SEARCH_ORGANIZATIONS_BY_TYPE_FAILURE,
+    error
+  }
+}
+
 /**
  * Sagas
  * */
@@ -112,8 +140,22 @@ function* fetchSearchOrganizationsSaga({payload}) {
   }
 }
 
+function* fetchSearchOrganizationsByTypeSaga({payload}) {
+  try {
+    const result = yield call(ApiFetchSearchByType, payload);
+
+    yield put(fetchSearchOrganizationsByTypeSuccess(result));
+    yield call(history.push, { pathname: `/directories/${payload.type}` });
+  } catch(error) {
+    yield put(fetchSearchOrganizationsByTypeFailure(error));
+  }
+}
+
 export const saga = function* () {
-  return yield all([takeEvery(FETCH_SEARCH_ORGANIZATIONS_REQUEST, fetchSearchOrganizationsSaga)])
+  return yield all([
+    takeEvery(FETCH_SEARCH_ORGANIZATIONS_REQUEST, fetchSearchOrganizationsSaga),
+    takeEvery(FETCH_SEARCH_ORGANIZATIONS_BY_TYPE_REQUEST, fetchSearchOrganizationsByTypeSaga),
+  ])
 };
 
 /**
@@ -121,4 +163,8 @@ export const saga = function* () {
  * */
 function ApiFetchSearchOrganizations(data) {
   return callApi(`orgids/?name=${data.value}&page[number]=${data.page}&page[size]=${data.per_page}`);
+}
+
+function ApiFetchSearchByType(data) {
+  return callApi(`orgids/?orgidType=${data.type}&page[number]=${data.page}&page[size]=${data.per_page}`)
 }

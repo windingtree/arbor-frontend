@@ -1,6 +1,13 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Container, Typography, Grid, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+
+import {
+  fetchSearchOrganizationsByType,
+  itemsSelector,
+  metaSelector
+} from '../ducks/fetchSearchResults';
 //Components
 import DirectoryCard from '../components/DirectoryCardItem';
 import CardsGridList from '../components/CardsGridList';
@@ -61,7 +68,7 @@ const styles = makeStyles({
 
 function Directories(props){
   const classes = styles();
-  const { directories } = props;
+  const { items, meta: {page, per_page, total, pages}, isFetched, directories }  = props;
 
   return (
     <Container>
@@ -78,6 +85,8 @@ function Directories(props){
                     <DirectoryCard
                       directoryName={item.name}
                       directoryImage={item.image}
+                      directorySearchReq={item.searchReq}
+                      handleSearchByType={() => props.fetchSearchOrganizationsByType({ type: item.searchReq, page: 1, per_page: 12 })}
                     />
                   </Grid>
                 )
@@ -102,25 +111,40 @@ function Directories(props){
   )
 }
 
-export default Directories;
+const mapStateToProps = state => {
+  return {
+    items: itemsSelector(state),
+    meta: metaSelector(state)
+  }
+};
+
+const mapDispatchToProps = {
+  fetchSearchOrganizationsByType
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Directories);
 
 Directories.defaultProps = {
   directories: [
     {
       name: 'hotels',
-      image: HotelIllustration
+      image: HotelIllustration,
+      searchReq: 'hotel'
     },
     {
       name: 'airlines',
-      image: AirlineIllustration
+      image: AirlineIllustration,
+      searchReq: 'airline'
     },
     {
       name: 'insurance',
-      image: InsuranceIllustration
+      image: InsuranceIllustration,
+      searchReq: 'insurance'
     },
     {
       name: 'travel-agencies',
-      image: TravelIllustration
+      image: TravelIllustration,
+      searchReq: 'travel-agencies'
     },
   ]
 };

@@ -1,3 +1,5 @@
+const Joi = require('@hapi/joi');
+
 export const wizardConfig = [
   {
     type: 'step',
@@ -82,7 +84,8 @@ export const wizardConfig = [
             type: 'input',
             subtype: 'website',
             name: 'Website',
-            orgidJson: 'legalEntity.contacts[0].website'
+            orgidJson: 'legalEntity.contacts[0].website',
+            schema: Joi.string().pattern(/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/, 'uri')
           }
         ]
       }

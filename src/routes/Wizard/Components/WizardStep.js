@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from "react-redux";
 import { Container, Typography } from '@material-ui/core';
 import { Formik } from 'formik';
+import _ from 'lodash';
 
 import { extendOrgidJson, selectWizardOrgidJson } from '../../../ducks/wizard'
 import { WizardSection } from '../Components';
@@ -10,6 +11,11 @@ import { WizardSection } from '../Components';
 const WizardStep = (props) => {
   const { extendOrgidJson, data: { longName, description, sections, cta } } = props;
   const emptyInitialValues = { email: '', password: '' };
+  // next line collect from "sections" all fields with non empty "schema" to object { [fieldName]:schema }
+  const validators = sections ?
+    _.chain(_.filter(_.flatten(sections.map(({ fields }) => fields.map(({ name, schema }) => ({ name, schema })))), 'schema')).keyBy('name').mapValues('schema').value() :
+    {};
+
 
   // console.log(`<Step longName='${longName} sections="'`, sections);
   return (
@@ -21,13 +27,14 @@ const WizardStep = (props) => {
         initialValues={Object.assign({}, emptyInitialValues, props.orgidJson)}
         validate={values => {
           const errors = {};
-          if (!values.email) {
-            errors.email = 'Required';
-          } else if (
-            !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-          ) {
-            errors.email = 'Invalid email address';
-          }
+          _.each(values, (value, field) => {
+            if (!validators[field]) return;
+            const { error } = validators[field].validate(value);
+            if (error) {
+              errors[field] = error.toString();
+            }
+          });
+          if(errors) console.log('ERRORS', errors);
           return errors;
         }}
         onSubmit={(values, { setSubmitting }) => {

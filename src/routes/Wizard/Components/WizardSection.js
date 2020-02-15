@@ -2,7 +2,7 @@ import React from "react";
 
 import { Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { InputField, SelectField } from "../Fields";
+import { InputField, SelectField, JsonHostingField } from "../Fields";
 
 const styles = makeStyles({
   sectionTitle: {
@@ -19,7 +19,8 @@ const WizardSection = (props) => {
   // console.log(`<Section name="${name}" fields="`, fields);
   const knownFields = {
     'input': InputField,
-    'select': SelectField
+    'select': SelectField,
+    'json_hosting': JsonHostingField
   };
 
   fields = fields.map((item, index) => {

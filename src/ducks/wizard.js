@@ -2,6 +2,7 @@ import _ from 'lodash';
 import {appName} from "../utils/constants";
 import { all, takeEvery, call, put } from 'redux-saga/effects';
 import {createSelector} from "reselect";
+import Web3 from 'web3';
 
 /**
  * Constants
@@ -12,10 +13,22 @@ const EXTEND_ORGID_JSON_REQUEST = `${prefix}/EXTEND_ORGID_JSON_REQUEST`;
 const EXTEND_ORGID_JSON_SUCCESS = `${prefix}/EXTEND_ORGID_JSON_SUCCESS`;
 const EXTEND_ORGID_JSON_FAILURE = `${prefix}/EXTEND_ORGID_JSON_FAILURE`;
 
+// const SAVE_ORGID_JSON_FILE_REQUEST = `${prefix}/EXTEND_ORGID_JSON_REQUEST`;
+// const SAVE_ORGID_JSON_FILE_SUCCESS = `${prefix}/EXTEND_ORGID_JSON_SUCCESS`;
+// const SAVE_ORGID_JSON_FILE_FAILURE = `${prefix}/EXTEND_ORGID_JSON_FAILURE`;
+
 const initialState = {
   isFetching: false,
   isFetched: false,
-  orgidJson: {},
+  orgidJson: {
+    "@context": "https://windingtree.com/ns/did/v1",
+    "created": new Date().toJSON(),
+    "publicKey": [],
+    "service": [],
+    "trust": {}
+  },
+  orgidUri: null,
+  orgidHash: null,
   error: null
 };
 
@@ -24,6 +37,9 @@ const initialState = {
  */
 export default function reducer( state = initialState, action) {
   const { type, payload, error } = action;
+  if (payload) {
+    payload.updated = new Date().toJSON();
+  }
 
   switch(type) {
     case EXTEND_ORGID_JSON_REQUEST:
@@ -37,6 +53,7 @@ export default function reducer( state = initialState, action) {
         isFetching: false,
         isFetched: true,
         orgidJson: payload,
+        orgidHash: Web3.utils.keccak256(JSON.stringify(payload, null, 2)),
         error: null
       });
     case EXTEND_ORGID_JSON_FAILURE:

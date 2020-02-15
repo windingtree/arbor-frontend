@@ -156,7 +156,7 @@ export const wizardConfig = [
           },
           {
             name: 'Choose type of JSON hosting',
-            type: 'orgjd_json_link_with_upload'
+            type: 'json_hosting'
           }
         ]
       }

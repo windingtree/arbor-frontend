@@ -12,7 +12,7 @@ const WizardStep = (props) => {
   const { extendOrgidJson, data: { longName, description, sections, cta } } = props;
   // next line collect from "sections" all fields with non empty "schema" to object { [fieldName]:schema }
   const validators = sections ?
-    _.chain(_.filter(_.flatten(sections.map(({ fields }) => fields.map(({ name, schema }) => ({ name, schema })))), 'schema')).keyBy('name').mapValues('schema').value() :
+    _.chain(_.filter(_.flatten(sections.map(({ fields }) => fields.map(({ orgidJsonPath, schema }) => ({ orgidJsonPath, schema })))), 'schema')).keyBy('orgidJsonPath').mapValues('schema').value() :
     {};
 
   return (
@@ -24,11 +24,13 @@ const WizardStep = (props) => {
         initialValues={Object.assign({}, props.orgidJson)}
         validate={values => {
           const errors = {};
-          _.each(values, (value, field) => {
-            if (!validators[field]) return;
-            const { error } = validators[field].validate(value);
-            if (error) {
-              errors[field] = error.toString();
+          _.each(validators, (validator, orgidJsonPath) => {
+            const value = _.get(values, orgidJsonPath, false);
+            if (value !== false) {
+              const { error } = validator.validate(value);
+              if (error) {
+                _.set(errors, orgidJsonPath, error.toString());
+              }
             }
           });
           if(!_.isEmpty(errors)) console.log('ERRORS', errors);

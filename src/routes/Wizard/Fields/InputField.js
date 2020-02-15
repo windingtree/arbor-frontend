@@ -4,19 +4,19 @@ import _ from 'lodash';
 import {Container, TextField} from '@material-ui/core';
 
 const InputField = (props) => {
-  const { type, name, orgidJson, index, helperText, required, values, errors, touched, handleChange, handleBlur } = props;
-  const isError = errors[name] && touched[name];
+  const { type, name, orgidJsonPath, index, helperText, required, values, errors, touched, handleChange, handleBlur } = props;
+  const isError = _.get(errors, orgidJsonPath) && _.get(touched, orgidJsonPath);
   return (
     <Container key={index}>
       <TextField
         type={type}
         label={name}
-        name={orgidJson}
-        value={_.get(values, orgidJson)}
-        helperText={isError ? errors[orgidJson] : helperText}
+        name={orgidJsonPath}
+        value={_.get(values, orgidJsonPath)}
+        helperText={isError ? _.get(errors, orgidJsonPath) : helperText}
         required={required}
         fullWidth
-        error={errors[orgidJson] && touched[orgidJson]}
+        error={isError}
         onChange={handleChange}
         onBlur={handleBlur}
       />

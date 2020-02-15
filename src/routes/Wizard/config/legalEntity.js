@@ -29,19 +29,19 @@ export const wizardConfig = [
               'non-governmental organization',
             ],
             required: true,
-            orgidJson: 'legalEntity.legalType'
+            orgidJsonPath: 'legalEntity.legalType'
           },
           {
             type: 'input',
             name: 'Legal name',
             required: true,
-            orgidJson: 'legalEntity.legalName'
+            orgidJsonPath: 'legalEntity.legalName'
           },
           {
             type: 'input',
             name: 'Registration number',
             helperText: 'That\'s the number in country-specific business registry',
-            orgidJson: 'legalEntity.legalIdentifier'
+            orgidJsonPath: 'legalEntity.legalIdentifier'
           }
         ]
       },
@@ -58,32 +58,32 @@ export const wizardConfig = [
               'US': 'United States'
             },
             required: true,
-            orgidJson: 'legalEntity.registeredAddress.country'
+            orgidJsonPath: 'legalEntity.registeredAddress.country'
           },
           {
             type: 'input',
             name: 'Subdivision',
-            orgidJson: 'legalEntity.registeredAddress.subdivision'
+            orgidJsonPath: 'legalEntity.registeredAddress.subdivision'
           },
           {
             type: 'input',
             name: 'Locality',
-            orgidJson: 'legalEntity.registeredAddress.locality'
+            orgidJsonPath: 'legalEntity.registeredAddress.locality'
           },
           {
             type: 'input',
             name: 'postal code',
-            orgidJson: 'legalEntity.registeredAddress.postal_code'
+            orgidJsonPath: 'legalEntity.registeredAddress.postal_code'
           },
           {
             type: 'input',
             name: 'Street, building',
-            orgidJson: 'legalEntity.registeredAddress.street_address'
+            orgidJsonPath: 'legalEntity.registeredAddress.street_address'
           },
           {
             type: 'input',
             name: 'Premise',
-            orgidJson: 'legalEntity.registeredAddress.premise'
+            orgidJsonPath: 'legalEntity.registeredAddress.premise'
           }
         ]
       },
@@ -95,13 +95,13 @@ export const wizardConfig = [
             type: 'input',
             subtype: 'phone',
             name: 'Phone',
-            orgidJson: 'legalEntity.contacts[0].phone'
+            orgidJsonPath: 'legalEntity.contacts[0].phone'
           },
           {
             type: 'input',
             subtype: 'website',
             name: 'Website',
-            orgidJson: 'legalEntity.contacts[0].website',
+            orgidJsonPath: 'legalEntity.contacts[0].website',
             schema: Joi.string().pattern(/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/, 'uri')
           }
         ]
@@ -113,17 +113,17 @@ export const wizardConfig = [
           {
             name: 'Facebook',
             type: 'input',
-            orgidJson: 'legalEntity.contacts[0].facebook',
+            orgidJsonPath: 'legalEntity.contacts[0].facebook',
           },
           {
             name: 'Twitter',
             type: 'input',
-            orgidJson: 'legalEntity.contacts[0].twitter',
+            orgidJsonPath: 'legalEntity.contacts[0].twitter',
           },
           {
             name: 'Instagram',
             type: 'input',
-            orgidJson: 'legalEntity.contacts[0].instagram',
+            orgidJsonPath: 'legalEntity.contacts[0].instagram',
           },
           {
             name: 'social media #',

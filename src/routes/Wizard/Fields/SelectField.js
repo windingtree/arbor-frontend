@@ -2,6 +2,7 @@ import React from "react";
 
 import { Container, FormControl, InputLabel, Select } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import _ from "lodash";
 
 const styles = makeStyles({
   formControl: {
@@ -10,8 +11,10 @@ const styles = makeStyles({
 
 const SelectField = (props) => {
   const classes = styles();
-  const {name, orgidJson, index, options, values, errors, touched, handleChange, handleBlur} = props;
+  const {name, orgidJsonPath, index, options, values, errors, touched, handleChange, handleBlur} = props;
   const optionsObj = Array.isArray(options) ? options.reduce((o, key) => Object.assign(o, {[key]: key}), {}) : options;
+  const isError = _.get(errors, orgidJsonPath) && _.get(touched, orgidJsonPath);
+
   return (
     <Container key={index}>
       <FormControl className={classes.formControl}>
@@ -21,11 +24,11 @@ const SelectField = (props) => {
           fullWidth
           inputProps={{
             label: name,
-            name: orgidJson,
+            name: orgidJsonPath,
             id: `select-${name.replace(' ','-')}-${index}`,
           }}
-          value={values[orgidJson]}
-          error={errors[orgidJson] && touched[orgidJson]}
+          value={_.get(values, orgidJsonPath)}
+          error={isError}
           onChange={handleChange}
           onBlur={handleBlur}
         >

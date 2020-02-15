@@ -141,7 +141,7 @@ export const wizardConfig = [
     cta: 'Next'
   },
   {
-    type: 'step',
+    type: 'step_hosting',
     name: 'Hosting',
     longName: 'Hosting information',
     description: 'The description that Arbor offers two types of hosting, depending on your needs.',
@@ -164,7 +164,7 @@ export const wizardConfig = [
     cta: 'Confirm'
   },
   {
-    type: 'step',
+    type: 'step_metamask',
     name: 'Confirmation',
     longName: 'MetaMask confirming',
     description: 'MetaMask also lets the user create and manage their own identities, so when a Dapp wants to perform a transaction and write to the blockchain, the user gets a secure interface to review the transaction, before approving or rejecting it.',

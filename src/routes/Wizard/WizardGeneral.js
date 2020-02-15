@@ -1,14 +1,25 @@
 import React from 'react';
 import { Container } from "@material-ui/core";
 
-import { WizardStep } from "./Components";
+import { WizardStep, WizardStepHosting, WizardStepMetaMask } from "./Components";
 import { wizardConfig } from './config/legalEntity'
 
 const WizardGeneral = () => {
   const steps = wizardConfig.map((step, index) => {
-    return (
-      <WizardStep data={step} key={index}/>
-    )
+    switch (step.type) {
+      case 'step': return (
+        <WizardStep data={step} key={index}/>
+      );
+      case 'step_hosting': return (
+        <WizardStepHosting data={step} key={index}/>
+      );
+      case "step_metamask": return (
+        <WizardStepMetaMask data={step} key={index}/>
+      );
+      default: return (
+        <div key={index}>Step <pre>${step.name}</pre> has unknown type: <pre>{step.type}</pre></div>
+      );
+    }
   });
 
   return (

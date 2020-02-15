@@ -2,7 +2,7 @@ import _ from 'lodash';
 import {appName} from "../utils/constants";
 import { all, takeEvery, call, put } from 'redux-saga/effects';
 import {createSelector} from "reselect";
-import Web3 from 'web3';
+import { keccak256 } from 'js-sha3';
 
 /**
  * Constants
@@ -16,6 +16,10 @@ const EXTEND_ORGID_JSON_FAILURE = `${prefix}/EXTEND_ORGID_JSON_FAILURE`;
 // const SAVE_ORGID_JSON_FILE_REQUEST = `${prefix}/EXTEND_ORGID_JSON_REQUEST`;
 // const SAVE_ORGID_JSON_FILE_SUCCESS = `${prefix}/EXTEND_ORGID_JSON_SUCCESS`;
 // const SAVE_ORGID_JSON_FILE_FAILURE = `${prefix}/EXTEND_ORGID_JSON_FAILURE`;
+
+const SAVE_ORGID_JSON_URI_REQUEST = `${prefix}/SAVE_ORGID_JSON_URI_REQUEST`;
+const SAVE_ORGID_JSON_URI_SUCCESS = `${prefix}/SAVE_ORGID_JSON_URI_SUCCESS`;
+const SAVE_ORGID_JSON_URI_FAILURE = `${prefix}/SAVE_ORGID_JSON_URI_FAILURE`;
 
 const initialState = {
   isFetching: false,
@@ -37,11 +41,9 @@ const initialState = {
  */
 export default function reducer( state = initialState, action) {
   const { type, payload, error } = action;
-  if (payload) {
-    payload.updated = new Date().toJSON();
-  }
 
   switch(type) {
+    case SAVE_ORGID_JSON_URI_REQUEST:
     case EXTEND_ORGID_JSON_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
@@ -49,13 +51,24 @@ export default function reducer( state = initialState, action) {
         error: null
       });
     case EXTEND_ORGID_JSON_SUCCESS:
+      if (payload) {
+        payload.updated = new Date().toJSON();
+      }
       return _.merge({}, state, {
         isFetching: false,
         isFetched: true,
         orgidJson: payload,
-        orgidHash: Web3.utils.keccak256(JSON.stringify(payload, null, 2)),
+        orgidHash: `0x${keccak256(JSON.stringify(payload, null, 2))}`,
         error: null
       });
+    case SAVE_ORGID_JSON_URI_SUCCESS:
+      return _.merge({}, state, {
+        isFetching: false,
+        isFetched: true,
+        orgidUri: payload,
+        error: null
+      });
+    case SAVE_ORGID_JSON_URI_FAILURE:
     case EXTEND_ORGID_JSON_FAILURE:
       return Object.assign({}, state, {
         isFetching: false,
@@ -75,6 +88,11 @@ const stateSelector = state => state[moduleName];
 export const selectWizardOrgidJson = createSelector(
   stateSelector,
   wizard => wizard.orgidJson
+);
+
+export const selectWizardOrgidUri = createSelector(
+  stateSelector,
+  wizard => wizard.orgidUri
 );
 
 /**
@@ -102,6 +120,28 @@ function extendOrgidJsonFailure(error) {
   }
 }
 
+export function saveOrgidUri(payload) {
+  return {
+    type: SAVE_ORGID_JSON_URI_REQUEST,
+    payload
+  }
+}
+
+function saveOrgidUriSuccess(payload) {
+  return {
+    type: SAVE_ORGID_JSON_URI_SUCCESS,
+    payload
+  }
+}
+
+function saveOrgidUriFailure(error) {
+  return {
+    type: SAVE_ORGID_JSON_URI_FAILURE,
+    error
+  }
+}
+
+
 /**
  * Sagas
  */
@@ -115,6 +155,20 @@ function* extendOrgidJsonSaga({payload}) {
   }
 }
 
+
+function* saveOrgidUriSaga({payload}) {
+  try {
+    const result = yield call((data) => data, payload);
+
+    yield put(saveOrgidUriSuccess(result));
+  } catch(error) {
+    yield put(saveOrgidUriFailure(error));
+  }
+}
+
 export const saga = function* () {
-  return yield all([takeEvery(EXTEND_ORGID_JSON_REQUEST, extendOrgidJsonSaga)])
+  return yield all([
+    takeEvery(EXTEND_ORGID_JSON_REQUEST, extendOrgidJsonSaga),
+    takeEvery(SAVE_ORGID_JSON_URI_REQUEST, saveOrgidUriSaga)
+  ])
 };

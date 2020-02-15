@@ -62,11 +62,28 @@ export const wizardConfig = [
           },
           {
             type: 'input',
-            name: 'City'
+            name: 'Subdivision',
+            orgidJson: 'legalEntity.registeredAddress.subdivision'
+          },
+          {
+            type: 'input',
+            name: 'Locality',
+            orgidJson: 'legalEntity.registeredAddress.locality'
+          },
+          {
+            type: 'input',
+            name: 'postal code',
+            orgidJson: 'legalEntity.registeredAddress.postal_code'
           },
           {
             type: 'input',
             name: 'Street, building',
+            orgidJson: 'legalEntity.registeredAddress.street_address'
+          },
+          {
+            type: 'input',
+            name: 'Premise',
+            orgidJson: 'legalEntity.registeredAddress.premise'
           }
         ]
       },
@@ -133,6 +150,10 @@ export const wizardConfig = [
         name: 'Choose type of JSON hosting',
         type: 'section',
         fields: [
+          {
+            name: 'step2 test',
+            type: 'input'
+          },
           {
             name: 'Choose type of JSON hosting',
             type: 'orgjd_json_link_with_upload'

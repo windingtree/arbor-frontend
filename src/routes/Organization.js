@@ -69,7 +69,7 @@ function Organization(props) {
   }, [id]);
 
   useEffect(() => {
-    subOrgs !== 0 && subOrgs !== null && subOrgs.map(sub => {
+    subOrgs !== 0 && subOrgs !== null && subOrgs.forEach(sub => {
       props.fetchOrganizationSubInfo({ id: sub });
     })
   }, [item.subsidiaries]);

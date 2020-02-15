@@ -246,7 +246,7 @@ function TrustWebsite(props) {
                                 <li className={classes.howTextListItem}>
                                     <span className={classes.howListDot}/>
                                     <Typography
-                                        className={classes.howListTexts}><a className={classes.link} href="#">http(s)://example.com/org.id</a></Typography>
+                                        className={classes.howListTexts}><a className={classes.link} href="http(s)://example.com/org.id">http(s)://example.com/org.id</a></Typography>
                                 </li>
 
                                 <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
@@ -285,7 +285,7 @@ function TrustWebsite(props) {
 
                                 <li className={classes.howTextListItem}><span
                                     className={classes.howListDot}/>
-                                    <Typography className={classes.howListTexts}><a className={classes.link} href="#">http(s)://example.com/org.id</a></Typography>
+                                    <Typography className={classes.howListTexts}><a className={classes.link} href="http(s)://example.com/org.id">http(s)://example.com/org.id</a></Typography>
                                 </li>
 
                                 <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>

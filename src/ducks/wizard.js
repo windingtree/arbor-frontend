@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import {appName} from "../utils/constants";
 import { all, takeEvery, call, put } from 'redux-saga/effects';
 import {createSelector} from "reselect";
@@ -32,7 +33,7 @@ export default function reducer( state = initialState, action) {
         error: null
       });
     case EXTEND_ORGID_JSON_SUCCESS:
-      return Object.assign({}, state, {
+      return _.merge({}, state, {
         isFetching: false,
         isFetched: true,
         orgidJson: payload,

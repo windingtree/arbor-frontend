@@ -12,8 +12,12 @@ const WizardStep = (props) => {
   const { extendOrgidJson, data: { longName, description, sections, cta } } = props;
   const emptyInitialValues = { email: '', password: '' };
   // next line collect from "sections" all fields with non empty "schema" to object { [fieldName]:schema }
+
   const validators = sections ?
     _.chain(_.filter(_.flatten(sections.map(({ fields }) => fields.map(({ name, schema }) => ({ name, schema })))), 'schema')).keyBy('name').mapValues('schema').value() :
+    {};
+  const nameToOrgIdJsonPath = sections ?
+    _.chain(_.filter(_.flatten(sections.map(({ fields }) => fields.map(({ name, orgidJson }) => ({ name, orgidJson })))), 'orgidJson')).keyBy('name').mapValues('orgidJson').value() :
     {};
 
 
@@ -34,14 +38,22 @@ const WizardStep = (props) => {
               errors[field] = error.toString();
             }
           });
-          if(errors) console.log('ERRORS', errors);
+          if(!_.isEmpty(errors)) console.log('ERRORS', errors);
           return errors;
         }}
         onSubmit={(values, { setSubmitting }) => {
           console.log('%conSubmit', 'background:red; color:white;');
-          extendOrgidJson(values);
+
+          const orgidJson = {};
+          _.each(values, (value, name) => {
+            if(nameToOrgIdJsonPath[name]) {
+              _.set(orgidJson, nameToOrgIdJsonPath[name], value)
+            }
+          });
+
+          extendOrgidJson(orgidJson);
           setTimeout(() => {
-            alert(JSON.stringify(values, null, 2));
+            alert(JSON.stringify(orgidJson, null, 2));
             setSubmitting(false);
           }, 400);
         }}

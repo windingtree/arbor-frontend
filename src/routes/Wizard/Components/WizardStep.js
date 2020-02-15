@@ -10,25 +10,18 @@ import { WizardSection } from '../Components';
 
 const WizardStep = (props) => {
   const { extendOrgidJson, data: { longName, description, sections, cta } } = props;
-  const emptyInitialValues = { email: '', password: '' };
   // next line collect from "sections" all fields with non empty "schema" to object { [fieldName]:schema }
-
   const validators = sections ?
     _.chain(_.filter(_.flatten(sections.map(({ fields }) => fields.map(({ name, schema }) => ({ name, schema })))), 'schema')).keyBy('name').mapValues('schema').value() :
     {};
-  const nameToOrgIdJsonPath = sections ?
-    _.chain(_.filter(_.flatten(sections.map(({ fields }) => fields.map(({ name, orgidJson }) => ({ name, orgidJson })))), 'orgidJson')).keyBy('name').mapValues('orgidJson').value() :
-    {};
 
-
-  // console.log(`<Step longName='${longName} sections="'`, sections);
   return (
     <Container>
       <Typography variant={'h3'}>Step: {longName}</Typography>
       <div>{description}</div>
 
       <Formik
-        initialValues={Object.assign({}, emptyInitialValues, props.orgidJson)}
+        initialValues={Object.assign({}, props.orgidJson)}
         validate={values => {
           const errors = {};
           _.each(values, (value, field) => {
@@ -42,18 +35,11 @@ const WizardStep = (props) => {
           return errors;
         }}
         onSubmit={(values, { setSubmitting }) => {
-          console.log('%conSubmit', 'background:red; color:white;');
+          console.log('%conSubmit', 'background:red; color:white;', values);
 
-          const orgidJson = {};
-          _.each(values, (value, name) => {
-            if(nameToOrgIdJsonPath[name]) {
-              _.set(orgidJson, nameToOrgIdJsonPath[name], value)
-            }
-          });
-
-          extendOrgidJson(orgidJson);
+          extendOrgidJson(values);
           setTimeout(() => {
-            alert(JSON.stringify(orgidJson, null, 2));
+            alert(JSON.stringify(values, null, 2));
             setSubmitting(false);
           }, 400);
         }}

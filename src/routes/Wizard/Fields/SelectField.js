@@ -10,7 +10,7 @@ const styles = makeStyles({
 
 const SelectField = (props) => {
   const classes = styles();
-  const {name, index, options, values, errors, touched, handleChange, handleBlur} = props;
+  const {name, orgidJson, index, options, values, errors, touched, handleChange, handleBlur} = props;
   const optionsObj = Array.isArray(options) ? options.reduce((o, key) => Object.assign(o, {[key]: key}), {}) : options;
   return (
     <Container key={index}>
@@ -20,11 +20,12 @@ const SelectField = (props) => {
           native
           fullWidth
           inputProps={{
-            name: name,
+            label: name,
+            name: orgidJson,
             id: `select-${name.replace(' ','-')}-${index}`,
           }}
-          value={values[name]}
-          error={errors[name] && touched[name]}
+          value={values[orgidJson]}
+          error={errors[orgidJson] && touched[orgidJson]}
           onChange={handleChange}
           onBlur={handleBlur}
         >

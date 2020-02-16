@@ -14,6 +14,10 @@ const EXTEND_ORGID_JSON_REQUEST = `${prefix}/EXTEND_ORGID_JSON_REQUEST`;
 const EXTEND_ORGID_JSON_SUCCESS = `${prefix}/EXTEND_ORGID_JSON_SUCCESS`;
 const EXTEND_ORGID_JSON_FAILURE = `${prefix}/EXTEND_ORGID_JSON_FAILURE`;
 
+const SAVE_MEDIA_TO_ARBOR_REQUEST = `${prefix}/SAVE_MEDIA_TO_ARBOR_REQUEST`;
+const SAVE_MEDIA_TO_ARBOR_SUCCESS = `${prefix}/SAVE_MEDIA_TO_ARBOR_SUCCESS`;
+const SAVE_MEDIA_TO_ARBOR_FAILURE = `${prefix}/SAVE_MEDIA_TO_ARBOR_FAILURE`;
+
 const SAVE_ORGID_JSON_TO_ARBOR_REQUEST = `${prefix}/SAVE_ORGID_JSON_TO_ARBOR_REQUEST`;
 const SAVE_ORGID_JSON_TO_ARBOR_SUCCESS = `${prefix}/SAVE_ORGID_JSON_TO_ARBOR_SUCCESS`;
 const SAVE_ORGID_JSON_TO_ARBOR_FAILURE = `${prefix}/SAVE_ORGID_JSON_TO_ARBOR_FAILURE`;
@@ -37,14 +41,14 @@ const initialState = {
   error: null
 };
 
-/**
- * Reducer
- */
+//region == [Reducer] ==================================================================================================
 export default function reducer( state = initialState, action) {
   const { type, payload, error } = action;
 
   switch(type) {
+    // REQUEST
     case EXTEND_ORGID_JSON_REQUEST:
+    case SAVE_MEDIA_TO_ARBOR_REQUEST:
     case SAVE_ORGID_JSON_TO_ARBOR_REQUEST:
     case SAVE_ORGID_JSON_URI_REQUEST:
       return Object.assign({}, state, {
@@ -52,6 +56,7 @@ export default function reducer( state = initialState, action) {
         isFetched: false,
         error: null
       });
+    // SUCCESS
     case EXTEND_ORGID_JSON_SUCCESS:
       if (payload) {
         payload.updated = new Date().toJSON();
@@ -63,6 +68,20 @@ export default function reducer( state = initialState, action) {
         orgidHash: `0x${keccak256(JSON.stringify(payload, null, 2))}`,
         error: null
       });
+    case SAVE_MEDIA_TO_ARBOR_SUCCESS:
+      const orgidJsonUpdates = _.merge({}, state.orgidJson, {
+        updated: new Date().toJSON(),
+        media: {
+          logo: payload
+        }
+      });
+      return {
+        isFetching: false,
+        isFetched: true,
+        orgidJson: orgidJsonUpdates,
+        orgidHash: `0x${keccak256(JSON.stringify(orgidJsonUpdates, null, 2))}`,
+        error: null
+      };
     case SAVE_ORGID_JSON_TO_ARBOR_SUCCESS:
     case SAVE_ORGID_JSON_URI_SUCCESS:
       return _.merge({}, state, {
@@ -71,7 +90,9 @@ export default function reducer( state = initialState, action) {
         orgidUri: payload,
         error: null
       });
+    // FAILURE
     case EXTEND_ORGID_JSON_FAILURE:
+    case SAVE_MEDIA_TO_ARBOR_FAILURE:
     case SAVE_ORGID_JSON_URI_FAILURE:
     case SAVE_ORGID_JSON_TO_ARBOR_FAILURE:
       return Object.assign({}, state, {
@@ -83,10 +104,9 @@ export default function reducer( state = initialState, action) {
       return state;
   }
 }
+//endregion===
 
-/**
- * Selectors
- */
+//region == [Selectors] ================================================================================================
 const stateSelector = state => state[moduleName];
 
 export const selectWizardOrgidJson = createSelector(
@@ -98,10 +118,10 @@ export const selectWizardOrgidUri = createSelector(
   stateSelector,
   wizard => wizard.orgidUri
 );
+//endregion
 
-/**
- * Actions
- */
+//region == [ACTIONS] ==================================================================================================
+//region == [ACTIONS: extendOrgidJson] =================================================================================
 export function extendOrgidJson(payload) {
   return {
     type: EXTEND_ORGID_JSON_REQUEST,
@@ -122,7 +142,32 @@ function extendOrgidJsonFailure(error) {
     error
   }
 }
+//endregion
 
+//region == [ACTIONS: saveMediaToArbor] ============================================================================
+export function saveMediaToArbor(payload) {
+  return {
+    type: SAVE_MEDIA_TO_ARBOR_REQUEST,
+    payload
+  }
+}
+
+function saveMediaToArborSuccess(payload) {
+  return {
+    type: SAVE_MEDIA_TO_ARBOR_SUCCESS,
+    payload
+  }
+}
+
+function saveMediaToArborFailure(error) {
+  return {
+    type: SAVE_MEDIA_TO_ARBOR_FAILURE,
+    error
+  }
+}
+//endregion
+
+//region == [ACTIONS: saveOrgidJsonToArbor] ============================================================================
 export function saveOrgidJsonToArbor(payload) {
   return {
     type: SAVE_ORGID_JSON_TO_ARBOR_REQUEST,
@@ -143,7 +188,9 @@ function saveOrgidJsonToArborFailure(error) {
     error
   }
 }
+//endregion
 
+//region == [ACTIONS: saveOrgidUri] ====================================================================================
 export function saveOrgidUri(payload) {
   return {
     type: SAVE_ORGID_JSON_URI_REQUEST,
@@ -164,10 +211,10 @@ function saveOrgidUriFailure(error) {
     error
   }
 }
+//endregion
+//endregion
 
-/**
- * Sagas
- */
+//region == [SAGAS] ====================================================================================================
 function* extendOrgidJsonSaga({payload}) {
   try {
     const result = yield call((data) => data, payload);
@@ -175,6 +222,16 @@ function* extendOrgidJsonSaga({payload}) {
     yield put(extendOrgidJsonSuccess(result));
   } catch(error) {
     yield put(extendOrgidJsonFailure(error));
+  }
+}
+
+function* saveMediaToArborSaga({payload}) {
+  try {
+    const { data: { uri }} = yield call(ApiPostMedia, payload);
+
+    yield put(saveMediaToArborSuccess(uri));
+  } catch(error) {
+    yield put(saveMediaToArborFailure(error));
   }
 }
 
@@ -203,15 +260,25 @@ function* saveOrgidUriSaga({payload}) {
 export const saga = function* () {
   return yield all([
     takeEvery(EXTEND_ORGID_JSON_REQUEST, extendOrgidJsonSaga),
+    takeEvery(SAVE_MEDIA_TO_ARBOR_REQUEST, saveMediaToArborSaga),
     takeEvery(SAVE_ORGID_JSON_TO_ARBOR_REQUEST, saveOrgidJsonToArborSaga),
     takeEvery(SAVE_ORGID_JSON_URI_REQUEST, saveOrgidUriSaga)
   ])
 };
+//endregion
 
+//region == [API] ======================================================================================================
+function ApiPostMedia(data) {
+  const { address, id, file } = data;
+  const fd = new FormData();
+  fd.append('media', file, file.name);
+  fd.append('address', address);
+  fd.append('id', id);
 
-/**
- * Api
- * */
+  return callApi(`media`, 'POST', { body: fd });
+}
+
 function ApiPostOrgidJson(data) {
   return callApi(`json`, 'POST', { body: JSON.stringify(data),  headers: { 'Content-Type': 'application/json' } });
 }
+//endregion

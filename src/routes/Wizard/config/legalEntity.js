@@ -126,12 +126,8 @@ export const wizardConfig = [
             orgidJsonPath: 'legalEntity.contacts[0].instagram',
           },
           {
-            name: 'social media #',
-            type: 'Field generator'
-          },
-          {
             name: 'Logo',
-            type: 'image_link_with_upload',
+            type: 'dropzone',
             description: 'Add a logo or any image that represents your organization. It will help you stand out in search results.',
             helperText: 'Recommended dimensions: 908х400 (minimal: 454x200)\nFormat: JPG, PNG'
           }

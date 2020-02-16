@@ -2,7 +2,7 @@ import React from "react";
 
 import { Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { InputField, SelectField, JsonHostingField } from "../Fields";
+import { InputField, SelectField, JsonHostingField, DropzoneField } from "../Fields";
 
 const styles = makeStyles({
   sectionTitle: {
@@ -20,10 +20,28 @@ const WizardSection = (props) => {
   const knownFields = {
     'input': InputField,
     'select': SelectField,
-    'json_hosting': JsonHostingField
+    'json_hosting': JsonHostingField,
+    'dropzone': DropzoneField
   };
 
   fields = fields.map((item, index) => {
+    if (item.type === 'dropzone') {
+      return (
+      <DropzoneField
+        index={index}
+        name={name}
+        type={item.type}
+        orgidJsonPath={item.orgidJsonPath}
+        helperText={item.helperText}
+        required={item.required}
+        values={values}
+        errors={errors}
+        touched={touched}
+        handleChange={handleChange}
+        handleBlur={handleBlur}
+      />
+      )
+    }
     if (knownFields[item.type]) {
       // console.log(`<${item.type} name="${item.name}" `, item);
       return knownFields[item.type]({...item, index, handleChange, handleBlur, values, errors, touched})

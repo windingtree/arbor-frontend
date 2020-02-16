@@ -77,7 +77,7 @@ function Profile(props) {
         {
           ownOrgs.length !== 0 && (
             <div>
-              <Button onClick={() => history.push('/my-organizations/wizard')} className={classes.button}>
+              <Button onClick={() => history.push('/my-organizations/wizard', { type: 'legalEntity' })} className={classes.button}>
                 <Typography variant={'subtitle2'} className={classes.buttonLabel}>+ Add organization</Typography>
               </Button>
             </div>
@@ -92,7 +92,7 @@ function Profile(props) {
               <div className={classes.emptyListTitleWrapper}>
                 <Typography variant={'subtitle2'} className={classes.emptyListTitle}>You don’t have any organizations yet. Let’s create one!</Typography>
               </div>
-              <Button onClick={() => history.push('/my-organizations/wizard')} className={classes.button}>
+              <Button onClick={() => history.push('/my-organizations/wizard', { type: 'legalEntity' })} className={classes.button}>
                 <Typography variant={'subtitle2'} className={classes.buttonLabel}>+ Add your first organization</Typography>
               </Button>
             </div>

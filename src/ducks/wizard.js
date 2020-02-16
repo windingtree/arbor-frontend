@@ -5,9 +5,7 @@ import {createSelector} from "reselect";
 import { keccak256 } from 'js-sha3';
 import { callApi } from "../redux/api";
 
-/**
- * Constants
- */
+//region == [Constants] ================================================================================================
 export const moduleName = 'wizard';
 const prefix = `${appName}/${moduleName}`;
 const EXTEND_ORGID_JSON_REQUEST = `${prefix}/EXTEND_ORGID_JSON_REQUEST`;
@@ -40,6 +38,7 @@ const initialState = {
   orgidHash: null,
   error: null
 };
+//endregion
 
 //region == [Reducer] ==================================================================================================
 export default function reducer( state = initialState, action) {
@@ -104,7 +103,7 @@ export default function reducer( state = initialState, action) {
       return state;
   }
 }
-//endregion===
+//endregion
 
 //region == [Selectors] ================================================================================================
 const stateSelector = state => state[moduleName];

@@ -1,10 +1,15 @@
 import React from 'react';
 import { Container } from "@material-ui/core";
+import _ from 'lodash';
 
 import { WizardStep, WizardStepHosting, WizardStepMetaMask } from "./Components";
-import { wizardConfig } from './config/legalEntity'
+import { wizardConfig as legalEntity } from './config/legalEntity'
+import { wizardConfig as entity} from './config/entity'
 
-const WizardGeneral = () => {
+const WizardGeneral = (props) => {
+  const types = { legalEntity, entity };
+  const wizardConfig = types[_.get(props, 'location.state.type', 'legalEntity')];
+
   const steps = wizardConfig.map((step, index) => {
     switch (step.type) {
       case 'step': return (

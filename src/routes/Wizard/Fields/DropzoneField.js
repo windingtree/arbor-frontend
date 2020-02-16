@@ -61,6 +61,7 @@ function Previews(props) {
     <div style={thumb} key={file.name}>
       <div style={thumbInner}>
         <img
+          alt={'Preview'}
           src={file.preview}
           style={img}
         />
@@ -88,7 +89,6 @@ function Previews(props) {
 
 
 const DropzoneField = (props) => {
-  console.log(props);
   const { saveMediaToArbor, address, orgidJson, type, name, orgidJsonPath, index, helperText, required, values, errors, touched, handleChange, handleBlur } = props;
   const isError = _.get(errors, orgidJsonPath) && _.get(touched, orgidJsonPath);
   return (
@@ -113,10 +113,7 @@ const DropzoneField = (props) => {
         required={required}
         fullWidth
         error={isError}
-        onChange={(...args) => {
-          console.log(args);
-          handleChange(...args)
-        }}
+        onChange={handleChange}
         onBlur={handleBlur}
       />
     </Container>

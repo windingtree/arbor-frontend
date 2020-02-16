@@ -5,7 +5,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
 import { Formik } from "formik";
 import Joi from '@hapi/joi';
-import { saveOrgidUri, selectWizardOrgidUri, selectWizardOrgidJson } from '../../../ducks/wizard'
+import { saveOrgidUri, saveOrgidJsonToArbor, selectWizardOrgidUri, selectWizardOrgidJson } from '../../../ducks/wizard'
+import { selectSignInAddress } from '../../../ducks/signIn'
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -22,7 +23,7 @@ const WizardStepHosting = (props) => {
     setValueHostingType(event.target.value);
   };
 
-  const { index, saveOrgidUri, orgidUri, orgidJson, data: { longName, description, cta } } = props;
+  const { index, saveOrgidUri, saveOrgidJsonToArbor, orgidUri, orgidJson, address, data: { longName, description, cta } } = props;
   // next line collect from "sections" all fields with non empty "schema" to object { [fieldName]:schema }
 
   const data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(orgidJson, null, 2));
@@ -44,9 +45,12 @@ const WizardStepHosting = (props) => {
           return errors;
         }}
         onSubmit={(values, { setSubmitting }) => {
-          console.log('%conSubmit [STEP: HOSTING]', 'background:red; color:white;', values);
+          if (values['hostingType'] === 'default-hosting') {
+            saveOrgidJsonToArbor(address)
+          } else {
+            saveOrgidUri(values['orgidUri']);
+          }
 
-          saveOrgidUri(values['orgidUri']);
           setTimeout(() => {
             alert(JSON.stringify(values, null, 2));
             setSubmitting(false);
@@ -111,12 +115,14 @@ const WizardStepHosting = (props) => {
 const mapStateToProps = state => {
   return {
     orgidUri: selectWizardOrgidUri(state),
-    orgidJson: selectWizardOrgidJson(state)
+    orgidJson: selectWizardOrgidJson(state),
+    address: selectSignInAddress(state)
   }
 };
 
 const mapDispatchToProps = {
-  saveOrgidUri
+  saveOrgidUri,
+  saveOrgidJsonToArbor,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WizardStepHosting);

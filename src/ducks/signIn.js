@@ -15,7 +15,7 @@ const FETCH_SIGN_IN_FAILURE = `${prefix}/FETCH_SIGN_IN_FAILURE`;
 const initialState = {
   isFetching: false,
   isFetched: false,
-  data: {},
+  address: false,
   isAuthenticated: false,
   error: null
 };
@@ -38,7 +38,7 @@ export default function reducer( state = initialState, action ) {
       return Object.assign({}, state, {
         isFetching: false,
         isFetched: true,
-        data: payload,
+        address: payload,
         isAuthenticated: true,
         error: null
       });
@@ -67,6 +67,11 @@ export const selectSignInStatus = createSelector(
 export const selectSignInError = createSelector(
   stateSelector,
   signIn => signIn.error
+);
+
+export const selectSignInAddress = createSelector(
+  stateSelector,
+  signIn => signIn.address
 );
 
 /**

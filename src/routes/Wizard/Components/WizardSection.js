@@ -28,6 +28,7 @@ const WizardSection = (props) => {
     if (item.type === 'dropzone') {
       return (
       <DropzoneField
+        key={index}
         index={index}
         name={name}
         type={item.type}

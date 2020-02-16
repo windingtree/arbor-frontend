@@ -1,3 +1,4 @@
+import {countries} from './countries';
 const Joi = require('@hapi/joi');
 
 export const wizardConfig = [
@@ -52,11 +53,7 @@ export const wizardConfig = [
           {
             type: 'select',
             name: 'Country',
-            options: {
-              'UA': 'Ukraine',
-              'UK': 'United Kingdom',
-              'US': 'United States'
-            },
+            options: countries,
             required: true,
             orgidJsonPath: 'legalEntity.registeredAddress.country'
           },

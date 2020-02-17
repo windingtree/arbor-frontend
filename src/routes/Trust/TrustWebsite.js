@@ -43,6 +43,11 @@ const styles = makeStyles({
         color: colors.primary.black,
         marginRight: '11px'
     },
+    topContent: {
+        position: 'relative',
+        display: 'flex',
+        justifyContent: 'space-between'
+    },
     mainTitle: {
         fontSize: '40px',
         fontWeight: 500,
@@ -72,11 +77,6 @@ const styles = makeStyles({
         color: colors.greyScale.dark,
         marginBottom: '19px',
         lineHeight: '28px'
-    },
-    illustrationWrapper: {
-        position: 'absolute',
-        top: '93px',
-        right: '276px'
     },
     line: {
         display: 'inline-block',
@@ -183,8 +183,8 @@ function TrustWebsite(props) {
                             </Button>
                         </div>
                     </Box>
-                    <Grid item style={{width: '50%'}}>
-                        <div><Typography className={classes.mainTitle} variant={'h1'}>Verify your website </Typography>
+                    <Container className={classes.topContent}>
+                        <div style={{width: '50%'}}><Typography className={classes.mainTitle} variant={'h1'}>Verify your website </Typography>
                             <Card className={classes.websiteAddressCard}>
                                 <img className={classes.websiteAddressGlobe} src={globeIconSvg} alt={"icon"}/>
                                 <Typography className={classes.link}>
@@ -195,10 +195,10 @@ function TrustWebsite(props) {
                                 steps.</Typography>
                             <div className={classes.line}/>
                         </div>
-                        <div className={classes.illustrationWrapper}>
+                        <div>
                             <img src={verifyWebsiteSvg} alt={'illustration'}/>
                         </div>
-                    </Grid>
+                    </Container>
                 </Container>
             </div>
             <Container className={classes.howSection}>

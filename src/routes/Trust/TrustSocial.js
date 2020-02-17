@@ -30,6 +30,7 @@ const styles = makeStyles({
         alignItems: 'center',
     },
     topWithCards: {
+        width: '65%',
         position: 'relative',
         zIndex: 1
     },
@@ -79,11 +80,6 @@ const styles = makeStyles({
         margin: '25px 0 20px 0',
         lineHeight: '28px'
     },
-    illustrationWrapper: {
-        position: 'absolute',
-        top: '93px',
-        right: '276px'
-    },
     line: {
         display: 'inline-block',
         verticalAlign: 'middle',
@@ -101,8 +97,22 @@ const styles = makeStyles({
         padding: '125px 0 106px 0',
         alignItems: 'center'
     },
+    howTitle: {
+        lineHeight: '44px',
+        fontSize: '32px',
+        fontWeight: 500,
+        color: colors.greyScale.darkest
+    },
     stepsCardsWrapper: {
         width: '50%',
+    },
+    verifyCardTitle: {
+        fontWeight: '500',
+        fontSize: '24px',
+        lineHeight: '28px',
+        color: colors.greyScale.darkest,
+        alignSelf: 'center',
+        marginRight: '25px'
     },
     howListDot: {
         position: 'absolute',
@@ -131,7 +141,7 @@ const styles = makeStyles({
         height: '15px',
         marginLeft: '3px'
     },
-    useCasesControllers: {
+    socialsControllers: {
         marginTop: '36px'
     },
     controllerItem: {
@@ -151,7 +161,7 @@ const styles = makeStyles({
         fontWeight: 600,
         lineHeight: 1.1,
         backgroundColor: 'transparent',
-        letterSpacing: '.009em',
+        letterSpacing: '0.1em',
         outline: 'none',
         textTransform: 'uppercase',
         cursor: 'pointer',
@@ -170,7 +180,7 @@ const styles = makeStyles({
 
     buttonVerify: {
         display: 'block',
-        margin: '50px auto 0 auto',
+        marginTop: '25px',
         backgroundImage: colors.gradients.orange,
         boxShadow: '0 2px 12px rgba(12, 64, 78, 0.1)',
         border: `1px solid ${colors.primary.accent}`,
@@ -234,7 +244,7 @@ function TrustSocial(props) {
             listItemsWithPlaceholders.push(listItems[i]);
             if (i !== listItems.length - 1) {
                 listItemsWithPlaceholders.push(<div><img className={classes.howListPlaceholder}
-                                                         src={listPlaceholderSvg}  alt={"|"}/>
+                                                         src={listPlaceholderSvg} alt={"|"}/>
                 </div>)
             }
         }
@@ -265,7 +275,7 @@ function TrustSocial(props) {
                             </Button>
                         </div>
                     </Box>
-                    <Grid item style={{width: '65%'}}>
+                    <Grid item style={{display: 'flex'}}>
                         <div className={classes.topWithCards}>
                             <Typography className={classes.mainTitle} variant={'h1'}>Verify your social
                                 media</Typography>
@@ -296,6 +306,9 @@ function TrustSocial(props) {
             </div>
             <Container className={classes.howSection}>
                 <div>
+                    <Typography className={classes.howTitle}>
+                    How it works
+                </Typography>
                     <Grid container justify={'space-between'}>
                         <Grid className={classes.stepsCardsWrapper}>
                             <Typography className={classes.paragraph}>Copy specific messages for Twitter, Instagram and
@@ -305,17 +318,17 @@ function TrustSocial(props) {
                             {renderSocialsControllers()}
                         </Grid>
                         <Grid style={{width: '45%'}}>
-                            <Box justify='space-between'>
-                                <Typography>
+                            <div style={{display: 'flex'}}>
+                                <Typography className={classes.verifyCardTitle}>
                                     {props.socials[activeSocial].title}
                                 </Typography> <img src={props.socials[activeSocial].logo} alt={"logo"}/>
-                            </Box>
-                            <ul style={{marginTop: '42px'}}>
+                            </div>
+                            <ul style={{marginTop: '30px'}}>
                                 {renderStepsList(props.socials[activeSocial].steps)}
                             </ul>
                             <Button className={classes.buttonVerify}>
                                 <Typography variant={'subtitle2'} noWrap className={classes.buttonVerifyTitle}>
-                                    Verify Twitter
+                                    {props.socials[activeSocial].button}
                                 </Typography>
                             </Button>
                         </Grid>

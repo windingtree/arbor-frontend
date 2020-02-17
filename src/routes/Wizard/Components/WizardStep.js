@@ -16,7 +16,7 @@ const WizardStep = (props) => {
     {};
 
   return (
-    <Container>
+    <div>
       <Typography variant={'h3'}>Step: {longName}</Typography>
       <div>{description}</div>
 
@@ -80,7 +80,7 @@ const WizardStep = (props) => {
           </form>
         )}
       </Formik>
-    </Container>
+    </div>
   )
 };
 

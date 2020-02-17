@@ -73,6 +73,11 @@ const theme = createMuiTheme({
         '@media (min-width: 1280px)': {
           maxWidth: '1146px'
         }
+      },
+      maxWidthSm: {
+        '@media (min-width: 600px)': {
+          maxWidth: '640px',
+        }
       }
     },
     MuiInputBase: {

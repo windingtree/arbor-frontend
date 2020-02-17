@@ -53,10 +53,10 @@ const WizardSection = (props) => {
   });
 
   return (
-    <Container>
+    <div>
       <Typography className={classes.sectionTitle}>{name}</Typography>
       {fields}
-    </Container>
+    </div>
   );
 };
 

@@ -74,8 +74,7 @@ const styles = makeStyles({
 
 function Search(props) {
     const classes = styles();
-    const request = history.location.state.request;
-    console.log('req', history.location);
+    const request = history.location.state && history.location.state.request;
     const [searchValue, setSearchValue] = useState('');
     const {items, meta: {page, per_page, total, pages}, isFetched} = props;
 
@@ -141,12 +140,14 @@ function Search(props) {
     };
 
     useEffect(() => {
-        if (request !== "") {
-            handleSearchFromHome();
-            props.fetchSearchOrganizations({value: request, page: page, per_page: per_page});
-        } else {
-            console.log('Should return list of all organizations')
-            //props.fetchSearchOrganizations({value: request, page: page, per_page: per_page});
+        if (request) {
+            if (request !== "") {
+                handleSearchFromHome();
+                props.fetchSearchOrganizations({value: request, page: page, per_page: per_page});
+            } else {
+                console.log('Should return list of all organizations')
+                //props.fetchSearchOrganizations({value: request, page: page, per_page: per_page});
+            }
         }
     }, [request]);
 

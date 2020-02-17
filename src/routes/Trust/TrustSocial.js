@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import history from '../../redux/history';
+import copy from 'copy-to-clipboard';
 
 import {Container, Typography, Grid, Card, Box, Button} from '@material-ui/core';
 import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
@@ -13,6 +14,9 @@ import instagramIconSvg from '../../assets/SvgComponents/instagram-icon.svg';
 import twitterIconSvg from '../../assets/SvgComponents/twitter-icon.svg';
 import listPlaceholderSvg from '../../assets/SvgComponents/list-placeholder.svg';
 import twitterBig from '../../assets/SvgComponents/twitter-big.svg';
+import facebookBig from '../../assets/SvgComponents/facebook-big.svg';
+import instagramBig from '../../assets/SvgComponents/instagram-big.svg';
+import copyIcon from '../../assets/SvgComponents/copy-icon.svg';
 
 import colors from '../../styles/colors';
 
@@ -177,7 +181,9 @@ const styles = makeStyles({
         backgroundColor: colors.primary.accent,
         transition: 'width .3s ease'
     },
-
+    verifyingCode: {
+        color: colors.primary.accent,
+    },
     buttonVerify: {
         display: 'block',
         marginTop: '25px',
@@ -231,11 +237,32 @@ function TrustSocial(props) {
         )
     };
 
-    const renderStepsList = (steps) => {
-        let listItems = [...steps.map((text) => <li className={classes.howTextListItem}>
-                <span className={classes.howListDot}/>
-                <Typography className={classes.howListTexts}>{text}</Typography>
-            </li>
+    const copyToClipboardText = (verifyingCode) => {
+        return <span onClick={copyToClipboard(verifyingCode)}>
+            <text className={classes.verifyingCode}>{verifyingCode}</text>
+            <img src={copyIcon} style={{marginLeft: '10px'}} alt={"copy"}/>
+        </span>
+    };
+
+    const copyToClipboard = (verifyingCode) => () => {
+        copy(verifyingCode);
+    };
+
+    const renderStepsList = (steps, verifyingCode) => {
+        let listItems = [...steps.map((text) => {
+                let verifyingCodePlaceholder = text.indexOf('%');
+                let transformedText = text;
+                console.log(verifyingCodePlaceholder);
+                if (verifyingCodePlaceholder !== -1) {
+                    transformedText = transformedText.slice(0, verifyingCodePlaceholder);
+                }
+                return <li className={classes.howTextListItem}>
+                    <span className={classes.howListDot}/>
+                    <Typography
+                        className={classes.howListTexts}>{transformedText}
+                        {verifyingCodePlaceholder > 0 ? copyToClipboardText(verifyingCode) : null}</Typography>
+                </li>
+            }
         )];
 
         let listItemsWithPlaceholders = [];
@@ -259,6 +286,8 @@ function TrustSocial(props) {
         if (activeSocial === itemIndex) return;
         setActiveSocial(itemIndex);
     };
+
+    const verifyingCodes = [null, 'OxBLABLABLA_FACEBOOK', '0xBLABLA_INSTAGRAM'];
 
     return (
         <div>
@@ -307,8 +336,8 @@ function TrustSocial(props) {
             <Container className={classes.howSection}>
                 <div>
                     <Typography className={classes.howTitle}>
-                    How it works
-                </Typography>
+                        How it works
+                    </Typography>
                     <Grid container justify={'space-between'}>
                         <Grid className={classes.stepsCardsWrapper}>
                             <Typography className={classes.paragraph}>Copy specific messages for Twitter, Instagram and
@@ -324,7 +353,7 @@ function TrustSocial(props) {
                                 </Typography> <img src={props.socials[activeSocial].logo} alt={"logo"}/>
                             </div>
                             <ul style={{marginTop: '30px'}}>
-                                {renderStepsList(props.socials[activeSocial].steps)}
+                                {renderStepsList(props.socials[activeSocial].steps, verifyingCodes[activeSocial])}
                             </ul>
                             <Button className={classes.buttonVerify}>
                                 <Typography variant={'subtitle2'} noWrap className={classes.buttonVerifyTitle}>
@@ -353,23 +382,23 @@ TrustSocial.defaultProps = {
             button: "Verify Twitter"
         },
         {
-            logo: twitterBig,
+            logo: facebookBig,
             title: "Verify your Facebook account",
             steps: [
+                "Copy this text: %verifying code%",
                 "Click on Verify Facebook button",
-                "Your Facebook account will pop up with a draft message",
-                "Post this message to your feed",
+                "Post that as a comment under one of your posts on behalf of your corporate profile",
                 "Congratulations, your account is verified!"
             ],
             button: "Verify Facebook"
         },
         {
-            logo: twitterBig,
+            logo: instagramBig,
             title: "Verify your Instagram account",
             steps: [
+                "Copy this text: %verifying code%",
                 "Click on Verify Instagram button",
-                "Your Instagram account will pop up with a draft message",
-                "Post this message to your feed",
+                "Post that as a comment under one of your posts on behalf of your corporate profile",
                 "Congratulations, your account is verified!"
             ],
             button: "Verify Instagram"

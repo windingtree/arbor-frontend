@@ -314,7 +314,7 @@ function Home(props) {
               </Typography>
             </div>
             <div className={classes.searchForm}>
-              <SearchComponent searchValue={searchValue} handleSearchValue={handleSearch} fetchSearchResult={() => history.push('search', { state: { request: searchValue }})}/>
+              <SearchComponent searchValue={searchValue} handleSearchValue={handleSearch} fetchSearchResult={() => history.push('search', { request: searchValue })} />
             </div>
           </div>
           <div className={classes.illustrationWrapper}>

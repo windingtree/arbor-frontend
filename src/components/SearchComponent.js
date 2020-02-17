@@ -45,7 +45,7 @@ const styles = makeStyles({
 
 export default function SearchComponent(props) {
   const classes = styles();
-  const { searchValue, handleSearchValue, fetchSearchResult, handleFocus } = props;
+  const { searchValue, handleSearchValue, fetchSearchResult, handleFocus, handleKeyPressed } = props;
 
   return (
     <div className={classes.searchForm}>
@@ -66,6 +66,7 @@ export default function SearchComponent(props) {
           value={searchValue}
           onChange={handleSearchValue}
           onFocus={handleFocus}
+          onKeyPress={handleKeyPressed}
         />
       </div>
       <div className={classes.searchButtonWrapper}>

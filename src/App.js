@@ -109,6 +109,40 @@ const theme = createMuiTheme({
           color: colors.secondary.green
         }
       },
+    },
+    MuiStepLabel: {
+      root: {
+        alignItems: 'flex-end',
+        padding: '6px',
+        backgroundColor: colors.greyScale.lighter,
+        borderRadius: '8px',
+      },
+      label: {
+        fontSize: '14px',
+        textAlign: 'start',
+        fontWeight: 500,
+        color: colors.greyScale.dark,
+        '&.MuiStepLabel-alternativeLabel': {
+          fontSize: '14px',
+          textAlign: 'start',
+          fontWeight: 500,
+          color: colors.greyScale.dark,
+        },
+        '&.MuiStepLabel-active': {
+          color: colors.primary.white
+        },
+        '&.MuiStepLabel-completed': {
+          color: colors.primary.white
+        },
+      },
+      active: {
+        //TODO find out how handle active and complete statuses at root
+        backgroundImage: colors.gradients.greenDeg
+      },
+      completed: {
+        backgroundColor: colors.secondary.green,
+        color: colors.primary.white
+      }
     }
   }
 });

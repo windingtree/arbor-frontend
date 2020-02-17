@@ -6,6 +6,10 @@ import { Container, Button, Typography, Stepper, StepConnector, Step, StepLabel 
 
 import BgPattern from '../../assets/SvgComponents/wizard-pattern.svg';
 import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
+import StepperGeneralIcon from '../../assets/SvgComponents/StepperGeneralIcon';
+import StepperDetailsIcon from '../../assets/SvgComponents/StepperDetailsIcon';
+import StepperHostingIcon from '../../assets/SvgComponents/StepperHostingIcon';
+import StepperMetaMaskIcon from '../../assets/SvgComponents/StepperMetaMaskIcon';
 import colors from '../../styles/colors';
 
 import { WizardStep, WizardStepDetails, WizardStepHosting, WizardStepMetaMask } from "./Components";
@@ -60,24 +64,66 @@ const styles = makeStyles({
     fontWeight: 500,
     lineHeight: 1.14,
     color: colors.greyScale.darkest
-  }
+  },
 });
 
 const StepperStyles = withStyles({
-
+  alternativeLabel: {
+    color: colors.greyScale.common,
+  },
+  active: {
+    color: colors.primary.white
+  },
+  completed: {
+    color: colors.primary.white
+  },
+  line: {
+    display: 'none'
+  }
 })(StepConnector);
+
+const useStepStyles = makeStyles({
+  root: {
+    color: colors.greyScale.common
+  },
+  homeIcon: {
+    width: '22px',
+    height: '22px',
+    fontSize: 'inherit'
+  },
+  detailsIcon: {
+    width: '22px',
+    height: '22px',
+    fontSize: 'inherit'
+  },
+  hostingIcon: {
+    width: '22px',
+    height: '22px',
+    fontSize: 'inherit'
+  },
+  metaMaskIcon: {
+    width: '22px',
+    height: '22px',
+    fontSize: 'inherit'
+  },
+  active: {
+    color: colors.primary.white
+  },
+  completed: {
+    color: colors.primary.white
+  },
+});
 
 const WizardGeneral = (props) => {
   const classes = styles();
   const [activeStep, setActiveStep] = useState(0);
-  const currentStep = history.location.pathname;
   const locationType = history.location.state.type;
   const types = { legalEntity, entity };
   const wizardConfig = types[_.get(props, 'location.state.type', 'legalEntity')];
 
   function getSteps() {
     const steps = [];
-    wizardConfig.map((step) => steps.push(step.name));
+    wizardConfig.map((step, index) => steps.push(`${index + 1}. \n ${step.name}`));
     return steps;
   }
 
@@ -86,8 +132,6 @@ const WizardGeneral = (props) => {
     wizardConfig.map((item, index) => {
       if ( step === index ) return content = item;
     });
-    console.log(wizardConfig);
-    console.log(content);
 
     switch (step) {
       case 0: return (
@@ -121,6 +165,33 @@ const WizardGeneral = (props) => {
       );
     }
   };
+
+  function StepStyle(props) {
+    const classes = useStepStyles();
+    const { active, completed } = props;
+
+    let icons;
+    if(wizardConfig.length === 3) {
+      icons = {
+        1: <StepperGeneralIcon viewBox={'0 0 22 20'} className={classes.homeIcon}/>,
+        2: <StepperHostingIcon viewBox={'0 0 24 24'} className={classes.hostingIcon}/>,
+        3: <StepperMetaMaskIcon viewBox={'0 0 24 24'} className={classes.metaMaskIcon}/>
+      }
+    } else {
+      icons = {
+        1: <StepperGeneralIcon viewBox={'0 0 22 20'} className={classes.homeIcon}/>,
+        2: <StepperDetailsIcon viewBox={'0 0 20 18'} className={classes.detailsIcon}/>,
+        3: <StepperHostingIcon viewBox={'0 0 24 24'} className={classes.hostingIcon}/>,
+        4: <StepperMetaMaskIcon viewBox={'0 0 24 24'} className={classes.metaMaskIcon}/>
+      }
+    }
+
+    return (
+      <div className={[classes.root, active ? classes.active: null, completed ? classes.completed : null].join(' ')}>
+        {icons[String(props.icon)]}
+      </div>
+    )
+  }
 
   const steps = getSteps();
 
@@ -169,8 +240,13 @@ const WizardGeneral = (props) => {
             </div>
             <Stepper alternativeLabel activeStep={activeStep} connector={<StepperStyles/>}>
               {steps.map(label => (
-                <Step key={label}>
-                  <StepLabel style={{ backgroundColor: colors.secondary.green }}>{label}</StepLabel>
+                <Step key={label}
+                      className={classes.stepItem}
+                      style={{
+                        width: locationType === 'legalEntity' ? '138px' : '104px'
+                      }}
+                >
+                  <StepLabel StepIconComponent={StepStyle}>{label}</StepLabel>
                 </Step>
               ))}
             </Stepper>

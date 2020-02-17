@@ -23,7 +23,7 @@ const WizardStepHosting = (props) => {
     setValueHostingType(event.target.value);
   };
 
-  const { index, saveOrgidUri, saveOrgidJsonToArbor, orgidUri, orgidJson, address, data: { longName, description, cta } } = props;
+  const { index, saveOrgidUri, saveOrgidJsonToArbor, orgidUri, orgidJson, address, data: { longName, description, cta }, handleNext } = props;
   // next line collect from "sections" all fields with non empty "schema" to object { [fieldName]:schema }
 
   const data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(orgidJson, null, 2));
@@ -50,6 +50,7 @@ const WizardStepHosting = (props) => {
           } else {
             saveOrgidUri(values['orgidUri']);
           }
+          handleNext();
 
           setTimeout(() => {
             alert(JSON.stringify(values, null, 2));

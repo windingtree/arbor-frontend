@@ -8,7 +8,7 @@ import { extendOrgidJson, selectWizardOrgidJson } from '../../../ducks/wizard'
 import { WizardSection } from '../Components';
 
 
-const WizardStep = (props) => {
+const WizardStepDetails = (props) => {
   const { extendOrgidJson, data: { longName, description, sections, cta }, handleNext } = props;
   // next line collect from "sections" all fields with non empty "schema" to object { [fieldName]:schema }
   const validators = sections ?
@@ -91,4 +91,4 @@ const mapDispatchToProps = {
   extendOrgidJson
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(WizardStep);
+export default connect(mapStateToProps, mapDispatchToProps)(WizardStepDetails);

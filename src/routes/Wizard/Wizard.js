@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import history from '../../redux/history';
 import _ from 'lodash';
-import { makeStyles } from '@material-ui/core/styles';
-import { Container, Button, Typography } from "@material-ui/core";
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { Container, Button, Typography, Stepper, StepConnector, Step, StepLabel } from "@material-ui/core";
 
 import BgPattern from '../../assets/SvgComponents/wizard-pattern.svg';
 import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
 import colors from '../../styles/colors';
 
-import { WizardStep, WizardStepHosting, WizardStepMetaMask } from "./Components";
+import { WizardStep, WizardStepDetails, WizardStepHosting, WizardStepMetaMask } from "./Components";
 import { wizardConfig as legalEntity } from './config/legalEntity'
 import { wizardConfig as entity} from './config/entity'
 
@@ -63,43 +63,89 @@ const styles = makeStyles({
   }
 });
 
+const StepperStyles = withStyles({
+
+})(StepConnector);
+
 const WizardGeneral = (props) => {
   const classes = styles();
+  const [activeStep, setActiveStep] = useState(0);
   const currentStep = history.location.pathname;
-  const locationType = history.location.state;
+  const locationType = history.location.state.type;
   const types = { legalEntity, entity };
   const wizardConfig = types[_.get(props, 'location.state.type', 'legalEntity')];
 
-  const steps = wizardConfig.map((step, index) => {
-    switch (step.type) {
-      case 'step': return (
-        <WizardStep data={step} key={index}/>
+  function getSteps() {
+    const steps = [];
+    wizardConfig.map((step) => steps.push(step.name));
+    return steps;
+  }
+
+  const stepsContent = (step) => {
+    let content;
+    wizardConfig.map((item, index) => {
+      if ( step === index ) return content = item;
+    });
+    console.log(wizardConfig);
+    console.log(content);
+
+    switch (step) {
+      case 0: return (
+        <WizardStep data={content} handleNext={handleNext} key={content.name}/>
       );
-      case 'step_hosting': return (
-        <WizardStepHosting data={step} key={index}/>
-      );
-      case "step_metamask": return (
-        <WizardStepMetaMask data={step} key={index}/>
+      case 1:
+        if(content.type === 'step') {
+          return (
+            <WizardStepDetails data={content} handleNext={handleNext} key={content.name}/>
+          )
+        } else {
+          return (
+            <WizardStepHosting data={content} handleNext={handleNext} key={content.name}/>
+          );
+        }
+      case 2:
+        if(content.type === 'step_hosting') {
+          return (
+            <WizardStepHosting data={content} handleNext={handleNext} key={content.name}/>
+          )
+        } else {
+          return (
+            <WizardStepMetaMask data={content} handleNext={handleNext} key={step.name}/>
+          );
+        }
+      case 3: return (
+        <WizardStepMetaMask data={content} handleNext={handleNext} key={step.name}/>
       );
       default: return (
-        <div key={index}>Step <pre>${step.name}</pre> has unknown type: <pre>{step.type}</pre></div>
+        <div key={step.type}>Step <pre>${step.name}</pre> has unknown type: <pre>{step.type}</pre></div>
       );
     }
-  });
+  };
+
+  const steps = getSteps();
+
+  const handleNext = () => {
+    setActiveStep(prevActiveStep => prevActiveStep + 1);
+  };
+
+  const handleBack = () => {
+    setActiveStep(prevActiveStep => prevActiveStep - 1);
+  };
 
   return (
     <div className={classes.mainContainer}>
       <Container>
         <div className={classes.screenHeading}>
           <div className={classes.buttonWrapper}>
-            <Button onClick={history.goBack}>
+            <Button onClick={activeStep === 0 ? history.goBack : handleBack}>
               <Typography variant={'caption'} className={classes.buttonLabel}>
                 <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
                 {
-                  currentStep !== '/my-organizations/wizard' ? (
-                    'Back to previous step'
-                  ) : (
+                  activeStep === 0 ? (
                     'Back to all organizations'
+
+                  ) : (
+                    'Back to previous step'
                   )
                 }
               </Typography>
@@ -121,14 +167,22 @@ const WizardGeneral = (props) => {
                 }
               </Typography>
             </div>
-
-            {steps}
-
+            <Stepper alternativeLabel activeStep={activeStep} connector={<StepperStyles/>}>
+              {steps.map(label => (
+                <Step key={label}>
+                  <StepLabel style={{ backgroundColor: colors.secondary.green }}>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+            {
+              stepsContent(activeStep)
+            }
           </div>
         </Container>
       </Container>
     </div>
   )
 };
+
 
 export default WizardGeneral;

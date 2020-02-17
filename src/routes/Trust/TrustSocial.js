@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import history from '../../redux/history';
+import copy from 'copy-to-clipboard';
 
 import {Container, Typography, Grid, Card, Box, Button} from '@material-ui/core';
 import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
@@ -13,6 +14,9 @@ import instagramIconSvg from '../../assets/SvgComponents/instagram-icon.svg';
 import twitterIconSvg from '../../assets/SvgComponents/twitter-icon.svg';
 import listPlaceholderSvg from '../../assets/SvgComponents/list-placeholder.svg';
 import twitterBig from '../../assets/SvgComponents/twitter-big.svg';
+import facebookBig from '../../assets/SvgComponents/facebook-big.svg';
+import instagramBig from '../../assets/SvgComponents/instagram-big.svg';
+import copyIcon from '../../assets/SvgComponents/copy-icon.svg';
 
 import colors from '../../styles/colors';
 
@@ -30,6 +34,7 @@ const styles = makeStyles({
         alignItems: 'center',
     },
     topWithCards: {
+        width: '65%',
         position: 'relative',
         zIndex: 1
     },
@@ -79,11 +84,6 @@ const styles = makeStyles({
         margin: '25px 0 20px 0',
         lineHeight: '28px'
     },
-    illustrationWrapper: {
-        position: 'absolute',
-        top: '93px',
-        right: '276px'
-    },
     line: {
         display: 'inline-block',
         verticalAlign: 'middle',
@@ -101,8 +101,22 @@ const styles = makeStyles({
         padding: '125px 0 106px 0',
         alignItems: 'center'
     },
+    howTitle: {
+        lineHeight: '44px',
+        fontSize: '32px',
+        fontWeight: 500,
+        color: colors.greyScale.darkest
+    },
     stepsCardsWrapper: {
         width: '50%',
+    },
+    verifyCardTitle: {
+        fontWeight: '500',
+        fontSize: '24px',
+        lineHeight: '28px',
+        color: colors.greyScale.darkest,
+        alignSelf: 'center',
+        marginRight: '25px'
     },
     howListDot: {
         position: 'absolute',
@@ -131,7 +145,7 @@ const styles = makeStyles({
         height: '15px',
         marginLeft: '3px'
     },
-    useCasesControllers: {
+    socialsControllers: {
         marginTop: '36px'
     },
     controllerItem: {
@@ -151,7 +165,7 @@ const styles = makeStyles({
         fontWeight: 600,
         lineHeight: 1.1,
         backgroundColor: 'transparent',
-        letterSpacing: '.009em',
+        letterSpacing: '0.1em',
         outline: 'none',
         textTransform: 'uppercase',
         cursor: 'pointer',
@@ -167,10 +181,12 @@ const styles = makeStyles({
         backgroundColor: colors.primary.accent,
         transition: 'width .3s ease'
     },
-
+    verifyingCode: {
+        color: colors.primary.accent,
+    },
     buttonVerify: {
         display: 'block',
-        margin: '50px auto 0 auto',
+        marginTop: '25px',
         backgroundImage: colors.gradients.orange,
         boxShadow: '0 2px 12px rgba(12, 64, 78, 0.1)',
         border: `1px solid ${colors.primary.accent}`,
@@ -221,11 +237,32 @@ function TrustSocial(props) {
         )
     };
 
-    const renderStepsList = (steps) => {
-        let listItems = [...steps.map((text) => <li className={classes.howTextListItem}>
-                <span className={classes.howListDot}/>
-                <Typography className={classes.howListTexts}>{text}</Typography>
-            </li>
+    const copyToClipboardText = (verifyingCode) => {
+        return <span onClick={copyToClipboard(verifyingCode)}>
+            <text className={classes.verifyingCode}>{verifyingCode}</text>
+            <img src={copyIcon} style={{marginLeft: '10px'}} alt={"copy"}/>
+        </span>
+    };
+
+    const copyToClipboard = (verifyingCode) => () => {
+        copy(verifyingCode);
+    };
+
+    const renderStepsList = (steps, verifyingCode) => {
+        let listItems = [...steps.map((text) => {
+                let verifyingCodePlaceholder = text.indexOf('%');
+                let transformedText = text;
+                console.log(verifyingCodePlaceholder);
+                if (verifyingCodePlaceholder !== -1) {
+                    transformedText = transformedText.slice(0, verifyingCodePlaceholder);
+                }
+                return <li className={classes.howTextListItem}>
+                    <span className={classes.howListDot}/>
+                    <Typography
+                        className={classes.howListTexts}>{transformedText}
+                        {verifyingCodePlaceholder > 0 ? copyToClipboardText(verifyingCode) : null}</Typography>
+                </li>
+            }
         )];
 
         let listItemsWithPlaceholders = [];
@@ -234,7 +271,7 @@ function TrustSocial(props) {
             listItemsWithPlaceholders.push(listItems[i]);
             if (i !== listItems.length - 1) {
                 listItemsWithPlaceholders.push(<div><img className={classes.howListPlaceholder}
-                                                         src={listPlaceholderSvg}  alt={"|"}/>
+                                                         src={listPlaceholderSvg} alt={"|"}/>
                 </div>)
             }
         }
@@ -249,6 +286,8 @@ function TrustSocial(props) {
         if (activeSocial === itemIndex) return;
         setActiveSocial(itemIndex);
     };
+
+    const verifyingCodes = [null, 'OxBLABLABLA_FACEBOOK', '0xBLABLA_INSTAGRAM'];
 
     return (
         <div>
@@ -265,7 +304,7 @@ function TrustSocial(props) {
                             </Button>
                         </div>
                     </Box>
-                    <Grid item style={{width: '65%'}}>
+                    <Grid item style={{display: 'flex'}}>
                         <div className={classes.topWithCards}>
                             <Typography className={classes.mainTitle} variant={'h1'}>Verify your social
                                 media</Typography>
@@ -296,6 +335,9 @@ function TrustSocial(props) {
             </div>
             <Container className={classes.howSection}>
                 <div>
+                    <Typography className={classes.howTitle}>
+                        How it works
+                    </Typography>
                     <Grid container justify={'space-between'}>
                         <Grid className={classes.stepsCardsWrapper}>
                             <Typography className={classes.paragraph}>Copy specific messages for Twitter, Instagram and
@@ -305,17 +347,17 @@ function TrustSocial(props) {
                             {renderSocialsControllers()}
                         </Grid>
                         <Grid style={{width: '45%'}}>
-                            <Box justify='space-between'>
-                                <Typography>
+                            <div style={{display: 'flex'}}>
+                                <Typography className={classes.verifyCardTitle}>
                                     {props.socials[activeSocial].title}
                                 </Typography> <img src={props.socials[activeSocial].logo} alt={"logo"}/>
-                            </Box>
-                            <ul style={{marginTop: '42px'}}>
-                                {renderStepsList(props.socials[activeSocial].steps)}
+                            </div>
+                            <ul style={{marginTop: '30px'}}>
+                                {renderStepsList(props.socials[activeSocial].steps, verifyingCodes[activeSocial])}
                             </ul>
                             <Button className={classes.buttonVerify}>
                                 <Typography variant={'subtitle2'} noWrap className={classes.buttonVerifyTitle}>
-                                    Verify Twitter
+                                    {props.socials[activeSocial].button}
                                 </Typography>
                             </Button>
                         </Grid>
@@ -340,23 +382,23 @@ TrustSocial.defaultProps = {
             button: "Verify Twitter"
         },
         {
-            logo: twitterBig,
+            logo: facebookBig,
             title: "Verify your Facebook account",
             steps: [
+                "Copy this text: %verifying code%",
                 "Click on Verify Facebook button",
-                "Your Facebook account will pop up with a draft message",
-                "Post this message to your feed",
+                "Post that as a comment under one of your posts on behalf of your corporate profile",
                 "Congratulations, your account is verified!"
             ],
             button: "Verify Facebook"
         },
         {
-            logo: twitterBig,
+            logo: instagramBig,
             title: "Verify your Instagram account",
             steps: [
+                "Copy this text: %verifying code%",
                 "Click on Verify Instagram button",
-                "Your Instagram account will pop up with a draft message",
-                "Post this message to your feed",
+                "Post that as a comment under one of your posts on behalf of your corporate profile",
                 "Congratulations, your account is verified!"
             ],
             button: "Verify Instagram"

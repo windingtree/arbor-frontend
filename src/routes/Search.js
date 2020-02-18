@@ -3,9 +3,10 @@ import {connect} from 'react-redux';
 import history from '../redux/history';
 import {Container, Grid, Typography} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
-//actions
+//actions and selectors
 import {
     fetchSearchOrganizations,
+    fetchAllOrganizations,
     isFetchedSelector,
     metaSelector,
     itemsSelector
@@ -144,11 +145,10 @@ function Search(props) {
             if (request !== "") {
                 handleSearchFromHome();
                 props.fetchSearchOrganizations({value: request, page: page, per_page: per_page});
-            } else {
-                console.log('Should return list of all organizations')
-                //props.fetchSearchOrganizations({value: request, page: page, per_page: per_page});
             }
+            props.fetchAllOrganizations({page: page, per_page: per_page});
         }
+        props.fetchAllOrganizations({page: page, per_page: per_page});
     }, [request]);
 
     return (
@@ -216,7 +216,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-    fetchSearchOrganizations
+    fetchSearchOrganizations,
+    fetchAllOrganizations
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Search);

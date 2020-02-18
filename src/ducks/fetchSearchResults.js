@@ -9,6 +9,9 @@ import history from '../redux/history';
  */
 export const moduleName = 'searchResults';
 const prefix = `${appName}/${moduleName}`;
+const FETCH_ALL_ORGANIZATIONS_REQUEST = `${prefix}/FETCH_ALL_ORGANIZATIONS_REQUEST`;
+const FETCH_ALL_ORGANIZATIONS_SUCCESS = `${prefix}/FETCH_ALL_ORGANIZATIONS_SUCCESS`;
+const FETCH_ALL_ORGANIZATIONS_FAILURE = `${prefix}/FETCH_ALL_ORGANIZATIONS_FAILURE`;
 const FETCH_SEARCH_ORGANIZATIONS_REQUEST = `${prefix}/FETCH_SEARCH_ORGANIZATIONS_REQUEST`;
 const FETCH_SEARCH_ORGANIZATIONS_SUCCESS = `${prefix}/FETCH_SEARCH_ORGANIZATIONS_SUCCESS`;
 const FETCH_SEARCH_ORGANIZATIONS_FAILURE = `${prefix}/FETCH_SEARCH_ORGANIZATIONS_FAILURE`;
@@ -34,6 +37,7 @@ export default function reducer( state = initialState, action) {
   const { type, payload, error } = action;
 
   switch(type) {
+    case FETCH_ALL_ORGANIZATIONS_REQUEST:
     case FETCH_SEARCH_ORGANIZATIONS_REQUEST:
     case FETCH_SEARCH_ORGANIZATIONS_BY_TYPE_REQUEST:
       return Object.assign({}, state, {
@@ -41,6 +45,7 @@ export default function reducer( state = initialState, action) {
         isFetched: false,
         error: null
       });
+    case FETCH_ALL_ORGANIZATIONS_SUCCESS:
     case FETCH_SEARCH_ORGANIZATIONS_SUCCESS:
     case FETCH_SEARCH_ORGANIZATIONS_BY_TYPE_SUCCESS:
       return Object.assign({}, state, {
@@ -50,6 +55,7 @@ export default function reducer( state = initialState, action) {
         meta: payload.meta,
         error: null
       });
+    case FETCH_ALL_ORGANIZATIONS_FAILURE:
     case FETCH_SEARCH_ORGANIZATIONS_FAILURE:
     case FETCH_SEARCH_ORGANIZATIONS_BY_TYPE_FAILURE:
       return Object.assign({}, state, {
@@ -85,6 +91,27 @@ export const metaSelector = createSelector(
 /**
  * Actions
  * */
+export function fetchAllOrganizations(payload) {
+  return {
+    type: FETCH_ALL_ORGANIZATIONS_REQUEST,
+    payload
+  }
+}
+
+function fetchAllOrganizationsSuccess(payload) {
+  return {
+    type: FETCH_ALL_ORGANIZATIONS_SUCCESS,
+    payload
+  }
+}
+
+function fetchAllOrganizationsFailure(error) {
+  return {
+    type: FETCH_ALL_ORGANIZATIONS_FAILURE,
+    error
+  }
+}
+
 export function fetchSearchOrganizations(payload) {
   return {
     type: FETCH_SEARCH_ORGANIZATIONS_REQUEST,
@@ -130,6 +157,16 @@ function fetchSearchOrganizationsByTypeFailure(error) {
 /**
  * Sagas
  * */
+function* fetchAllOrganizationsSaga({payload}) {
+  try {
+    const result = yield call(ApiFetchAllOrganizations, payload);
+
+    yield put(fetchAllOrganizationsSuccess(result));
+  } catch(error) {
+    yield put(fetchAllOrganizationsFailure(error));
+  }
+}
+
 function* fetchSearchOrganizationsSaga({payload}) {
   try {
     const result = yield call(ApiFetchSearchOrganizations, payload);
@@ -153,6 +190,7 @@ function* fetchSearchOrganizationsByTypeSaga({payload}) {
 
 export const saga = function* () {
   return yield all([
+    takeEvery(FETCH_ALL_ORGANIZATIONS_REQUEST, fetchAllOrganizationsSaga),
     takeEvery(FETCH_SEARCH_ORGANIZATIONS_REQUEST, fetchSearchOrganizationsSaga),
     takeEvery(FETCH_SEARCH_ORGANIZATIONS_BY_TYPE_REQUEST, fetchSearchOrganizationsByTypeSaga),
   ])
@@ -161,6 +199,10 @@ export const saga = function* () {
 /**
  * Api
  * */
+function ApiFetchAllOrganizations(data) {
+  return callApi(`orgids?page[number]=${data.page}&page[size]=${data.per_page}`);
+}
+
 function ApiFetchSearchOrganizations(data) {
   return callApi(`orgids/?name=${data.value}&page[number]=${data.page}&page[size]=${data.per_page}`);
 }

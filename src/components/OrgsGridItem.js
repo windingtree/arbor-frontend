@@ -211,11 +211,11 @@ const styles = makeStyles({
 export default function OrgsGridItem(props) {
   const classes = styles();
   const {
-    id,
+    orgid,
     img,
     isSub,
-    type,
-    trustLevel,
+    orgidType,
+    proofsQty,
     name,
     subs,
     entityName,
@@ -234,8 +234,8 @@ export default function OrgsGridItem(props) {
     <Card className={isSub ? [classes.item, classes.itemSubOrg].join(' ') : classes.item} style={{ backgroundColor: error ? colors.secondary.error : colors.primary.white }}>
       <CardContent style={{ padding: '12px' }}>
         <Link to={{
-          pathname: `/organization/${id}`,
-          state: { id: id }
+          pathname: `/organization/${orgid}`,
+          state: { id: orgid }
         }} className={classes.linkToProfileView}
         >
           {
@@ -253,11 +253,10 @@ export default function OrgsGridItem(props) {
         {
           !error ? isSub ? (
             <div className={classes.itemMarksWrapper}>
-              <Typography variant={'subtitle2'} className={classes.itemMark}>Org Unit</Typography>
               {
-                type && (
-                  <Typography variant={'subtitle2'} className={classes.itemMark} style={{ backgroundColor: bgColorsForTypes[type] }}>
-                    {type}
+                orgidType && (
+                  <Typography variant={'subtitle2'} className={classes.itemMark} style={{ backgroundColor: bgColorsForTypes[orgidType] }}>
+                    {orgidType}
                   </Typography>
                 )
               }
@@ -267,19 +266,19 @@ export default function OrgsGridItem(props) {
         {
           !error ? (
             <div className={classes.idInfoWrapper}>
-              <CopyIdComponent id={id} leftElement={'ID: '}/>
+              <CopyIdComponent id={orgid} leftElement={'ID: '}/>
               <div className={classes.trustLevelInfo}>
                 <TrustLevelIcon viewBox={'0 0 16 16'} className={classes.icon}/>
                 <Typography variant={'subtitle2'} className={classes.trustLevelValue}>
-                  {trustLevel}
+                  {proofsQty}
                 </Typography>
               </div>
             </div>
           ) : null
         }
         <Link to={{
-          pathname: `/organization/${id}`,
-          state: { id: id }
+          pathname: `/organization/${orgid}`,
+          state: { id: orgid }
         }} className={classes.linkToProfileView}
         >
           <div className={classes.itemNameWrapper} style={{ color: error ? colors.primary.accent : colors.greyScale.darkest }}>
@@ -314,7 +313,7 @@ export default function OrgsGridItem(props) {
             </div>
           </Box>
         ) : (
-          subs.length !== 0
+          subs && subs.length !== 0
         ) ? (
           <div className={classes.entitySubOrgsWrapper}>
             <Typography variant={'subtitle2'} className={classes.entityTitle}>Include {subs.length} SubOrgs:</Typography>
@@ -369,12 +368,12 @@ export default function OrgsGridItem(props) {
 }
 
 OrgsGridItem.propTypes = {
-  id: PropTypes.string.isRequired,
+  orgid: PropTypes.string.isRequired,
   img: PropTypes.string,
   isSub: PropTypes.bool,
-  type: PropTypes.string,
+  orgidType: PropTypes.string,
   address: PropTypes.string,
-  trustLevel: PropTypes.any,
+  proofsQty: PropTypes.any,
   name: PropTypes.string,
   subs: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.string), PropTypes.arrayOf(PropTypes.object)]),
   parent: PropTypes.object,
@@ -382,20 +381,13 @@ OrgsGridItem.propTypes = {
   entityTrustLevel: PropTypes.any,
 };
 
+/*
 OrgsGridItem.defaultProps = {
-  img: null,
-  isSub: true,
-  type: 'Travel Agency',
-  address: '18 avenue de Suffren Entrée au 22 rue Jean Rey\n' +
-    'Paris, France ',
-  trustLevel: '4',
-  name: 'Default Organization with extremely long long long long name',
-  subs: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, ],
-  entityName: 'Default Corporation',
-  entityTrustLevel: '5',
+  ...
   error: false
   // error: {
   //   expiresAt: '2h : 20m : 05s',
   //   message: 'Something went wrong and suborganisation was not created. We saved all you info for 2 hours',
   // }
 };
+*/

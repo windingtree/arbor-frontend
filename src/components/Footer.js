@@ -113,10 +113,11 @@ export default function Footer(props) {
                             </Grid>
                             <Grid container direction="column" item xs={3}>
                                 <Typography variant={'h4'} className={classes.columnTitle}>Directories</Typography>
-                                <Typography onClick={() => history.push('/directories', { dirType: 'airline' })} variant={'h6'} className={classes.navLink}>Airlines</Typography>
-                                <Typography onClick={() => history.push('/directories', { dirType: 'hotel' })} variant={'h6'} className={classes.navLink}>Hotels</Typography>
-                                <Typography variant={'h6'} className={classes.columnItem}>Travel agencies</Typography>
-                                <Typography variant={'h6'} className={classes.columnItem}>Insurance</Typography>
+
+                                <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'airline' })}><Typography variant={'h6'} className={classes.columnItem}>Airlines</Typography></div>
+                                <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'hotel' })} ><Typography variant={'h6'} className={classes.columnItem}>Hotels</Typography></div>
+                                <div><Typography variant={'h6'} className={classes.columnItem}>Travel agencies</Typography></div>
+                                <div><Typography variant={'h6'} className={classes.columnItem}>Insurance</Typography></div>
                             </Grid>
                             <Grid container direction="column" item xs={3}>
                                 <Typography variant={'h4'} className={classes.columnTitle}>Contacts</Typography>
@@ -129,7 +130,6 @@ export default function Footer(props) {
                             </Grid>
                         </Grid>
                     </Grid>
-
                 </Grid>
             </Container>
             <div className={classes.legalInfoContainer}>

@@ -279,6 +279,6 @@ const TrustSSL = () => {
             </div>
         </div>
     )
-}
+};
 
 export default TrustSSL;

@@ -380,22 +380,22 @@ function Home(props) {
                 <div className={classes.contentWrapper}>
                     <Grid container justify={'space-between'} alignItems={'center'}>
                         <Grid item container spacing={2} style={{width: '42%'}}>
-                            <Grid item className={classes.partnerCardContainer}>
+                            <Grid item>
                                 <Card className={classes.partnerCard}>
                                     <img src={AirFinanceImage} alt={'partner'}/>
                                 </Card>
                             </Grid>
-                            <Grid item className={classes.partnerCardContainer}>
+                            <Grid item>
                                 <Card className={classes.partnerCard}>
                                     <img src={ERevMaxImage} alt={'partner'}/>
                                 </Card>
                             </Grid>
-                            <Grid item className={classes.partnerCardContainer}>
+                            <Grid item>
                                 <Card className={classes.partnerCard}>
                                     <img src={NordicImage} alt={'partner'}/>
                                 </Card>
                             </Grid>
-                            <Grid item className={classes.partnerCardContainer}>
+                            <Grid item>
                                 <Card className={classes.partnerCard}>
                                     <img src={MachefertImage} alt={'partner'}/>
                                 </Card>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import history from '../../redux/history';
 import _ from 'lodash';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -98,7 +98,7 @@ const useStepStyles = makeStyles({
 const WizardGeneral = (props) => {
   const classes = styles();
   const [activeStep, setActiveStep] = useState(0);
-  const locationType = history.location.state.type;
+  const locationType = history.location.state ? history.location.state.type : 'legalEntity';
   const types = { legalEntity, entity };
   const wizardConfig = types[_.get(props, 'location.state.type', 'legalEntity')];
 
@@ -107,6 +107,10 @@ const WizardGeneral = (props) => {
     wizardConfig.map(step => steps.push(step.name));
     return steps;
   }
+
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, []);
 
   const stepsContent = (stepIndex) => {
     const content = wizardConfig[stepIndex];

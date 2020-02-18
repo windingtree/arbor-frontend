@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+import history from '../redux/history';
 import { connect } from 'react-redux';
 import { Container, Typography, Grid, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -68,6 +69,15 @@ const styles = makeStyles({
 function Directories(props){
   const classes = styles();
   const { directories }  = props;
+    const dirType = history.location.state && history.location.state.dirType;
+
+    useEffect(() => {
+      if (dirType) props.fetchSearchOrganizationsByType({ type: dirType, page: 1, per_page: 12 })
+    }, [dirType]);
+
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, []);
 
   return (
     <Container>

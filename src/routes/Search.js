@@ -91,7 +91,7 @@ function Search(props) {
 
 
     const searchTitle = () => {
-        if (lastSearchValue === "") {
+        if (!lastSearchValue || lastSearchValue === "") {
             return 'Search for ORG.ID'
         } else if (total === 0 && isFetched) {
             return `Sorry, can’t find anything for "${lastSearchValue}"`
@@ -154,6 +154,10 @@ function Search(props) {
             props.fetchSearchOrganizations({value: request, page: page, per_page: per_page});
         } else props.fetchAllOrganizations({page: page, per_page: per_page});
     }, [request]);
+
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, []);
 
     return (
         <div>

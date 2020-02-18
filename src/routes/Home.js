@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import history from '../redux/history';
 import {Link} from 'react-router-dom';
 import {Container, Typography, Grid, Card, CardContent} from '@material-ui/core';
@@ -271,6 +271,10 @@ function Home(props) {
         'airlines',
         'Category 4',
     ];
+// -- Scrolling to top on first render
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, []);
 
     const renderUseCasesControllers = () => {
         const controllers = useCasesControllers.map((item, index) => {

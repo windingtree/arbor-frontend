@@ -271,6 +271,14 @@ const theme = createMuiTheme({
       colorPrimary: {
         backgroundColor: colors.secondary.peach
       }
+    },
+    PrivateRadioButtonIcon: {
+      root: {
+        color: colors.greyScale.common
+      },
+      checked: {
+        color: colors.secondary.cyan
+      }
     }
   }
 });

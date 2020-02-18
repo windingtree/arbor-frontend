@@ -12,7 +12,7 @@ import ArrowLeftIcon from '../../../assets/SvgComponents/ArrowLeftIcon';
 
 import colors from '../../../styles/colors';
 
-const styles = makeStyles({
+export const styles = makeStyles({
   stepTitle: {
     fontSize: '24px',
     fontWeight: 500,

@@ -60,13 +60,14 @@ function Organization(props) {
   const [isOpen, toggleOpen] = useState(false);
   const classes = styles();
 
-  const { id } = history.location.state;
-  const { item } = props;
-  let subOrgs = _.get(item, 'subsidiaries', []);
+  const id = history.location.state ? history.location.state.id : history.location.pathname.split('/')[2];
 
   useEffect(() => {
     props.fetchOrganizationInfo({ id: id });
   }, [id]);
+
+  const { item } = props;
+  let subOrgs = _.get(item, 'subsidiaries', []);
 
   useEffect(() => {
     subOrgs !== 0 && subOrgs !== null && subOrgs.forEach(sub => {

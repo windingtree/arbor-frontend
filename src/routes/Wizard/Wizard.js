@@ -78,6 +78,23 @@ const StepperStyles = withStyles({
   }
 })(StepConnector);
 
+const useStepStyles = makeStyles({
+  root: {
+    color: colors.greyScale.common
+  },
+  stepIcon: {
+    width: '22px',
+    height: '22px',
+    fontSize: 'inherit'
+  },
+  active: {
+    color: colors.primary.white
+  },
+  completed: {
+    color: colors.primary.white
+  },
+});
+
 const WizardGeneral = (props) => {
   const classes = styles();
   const [activeStep, setActiveStep] = useState(0);
@@ -107,14 +124,16 @@ const WizardGeneral = (props) => {
 
   function StepStyle(props) {
     const icons = {};
+    const classes = useStepStyles();
+    const { active, completed } = props;
 
     wizardConfig.forEach((stepsContent, stepIndex) => {
       icons[stepIndex+1] = stepsContent.icon;
     });
 
     return (
-      <div>
-        {icons[String(props.icon)]}
+      <div className={[classes.root, active ? classes.active: null, completed ? classes.completed : null].join(' ')}>
+        {icons[String(props.icon)]({})}
       </div>
     )
   }

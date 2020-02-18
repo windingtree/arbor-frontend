@@ -1,5 +1,5 @@
 import {countries} from './countries';
-const Joi = require('@hapi/joi');
+import Joi from '@hapi/joi';
 import StepperGeneralIcon from '../../../assets/SvgComponents/StepperGeneralIcon';
 import StepperHostingIcon from '../../../assets/SvgComponents/StepperHostingIcon';
 import StepperMetaMaskIcon from '../../../assets/SvgComponents/StepperMetaMaskIcon';

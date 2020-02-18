@@ -77,11 +77,15 @@ const WizardStep = (props) => {
       <div className={classes.subtitleWrapper}>
         <Typography variant={'subtitle1'} className={classes.subtitle}>{description}</Typography>
       </div>
-      <div>
-        <Link to={'/how-to'} className={classes.link}>
-          Learn how to obtain Ether <ArrowLeftIcon viewBox={'0 0 12 12'} className={classes.linkIcon}/>
-        </Link>
-      </div>
+      {
+        longName !== 'Details' ? (
+          <div>
+            <Link to={'/how-to'} className={classes.link}>
+              Learn how to obtain Ether <ArrowLeftIcon viewBox={'0 0 12 12'} className={classes.linkIcon}/>
+            </Link>
+          </div>
+        ) : null
+      }
 
       <Formik
         initialValues={Object.assign({}, props.orgidJson)}

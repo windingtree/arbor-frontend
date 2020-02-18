@@ -1,20 +1,27 @@
 import React from 'react';
 import { connect } from "react-redux";
-import { Container, Typography } from '@material-ui/core';
+import { Button, Container, Typography } from '@material-ui/core';
 
 import { selectWizardOrgidJson } from '../../../ducks/wizard'
-
+import { styles } from './WizardStep';
 
 const WizardStep = (props) => {
+  const inheritClasses = styles();
   const { index, /*orgidJson,*/ data: { longName, description, cta } } = props;
   // next line collect from "sections" all fields with non empty "schema" to object { [fieldName]:schema }
 
   return (
-    <Container  key={index}>
-      <Typography variant={'h3'}>Step: {longName}</Typography>
-      <div>{description}</div>
-      <button type="submit">{cta}</button>
-    </Container>
+    <div  key={index}>
+      <Typography variant={'h3'} className={inheritClasses.stepTitle}>Step: {longName}</Typography>
+      <div className={inheritClasses.subtitleWrapper}>
+        <Typography variant={'subtitle1'} className={inheritClasses.subtitle}>{description}</Typography>
+      </div>
+      <div className={inheritClasses.buttonWrapper}>
+        <Button type="submit" className={inheritClasses.button}>
+          <Typography variant={'caption'} className={inheritClasses.buttonLabel}>{cta}</Typography>
+        </Button>
+      </div>
+    </div>
   )
 };
 

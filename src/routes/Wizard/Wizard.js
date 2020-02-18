@@ -63,6 +63,14 @@ const styles = makeStyles({
     lineHeight: 1.14,
     color: colors.greyScale.darkest
   },
+  formSubtitle: {
+    position: 'relative',
+    top: '10px',
+    fontSize: '14px',
+    fontWeight: 400,
+    lineHeight: 1.42,
+    color: colors.greyScale.common,
+  }
 });
 
 const StepperStyles = withStyles({
@@ -186,6 +194,11 @@ const WizardGeneral = (props) => {
                   `${wizardType === 'legalEntity' ? 'Organization' : 'Sub-organization'} ${actionLabel}`
                 }
               </Typography>
+              {
+                wizardType !== 'legalEntity' ? (
+                  <Typography variant={'caption'} className={classes.formSubtitle}>Operated by: {'legalEntity.name'}</Typography>
+                ) : null
+              }
             </div>
             <Stepper alternativeLabel activeStep={activeStep} connector={<StepperStyles/>}>
               {steps.map((label, index) => (

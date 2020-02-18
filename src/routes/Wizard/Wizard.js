@@ -57,7 +57,7 @@ const styles = makeStyles({
   formContentWrapper: {
     position: 'relative',
     boxSizing: 'border-box',
-    padding: '80px'
+    padding: '80px 80px 60px'
   },
   formTitle: {
     fontSize: '32px',
@@ -86,22 +86,7 @@ const useStepStyles = makeStyles({
   root: {
     color: colors.greyScale.common
   },
-  homeIcon: {
-    width: '22px',
-    height: '22px',
-    fontSize: 'inherit'
-  },
-  detailsIcon: {
-    width: '22px',
-    height: '22px',
-    fontSize: 'inherit'
-  },
-  hostingIcon: {
-    width: '22px',
-    height: '22px',
-    fontSize: 'inherit'
-  },
-  metaMaskIcon: {
+  stepIcon: {
     width: '22px',
     height: '22px',
     fontSize: 'inherit'
@@ -173,16 +158,16 @@ const WizardGeneral = (props) => {
     let icons;
     if(wizardConfig.length === 3) {
       icons = {
-        1: <StepperGeneralIcon viewBox={'0 0 22 20'} className={classes.homeIcon}/>,
-        2: <StepperHostingIcon viewBox={'0 0 24 24'} className={classes.hostingIcon}/>,
-        3: <StepperMetaMaskIcon viewBox={'0 0 24 24'} className={classes.metaMaskIcon}/>
+        1: <StepperGeneralIcon viewBox={'0 0 22 20'} className={classes.stepIcon}/>,
+        2: <StepperHostingIcon viewBox={'0 0 24 24'} className={classes.stepIcon}/>,
+        3: <StepperMetaMaskIcon viewBox={'0 0 24 24'} className={classes.stepIcon}/>
       }
     } else {
       icons = {
-        1: <StepperGeneralIcon viewBox={'0 0 22 20'} className={classes.homeIcon}/>,
-        2: <StepperDetailsIcon viewBox={'0 0 20 18'} className={classes.detailsIcon}/>,
-        3: <StepperHostingIcon viewBox={'0 0 24 24'} className={classes.hostingIcon}/>,
-        4: <StepperMetaMaskIcon viewBox={'0 0 24 24'} className={classes.metaMaskIcon}/>
+        1: <StepperGeneralIcon viewBox={'0 0 22 20'} className={classes.stepIcon}/>,
+        2: <StepperDetailsIcon viewBox={'0 0 20 18'} className={classes.stepIcon}/>,
+        3: <StepperHostingIcon viewBox={'0 0 24 24'} className={classes.stepIcon}/>,
+        4: <StepperMetaMaskIcon viewBox={'0 0 24 24'} className={classes.stepIcon}/>
       }
     }
 

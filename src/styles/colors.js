@@ -21,7 +21,8 @@ export default {
     light: '#D9DBE1',
     lighter: '#E6E7EB',
     moreLighter: '#FAFBFC',
-    lightest: '#EFEFEF'
+    lightest: '#EFEFEF',
+    inputBg: '#FAFAFA'
   },
   social: {
     facebook: '#4873C3',

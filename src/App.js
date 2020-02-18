@@ -89,6 +89,14 @@ const theme = createMuiTheme({
         lineHeight: 1.2,
         letterSpacing: '-0.0068em',
         padding: '8px 20px',
+      },
+      input: {
+        color: colors.greyScale.darkest,
+        fontFamily: 'Inter',
+        fontSize: '16px',
+        fontWeight: 400,
+        lineHeight: 1.2,
+        letterSpacing: '-0.0068em',
       }
     },
     MuiInput: {
@@ -107,8 +115,86 @@ const theme = createMuiTheme({
         },
         '&.Mui-focused > .MuiInputAdornment-root > .MuiSvgIcon-root': {
           color: colors.secondary.green
+        },
+        '&.Mui-focused > .MuiSvgIcon-root': {
+          color: colors.secondary.green
         }
       },
+    },
+    label: {
+      '+ .MuiInput-formControl': {
+        marginTop: '10px'
+      }
+    },
+    MuiFilledInput: {
+      root: {
+        backgroundColor: colors.greyScale.inputBg,
+        borderTopLeftRadius: '8px',
+        borderTopRightRadius: '8px',
+        padding: '0',
+        '&:hover': {
+          backgroundColor: colors.greyScale.lightest
+        },
+        '&.Mui-focused': {
+          backgroundColor: colors.greyScale.inputBg
+        }
+      },
+      input: {
+        padding: '27px 20px 10px'
+      },
+      underline: {
+        '&:before': {
+          borderBottomColor: colors.greyScale.common
+        },
+        '&:after': {
+          borderBottomColor: colors.greyScale.common
+        },
+        '&:hover:not(.Mui-disabled):before': {
+          borderBottomColor: colors.greyScale.common
+        },
+        '&.Mui-focused:after': {
+          borderBottomColor: colors.secondary.green,
+        },
+        '&.Mui-focused > .MuiInputAdornment-root > .MuiSvgIcon-root': {
+          color: colors.secondary.green
+        }
+      },
+    },
+    MuiFormLabel: {
+      root: {
+        '&.Mui-focused': {
+          color: colors.secondary.green
+        }
+      },
+    },
+    MuiFormHelperText: {
+      root: {
+        fontFamily: 'Inter',
+        fontSize: '12px',
+        fontWeight: 400,
+        lineHeight: 1.2,
+        letterSpacing: '-0.0068em',
+        color: colors.greyScale.common,
+      }
+    },
+    MuiInputLabel: {
+      root: {
+        fontFamily: 'Inter',
+        fontSize: '16px',
+        fontWeight: 400,
+        letterSpacing: '-0.0068em',
+        color: colors.greyScale.common
+      },
+      filled: {
+        fontWeight: 400,
+        color: colors.greyScale.common,
+        '&.MuiInputLabel-shrink': {
+          transform: 'translate(20px, 10px) scale(0.75)'
+        }
+      },
+      shrink: {
+        transform: 'translate(20px, 1.5px) scale(0.75)',
+      }
     },
     MuiStepper: {
       root: {
@@ -132,7 +218,7 @@ const theme = createMuiTheme({
         textAlign: 'start',
         fontWeight: 500,
         color: colors.greyScale.dark,
-        padding: '30px 12px 16px 12px',
+        padding: '30px 12px 12px 12px',
         borderRadius: '8px',
         backgroundColor: colors.greyScale.lighter,
         '&.MuiStepLabel-alternativeLabel': {
@@ -155,7 +241,8 @@ const theme = createMuiTheme({
         right: '14px'
       },
       active: {
-        backgroundImage: colors.gradients.greenDeg
+        backgroundImage: colors.gradients.greenDeg,
+        boxShadow: '0px 2px 12px rgba(12, 64, 78, 0.1)'
       },
       completed: {
         backgroundColor: colors.secondary.green,

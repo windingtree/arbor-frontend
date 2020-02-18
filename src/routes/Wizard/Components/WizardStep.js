@@ -1,14 +1,70 @@
 import React from 'react';
+import { Link } from 'react-router-dom'
 import { connect } from "react-redux";
-import { Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { Typography, Button } from '@material-ui/core';
 import { Formik } from 'formik';
 import _ from 'lodash';
 
 import { extendOrgidJson, selectWizardOrgidJson } from '../../../ducks/wizard'
 import { WizardSection } from '../Components';
+import ArrowLeftIcon from '../../../assets/SvgComponents/ArrowLeftIcon';
 
+import colors from '../../../styles/colors';
+
+const styles = makeStyles({
+  stepTitle: {
+    fontSize: '24px',
+    fontWeight: 500,
+    color: colors.greyScale.darkest,
+  },
+  subtitleWrapper: {
+    margin: '12px 0'
+  },
+  subtitle: {
+    fontSize: '16px',
+    fontWeight: 400,
+    lineHeight: 1.45,
+    color: colors.greyScale.common
+  },
+  link: {
+    fontSize: '16px',
+    fontWeight: 500,
+    color: colors.secondary.cyan,
+    letterSpacing: '0.005em',
+    textDecoration: 'none'
+  },
+  linkIcon: {
+    width: '13px',
+    height: '12px',
+    color: colors.secondary.cyan,
+    transform: 'rotate(180deg)',
+    marginLeft: '4px'
+  },
+  form: {
+    marginTop: '12px'
+  },
+  buttonWrapper: {
+    display: 'table',
+    margin: '40px auto 0 auto'
+  },
+  button: {
+    border: `1px solid ${colors.primary.accent}`,
+    borderRadius: '8px',
+    backgroundImage: colors.gradients.orange,
+    textTransform: 'capitalize'
+  },
+  buttonLabel: {
+    fontSize: '16px',
+    fontWeight: 600,
+    lineHeight: 1.24,
+    color: colors.primary.white,
+    padding: '4px 12px'
+  }
+});
 
 const WizardStep = (props) => {
+  const classes = styles();
   const { extendOrgidJson, data: { longName, description, sections, cta }, handleNext } = props;
   // next line collect from "sections" all fields with non empty "schema" to object { [fieldName]:schema }
   const validators = sections ?
@@ -17,8 +73,15 @@ const WizardStep = (props) => {
 
   return (
     <div>
-      <Typography variant={'h3'}>Step: {longName}</Typography>
-      <div>{description}</div>
+      <Typography variant={'h3'} className={classes.stepTitle}>Step: {longName}</Typography>
+      <div className={classes.subtitleWrapper}>
+        <Typography variant={'subtitle1'} className={classes.subtitle}>{description}</Typography>
+      </div>
+      <div>
+        <Link to={'/how-to'} className={classes.link}>
+          Learn how to obtain Ether <ArrowLeftIcon viewBox={'0 0 12 12'} className={classes.linkIcon}/>
+        </Link>
+      </div>
 
       <Formik
         initialValues={Object.assign({}, props.orgidJson)}
@@ -53,7 +116,7 @@ const WizardStep = (props) => {
             isSubmitting,
             /* and other goodies */
           }) => (
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className={classes.form}>
             {
               !sections ?
                 <div />
@@ -73,7 +136,11 @@ const WizardStep = (props) => {
                 })
             }
 
-            <button type="submit" disabled={isSubmitting}>{cta}</button>
+            <div className={classes.buttonWrapper}>
+              <Button type="submit" disabled={isSubmitting} className={classes.button}>
+                <Typography variant={'caption'} className={classes.buttonLabel}>{cta}</Typography>
+              </Button>
+            </div>
           </form>
         )}
       </Formik>

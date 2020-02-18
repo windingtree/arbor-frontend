@@ -4,12 +4,17 @@ import {  Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { InputField, SelectField, JsonHostingField, DropzoneField } from "../Fields";
 
+import colors from '../../../styles/colors';
+
 const styles = makeStyles({
+  section: {
+    padding: '16px 0'
+  },
   sectionTitle: {
-    fontStyle: 'normal',
-    fontWight: 500,
     fontSize: '16px',
-    lineHeight: '28px',
+    fontWeight: 500,
+    lineHeight: 1.45,
+    color: colors.greyScale.darkest,
   }
 });
 
@@ -53,7 +58,7 @@ const WizardSection = (props) => {
   });
 
   return (
-    <div>
+    <div className={classes.section}>
       <Typography className={classes.sectionTitle}>{name}</Typography>
       {fields}
     </div>

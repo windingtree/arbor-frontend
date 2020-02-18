@@ -1,10 +1,15 @@
 import {countries} from './countries';
 const Joi = require('@hapi/joi');
+import StepperGeneralIcon from '../../../assets/SvgComponents/StepperGeneralIcon';
+import StepperDetailsIcon from '../../../assets/SvgComponents/StepperDetailsIcon';
+import StepperHostingIcon from '../../../assets/SvgComponents/StepperHostingIcon';
+import StepperMetaMaskIcon from '../../../assets/SvgComponents/StepperMetaMaskIcon';
 
 export const wizardConfig = [
   {
     type: 'step',
     name: 'General',
+    icon: StepperGeneralIcon,
     longName: 'General information',
     description: 'You will need at least 0.1 ether in your MetaMask account.',
     sections: [
@@ -143,6 +148,7 @@ export const wizardConfig = [
   {
     type: 'step',
     name: 'Details',
+    icon: StepperDetailsIcon,
     longName: 'Details',
     description: 'You can tell us a bit more about your sub-organization or skip this step.',
     sections: [
@@ -168,6 +174,7 @@ export const wizardConfig = [
   {
     type: 'step_hosting',
     name: 'Hosting',
+    icon: StepperHostingIcon,
     longName: 'Hosting information',
     description: 'The description that Arbor offers two types of hosting, depending on your needs.',
     sections: [
@@ -191,6 +198,7 @@ export const wizardConfig = [
   {
     type: 'step_metamask',
     name: 'Confirmation',
+    icon: StepperMetaMaskIcon,
     longName: 'MetaMask confirming',
     description: 'MetaMask also lets the user create and manage their own identities, so when a Dapp wants to perform a transaction and write to the blockchain, the user gets a secure interface to review the transaction, before approving or rejecting it.',
     cta: 'Register my organization'

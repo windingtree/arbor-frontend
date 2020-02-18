@@ -6,13 +6,9 @@ import { Container, Button, Typography, Stepper, StepConnector, Step, StepLabel 
 
 import BgPattern from '../../assets/SvgComponents/wizard-pattern.svg';
 import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
-import StepperGeneralIcon from '../../assets/SvgComponents/StepperGeneralIcon';
-import StepperDetailsIcon from '../../assets/SvgComponents/StepperDetailsIcon';
-import StepperHostingIcon from '../../assets/SvgComponents/StepperHostingIcon';
-import StepperMetaMaskIcon from '../../assets/SvgComponents/StepperMetaMaskIcon';
 import colors from '../../styles/colors';
 
-import { WizardStep, WizardStepDetails, WizardStepHosting, WizardStepMetaMask } from "./Components";
+import { WizardStep, WizardStepHosting, WizardStepMetaMask } from "./Components";
 import { wizardConfig as legalEntity } from './config/legalEntity'
 import { wizardConfig as entity} from './config/entity'
 
@@ -82,23 +78,6 @@ const StepperStyles = withStyles({
   }
 })(StepConnector);
 
-const useStepStyles = makeStyles({
-  root: {
-    color: colors.greyScale.common
-  },
-  stepIcon: {
-    width: '22px',
-    height: '22px',
-    fontSize: 'inherit'
-  },
-  active: {
-    color: colors.primary.white
-  },
-  completed: {
-    color: colors.primary.white
-  },
-});
-
 const WizardGeneral = (props) => {
   const classes = styles();
   const [activeStep, setActiveStep] = useState(0);
@@ -112,67 +91,29 @@ const WizardGeneral = (props) => {
     return steps;
   }
 
-  const stepsContent = (step) => {
-    let content;
-    wizardConfig.map((item, index) => {
-      if ( step === index ) return content = item;
-    });
+  const stepsContent = (stepIndex) => {
+    const content = wizardConfig[stepIndex];
+    const { type } = content;
 
-    switch (step) {
-      case 0: return (
-        <WizardStep data={content} handleNext={handleNext} key={content.name}/>
-      );
-      case 1:
-        if(content.type === 'step') {
-          return (
-            <WizardStepDetails data={content} handleNext={handleNext} key={content.name}/>
-          )
-        } else {
-          return (
-            <WizardStepHosting data={content} handleNext={handleNext} key={content.name}/>
-          );
-        }
-      case 2:
-        if(content.type === 'step_hosting') {
-          return (
-            <WizardStepHosting data={content} handleNext={handleNext} key={content.name}/>
-          )
-        } else {
-          return (
-            <WizardStepMetaMask data={content} handleNext={handleNext} key={step.name}/>
-          );
-        }
-      case 3: return (
-        <WizardStepMetaMask data={content} handleNext={handleNext} key={step.name}/>
-      );
+    switch (type) {
+      case 'step': return <WizardStep data={content} handleNext={handleNext} key={content.name}/>;
+      case 'step_hosting': return <WizardStepHosting data={content} handleNext={handleNext} key={content.name}/>;
+      case 'step_metamask': return <WizardStepMetaMask data={content} handleNext={handleNext} key={stepIndex.name}/>;
       default: return (
-        <div key={step.type}>Step <pre>${step.name}</pre> has unknown type: <pre>{step.type}</pre></div>
+        <div key={stepIndex.type}>Step <pre>${stepIndex.name}</pre> has unknown type: <pre>{stepIndex.type}</pre></div>
       );
     }
   };
 
   function StepStyle(props) {
-    const classes = useStepStyles();
-    const { active, completed } = props;
+    const icons = {};
 
-    let icons;
-    if(wizardConfig.length === 3) {
-      icons = {
-        1: <StepperGeneralIcon viewBox={'0 0 22 20'} className={classes.stepIcon}/>,
-        2: <StepperHostingIcon viewBox={'0 0 24 24'} className={classes.stepIcon}/>,
-        3: <StepperMetaMaskIcon viewBox={'0 0 24 24'} className={classes.stepIcon}/>
-      }
-    } else {
-      icons = {
-        1: <StepperGeneralIcon viewBox={'0 0 22 20'} className={classes.stepIcon}/>,
-        2: <StepperDetailsIcon viewBox={'0 0 20 18'} className={classes.stepIcon}/>,
-        3: <StepperHostingIcon viewBox={'0 0 24 24'} className={classes.stepIcon}/>,
-        4: <StepperMetaMaskIcon viewBox={'0 0 24 24'} className={classes.stepIcon}/>
-      }
-    }
+    wizardConfig.forEach((stepsContent, stepIndex) => {
+      icons[stepIndex+1] = stepsContent.icon;
+    });
 
     return (
-      <div className={[classes.root, active ? classes.active: null, completed ? classes.completed : null].join(' ')}>
+      <div>
         {icons[String(props.icon)]}
       </div>
     )
@@ -197,12 +138,7 @@ const WizardGeneral = (props) => {
               <Typography variant={'caption'} className={classes.buttonLabel}>
                 <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
                 {
-                  activeStep === 0 ? (
-                    'Back to all organizations'
-
-                  ) : (
-                    'Back to previous step'
-                  )
+                  activeStep === 0 ? 'Back to all organizations' : 'Back to previous step'
                 }
               </Typography>
             </Button>
@@ -215,19 +151,13 @@ const WizardGeneral = (props) => {
             <div>
               <Typography variant={'h2'} className={classes.formTitle}>
                 {
-                  locationType === 'legalEntity' ? (
-                    'Organization creating'
-                  ) : (
-                    'Sub-organization creating'
-                  )
+                  locationType === 'legalEntity' ? 'Organization creating' : 'Sub-organization creating'
                 }
               </Typography>
             </div>
             <Stepper alternativeLabel activeStep={activeStep} connector={<StepperStyles/>}>
               {steps.map((label, index) => (
-                <Step key={label}
-                      className={classes.stepItem}
-                >
+                <Step key={label} className={classes.stepItem}>
                   <StepLabel StepIconComponent={StepStyle}><p>{`${index + 1}.`}</p>{label}</StepLabel>
                 </Step>
               ))}
@@ -241,6 +171,5 @@ const WizardGeneral = (props) => {
     </div>
   )
 };
-
 
 export default WizardGeneral;

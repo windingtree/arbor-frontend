@@ -83,11 +83,11 @@ function Directory(props) {
       return (
         <Grid item key={index.toString()} style={{ width: '264px' }}>
           <OrgsGridItem
-            id={item.orgid}
+            orgid={item.orgid}
             img={item.avatar}
             isSub={!!item.parent}
-            type={item.orgidType}
-            trustLevel={item.proofsQty}
+            orgidType={item.orgidType}
+            proofsQty={item.proofsQty}
             name={item.name}
             subs={item.subsidiaries}
             entityName={parentName}

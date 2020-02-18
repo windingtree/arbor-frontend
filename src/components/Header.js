@@ -41,6 +41,10 @@ const styles = makeStyles({
     borderTopColor: 'transparent',
     padding: '0 14px'
   },
+  navIcon: {
+    color: colors.primary.black,
+    marginRight: '10px'
+  },
   linkTitle: {
     fontSize: '14px',
     fontWeight: 500,
@@ -132,7 +136,7 @@ export default function Header(props) {
                         width={'18px'}
                         height={'15px'}
                         viewBox={'0 0 15 18'}
-                        style={{ marginRight: '10px' }}
+                        className={classes.navIcon}
                       />
                       <Typography variant={'caption'} className={classes.linkTitle} noWrap>
                         My Organizations

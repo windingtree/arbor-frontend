@@ -8,6 +8,11 @@ import { callApi } from "../redux/api";
 //region == [Constants] ================================================================================================
 export const moduleName = 'wizard';
 const prefix = `${appName}/${moduleName}`;
+
+const REWRITE_ORGID_JSON_REQUEST = `${prefix}/EXTEND_ORGID_JSON_REQUEST`;
+const REWRITE_ORGID_JSON_SUCCESS = `${prefix}/EXTEND_ORGID_JSON_SUCCESS`;
+const REWRITE_ORGID_JSON_FAILURE = `${prefix}/EXTEND_ORGID_JSON_FAILURE`;
+
 const EXTEND_ORGID_JSON_REQUEST = `${prefix}/EXTEND_ORGID_JSON_REQUEST`;
 const EXTEND_ORGID_JSON_SUCCESS = `${prefix}/EXTEND_ORGID_JSON_SUCCESS`;
 const EXTEND_ORGID_JSON_FAILURE = `${prefix}/EXTEND_ORGID_JSON_FAILURE`;
@@ -46,6 +51,7 @@ export default function reducer( state = initialState, action) {
 
   switch(type) {
     // REQUEST
+    case REWRITE_ORGID_JSON_REQUEST:
     case EXTEND_ORGID_JSON_REQUEST:
     case SAVE_MEDIA_TO_ARBOR_REQUEST:
     case SAVE_ORGID_JSON_TO_ARBOR_REQUEST:
@@ -56,6 +62,14 @@ export default function reducer( state = initialState, action) {
         error: null
       });
     // SUCCESS
+    case REWRITE_ORGID_JSON_SUCCESS:
+      return {
+        isFetching: false,
+        isFetched: true,
+        orgidJson: payload,
+        orgidHash: `0x${keccak256(JSON.stringify(payload, null, 2))}`,
+        error: null
+      };
     case EXTEND_ORGID_JSON_SUCCESS:
       if (payload) {
         payload.updated = new Date().toJSON();
@@ -90,6 +104,7 @@ export default function reducer( state = initialState, action) {
         error: null
       });
     // FAILURE
+    case REWRITE_ORGID_JSON_FAILURE:
     case EXTEND_ORGID_JSON_FAILURE:
     case SAVE_MEDIA_TO_ARBOR_FAILURE:
     case SAVE_ORGID_JSON_URI_FAILURE:
@@ -120,6 +135,29 @@ export const selectWizardOrgidUri = createSelector(
 //endregion
 
 //region == [ACTIONS] ==================================================================================================
+//region == [ACTIONS: rewriteOrgidJson] ================================================================================
+export function rewriteOrgidJson(payload) {
+  return {
+    type: EXTEND_ORGID_JSON_REQUEST,
+    payload
+  }
+}
+
+function rewriteOrgidJsonSuccess(payload) {
+  return {
+    type: EXTEND_ORGID_JSON_SUCCESS,
+    payload
+  }
+}
+
+function rewriteOrgidJsonFailure(error) {
+  return {
+    type: EXTEND_ORGID_JSON_FAILURE,
+    error
+  }
+}
+//endregion
+
 //region == [ACTIONS: extendOrgidJson] =================================================================================
 export function extendOrgidJson(payload) {
   return {
@@ -214,6 +252,16 @@ function saveOrgidUriFailure(error) {
 //endregion
 
 //region == [SAGAS] ====================================================================================================
+function* rewriteOrgidJsonSaga({payload}) {
+  try {
+    const result = yield call((data) => data, payload);
+
+    yield put(rewriteOrgidJsonSuccess(result));
+  } catch(error) {
+    yield put(rewriteOrgidJsonFailure(error));
+  }
+}
+
 function* extendOrgidJsonSaga({payload}) {
   try {
     const result = yield call((data) => data, payload);
@@ -258,6 +306,7 @@ function* saveOrgidUriSaga({payload}) {
 
 export const saga = function* () {
   return yield all([
+    takeEvery(REWRITE_ORGID_JSON_REQUEST, rewriteOrgidJsonSaga),
     takeEvery(EXTEND_ORGID_JSON_REQUEST, extendOrgidJsonSaga),
     takeEvery(SAVE_MEDIA_TO_ARBOR_REQUEST, saveMediaToArborSaga),
     takeEvery(SAVE_ORGID_JSON_TO_ARBOR_REQUEST, saveOrgidJsonToArborSaga),

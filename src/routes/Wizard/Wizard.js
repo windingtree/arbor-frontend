@@ -11,6 +11,8 @@ import colors from '../../styles/colors';
 import { WizardStep, WizardStepHosting, WizardStepMetaMask } from "./Components";
 import { wizardConfig as legalEntity } from './config/legalEntity'
 import { wizardConfig as entity} from './config/entity'
+import { connect } from "react-redux";
+import { rewriteOrgidJson } from "../../ducks/wizard";
 
 const styles = makeStyles({
   mainContainer: {
@@ -61,6 +63,14 @@ const styles = makeStyles({
     lineHeight: 1.14,
     color: colors.greyScale.darkest
   },
+  formSubtitle: {
+    position: 'relative',
+    top: '10px',
+    fontSize: '14px',
+    fontWeight: 400,
+    lineHeight: 1.42,
+    color: colors.greyScale.common,
+  }
 });
 
 const StepperStyles = withStyles({
@@ -96,32 +106,39 @@ const useStepStyles = makeStyles({
 });
 
 const WizardGeneral = (props) => {
+  const { rewriteOrgidJson } = props;
   const classes = styles();
   const [activeStep, setActiveStep] = useState(0);
-  const locationType = history.location.state ? history.location.state.type : 'legalEntity';
+  const wizardType = _.get(history, 'location.state.type', 'legalEntity');
+  const action = _.get(history, 'location.state.action', 'create');
+  const jsonContent = _.get(history, 'location.state.jsonContent', {});
+  const id = _.get(history, 'location.state.id', null);
+  const actionLabel = (action === 'create') ? 'creating' : 'editing';
   const types = { legalEntity, entity };
-  const wizardConfig = types[_.get(props, 'location.state.type', 'legalEntity')];
+  const wizardConfig = types[wizardType];
 
-  function getSteps() {
-    const steps = [];
-    wizardConfig.map(step => steps.push(step.name));
-    return steps;
-  }
 
-    useEffect(() => {
-        window.scrollTo(0, 0)
-    }, []);
+  useEffect(() => {
+    if(id) {
+      rewriteOrgidJson(jsonContent)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, []);
 
   const stepsContent = (stepIndex) => {
     const content = wizardConfig[stepIndex];
     const { type } = content;
 
     switch (type) {
-      case 'step': return <WizardStep data={content} handleNext={handleNext} key={content.name}/>;
-      case 'step_hosting': return <WizardStepHosting data={content} handleNext={handleNext} key={content.name}/>;
-      case 'step_metamask': return <WizardStepMetaMask data={content} handleNext={handleNext} key={stepIndex.name}/>;
+      case 'step': return <WizardStep data={content} action={action} handleNext={handleNext} key={stepIndex}/>;
+      case 'step_hosting': return <WizardStepHosting data={content} action={action} handleNext={handleNext} key={stepIndex}/>;
+      case 'step_metamask': return <WizardStepMetaMask data={content} action={action} handleNext={handleNext} key={stepIndex}/>;
       default: return (
-        <div key={stepIndex.type}>Step <pre>${stepIndex.name}</pre> has unknown type: <pre>{stepIndex.type}</pre></div>
+        <div key={stepIndex}>Step <pre>${content.name}</pre> has unknown type: <pre>{content.type}</pre></div>
       );
     }
   };
@@ -142,7 +159,7 @@ const WizardGeneral = (props) => {
     )
   }
 
-  const steps = getSteps();
+  const steps = wizardConfig.map(step => step.name);
 
   const handleNext = () => {
     setActiveStep(prevActiveStep => prevActiveStep + 1);
@@ -174,13 +191,18 @@ const WizardGeneral = (props) => {
             <div>
               <Typography variant={'h2'} className={classes.formTitle}>
                 {
-                  locationType === 'legalEntity' ? 'Organization creating' : 'Sub-organization creating'
+                  `${wizardType === 'legalEntity' ? 'Organization' : 'Sub-organization'} ${actionLabel}`
                 }
               </Typography>
+              {
+                wizardType !== 'legalEntity' ? (
+                  <Typography variant={'caption'} className={classes.formSubtitle}>Operated by: {'legalEntity.name'}</Typography>
+                ) : null
+              }
             </div>
             <Stepper alternativeLabel activeStep={activeStep} connector={<StepperStyles/>}>
               {steps.map((label, index) => (
-                <Step key={label} className={classes.stepItem}>
+                <Step key={index} className={classes.stepItem}>
                   <StepLabel StepIconComponent={StepStyle}><p>{`${index + 1}.`}</p>{label}</StepLabel>
                 </Step>
               ))}
@@ -195,4 +217,12 @@ const WizardGeneral = (props) => {
   )
 };
 
-export default WizardGeneral;
+const mapStateToProps = state => {
+  return {}
+};
+
+const mapDispatchToProps = {
+  rewriteOrgidJson
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(WizardGeneral);

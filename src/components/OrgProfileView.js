@@ -650,9 +650,9 @@ function OrgProfileView(props) {
                     return (
                       <Grid item key={index.toString()} style={{ width: '264px' }}>
                         <OrgsGridItem
-                          id={item.orgid}
+                          orgid={item.orgid}
                           isSub={!!item.parent}
-                          type={item.orgidType}
+                          orgidType={item.orgidType}
                           entityName={item.parent.name}
                           entityTrustLevel={item.parent.proofsQty}
                           name={item.name}

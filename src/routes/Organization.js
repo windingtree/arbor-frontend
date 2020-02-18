@@ -73,12 +73,17 @@ function Organization(props) {
     subOrgs !== 0 && subOrgs !== null && subOrgs.forEach(sub => {
       props.fetchOrganizationSubInfo({ id: sub });
     })
-  }, [item.subsidiaries]);
+  }, [subOrgs]);
+
+  const type = item.parent ? 'entity' : 'legalEntity';
+  const editState = { action: 'edit', type, id, jsonContent: item.jsonContent };
+  if (type === 'entity') {
+    editState.parent = item.parent;
+  }
 
   const OrganizationProfile = () => {
-    let isEntity = item.parent ? 'entity' : 'legalEntity';
-    let location = _.get(item, `jsonContent.${isEntity}.locations[0].address`, {});
-    let contacts = _.get(item, `jsonContent.${isEntity}.contacts[0]`, {});
+    const location = _.get(item, `jsonContent.${type}.locations[0].address`, {});
+    const contacts = _.get(item, `jsonContent.${type}.contacts[0]`, {});
 
     const social = [
       {
@@ -142,7 +147,10 @@ function Organization(props) {
                     Public organization view
                   </Typography>
                 </Button>
-                <Button onClick={() => null} className={classes.itemActionButton}>
+
+                <Button
+                    onClick={() => history.push('/my-organizations/wizard', editState)}
+                    className={classes.itemActionButton}>
                   <Typography variant={'caption'} className={classes.buttonLabel}>
                     <EditIcon viewBox={'0 0 14 14 '} className={[classes.itemActionButtonIcon, classes.editIcon].join(' ')}/>
                     Edit organization profile

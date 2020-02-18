@@ -467,7 +467,7 @@ function OrgProfileView(props) {
           </Grid>
           <Grid item style={{ width: '56%' }}>
             <div className={classes.idInfoContainer}>
-              <CopyIdComponent id={history.location.state.id} leftElement={'Org ID: '} fontWeight={500}/>
+              <CopyIdComponent id={id} leftElement={'Org ID: '} fontWeight={500}/>
               {
                 ownOrganization || (
                   <div className={classes.publicTrustLevelWrapper}>

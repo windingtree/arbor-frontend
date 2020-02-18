@@ -77,6 +77,7 @@ function Search(props) {
     const classes = styles();
     const request = history.location.state && history.location.state.request;
     const [searchValue, setSearchValue] = useState('');
+    const [lastSearchValue, setLastSearchValue] = useState('');
     const {items, meta: {page, per_page, total, pages}, isFetched} = props;
 
     const handleSearch = event => {
@@ -85,15 +86,18 @@ function Search(props) {
 
     const handleSearchFromHome = () => {
         setSearchValue(request);
+        setLastSearchValue(request);
     };
 
+
     const searchTitle = () => {
-        if (!isFetched || searchValue === '') {
+        if (lastSearchValue === "") {
             return 'Search for ORG.ID'
-        } else if (isFetched && total === 0) {
-            return `Sorry, can’t find anything for "${searchValue}"`
+        } else if (total === 0 && isFetched) {
+            return `Sorry, can’t find anything for "${lastSearchValue}"`
         } else {
-            return `${total} search results for "${searchValue}"`
+            if (!isFetched) return `Searching...`;
+            return `${total} search results for "${lastSearchValue}"`
         }
     };
 
@@ -136,25 +140,25 @@ function Search(props) {
         props.fetchSearchOrganizations({value: searchValue, page: selected + 1, per_page: per_page});
     };
 
-    const fetchSearchResults = () => {
-        props.fetchSearchOrganizations({value: searchValue, page: page, per_page: per_page});
+    const fetchSearchResults = async () => {
+        if (searchValue === "" && !request) {
+            await props.fetchAllOrganizations({page: page, per_page: per_page});
+        } else await props.fetchSearchOrganizations({value: searchValue, page: page, per_page: per_page});
+        setLastSearchValue(searchValue)
     };
 
+
     useEffect(() => {
-        if (request) {
-            if (request !== "") {
-                handleSearchFromHome();
-                props.fetchSearchOrganizations({value: request, page: page, per_page: per_page});
-            }
-            props.fetchAllOrganizations({page: page, per_page: per_page});
-        }
-        props.fetchAllOrganizations({page: page, per_page: per_page});
+        handleSearchFromHome();
+        if (request && request !== "") {
+            props.fetchSearchOrganizations({value: request, page: page, per_page: per_page});
+        } else props.fetchAllOrganizations({page: page, per_page: per_page});
     }, [request]);
 
     return (
         <div>
             <div
-                className={isFetched && total === 0 ? [classes.searchHeaderWrapper, classes.searchHeaderWrapperNoResults].join(' ') : classes.searchHeaderWrapper}>
+                className={total === 0 ? [classes.searchHeaderWrapper, classes.searchHeaderWrapperNoResults].join(' ') : classes.searchHeaderWrapper}>
                 <Container className={classes.searchHeader}>
                     <div>
                         <Typography variant={'h2'} className={classes.searchTitle}>
@@ -166,14 +170,11 @@ function Search(props) {
                                 handleSearchValue={handleSearch}
                                 fetchSearchResult={fetchSearchResults}
                                 handleFocus={() => setSearchValue('')}
-                                handleKeyPressed={(event) => {if (event.key === "Enter") {
-                                    fetchSearchResults()
-                                }}}
                             />
                         </div>
                     </div>
                     <div className={classes.illustrationWrapper}>
-                        <img src={isFetched && total === 0 ? SearchNoResultsIllustration : SearchIllustration}
+                        <img src={total === 0 ? SearchNoResultsIllustration : SearchIllustration}
                              alt={'illustration'}/>
                     </div>
                 </Container>

@@ -110,23 +110,37 @@ const theme = createMuiTheme({
         }
       },
     },
+    MuiStepper: {
+      root: {
+        paddingLeft: '0',
+        paddingRight: '0',
+        marginLeft: '-7px'
+      },
+    },
+    MuiStep: {
+      horizontal: {
+        paddingRight: '0'
+      }
+    },
     MuiStepLabel: {
       root: {
+        position: 'relative',
         alignItems: 'flex-end',
-        padding: '6px',
-        backgroundColor: colors.greyScale.lighter,
-        borderRadius: '8px',
       },
       label: {
         fontSize: '14px',
         textAlign: 'start',
         fontWeight: 500,
         color: colors.greyScale.dark,
+        padding: '30px 12px 16px 12px',
+        borderRadius: '8px',
+        backgroundColor: colors.greyScale.lighter,
         '&.MuiStepLabel-alternativeLabel': {
           fontSize: '14px',
           textAlign: 'start',
           fontWeight: 500,
           color: colors.greyScale.dark,
+          marginTop: '0'
         },
         '&.MuiStepLabel-active': {
           color: colors.primary.white
@@ -135,8 +149,12 @@ const theme = createMuiTheme({
           color: colors.primary.white
         },
       },
+      iconContainer: {
+        position: 'absolute',
+        top: '14px',
+        right: '14px'
+      },
       active: {
-        //TODO find out how handle active and complete statuses at root
         backgroundImage: colors.gradients.greenDeg
       },
       completed: {

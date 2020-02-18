@@ -123,7 +123,7 @@ const WizardGeneral = (props) => {
 
   function getSteps() {
     const steps = [];
-    wizardConfig.map((step, index) => steps.push(`${index + 1}. \n ${step.name}`));
+    wizardConfig.map(step => steps.push(step.name));
     return steps;
   }
 
@@ -239,14 +239,11 @@ const WizardGeneral = (props) => {
               </Typography>
             </div>
             <Stepper alternativeLabel activeStep={activeStep} connector={<StepperStyles/>}>
-              {steps.map(label => (
+              {steps.map((label, index) => (
                 <Step key={label}
                       className={classes.stepItem}
-                      style={{
-                        width: locationType === 'legalEntity' ? '138px' : '104px'
-                      }}
                 >
-                  <StepLabel StepIconComponent={StepStyle}>{label}</StepLabel>
+                  <StepLabel StepIconComponent={StepStyle}><p>{`${index + 1}.`}</p>{label}</StepLabel>
                 </Step>
               ))}
             </Stepper>

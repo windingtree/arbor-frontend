@@ -250,18 +250,26 @@ const theme = createMuiTheme({
       }
     },
     MuiTab: {
-      root: {},
-      wrapper: {
+      root: {
+        fontFamily: 'Inter',
         fontSize: '18px',
         fontWeight: 500,
         lineHeight: 1.3,
-        textTransform: 'none'
+        textTransform: 'none',
+        letterSpacing: '-0.0068em',
+        padding: 'unset',
+        marginRight: '20px'
       },
       textColorPrimary: {
         color: colors.greyScale.common,
         '&.Mui-selected': {
           color: colors.secondary.peach
         }
+      }
+    },
+    PrivateTabIndicator: {
+      colorPrimary: {
+        backgroundColor: colors.secondary.peach
       }
     }
   }

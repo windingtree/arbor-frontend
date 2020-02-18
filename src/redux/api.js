@@ -2,7 +2,6 @@ import { API_URI } from '../utils/constants';
 
 export function* callApi(directory, method = 'GET', options) {
   try {
-    console.log(`${API_URI}/${directory}`);
     let responsePromise = yield fetch(`${API_URI}/${directory}`, {
       method,
       ...options

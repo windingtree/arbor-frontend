@@ -64,6 +64,7 @@ function Organization(props) {
 
   useEffect(() => {
     props.fetchOrganizationInfo({ id: id });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const { item } = props;
@@ -73,6 +74,7 @@ function Organization(props) {
     subOrgs !== 0 && subOrgs !== null && subOrgs.forEach(sub => {
       props.fetchOrganizationSubInfo({ id: sub });
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subOrgs]);
 
   const type = item.parent ? 'entity' : 'legalEntity';

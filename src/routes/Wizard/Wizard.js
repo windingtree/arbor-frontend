@@ -114,6 +114,7 @@ const WizardGeneral = (props) => {
     if(id) {
       rewriteOrgidJson(jsonContent)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   useEffect(() => {

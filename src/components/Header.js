@@ -11,6 +11,21 @@ import HomeIcon from '../assets/SvgComponents/HomeIcon';
 import colors from '../styles/colors';
 
 const styles = makeStyles({
+  xsHidden: {
+    ['@media (max-width:960px)']: { // eslint-disable-line no-useless-computed-key
+      display: 'none !important',
+    },
+  },
+  authenticatedBlock: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  unauthenticatedBlock: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center'
+  },
   header: {
     backgroundColor: colors.primary.white,
     zIndex: 100,
@@ -112,7 +127,7 @@ export default function Header(props) {
               </div>
               {
                 isAuthenticated ? (
-                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <div className={`${classes.xsHidden} ${classes.authenticatedBlock} `}>
                     <NavLink
                       to={'/trust'}
                       className={classes.navLink}
@@ -144,7 +159,7 @@ export default function Header(props) {
                     </NavLink>
                   </div>
                 ) : (
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center'}}>
+                  <div className={`${classes.xsHidden} ${classes.unauthenticatedBlock} `}>
                     <Button
                       onClick={() => history.push('/authorization/register')}
                       className={classes.authButton}

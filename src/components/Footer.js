@@ -115,8 +115,8 @@ export default function Footer(props) {
                                 <Typography variant={'h4'} className={classes.columnTitle}>Directories</Typography>
                                 <Typography onClick={() => history.push('/directories', { dirType: 'airline' })} variant={'h6'} className={classes.navLink}>Airlines</Typography>
                                 <Typography onClick={() => history.push('/directories', { dirType: 'hotel' })} variant={'h6'} className={classes.navLink}>Hotels</Typography>
-                                <Typography onClick={/*() => history.push('/directories', { dirType: 'travel-agencies' })*/} variant={'h6'} className={classes.columnItem}>Travel agencies</Typography>
-                                <Typography onClick={/*() => history.push('/directories', { dirType: 'insurance' })*/} variant={'h6'} className={classes.columnItem}>Insurance</Typography>
+                                <Typography variant={'h6'} className={classes.columnItem}>Travel agencies</Typography>
+                                <Typography variant={'h6'} className={classes.columnItem}>Insurance</Typography>
                             </Grid>
                             <Grid container direction="column" item xs={3}>
                                 <Typography variant={'h4'} className={classes.columnTitle}>Contacts</Typography>

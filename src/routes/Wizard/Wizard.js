@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import history from '../../redux/history';
 import _ from 'lodash';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -116,7 +116,9 @@ const WizardGeneral = (props) => {
     }
   }, [id]);
 
-
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, []);
 
   const stepsContent = (stepIndex) => {
     const content = wizardConfig[stepIndex];

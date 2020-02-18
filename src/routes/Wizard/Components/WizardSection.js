@@ -35,10 +35,11 @@ const WizardSection = (props) => {
       <DropzoneField
         key={index}
         index={index}
-        name={name}
+        name={item.name}
         type={item.type}
         orgidJsonPath={item.orgidJsonPath}
         helperText={item.helperText}
+        description={item.description}
         required={item.required}
         values={values}
         errors={errors}

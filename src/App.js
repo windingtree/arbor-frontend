@@ -248,6 +248,21 @@ const theme = createMuiTheme({
         backgroundColor: colors.secondary.green,
         color: colors.primary.white
       }
+    },
+    MuiTab: {
+      root: {},
+      wrapper: {
+        fontSize: '18px',
+        fontWeight: 500,
+        lineHeight: 1.3,
+        textTransform: 'none'
+      },
+      textColorPrimary: {
+        color: colors.greyScale.common,
+        '&.Mui-selected': {
+          color: colors.secondary.peach
+        }
+      }
     }
   }
 });

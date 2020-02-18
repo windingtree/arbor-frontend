@@ -5,7 +5,68 @@ import _ from 'lodash';
 import { saveMediaToArbor, selectWizardOrgidJson } from '../../../ducks/wizard'
 import { selectSignInAddress } from '../../../ducks/signIn'
 
-import {Container, TextField} from '@material-ui/core';
+import { Tab, Tabs, TextField, Typography, Button } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import DragAndDropImage from '../../../assets/SvgComponents/dragNDrop-image.svg';
+
+import colors from '../../../styles/colors';
+
+const styles = makeStyles({
+  tabsContainer: {
+    marginTop: '40px'
+  },
+  dropzoneContentTitleWrapper: {
+    margin: '20px 0 32px 0'
+  },
+  dropzoneContentTitle: {
+    fontSize: '16px',
+    fontWeight: 400,
+    lineHeight: 1.45,
+    color: colors.greyScale.common
+  },
+  dropzoneContent: {
+    marginTop: '32px'
+  },
+  dropzone: {
+    flex: '1',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: '32px',
+    marginBottom: '12px',
+    borderWidth: '1px',
+    borderRadius: '8px',
+    borderColor: colors.greyScale.light,
+    borderStyle: 'dashed',
+    backgroundColor: colors.greyScale.inputBg,
+    outline: 'none',
+    transition: 'border .24s ease-in-out',
+  },
+  dropzoneTitle: {
+    fontSize: '14px',
+    fontWeight: 500,
+    color: colors.greyScale.common,
+  },
+  dropzoneImageWrapper: {
+    margin: '8px 0'
+  },
+  selectFilesButton: {
+    textTransform: 'none'
+  },
+  selectFilesButtonLabel: {
+    fontSize: '14px',
+    fontWeight: 500,
+    color: colors.secondary.cyan
+  },
+  helperText: {
+    fontSize: '12px',
+    fontWeight: 400,
+    color: colors.greyScale.common,
+  },
+  inputWrapper: {
+    marginTop: '20px'
+  }
+});
 
 const thumbsContainer = {
   display: 'flex',
@@ -39,7 +100,8 @@ const img = {
 };
 
 function Previews(props) {
-  const { saveMediaToArbor, address, orgidJson: { id } } = props;
+  const classes = styles();
+  const { saveMediaToArbor, helperText, description, address, orgidJson: { id } } = props;
   const [files, setFiles] = useState([]);
   const {getRootProps, getInputProps} = useDropzone({
     accept: 'image/*',
@@ -75,48 +137,104 @@ function Previews(props) {
   }, [files]);
 
   return (
-    <section className="container">
-      <div {...getRootProps({className: 'dropzone'})}>
-        <input {...getInputProps()} />
-        <p>Drag 'n' drop some files here, or click to select files</p>
+    <div>
+      <div className={classes.dropzoneContentTitleWrapper}>
+        <Typography variant={'subtitle1'} className={classes.dropzoneContentTitle}>{description}</Typography>
       </div>
-      <aside style={thumbsContainer}>
-        {thumbs}
-      </aside>
-    </section>
+      <section className={classes.dropzoneContent}>
+        <div {...getRootProps({className: classes.dropzone})}>
+          <input {...getInputProps()} />
+          <Typography variant={'subtitle2'} className={classes.dropzoneTitle}>Drag a file here</Typography>
+          <div className={classes.dropzoneImageWrapper}>
+            <img src={DragAndDropImage} alt={'drag-and-drop'}/>
+          </div>
+          <Button onClick={() => console.log('select a file')} className={classes.selectFilesButton}>
+            <Typography variant={'caption'} className={classes.selectFilesButtonLabel}>
+              or select a file from your computer
+            </Typography>
+          </Button>
+        </div>
+        <Typography variant={'caption'} className={classes.helperText}>{helperText}</Typography>
+        <aside style={thumbsContainer}>
+          {thumbs}
+        </aside>
+      </section>
+    </div>
   );
 }
 
 
 const DropzoneField = (props) => {
-  const { saveMediaToArbor, address, orgidJson, type, name, orgidJsonPath, index, helperText, required, values, errors, touched, handleChange, handleBlur } = props;
+  const classes = styles();
+  const [value, setValue] = useState(0);
+  const { saveMediaToArbor, address, orgidJson, type, name, description, orgidJsonPath, index, helperText, required, values, errors, touched, handleChange, handleBlur } = props;
   const isError = _.get(errors, orgidJsonPath) && _.get(touched, orgidJsonPath);
+
+  const handleChangeTab = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const TabPanel = (props) => {
+    const { children, value, index, ...other } = props
+
+    return (
+      <Typography
+        component="div"
+        role="tabpanel"
+        hidden={value !== index}
+        id={`tabpanel-${index}`}
+        {...other}
+      >
+        {value === index && <div>{children}</div>}
+      </Typography>
+    )
+  };
+
   return (
-    <Container key={index}>
-      <Previews
-        address={address}
-        orgidJson={orgidJson}
-        saveMediaToArbor={saveMediaToArbor}
-        name={orgidJsonPath}
-        value={_.get(values, orgidJsonPath)}
-        helperText={isError ? _.get(errors, orgidJsonPath) : helperText}
-        required={required}
-        onChange={handleChange}
-        onBlur={handleBlur}
-      />
-      <TextField
-        type={type}
-        label={name}
-        name={orgidJsonPath}
-        value={_.get(values, orgidJsonPath)}
-        helperText={isError ? _.get(errors, orgidJsonPath) : helperText}
-        required={required}
-        fullWidth
-        error={isError}
-        onChange={handleChange}
-        onBlur={handleBlur}
-      />
-    </Container>
+    <div key={index} className={classes.tabsContainer}>
+      <div>
+        <Tabs
+          value={value}
+          onChange={handleChangeTab}
+          indicatorColor='primary'
+          textColor="primary"
+        >
+          <Tab label={'Upload an image'}/>
+          <Tab label={'Add link to image'}/>
+        </Tabs>
+      </div>
+      <TabPanel value={value} index={0}>
+        <Previews
+          address={address}
+          orgidJson={orgidJson}
+          saveMediaToArbor={saveMediaToArbor}
+          name={orgidJsonPath}
+          description={description}
+          value={_.get(values, orgidJsonPath)}
+          helperText={isError ? _.get(errors, orgidJsonPath) : helperText}
+          required={required}
+          onChange={handleChange}
+          onBlur={handleBlur}
+        />
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        <div className={classes.inputWrapper}>
+          <TextField
+            type={type}
+            variant={'filled'}
+            label={name}
+            name={orgidJsonPath}
+            value={_.get(values, orgidJsonPath)}
+            helperText={isError ? _.get(errors, orgidJsonPath) : helperText}
+            required={required}
+            fullWidth
+            error={isError}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+        </div>
+      </TabPanel>
+    </div>
   )
 };
 

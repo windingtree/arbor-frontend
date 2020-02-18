@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Container, FormControl, InputLabel, Select, TextField } from "@material-ui/core";
+import { TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import _ from "lodash";
 
@@ -28,6 +28,9 @@ const SelectField = (props) => {
         value={_.get(values, orgidJsonPath)}
         error={isError}
         onChange={handleChange}
+        SelectProps={{
+          native: true,
+        }}
         onBlur={handleBlur}
       >
         {

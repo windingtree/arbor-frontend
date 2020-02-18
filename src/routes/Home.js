@@ -1,8 +1,9 @@
 import React, {useState, useEffect} from "react";
 import history from '../redux/history';
-import {Link} from 'react-router-dom';
-import {Container, Typography, Grid, Card, CardContent} from '@material-ui/core';
-import {makeStyles} from '@material-ui/core/styles';
+import { Link } from 'react-router-dom';
+import { Container, Typography, Grid, Card, CardContent } from '@material-ui/core';
+
+import { makeStyles } from '@material-ui/core/styles';
 import Ellipsis from 'react-dotdotdot';
 import Carousel from '@brainhubeu/react-carousel';
 //components
@@ -38,44 +39,54 @@ const styles = makeStyles({
   },
   searchContent: {
     position: 'relative',
-    paddingTop: '122px',
-    paddingBottom: '122px',
+    paddingTop: '94px',
+    paddingBottom: '117px',
   },
   searchTitle: {
+    marginTop: '28px',
     fontSize: '40px',
     fontWeight: 500,
     color: colors.greyScale.darkest,
-    width: '50%'
+    lineHeight: 1.3,
   },
   subtitleWrapper: {
-    width: '50%',
+    marginTop: '5px',
     marginBottom: '30px',
   },
   searchForm: {
+    marginTop: '50px',
     position: 'relative',
-    width: '60%',
+  },
+  bgRed: { // 435+16+191 = 642 | 435/642 = 68% | 29% ||
+    backgroundColor: 'red',
+    minHeight: '20px'
   },
   illustrationWrapper: {
-    position: 'absolute',
+    // [theme.breakpoints.up('md')]: {
+    textAlign: 'center',
+    ['@media (min-width:960px)']: {
+      marginRight: '-82px'
+    },
+    /*position: 'absolute',
     top: '87px',
-    right: '-60px'
+    right: '-60px'*/
+  },
+  searchBlockIllustrationImg: {
+    maxWidth: '100%'
   },
   kybChecksContent: {
-    padding: '80px 0'
+    padding: '98px 0'
   },
   kybChecksImageWrapper: {
-    position: 'relative',
-    width: '40%',
-    minHeight: '360px'
+    textAlign: 'center',
+    maxWidth: '100%',
+    ['@media (min-width:960px)']: {
+      marginRight: '-82px'
+    },
   },
   kybChecksIllustration: {
-    position: 'absolute',
-    left: '-80px',
-    top: '0'
   },
   kybChecksTextContainer: {
-    position: 'relative',
-    width: '40%'
   },
   blockTitleWrapper: {
     width: '85%'
@@ -89,9 +100,9 @@ const styles = makeStyles({
   blockSubtitle: {
     fontSize: '16px',
     fontWeight: 400,
-    lineHeight: 1.6,
+    lineHeight: 1.74,
     color: colors.greyScale.dark,
-    paddingTop: '20px'
+    paddingTop: '30px'
   },
   joinContainer: {
     position: 'relative',
@@ -130,7 +141,7 @@ const styles = makeStyles({
   },
   contentWrapper: {
     position: 'relative',
-    padding: '120px 0'
+    padding: '103px 0'
   },
   partnerCard: {
     position: 'relative',
@@ -357,50 +368,61 @@ function Home(props) {
 
   return (
     <div>
+      {/* ================================================ BLOCK 01 =================================================*/}
       <div className={classes.searchContainer}>
         <Container className={classes.searchContent}>
-          <div>
-            <Typography variant={'h1'} className={classes.searchTitle}>
+          <Grid container spacing={5} direction="row-reverse">
+            <Grid item xs={12} md={5}>
+              <div className={classes.illustrationWrapper}>
+                <img className={classes.searchBlockIllustrationImg} src={HomeSearchIllustration} alt={''}/>
+              </div>
+            </Grid>{/*right*/}
+            <Grid item xs={12} md={7}>
+              <Typography variant={'h1'} className={classes.searchTitle}>
               Find trusted partners for your business
             </Typography>
-            <div className={classes.subtitleWrapper}>
-              <Typography variant={'subtitle1'} className={classes.blockSubtitle}>
-                Arbor has created an efficient alternative to lengthy and expensive Know-Your-Business
-                (KYB) processes. Search for verified organizations across various industries and get
-                discovered by potential partners.</Typography>
-            </div>
-            <div className={classes.searchForm}>
-              <SearchComponent searchValue={searchValue} handleSearchValue={handleSearch}
-                               fetchSearchResult={() => history.push('search', {request: searchValue})}/>
-            </div>
-          </div>
-          <div className={classes.illustrationWrapper}>
-            <img src={HomeSearchIllustration} alt={'illustration'}/>
-          </div>
+              <div className={classes.subtitleWrapper}>
+                <Typography variant={'subtitle1'} className={classes.blockSubtitle}>
+                  Arbor has created an efficient alternative to lengthy and expensive <nobr>Know-Your-Business</nobr>
+                  (KYB) processes. Search for verified organizations across various industries and get
+                  discovered by potential partners.
+                </Typography>
+              </div>
+              <div className={classes.searchForm}>
+                <SearchComponent searchValue={searchValue} handleSearchValue={handleSearch}
+                                 fetchSearchResult={() => history.push('search', {request: searchValue})}/>
+              </div>
+            </Grid>{/*left*/}
+          </Grid>
         </Container>
       </div>
+      {/* ================================================ BLOCK 02 =================================================*/}
       <Container>
-        <Grid container justify={'space-around'} alignItems={'center'} className={classes.kybChecksContent}
-              wrap={'nowrap'}>
-          <Grid item className={classes.kybChecksImageWrapper}>
-            <img src={WhatIfIllustration} alt={'illustration'} className={classes.kybChecksIllustration}/>
-          </Grid>
-          <Grid item className={classes.kybChecksTextContainer}>
-            <Typography variant={'h3'} className={classes.blockTitle}>
-              Simplify routine KYB checks
-            </Typography>
-            <Typography variant={'subtitle2'} className={classes.blockSubtitle}>
-              We strongly believe that due diligence should not get in the way of your business' success.
-              With this in mind, we have created an open-source registry of trusted organizations that is
-              controlled by community and accessible to everyone. </Typography>
-            <Typography variant={'subtitle2'} className={classes.blockSubtitle}>Arbor uses ORG.ID, an open
-              source
-              standard for exchanging verified data about organizations. We have designed it to simplify
-              lengthy and costly KYB processes that impede many potential partnerships.
-            </Typography>
-          </Grid>
+        <Grid container spacing={5}  justify={'space-around'} alignItems={'center'} className={classes.kybChecksContent} >
+            <Grid item xs={12} md={6}>
+              <div className={classes.kybChecksImageWrapper}>
+                <img src={WhatIfIllustration} alt={'illustration'} className={classes.kybChecksIllustration}/>
+              </div>
+            </Grid>{/*left*/}
+
+            <Grid item xs={12} md={6} className={classes.kybChecksTextContainer}>
+              <Typography variant={'h3'} className={classes.blockTitle}>
+                Simplify routine KYB checks
+              </Typography>
+              <Typography variant={'subtitle2'} className={classes.blockSubtitle}>
+                We strongly believe that due diligence should not get in the way of your business' success.
+                With this in mind, we have created an open-source registry of trusted organizations that is
+                controlled by community and accessible to everyone. </Typography>
+              <Typography variant={'subtitle2'} className={classes.blockSubtitle}>Arbor uses ORG.ID, an open
+                source
+                standard for exchanging verified data about organizations. We have designed it to simplify
+                lengthy and costly KYB processes that impede many potential partnerships.
+              </Typography>
+          </Grid>{/*right*/}
         </Grid>
       </Container>
+
+      {/* ================================================ BLOCK 03 =================================================*/}
       <div className={classes.joinContainer}>
         <Container>
           <div className={classes.contentWrapper}>
@@ -443,6 +465,30 @@ function Home(props) {
           </div>
         </Container>
       </div>
+
+      {/* ================================================   GRID   =================================================*/}
+      {/*<Container>
+        <Grid container spacing={5}>
+          <Grid item xs={1}><div className={classes.bgRed}>1</div></Grid>
+          <Grid item xs={1}><div className={classes.bgRed}>2</div></Grid>
+          <Grid item xs={1}><div className={classes.bgRed}>3</div></Grid>
+          <Grid item xs={1}><div className={classes.bgRed}>4</div></Grid>
+          <Grid item xs={1}><div className={classes.bgRed}>5</div></Grid>
+          <Grid item xs={1}><div className={classes.bgRed}>6</div></Grid>
+          <Grid item xs={1}><div className={classes.bgRed}>7</div></Grid>
+          <Grid item xs={1}><div className={classes.bgRed}>8</div></Grid>
+          <Grid item xs={1}><div className={classes.bgRed}>9</div></Grid>
+          <Grid item xs={1}><div className={classes.bgRed}>10</div></Grid>
+          <Grid item xs={1}><div className={classes.bgRed}>11</div></Grid>
+          <Grid item xs={1}><div className={classes.bgRed}>12</div></Grid>
+        </Grid>
+        <Grid container spacing={5}>
+          <Grid item xs={12} md={6}><div className={classes.bgRed}>1</div></Grid>
+          <Grid item xs={12} md={6}><div className={classes.bgRed}>2</div></Grid>
+        </Grid>
+      </Container>*/}
+
+      {/* ================================================ BLOCK 04 =================================================*/}
       <Container>
         <div className={classes.contentWrapper}>
           <Grid container justify={'space-between'} alignItems={'center'}>

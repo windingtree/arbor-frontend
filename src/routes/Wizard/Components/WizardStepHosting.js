@@ -168,7 +168,7 @@ const WizardStepHosting = (props) => {
               <Typography variant={'subtitle2'} className={classes.formControlTitle}>Choose type of JSON Hosting</Typography>
               <RadioGroup aria-label="hostingType" name="hostingType" value={valueHostingType} onChange={handleChangeHostingType}>
                 <div className={classes.formControlItem}>
-                  <FormControlLabel value="default-hosting" control={<Radio color={colors.secondary.cyan} />} label="Hosting with Arbor" className={classes.radioItem}/>
+                  <FormControlLabel value="default-hosting" control={<Radio color='primary' />} label="Hosting with Arbor" className={classes.radioItem}/>
                   <div>
                     <LightTooltip
                       title={'We will store your organization \n information on our servers and back it \n up regularly.'}
@@ -181,7 +181,7 @@ const WizardStepHosting = (props) => {
                   </div>
                 </div>
                 <div className={classes.formControlItem}>
-                  <FormControlLabel value="self-hosting" control={<Radio color={colors.secondary.cyan} />} label="Self-hosting option" className={classes.radioItem}/>
+                  <FormControlLabel value="self-hosting" control={<Radio color='primary' />} label="Self-hosting option" className={classes.radioItem}/>
                   <div>
                     <LightTooltip
                       title={'You choose where to store your \n organization information and provide \n us with a link. You may use private \n cloud storages or even file sharing \n services as long as the link remains \n permanently accessible. '}

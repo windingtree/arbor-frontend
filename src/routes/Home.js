@@ -350,9 +350,9 @@ function Home(props) {
       )
     });
 
-      return (
-        <ul className={classes.useCasesControllers}>{controllers}</ul>
-      )
+    return (
+      <ul className={classes.useCasesControllers}>{controllers}</ul>
+    )
   };
 
   return (
@@ -373,41 +373,6 @@ function Home(props) {
               <SearchComponent searchValue={searchValue} handleSearchValue={handleSearch}
                                fetchSearchResult={() => history.push('search', {request: searchValue})}/>
             </div>
-<<<<<<< HEAD
-            <Container>
-                <div className={classes.contentWrapper}>
-                    <Grid container justify={'space-between'} alignItems={'center'}>
-                        <Grid item container spacing={2} style={{width: '42%'}}>
-                            <Grid item>
-                                <Card className={classes.partnerCard}>
-                                    <img src={AirFinanceImage} alt={'partner'}/>
-                                </Card>
-                            </Grid>
-                            <Grid item>
-                                <Card className={classes.partnerCard}>
-                                    <img src={ERevMaxImage} alt={'partner'}/>
-                                </Card>
-                            </Grid>
-                            <Grid item>
-                                <Card className={classes.partnerCard}>
-                                    <img src={NordicImage} alt={'partner'}/>
-                                </Card>
-                            </Grid>
-                            <Grid item>
-                                <Card className={classes.partnerCard}>
-                                    <img src={MachefertImage} alt={'partner'}/>
-                                </Card>
-                            </Grid>
-                        </Grid>
-                        <Grid item style={{width: '45%'}}>
-                            <Typography variant={'h3'} className={classes.blockTitle}>We work with industry leaders
-                            </Typography>
-                            <Typography variant={'subtitle1'} className={classes.blockSubtitle}>
-                                Large multinational companies join Arbor community to optimize their due diligence
-                                processes and get exposed to prospective clients.</Typography>
-                        </Grid>
-                    </Grid>
-=======
           </div>
           <div className={classes.illustrationWrapper}>
             <img src={HomeSearchIllustration} alt={'illustration'}/>
@@ -446,7 +411,6 @@ function Home(props) {
                     trusted organizations</Typography>
                   <Typography variant={'subtitle1'} className={classes.blockSubtitle}>Find new
                     partners for your business and get discovered by potential clients.</Typography>
->>>>>>> 2bb3b6d02d05bbf3818779f28e8cd66e591b9df0
                 </div>
               </Grid>
               <Grid item container justify={'space-between'} alignItems={'center'} style={{width: '50%'}}>

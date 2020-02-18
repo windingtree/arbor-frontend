@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from 'react-router-dom';
 import history from '../redux/history';
 import { Card, CardContent, CardMedia, Grid, Typography, Button, Collapse } from '@material-ui/core';
@@ -157,6 +157,7 @@ const styles = makeStyles({
 
 export default function OrgsListItem(props) {
   const classes = styles();
+  const [isSubsOpen, toggleSubsOpen] = useState(false);
   const {
     id,
     img,
@@ -175,8 +176,6 @@ export default function OrgsListItem(props) {
     entityTrustLevel,
     details,
     agents,
-    isSubsOpen,
-    toggleSubsOpen,
     error
   } = props;
 

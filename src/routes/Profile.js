@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import history from '../redux/history';
 import { Container, Typography, Button, List } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -67,7 +67,6 @@ const styles = makeStyles({
 });
 
 function Profile(props) {
-  const [isSubsOpen, toggleSubsOpen] = useState(false);
   const classes = styles();
   const { organizations, address } = props;
 
@@ -116,8 +115,6 @@ function Profile(props) {
                     name={item.name}
                     proofsQty={item.proofsQty}
                     subs={item.subs}
-                    isSubsOpen={isSubsOpen}
-                    toggleSubsOpen={toggleSubsOpen}
                   />
                 )
               })

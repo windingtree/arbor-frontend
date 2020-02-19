@@ -135,9 +135,12 @@ function Search(props) {
         )
     };
 
-    const handlePageClick = data => {
+    const handlePageClick = async (data) => {
         let selected = data.selected;
-        props.fetchSearchOrganizations({name: searchValue, page: selected + 1, per_page: per_page});
+        if (searchValue === "" && !request) {
+          await props.fetchAllOrganizations({page: selected + 1, per_page: per_page});
+        } else await props.fetchSearchOrganizations({name: searchValue, page: page, per_page: per_page});
+        setLastSearchValue(searchValue)
     };
 
     const fetchSearchResults = async () => {

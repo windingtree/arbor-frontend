@@ -27,9 +27,11 @@ import TravelIllustration from '../assets/SvgComponents/travel-illustration.svg'
 import DirectoryCard from '../components/DirectoryCardItem';
 import CardsGridList from '../components/CardsGridList';
 import BuiltByIllustration from '../assets/SvgComponents/built-by-illustration.svg';
+import listPlaceholderSvg from '../assets/SvgComponents/list-placeholder.svg';
 //styles && colors
 import colors from '../styles/colors';
 import '@brainhubeu/react-carousel/lib/style.css';
+import { styles as trustStyles } from '../routes/Trust/TrustWebsite';
 
 const styles = makeStyles({
   searchContainer: {
@@ -108,6 +110,10 @@ const styles = makeStyles({
     position: 'relative',
     width: '100%',
     backgroundColor: colors.greyScale.moreLighter
+  },
+  trustLink: {
+    textDecoration: 'none',
+    color: colors.secondary.peach
   },
   joinSliderBase: {
     position: 'relative',
@@ -325,6 +331,7 @@ const styles = makeStyles({
 
 function Home(props) {
   const classes = styles();
+  const trustClasses = trustStyles();
   const [searchValue, setSearchValue] = useState('');
   const [activeUseCase, setActiveUseCase] = useState(0);
   const [activeSlide, setActiveSlide] = useState(0);
@@ -380,7 +387,11 @@ function Home(props) {
     'choose directory'
   ];
 
-  const handleSlideChange = (e) => {
+  const handleSlideChange = value => {
+    setActiveSlide(value);
+  };
+
+  const handleSlideChangeFromControllers = e => {
     const item = e.target.innerHTML;
     const itemIndex = sliderControllers.indexOf(item);
 
@@ -395,7 +406,7 @@ function Home(props) {
             key={index.toString()} style={{ margin: '8px 0' }}>
           <button
             className={[classes.controllerButton, classes.joinControllerButton].join(' ')}
-            onClick={handleSlideChange}
+            onClick={handleSlideChangeFromControllers}
           >
             {item}
           </button>
@@ -481,6 +492,7 @@ function Home(props) {
                       <Carousel
                         value={activeSlide}
                         onChange={handleSlideChange}
+                        animationSpeed={500}
                       >
                         <img src={CarouselSignUpIllustration} alt={'illustration'} className={classes.carouselImage}/>
                         <img src={CarouselValidateIllustration} alt={'illustration'} className={classes.carouselImage}/>
@@ -490,7 +502,7 @@ function Home(props) {
                   </div>
                 </Grid>
                 <Grid item style={{width: '34%'}}>
-                  <Box only={['md', 'lg', 'xl']} display={{ xs: "none", lg: "block" }}>
+                  <Box display={{ xs: "none", lg: "block" }}>
                     {
                       renderSliderControllers()
                     }
@@ -506,6 +518,37 @@ function Home(props) {
                   <Typography variant={'subtitle1'} className={classes.blockSubtitle}>
                     Find new partners for your business and get discovered by potential clients.
                   </Typography>
+                  <ul style={{marginTop: '42px'}}>
+                    <li className={trustClasses.howTextListItem}>
+                      <span className={trustClasses.howListDot}/>
+                      <Typography className={trustClasses.howListTexts}>
+                        Register your organization and get a unique identifier
+                      </Typography>
+                    </li>
+                    <li><img className={trustClasses.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
+                    <li className={trustClasses.howTextListItem}><span
+                      className={trustClasses.howListDot}/>
+                      <Typography className={trustClasses.howListTexts}>
+                        Add information on your business activities
+                      </Typography>
+                    </li>
+                    <li><img className={trustClasses.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
+                    <li className={trustClasses.howTextListItem}>
+                      <span className={trustClasses.howListDot}/>
+                      <Typography
+                        className={trustClasses.howListTexts}>
+                        Verify your data to gain
+                        <Link className={classes.trustLink} to={'/trust/general'}> trust points</Link>
+                      </Typography>
+                    </li>
+                    <li><img className={trustClasses.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
+                    <li className={trustClasses.howTextListItem}>
+                      <span className={trustClasses.howListDot}/>
+                      <Typography className={trustClasses.howListTexts}>
+                        Join one of the directories to be easily found
+                      </Typography>
+                    </li>
+                  </ul>
                 </div>
               </Grid>
             </Grid>
@@ -566,7 +609,7 @@ function Home(props) {
               <Typography variant={'h3'} className={classes.blockTitle}>
                 Directories we work with
               </Typography>
-              <Box only={['md', 'lg', 'xl']} display={{ xs: "none", lg: "block" }}>
+              <Box display={{ xs: "none", lg: "block" }}>
                 <Link to={'/directories'} className={classes.navLinkToDirectories} >
                   Explore directories <ArrowLongIcon viewbow={'0 0 24 12'} className={classes.navLinkIcon}/>
                 </Link>
@@ -670,7 +713,7 @@ function Home(props) {
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6} style={{width: '50%'}}>
-                <img className={classes.builtByContentImage}src={BuiltByIllustration} alt={'illustration'}/>
+                <img className={classes.builtByContentImage} src={BuiltByIllustration} alt={'illustration'}/>
               </Grid>
             </Grid>
           </div>

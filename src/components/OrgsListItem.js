@@ -159,6 +159,7 @@ export default function OrgsListItem(props) {
   const classes = styles();
   const [isSubsOpen, toggleSubsOpen] = useState(false);
   const {
+    canManage,
     id,
     img,
     name,
@@ -328,6 +329,7 @@ export default function OrgsListItem(props) {
                             proofsQty={item.parent.proofsQty}
                             entityTrustLevel={item.parent.proofsQty}
                             orgidType={item.orgidType}
+                            canManage={canManage}
                           />
                         </Grid>
                       ))

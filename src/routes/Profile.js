@@ -72,7 +72,7 @@ function Profile(props) {
 
   useEffect(() => {
     props.fetchProfileOrganizations({owner: address});
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Container className={classes.rootContainer}>

@@ -153,7 +153,7 @@ function Search(props) {
         if (request && request !== "") {
             props.fetchSearchOrganizations({name: request, page: page, per_page: per_page});
         } else props.fetchAllOrganizations({page: page, per_page: per_page});
-    }, [request]);
+    }, [request]); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         window.scrollTo(0, 0)

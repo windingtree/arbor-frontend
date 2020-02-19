@@ -73,9 +73,10 @@ function Directories(props){
 
     useEffect(() => {
       if (dirType) props.fetchSearchOrganizationsByType({ type: dirType, page: 1, per_page: 12 })
-    }, [dirType]);
+    }, [dirType]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    useEffect(() => {
+
+  useEffect(() => {
         window.scrollTo(0, 0)
     }, []);
 

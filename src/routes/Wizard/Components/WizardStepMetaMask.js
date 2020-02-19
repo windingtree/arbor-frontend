@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from "react-redux";
-import { Button, Container, Typography } from '@material-ui/core';
+import { Button, Typography } from '@material-ui/core';
 
 import { selectWizardOrgidJson } from '../../../ducks/wizard'
 import { styles } from './WizardStep';

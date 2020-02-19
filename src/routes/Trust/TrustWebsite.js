@@ -3,6 +3,8 @@ import history from '../../redux/history';
 
 import {Container, Typography, Card, Box, Button} from '@material-ui/core';
 import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
+
+
 import {makeStyles} from '@material-ui/core/styles';
 
 import verifyWebsiteSvg from '../../assets/SvgComponents/verify-your-website.svg';
@@ -182,7 +184,8 @@ function TrustWebsite(props) {
             </div>
           </Box>
           <Container className={classes.topContent}>
-            <div style={{width: '50%'}}><Typography className={classes.mainTitle} variant={'h1'}>Verify your website </Typography>
+            <div style={{width: '50%'}}><Typography className={classes.mainTitle} variant={'h1'}>Verify your
+              website </Typography>
               <Card className={classes.websiteAddressCard}>
                 <img className={classes.websiteAddressGlobe} src={globeIconSvg} alt={"icon"}/>
                 <Typography className={classes.link}>
@@ -283,7 +286,8 @@ function TrustWebsite(props) {
 
                 <li className={classes.howTextListItem}><span
                   className={classes.howListDot}/>
-                  <Typography className={classes.howListTexts}><a className={classes.link} href="http(s)://example.com/org.id">http(s)://example.com/org.id</a></Typography>
+                  <Typography className={classes.howListTexts}><a className={classes.link}
+                                                                  href="http(s)://example.com/org.id">http(s)://example.com/org.id</a></Typography>
                 </li>
 
                 <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>

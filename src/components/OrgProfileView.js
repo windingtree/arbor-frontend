@@ -399,27 +399,58 @@ const LightTooltip = withStyles({
   }
 })(Tooltip);
 
+const allTodo = {
+  social: {
+    step: 'Step 1. Confirm social network',
+    link: '/trust/social',
+    title: 'Verify your social media profiles',
+    description: 'Post a specific message or comment on behalf of your corporate profiles on Twitter, Facebook and Instagram to prove your ownership.'
+  },
+  website: {
+    step: 'Step 2. Confirm Website',
+    link: '/trust/website',
+    title: 'Verify your website ownership',
+    description: 'It’s easy to prove that a website is linked to your organization profile via a DNS record or a text file in the root directory. '
+  },
+  ssl: {
+    step: 'Step 3. Submit LIF stake',
+    link: '/trust/lif-stake',
+    title: 'Submit your Líf deposit and participate in platform governance ',
+    description: 'Líf deposit serves as an anti-spam protection. You are required to submit 1000 Líf ($100) for every organization profile you create.'
+  },
+  lif: {
+    step: 'Step 4. Setup Extended SSL',
+    link: '/trust/ssl',
+    title: 'Request an Extended Validation Certificate',
+    description: 'Request a legal entity verification from a Certificate Authority of your choice. '
+  }
+};
+
+const getTodo = (item) => {
+  const todo = [];
+  if (!(item.isSocialFBProved || item.isSocialTWProved || item.isSocialIGProved || item.isSocialLNProved)) todo.push(allTodo.social);
+  if (!item.isWebsiteProved) todo.push(allTodo.website);
+  if (!item.isSslProved) todo.push(allTodo.ssl);
+  if (!item.isLifProved) todo.push(allTodo.lif);
+  return todo;
+};
+
 function OrgProfileView(props) {
   const classes = styles();
   const [isOpen, toggleOpen] = useState(false);
-
-  const {
-    item,
-    subs,
-
-    stage,    // TODO: define
-    verified, // TODO: define
-    details,  // TODO: define
-    agents    // TODO: define
-  } = props;
-
-  const { orgid: id, proofsQty, avatar, name, parent} = item;
+  const {item, subs} = props;
+  const { orgid: id, proofsQty, avatar, name, parent, isWebsiteProved, owner } = item;
+  const todo = getTodo(item);
   const isSub = !!parent;
-  const type = item.parent ? 'entity' : 'legalEntity';
+  const type = isSub ? 'entity' : 'legalEntity';
   const address = _.get(item, `jsonContent.${type}.locations[0].address`, {});
   const contacts = _.get(item, `jsonContent.${type}.contacts[0]`, {});
+  const agents = _.get(item, `jsonContent.publicKey`, []);
+  const description = _.get(item, `jsonContent.organizationalUnit.description`, false);
+  const longDescription = _.get(item, `jsonContent.organizationalUnit.longDescription`, false);
   const entityName = _.get(item, `parent.name`, '');
   const entityTrustLevel = _.get(item, `parent.proofsQty`, 0);
+
   const social = [];
   const possibleSocial = {
     'facebook': 'FB',
@@ -454,10 +485,10 @@ function OrgProfileView(props) {
                 <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{proofsQty}</Typography>
               </div>
               {
-                !isSub ? (
-                  <div className={[classes.itemTrustInfoBase, classes.itemStage].join(' ')}>
+                todo.length ? (
+                  <div className={[classes.itemTrustInfoBase, classes.itemStage].join(' ')} onClick={() => history.push(todo[0].link, { id })}>
                     <StageIcon viewBox={'0 0 20 20'} className={classes.stageIcon}/>
-                    <Typography variant={'caption'} className={[classes.itemTrustInfoTitle, classes.itemStageTitle].join(' ')}>{stage}</Typography>
+                    <Typography variant={'caption'} className={[classes.itemTrustInfoTitle, classes.itemStageTitle].join(' ')}>{todo[0].step}</Typography>
                   </div>
                 ) : null
               }
@@ -529,7 +560,7 @@ function OrgProfileView(props) {
                   {'Website: '}
                   <a href={contacts.website} target={'_blank'} className={classes.orgInfoField}>{contacts.website}</a>
                   {
-                    verified ? (
+                    isWebsiteProved ? (
                       <TrustLevelIcon viewBox={'0 0 16 16'} className={classes.iconTrustLevel} style={{ verticalAlign: 'text-bottom' }}/>
                     ) : null
                   }
@@ -576,7 +607,7 @@ function OrgProfileView(props) {
                   }
                   <Typography variant={'inherit'}>{item.network}</Typography>
                   {
-                    item.verified ? (
+                    item.isWebsiteProved ? (
                       <TrustLevelIcon viewBox={'0 0 16 16'} className={[classes.iconTrustLevel, classes.iconVerify].join(' ')}/>
                     ) : null
                   }
@@ -587,7 +618,7 @@ function OrgProfileView(props) {
         </div>
         {/* ORG DETAILS =============================================================================================*/}
         {
-          ownOrganization && (
+          ownOrganization && isSub && (description || longDescription) && (
             <Fade in={!isOpen}>
               <div className={classes.toggleOpenDetailsButtonContainer}>
                 <Button onClick={() => toggleOpen(!isOpen)} className={classes.toggleOpenDetailsButton}>
@@ -601,13 +632,13 @@ function OrgProfileView(props) {
         }
       </Container>
       {
-        details ? (
+        (description || longDescription) ? (
           ownOrganization ? (
             <Collapse in={isOpen} className={classes.detailsContainer}>
               <Container className={classes.detailsContent}>
                 <div className={classes.details}>
-                  <Typography variant={'inherit'} className={classes.detailsTitle}>{details.title}</Typography>
-                  <Typography variant={'inherit'}>{details.text}</Typography>
+                  <Typography variant={'inherit'} className={classes.detailsTitle}>{description}</Typography>
+                  <Typography variant={'inherit'}>{longDescription}</Typography>
                   <div className={classes.line}/>
                 </div>
                 <img src={DetailsIllustration} alt={'Details illustration'} className={classes.detailsIllustration}/>
@@ -624,8 +655,8 @@ function OrgProfileView(props) {
             <div className={classes.detailsContainer}>
               <Container className={classes.detailsContent}>
                 <div className={classes.details}>
-                  <Typography variant={'inherit'} className={classes.detailsTitle}>{details.title}</Typography>
-                  <Typography variant={'inherit'}>{details.text}</Typography>
+                  <Typography variant={'inherit'} className={classes.detailsTitle}>{description}</Typography>
+                  <Typography variant={'inherit'}>{longDescription}</Typography>
                   <div className={classes.line}/>
                 </div>
                 <img src={DetailsIllustration} alt={'Details illustration'} className={classes.detailsIllustration}/>
@@ -688,7 +719,7 @@ function OrgProfileView(props) {
                 <Typography variant={'inherit'} className={classes.agentTitle}>Owner</Typography>
                 <div className={classes.ownerInfo}>
                   <CopyIdComponent
-                    id={id}
+                    id={owner}
                     leftElement={(<VpnKeyIcon className={classes.keyIcon}/>)}
                     fontSize={'14px'}
                     color={colors.greyScale.dark}
@@ -757,75 +788,5 @@ OrgProfileView.propTypes = {
   address: PropTypes.object,
   contacts: PropTypes.object,
 };
-/*
-OrgProfileView.defaultProps = {
-  id: '0x3288gjgndk48d8dsjsf8f9ssjsj88f',
-  stage: 'Step 2. Submit LIF stake ',
-  proofsQty: '1',
-  avatar: null,
-  name: 'Default organization',
-  address: 'Default address with extremely long description and it will go on the second line',
-  tel: '+33144385600',
-  web: 'all.accor.com',
-  email: 'all.accor@gmail.com',
-  verified: true,
-  subs: [
-    {
-      id: '0x67jrfh774854nre7ns8r8f85g',
-      subName: 'Default subOrg',
-      isSub: true,
-      type: 'Travel Agency',
-    },
-    {
-      id: '0x67jrfh774854nre7ns8r8f6ig',
-      subName: 'Default subOrg with very long name',
-      isSub: true,
-      type: 'Hotel',
-    },
-  ],
-  isSub: false,
-  entityName: 'Default Corp',
-  entityTrustLevel: '5',
-  social: [
-    {
-      facebook: 'https://facebook.com/',
-      verified: false
-    },
-    {
-      telegram: 'https://web.telegram.org/',
-      verified: false
-    },
-    {
-      twitter: 'https://twitter.com/',
-      verified: true
-    },
-    {
-      instagram: 'https://instagram.com/',
-      verified: false
-    }
-  ],
-  details: {
-    title: 'Details. User title example',
-    text: 'Located just a few steps from some of the oldest and most precious ruins in Rome, including the Colosseum and the Roman Forum, offering 5 star service boasts charming views of the Campidoglio, Palatin Hill, Roman Forum, Venice Square. It\'s the only luxury residence in Rome which actually houses Roman ruins inside it. At the entrance, a passageway leads you to a Cryptoporticus, an exquisite stone gallery with engravings that can be traced back to 2,000 years ago. The five star service accommodations are carefully decorated in a modern style and are luxuriously furnished. On the roof terrace you can enjoy free snacks from 17:00 to 20:00. This inn is pet friendly.'
-  },
-  agents: [
-    {
-      id: '0xcdmfkfkslamsmssmooc55dc8dcdf',
-      comment: 'Default agent'
-    },
-    {
-      id: '0xcdmfkfkslamsmssmooc557fjfnde4',
-      comment: 'Default agent'
-    },
-    {
-      id: '0xcdmfkfkslamsmssmooc55dh54ddcf',
-      comment: ''
-    },
-    {
-      id: '0xcdmfkfkslamsmssmooc55dcdmk6fd',
-      comment: 'Nice guy'
-    },
-  ]
-};*/
 
 export default OrgProfileView;

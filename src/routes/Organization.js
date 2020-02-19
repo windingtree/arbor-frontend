@@ -63,7 +63,7 @@ function Organization(props) {
   const canManageOrganization = history.location.pathname !== `/organization/${id}`;
 
   useEffect(() => {
-    props.fetchOrganizationInfo({ id: id });
+    props.fetchOrganizationInfo({ id });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 

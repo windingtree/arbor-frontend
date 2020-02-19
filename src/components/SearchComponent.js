@@ -21,15 +21,17 @@ const styles = makeStyles({
     color: colors.greyScale.common,
     transition: 'color .2s cubic-bezier(0.0, 0, 0.2, 1) 0ms'
   },
-  searchButtonWrapper: {
-
-  },
   searchButton: {
     backgroundImage: colors.gradients.green,
     border: `1px solid ${colors.secondary.cyan}`,
     borderRadius: '8px',
     textTransform: 'none',
-    padding: '14px 26px'
+    padding: '14px 26px',
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
+      padding: '0',
+      width: '100%',
+      height: '56px'
+    }
   },
   searchButtonLabel: {
     fontSize: '16px',

@@ -62,18 +62,8 @@ const styles = makeStyles({
     backgroundColor: 'red',
     minHeight: '20px'
   },
-  illustrationWrapper: {
-    // [theme.breakpoints.up('md')]: {
-    textAlign: 'center',
-    ['@media (min-width:960px)']: { // eslint-disable-line no-useless-computed-key
-      marginRight: '-82px'
-    },
-    /*position: 'absolute',
-    top: '87px',
-    right: '-60px'*/
-  },
   searchBlockIllustrationImg: {
-    maxWidth: '100%'
+    width: '100%'
   },
   kybChecksContent: {
     padding: '98px 0'
@@ -115,6 +105,16 @@ const styles = makeStyles({
     textDecoration: 'none',
     color: colors.secondary.peach
   },
+  joinSliderContainer: {
+    ['@media (max-width:960px)']: { // eslint-disable-line no-useless-computed-key
+      flexDirection: 'column'
+    }
+  },
+  joinTextContainer: {
+    ['@media (max-width:960px)']: { // eslint-disable-line no-useless-computed-key
+      marginTop: '30px'
+    }
+  },
   joinSliderBase: {
     position: 'relative',
     height: '540px',
@@ -155,6 +155,12 @@ const styles = makeStyles({
     height: '2px',
     backgroundImage: colors.gradients.orangeDeg,
   },
+  joinSliderControllersContainer: {
+    width: '34%',
+    ['@media (max-width:960px)']: { // eslint-disable-line no-useless-computed-key
+      display: 'none'
+    }
+  },
   contentWrapper: {
     position: 'relative',
     padding: '103px 0'
@@ -176,18 +182,39 @@ const styles = makeStyles({
     backgroundColor: colors.greyScale.moreLighter,
     marginBottom: '75px'
   },
+  directoriesContent: {
+    padding: '80px 64px 64px',
+    ['@media (max-width:960px)']: { // eslint-disable-line no-useless-computed-key
+      padding: '64px',
+    },
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      padding: '32px 20px 20px'
+    },
+  },
   directoriesHeading: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  directoriesLinkWrapper: {
+    ['@media (max-width:960px)']: { // eslint-disable-line no-useless-computed-key
+      display: 'none',
+    }
+  },
   directoriesCardsContainer: {
-    marginTop: '20px'
+    marginTop: '20px',
+    flexWrap: 'no-wrap',
+    ['@media (max-width:960px)']: { // eslint-disable-line no-useless-computed-key
+      flexWrap: 'wrap'
+    },
   },
   directoriesCardsGridItem: {
-    ['@media (min-width:960px)']: { // eslint-disable-line no-useless-computed-key
-      width: '210px'
+    ['@media (max-width:960px)']: { // eslint-disable-line no-useless-computed-key
+      width: '50%',
     },
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      width: '70%'
+    }
   },
   navLinkToDirectories: {
     fontSize: '12px',
@@ -201,14 +228,6 @@ const styles = makeStyles({
     color: colors.primary.accent,
     verticalAlign: 'text-top',
     marginLeft: '10px'
-  },
-  directoriesContent: {
-    ['@media (min-width:960px)']: { // eslint-disable-line no-useless-computed-key
-      padding: '64px',
-    },
-    ['@media (max-width:960px)']: { // eslint-disable-line no-useless-computed-key
-      textAlign: 'left'
-    },
   },
   useCasesInfoContainer: {
     position: 'relative',
@@ -325,7 +344,7 @@ const styles = makeStyles({
     padding: '120px 0'
   },
   builtByContentImage: {
-    maxWidth: '100%'
+    width: '100%'
   }
 });
 
@@ -419,7 +438,7 @@ function Home(props) {
         <Container className={classes.searchContent}>
           <Grid container spacing={5} direction="row-reverse">
             <Grid item xs={12} md={5}>
-              <div className={classes.illustrationWrapper}>
+              <div>
                 <img className={classes.searchBlockIllustrationImg} src={HomeSearchIllustration} alt={''}/>
               </div>
             </Grid>{/*right*/}
@@ -472,7 +491,7 @@ function Home(props) {
         <Container>
           <div className={classes.contentWrapper}>
             <Grid container spacing={5} direction="row-reverse" justify={'space-between'} alignItems={'center'}>
-              <Grid item xm={12} md={6} container justify={'space-between'} alignItems={'center'}>
+              <Grid item xm={12} md={6} container justify={'space-between'} alignItems={'center'} className={classes.joinSliderContainer}>
                 <Grid item xm={12} md={6}>
                   <div className={classes.joinSliderBase}>
                     <div className={classes.joinSliderBaseHeader}>
@@ -484,8 +503,8 @@ function Home(props) {
                       <Carousel
                         value={activeSlide}
                         onChange={handleSlideChange}
-                        animationSpeed={700}
-                        infinite
+                        slidesPerScroll={1}
+                        animationSpeed={1000}
                       >
                         <img src={CarouselSignUpIllustration} alt={'illustration'} className={classes.carouselImage}/>
                         <img src={CarouselValidateIllustration} alt={'illustration'} className={classes.carouselImage}/>
@@ -494,15 +513,13 @@ function Home(props) {
                     </div>
                   </div>
                 </Grid>
-                <Grid item style={{width: '34%'}}>
-                  <Box display={{ xs: "none", lg: "block" }}>
-                    {
-                      renderSliderControllers()
-                    }
-                  </Box>
+                <Grid item className={classes.joinSliderControllersContainer}>
+                  {
+                    renderSliderControllers()
+                  }
                 </Grid>
               </Grid>
-              <Grid item xm={12} md={6}>
+              <Grid item xm={12} md={6} className={classes.joinTextContainer}>
                 <div className={classes.blockTitleWrapper}>
                   <Typography variant={'h3'} className={classes.blockTitle}>
                       Join the registry of
@@ -602,7 +619,7 @@ function Home(props) {
               <Typography variant={'h3'} className={classes.blockTitle}>
                 Directories we work with
               </Typography>
-              <Box display={{ xs: "none", lg: "block" }}>
+              <Box className={classes.directoriesLinkWrapper}>
                 <Link to={'/directories'} className={classes.navLinkToDirectories} >
                   Explore directories <ArrowLongIcon viewbow={'0 0 24 12'} className={classes.navLinkIcon}/>
                 </Link>

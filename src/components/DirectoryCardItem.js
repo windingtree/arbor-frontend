@@ -30,7 +30,10 @@ const styles = makeStyles({
   cardButton: {
     position: 'relative',
     width: '100%',
-    height: '100%'
+    height: '100%',
+    ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
+      width: 'auto'
+    }
   },
   cardContent: {
     height: '100%',

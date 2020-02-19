@@ -72,6 +72,9 @@ const theme = createMuiTheme({
       maxWidthLg: {
         '@media (min-width: 1280px)': {
           maxWidth: '1146px'
+        },
+        '@media (max-width: 960px)': {
+          padding: '0 20px'
         }
       },
       maxWidthSm: {

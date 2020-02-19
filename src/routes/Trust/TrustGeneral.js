@@ -253,7 +253,7 @@ const styles = makeStyles({
 });
 
 
-function TrustGeneral(props) {
+function TrustGeneral() {
   const [activeStep, setActiveStep] = useState(0);
   const classes = styles();
 
@@ -539,7 +539,7 @@ function TrustGeneral(props) {
             </Typography>
           </Grid>
           <Grid item>
-            <Button className={classes.registerButton}>
+            <Button className={classes.registerButton} onClick={(event) => {event.preventDefault(); window.open('https://metamask.io/');}}>
               <Typography className={classes.registerButtonTitle} noWrap>Register with
                 MetaMask</Typography>
             </Button>

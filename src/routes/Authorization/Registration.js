@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Container, Grid, Typography, Box, Button } from '@material-ui/core';
 import { ArrowForward } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
@@ -82,7 +81,7 @@ const styles = makeStyles({
   },
 });
 
-const  Registration = ({props}) => {
+const  Registration = () => {
   const classes = styles();
 
   return (
@@ -101,17 +100,17 @@ const  Registration = ({props}) => {
               <Typography variant={'subtitle2'} className={classes.subtitle}>To start off, register with MetaMask - a browser extension that lets you create and manage your company profile in Arbor database.</Typography>
             </div>
             <div className={classes.buttonWrapper}>
-              <Button onClick={() => console.log('metamask')} className={classes.button}>
+              <Button onClick={(event) => {event.preventDefault(); window.open('https://metamask.io/');}} className={classes.button}>
                 <Typography variant={'caption'} className={classes.buttonLabel}>Register with MetaMask</Typography>
               </Button>
             </div>
             <div className={classes.linkWrapper}>
-              <Link
-                to={'/'}
+              <a
+                href="https://metamask.io/" target="_blank" rel="noopener noreferrer"
                 className={classes.link}
               >
                 More about MetaMask <ArrowForward className={classes.linkIcon}/>
-              </Link>
+              </a>
             </div>
           </Box>
         </Grid>

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Container, Typography, Grid, Card} from '@material-ui/core';
+import {Container, Typography, Grid, Card, Button} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 import trustTopIllustration from '../../assets/SvgComponents/trust-g-top.svg';
 import cardWebsiteIllustration from '../../assets/SvgComponents/trust-g-website.svg';
@@ -16,6 +16,7 @@ import stepEntityIcon from '../../assets/SvgComponents/trust-step-legal-entity-i
 import stepSocialIcon from '../../assets/SvgComponents/trust-step-social-icon.svg';
 import stepLifIcon from '../../assets/SvgComponents/trust-step-lif-icon.svg';
 import stepDirectoryIcon from '../../assets/SvgComponents/trust-step-directory-icon.svg';
+import stepsBg from '../../assets/SvgComponents/tiles-bg.svg';
 
 
 import colors from '../../styles/colors';
@@ -114,9 +115,14 @@ const styles = makeStyles({
     lineHeight: '16px',
     color: colors.greyScale.dark,
   },
-
+  stepsSection: {
+    padding: '87px 15px 87px 0',
+    backgroundImage: `url(${stepsBg})`,
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'right bottom'
+  },
   stepControllers: {
-    marginTop: '36px'
+    textAlign: 'right'
   },
   controllerItem: {
     position: 'relative',
@@ -146,10 +152,67 @@ const styles = makeStyles({
     color: colors.greyScale.common,
     transition: 'color .3s ease'
   },
+  stepCardsWrapper: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginTop: '80px'
+  },
+  stepCard: {
+    boxSizing: 'border-box',
+    width: '550px',
+    padding: '60px 48px',
+    borderRadius: '6px',
+    overflow: 'visible',
+    boxShadow: "0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)",
+  },
+  stepCardPreTitle: {
+    color: colors.secondary.peach,
+    fontWeight: 600,
+    fontSize: '12px',
+    lineHeight: '16px',
+    letterSpacing: '0.1em',
+    textTransform: 'uppercase'
+  },
+  stepCardTitle: {
+    fontSize: '24px',
+    lineHeight: '28px',
+    marginTop: '15px'
+  },
+  orgIdBadge: {
+    margin: '25px 0 15px 0',
+    padding: '20px 15px',
+    fontWeight: 500,
+    fontSize: '16px',
+    lineHeight: '20px',
+    textAlign: 'center',
+    color: colors.secondary.peach,
+    background: colors.gradients.orangeDegOpacity,
+    borderRadius: '8px',
+  },
+  stepCardIconWrapper: {
+    position: 'relative',
+  },
+  stepCardIcon: {
+    position: 'absolute',
+    top: '-100px',
+    left: '-88px'
+  },
   trustPointsBadge: {
     width: '100px',
     height: '75px',
-    alignItems: 'center'
+    alignItems: 'center',
+    position: 'relative',
+    display: 'inline-flex',
+    justifyContent: 'space-evenly',
+    left: '24px'
+  },
+  trustPointBadgeText: {
+    fontWeight: 500,
+    fontSize: '32px',
+    lineHeight: '44px'
+  },
+  moreVerifiedSection: {
+    margin: '150px 0 130px 0'
   },
   metamaskIllustration: {
     position: 'absolute',
@@ -160,6 +223,33 @@ const styles = makeStyles({
     width: '55%',
     position: 'relative'
   },
+  registerSection: {
+    display: 'flex',
+    padding: '84px 14px'
+  },
+  registerTitle: {
+    color: colors.greyScale.darkest,
+    lineHeight: '44px',
+    fontWeight: 500,
+    fontSize: '32px'
+  },
+  registerButton: {
+    padding: '16px 28px',
+    margin: '15px 0 0 145px',
+    textTransform: 'none',
+    borderColor: 'transparent',
+    backgroundImage: colors.gradients.orange,
+    boxShadow: '0 2px 12px rgba(12, 64, 78, 0.1)',
+    border: `1px solid ${colors.primary.accent}`,
+    borderRadius: '8px',
+    boxSizing: 'border-box',
+  },
+  registerButtonTitle: {
+    fontWeight: 600,
+    fontSize: '16px',
+    lineHeight: '24px',
+    color: colors.primary.white
+  }
 });
 
 
@@ -175,6 +265,12 @@ function TrustGeneral(props) {
       content: <Grid container>
         <Typography className={classes.paragraph}>
           It looks like this:
+        </Typography>
+        <div className={classes.orgIdBadge}>
+          0x48da4438c2373053a52a80ee04c3ce3834e1080a
+        </div>
+        <Typography className={classes.paragraph}>
+          As we use Ethereum blockchain, you have an exclusive control over your data and profile!
         </Typography>
       </Grid>
     },
@@ -279,7 +375,7 @@ function TrustGeneral(props) {
       const name = index === activeStep ? item : item.slice(0, 6);
       return (
         <li className={index === activeStep ? classes.activeController : classes.controllerItem}
-            key={index.toString()} style={{margin: '8px 0'}}>
+            key={index.toString()} style={{margin: '15px 0'}}>
           <span className={classes.controllerLine}/>
           <button
             className={classes.controllerButton}
@@ -298,21 +394,27 @@ function TrustGeneral(props) {
 
   const handleChangeActiveStep = (e) => {
     const item = e.target.innerHTML;
-    const itemIndex = parseInt(item[5])-1; // 5th char of "step N"
+    const itemIndex = parseInt(item[5]) - 1; // 5th char of "step N"
 
     if (activeStep === itemIndex) return;
     setActiveStep(itemIndex);
   };
 
   const renderStepCard = (activeStep) => {
-    return <div><Card>
-      <div><Typography>step {activeStep + 1}.</Typography><img src={stepCards[activeStep].icon} alt="icon"/></div>
-      <Typography>{stepCards[activeStep].title}.</Typography>
-      {stepCards[activeStep].content}
-    </Card>
+    return <div style={{display: 'flex'}}>
+      <Card className={classes.stepCard}>
+        <div style={{display: 'flex', justifyContent: 'space-between'}}>
+          <Typography className={classes.stepCardPreTitle}>step {activeStep + 1}.</Typography>
+          <div className={classes.stepCardIconWrapper}>
+            <img className={classes.stepCardIcon} src={stepCards[activeStep].icon} alt="icon"/>
+          </div>
+        </div>
+        <Typography className={classes.stepCardTitle}>{stepCards[activeStep].title}</Typography>
+        {stepCards[activeStep].content}
+      </Card>
       <Card className={classes.trustPointsBadge}>
         <img src={trustPointsIcon} alt="trust points"/>
-        <Typography>{stepCards[activeStep].trustPoints}</Typography>
+        <Typography className={classes.trustPointBadgeText}>{stepCards[activeStep].trustPoints}</Typography>
       </Card></div>
   };
 
@@ -386,20 +488,25 @@ function TrustGeneral(props) {
           </Grid>
         </div>
       </Container>
-      <Container>
-        <Typography variant={'h3'} className={classes.blockTitle}>
-          How to achieve the ultimate trust level?
-        </Typography>
-        <Typography className={classes.paragraph}>
-          Arbor allows organizations all over the world to opt-in and verify themselves without involving a third-party
-          intermediary.
-        </Typography>
-        <Grid container justify={'space-between'}>
-        {renderStepCard(activeStep)}
-        {renderStepControllers()}
-        </Grid>
-      </Container>
-      <div className={classes.moreVerifiedSectionDiv}>
+      <Grid style={{backgroundColor: colors.greyScale.moreLighter}}>
+        <Container className={classes.stepsSection}>
+          <Grid style={{width: '50%'}}>
+            <Typography variant={'h3'} className={classes.blockTitle}>
+              How to achieve the ultimate trust level?
+            </Typography>
+            <Typography className={classes.paragraph}>
+              Arbor allows organizations all over the world to opt-in and verify themselves without involving a
+              third-party
+              intermediary.
+            </Typography>
+          </Grid>
+          <Grid className={classes.stepCardsWrapper} container justify={'space-between'}>
+            {renderStepCard(activeStep)}
+            {renderStepControllers()}
+          </Grid>
+        </Container>
+      </Grid>
+      <Grid className={classes.moreVerifiedSection}>
         <Container>
           <Grid container wrap={'nowrap'}>
             <Grid item className={classes.metamaskIllustrationWrapper}>
@@ -423,7 +530,22 @@ function TrustGeneral(props) {
             </Grid>
           </Grid>
         </Container>
-      </div>
+      </Grid>
+      <Grid style={{backgroundColor: colors.secondary.yellowLight}}>
+        <Container className={classes.registerSection}>
+          <Grid style={{width: '53%'}} item>
+            <Typography className={classes.registerTitle} variant={'h4'}>
+              Join Arbor today and find trusted partners for your business
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Button className={classes.registerButton}>
+              <Typography className={classes.registerButtonTitle} noWrap>Register with
+                MetaMask</Typography>
+            </Button>
+          </Grid>
+        </Container>
+      </Grid>
     </div>
   )
 }

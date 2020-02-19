@@ -119,6 +119,16 @@ const styles = makeStyles({
   joinSliderBaseHomeIcon: {
     color: colors.primary.accent
   },
+  carouselWrapper: {
+    position: 'absolute',
+    top: '100px',
+    left: '-25px',
+    width: '120%',
+    height: '70%'
+  },
+  carouselImage: {
+    width: '100%'
+  },
   joinSliderBaseLine: {
     position: 'absolute',
     bottom: '18px',
@@ -200,6 +210,16 @@ const styles = makeStyles({
     cursor: 'pointer',
     color: colors.greyScale.common,
     transition: 'color .3s ease'
+  },
+  joinControllerButton: {
+    textAlign: 'end',
+    whiteSpace: 'nowrap'
+  },
+  joinSliderControllers: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end'
   },
   controllerLine: {
     display: 'inline-block',
@@ -322,8 +342,8 @@ function Home(props) {
 
   const sliderControllers = [
     'sign up',
-    'validate',
-    'directory'
+    'validate info',
+    'choose directory'
   ];
 
   const handleSlideChange = (e) => {
@@ -338,20 +358,20 @@ function Home(props) {
     const controllers = sliderControllers.map((item, index) => {
       return (
         <li className={index === activeSlide ? classes.activeController : classes.controllerItem}
-            key={index.toString()} style={{margin: '8px 0'}}>
-          <span className={classes.controllerLine}/>
+            key={index.toString()} style={{ margin: '8px 0' }}>
           <button
-            className={classes.controllerButton}
+            className={[classes.controllerButton, classes.joinControllerButton].join(' ')}
             onClick={handleSlideChange}
           >
             {item}
           </button>
+          <span className={classes.controllerLine}/>
         </li>
       )
     });
 
       return (
-        <ul className={classes.useCasesControllers}>{controllers}</ul>
+        <ul className={classes.joinSliderControllers}>{controllers}</ul>
       )
   };
 
@@ -420,20 +440,20 @@ function Home(props) {
                       <Logo viewBox={'0 0 90 32'} className={classes.joinSliderBaseLogo}/>
                       <HomeIcon width={'16px'} height={'16px'} viewBox={'0 0 16 16'} className={classes.joinSliderBaseHomeIcon}/>
                     </div>
-                    <div>
+                    <div className={classes.joinSliderBaseLine}/>
+                    <div className={classes.carouselWrapper}>
                       <Carousel
                         value={activeSlide}
                         onChange={handleSlideChange}
                       >
-                        <img src={CarouselSignUpIllustration} alt={'illustration'}/>
-                        <img src={CarouselValidateIllustration} alt={'illustration'}/>
-                        <img src={CarouselDirectoryIllustration} alt={'illustration'}/>
+                        <img src={CarouselSignUpIllustration} alt={'illustration'} className={classes.carouselImage}/>
+                        <img src={CarouselValidateIllustration} alt={'illustration'} className={classes.carouselImage}/>
+                        <img src={CarouselDirectoryIllustration} alt={'illustration'} className={classes.carouselImage}/>
                       </Carousel>
                     </div>
-                    <div className={classes.joinSliderBaseLine}/>
                   </div>
                 </Grid>
-                <Grid item style={{width: '30%'}}>
+                <Grid item style={{width: '34%'}}>
                   {
                     renderSliderControllers()
                   }
@@ -469,8 +489,7 @@ function Home(props) {
               </Grid>
             </Grid>
             <Grid item style={{width: '45%'}}>
-              <Typography variant={'h3'} className={classes.blockTitle}>We work with industry leaders
-              </Typography>
+              <Typography variant={'h3'} className={classes.blockTitle}>We work with industry leaders</Typography>
               <Typography variant={'subtitle1'} className={classes.blockSubtitle}>
                 Large multinational companies join Arbor community to optimize their due diligence
                 processes and get exposed to prospective clients.</Typography>

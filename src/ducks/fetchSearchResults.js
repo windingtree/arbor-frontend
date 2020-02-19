@@ -3,6 +3,7 @@ import { createSelector } from 'reselect';
 import { all, takeEvery, call, put } from 'redux-saga/effects';
 import { callApi } from '../redux/api';
 import history from '../redux/history';
+import _ from 'lodash';
 
 /**
  * Constants
@@ -200,13 +201,23 @@ export const saga = function* () {
  * Api
  * */
 function ApiFetchAllOrganizations(data) {
-  return callApi(`orgids?page[number]=${data.page}&page[size]=${data.per_page}`);
+  const page = _.get(data, 'page', 1);
+  const per_page = _.get(data, 'per_page', 12);
+  return callApi(`orgids?page[number]=${page}&page[size]=${per_page}`);
 }
 
 function ApiFetchSearchOrganizations(data) {
-  return callApi(`orgids/?name=${data.value}&page[number]=${data.page}&page[size]=${data.per_page}`);
+  const page = _.get(data, 'page', 1);
+  const per_page = _.get(data, 'per_page', 12);
+  delete data['page'];
+  delete data['per_page'];
+  const otherParams = _.map(data, (value, param) => `${param}=${value}`).join('&');
+
+  return callApi(`orgids/?page[number]=${page}&page[size]=${per_page}&${otherParams}`);
 }
 
 function ApiFetchSearchByType(data) {
-  return callApi(`orgids/?orgidType=${data.type}&page[number]=${data.page}&page[size]=${data.per_page}`)
+  const page = _.get(data, 'page', 1);
+  const per_page = _.get(data, 'per_page', 12);
+  return callApi(`orgids/?orgidType=${data.type}&page[number]=${page}&page[size]=${per_page}`)
 }

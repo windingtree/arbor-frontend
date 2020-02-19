@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import history from '../redux/history';
 import {Link} from 'react-router-dom';
-import {Container, Typography, Grid, Card, CardContent} from '@material-ui/core';
+import {Container, Typography, Grid, Card, CardContent, Box} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 import Ellipsis from 'react-dotdotdot';
 import Carousel from '@brainhubeu/react-carousel';
@@ -38,44 +38,55 @@ const styles = makeStyles({
   },
   searchContent: {
     position: 'relative',
-    paddingTop: '122px',
-    paddingBottom: '122px',
+    paddingTop: '94px',
+    paddingBottom: '117px',
   },
   searchTitle: {
+    marginTop: '28px',
     fontSize: '40px',
     fontWeight: 500,
     color: colors.greyScale.darkest,
-    width: '50%'
+    lineHeight: 1.3,
   },
   subtitleWrapper: {
-    width: '50%',
+    marginTop: '5px',
     marginBottom: '30px',
   },
   searchForm: {
+    marginTop: '50px',
     position: 'relative',
-    width: '60%',
+  },
+  bgRed: { // 435+16+191 = 642 | 435/642 = 68% | 29% ||
+    backgroundColor: 'red',
+    minHeight: '20px'
   },
   illustrationWrapper: {
-    position: 'absolute',
+    // [theme.breakpoints.up('md')]: {
+    textAlign: 'center',
+    ['@media (min-width:960px)']: { // eslint-disable-line no-useless-computed-key
+      marginRight: '-82px'
+    },
+    /*position: 'absolute',
     top: '87px',
-    right: '-60px'
+    right: '-60px'*/
+  },
+  searchBlockIllustrationImg: {
+    maxWidth: '100%'
   },
   kybChecksContent: {
-    padding: '80px 0'
+    padding: '98px 0'
   },
   kybChecksImageWrapper: {
-    position: 'relative',
-    width: '40%',
-    minHeight: '360px'
+    textAlign: 'center',
+    maxWidth: '100%',
+    ['@media (min-width:960px)']: { // eslint-disable-line no-useless-computed-key
+      marginRight: '-82px'
+    },
   },
   kybChecksIllustration: {
-    position: 'absolute',
-    left: '-80px',
-    top: '0'
+    maxWidth: '100%'
   },
   kybChecksTextContainer: {
-    position: 'relative',
-    width: '40%'
   },
   blockTitleWrapper: {
     width: '85%'
@@ -89,9 +100,9 @@ const styles = makeStyles({
   blockSubtitle: {
     fontSize: '16px',
     fontWeight: 400,
-    lineHeight: 1.6,
+    lineHeight: 1.74,
     color: colors.greyScale.dark,
-    paddingTop: '20px'
+    paddingTop: '30px'
   },
   joinContainer: {
     position: 'relative',
@@ -140,21 +151,24 @@ const styles = makeStyles({
   },
   contentWrapper: {
     position: 'relative',
-    padding: '120px 0'
+    padding: '103px 0'
   },
   partnerCard: {
     position: 'relative',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '220px',
     height: '80px',
     backgroundColor: colors.primary.white,
     borderRadius: '6px',
     boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)'
   },
+  partnerCardImage: {
+    maxWidth: '95%'
+  },
   directoriesWrapper: {
-    backgroundColor: colors.greyScale.moreLighter
+    backgroundColor: colors.greyScale.moreLighter,
+    marginBottom: '75px'
   },
   directoriesHeading: {
     display: 'flex',
@@ -163,6 +177,11 @@ const styles = makeStyles({
   },
   directoriesCardsContainer: {
     marginTop: '20px'
+  },
+  directoriesCardsGridItem: {
+    ['@media (min-width:960px)']: { // eslint-disable-line no-useless-computed-key
+      width: '210px'
+    },
   },
   navLinkToDirectories: {
     fontSize: '12px',
@@ -178,7 +197,12 @@ const styles = makeStyles({
     marginLeft: '10px'
   },
   directoriesContent: {
-    padding: '64px',
+    ['@media (min-width:960px)']: { // eslint-disable-line no-useless-computed-key
+      padding: '64px',
+    },
+    ['@media (max-width:960px)']: { // eslint-disable-line no-useless-computed-key
+      textAlign: 'left'
+    },
   },
   useCasesInfoContainer: {
     position: 'relative',
@@ -190,6 +214,10 @@ const styles = makeStyles({
   controllerItem: {
     position: 'relative',
     left: '-12px',
+  },
+  joinControllerItem: {
+    left: 'auto',
+    right: '-12px'
   },
   activeController: {
     '& button': {
@@ -230,6 +258,10 @@ const styles = makeStyles({
     backgroundColor: colors.primary.accent,
     transition: 'width .3s ease'
   },
+  joinControllerLine: {
+    marginRight: '0',
+    marginLeft: '12px'
+  },
   useCasesCardContainer: {
     position: 'relative',
     width: '50%',
@@ -268,7 +300,6 @@ const styles = makeStyles({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  statsItem: {},
   statsItemCount: {
     fontSize: '18px',
     fontWeight: 500,
@@ -286,6 +317,9 @@ const styles = makeStyles({
   builtByContent: {
     position: 'relative',
     padding: '120px 0'
+  },
+  builtByContentImage: {
+    maxWidth: '100%'
   }
 });
 
@@ -357,7 +391,7 @@ function Home(props) {
   const renderSliderControllers = () => {
     const controllers = sliderControllers.map((item, index) => {
       return (
-        <li className={index === activeSlide ? classes.activeController : classes.controllerItem}
+        <li className={index === activeSlide ? classes.activeController : [classes.controllerItem, classes.joinControllerItem].join(' ')}
             key={index.toString()} style={{ margin: '8px 0' }}>
           <button
             className={[classes.controllerButton, classes.joinControllerButton].join(' ')}
@@ -365,7 +399,7 @@ function Home(props) {
           >
             {item}
           </button>
-          <span className={classes.controllerLine}/>
+          <span className={[classes.controllerLine, classes.joinControllerLine].join(' ')}/>
         </li>
       )
     });
@@ -377,64 +411,66 @@ function Home(props) {
 
   return (
     <div>
+      {/* ================================================ BLOCK 01: Search =================================================*/}
       <div className={classes.searchContainer}>
         <Container className={classes.searchContent}>
-          <div>
-            <Typography variant={'h1'} className={classes.searchTitle}>
+          <Grid container spacing={5} direction="row-reverse">
+            <Grid item xs={12} md={5}>
+              <div className={classes.illustrationWrapper}>
+                <img className={classes.searchBlockIllustrationImg} src={HomeSearchIllustration} alt={''}/>
+              </div>
+            </Grid>{/*right*/}
+            <Grid item xs={12} md={7}>
+              <Typography variant={'h1'} className={classes.searchTitle}>
               Find trusted partners for your business
             </Typography>
-            <div className={classes.subtitleWrapper}>
-              <Typography variant={'subtitle1'} className={classes.blockSubtitle}>
-                Arbor has created an efficient alternative to lengthy and expensive Know-Your-Business
-                (KYB) processes. Search for verified organizations across various industries and get
-                discovered by potential partners.</Typography>
-            </div>
-            <div className={classes.searchForm}>
-              <SearchComponent searchValue={searchValue} handleSearchValue={handleSearch}
-                               fetchSearchResult={() => history.push('search', {request: searchValue})}/>
-            </div>
-          </div>
-          <div className={classes.illustrationWrapper}>
-            <img src={HomeSearchIllustration} alt={'illustration'}/>
-          </div>
+              <div className={classes.subtitleWrapper}>
+                <Typography variant={'subtitle1'} className={classes.blockSubtitle}>
+                  Arbor has created an efficient alternative to lengthy and expensive <nobr>Know-Your-Business</nobr>
+                  (KYB) processes. Search for verified organizations across various industries and get
+                  discovered by potential partners.
+                </Typography>
+              </div>
+              <div className={classes.searchForm}>
+                <SearchComponent searchValue={searchValue} handleSearchValue={handleSearch}
+                                 fetchSearchResult={() => history.push('search', {request: searchValue})}/>
+              </div>
+            </Grid>{/*left*/}
+          </Grid>
         </Container>
       </div>
+      {/* ================================================ BLOCK 02: KYB =================================================*/}
       <Container>
-        <Grid container justify={'space-around'} alignItems={'center'} className={classes.kybChecksContent}
-              wrap={'nowrap'}>
-          <Grid item className={classes.kybChecksImageWrapper}>
-            <img src={WhatIfIllustration} alt={'illustration'} className={classes.kybChecksIllustration}/>
-          </Grid>
-          <Grid item className={classes.kybChecksTextContainer}>
-            <Typography variant={'h3'} className={classes.blockTitle}>
-              Simplify routine KYB checks
-            </Typography>
-            <Typography variant={'subtitle2'} className={classes.blockSubtitle}>
-              We strongly believe that due diligence should not get in the way of your business' success.
-              With this in mind, we have created an open-source registry of trusted organizations that is
-              controlled by community and accessible to everyone. </Typography>
-            <Typography variant={'subtitle2'} className={classes.blockSubtitle}>Arbor uses ORG.ID, an open
-              source
-              standard for exchanging verified data about organizations. We have designed it to simplify
-              lengthy and costly KYB processes that impede many potential partnerships.
-            </Typography>
-          </Grid>
+        <Grid container spacing={5}  justify={'space-around'} alignItems={'center'} className={classes.kybChecksContent} >
+            <Grid item xs={12} md={6}>
+              <div className={classes.kybChecksImageWrapper}>
+                <img src={WhatIfIllustration} alt={'illustration'} className={classes.kybChecksIllustration}/>
+              </div>
+            </Grid>{/*left*/}
+
+            <Grid item xs={12} md={6} className={classes.kybChecksTextContainer}>
+              <Typography variant={'h3'} className={classes.blockTitle}>
+                Simplify routine KYB checks
+              </Typography>
+              <Typography variant={'subtitle2'} className={classes.blockSubtitle}>
+                We strongly believe that due diligence should not get in the way of your business' success.
+                With this in mind, we have created an open-source registry of trusted organizations that is
+                controlled by community and accessible to everyone. </Typography>
+              <Typography variant={'subtitle2'} className={classes.blockSubtitle}>Arbor uses ORG.ID, an open
+                source
+                standard for exchanging verified data about organizations. We have designed it to simplify
+                lengthy and costly KYB processes that impede many potential partnerships.
+              </Typography>
+          </Grid>{/*right*/}
         </Grid>
       </Container>
+      {/* ================================================ BLOCK 03: Slider  =================================================*/}
       <div className={classes.joinContainer}>
         <Container>
           <div className={classes.contentWrapper}>
-            <Grid container justify={'space-between'} alignItems={'center'}>
-              <Grid item style={{width: '45%'}}>
-                <div className={classes.blockTitleWrapper}>
-                  <Typography variant={'h3'} className={classes.blockTitle}>Join the registry of
-                    trusted organizations</Typography>
-                  <Typography variant={'subtitle1'} className={classes.blockSubtitle}>Find new
-                    partners for your business and get discovered by potential clients.</Typography>
-                </div>
-              </Grid>
-              <Grid item container justify={'space-between'} alignItems={'center'} style={{width: '50%'}}>
-                <Grid item style={{width: '60%'}}>
+            <Grid container spacing={5} direction="row-reverse" justify={'space-between'} alignItems={'center'}>
+              <Grid item xm={12} md={6} container justify={'space-between'} alignItems={'center'}>
+                <Grid item xm={12} md={6}>
                   <div className={classes.joinSliderBase}>
                     <div className={classes.joinSliderBaseHeader}>
                       <Logo viewBox={'0 0 90 32'} className={classes.joinSliderBaseLogo}/>
@@ -454,49 +490,75 @@ function Home(props) {
                   </div>
                 </Grid>
                 <Grid item style={{width: '34%'}}>
-                  {
-                    renderSliderControllers()
-                  }
+                  <Box only={['md', 'lg', 'xl']} display={{ xs: "none", lg: "block" }}>
+                    {
+                      renderSliderControllers()
+                    }
+                  </Box>
                 </Grid>
+              </Grid>
+              <Grid item xm={12} md={6}>
+                <div className={classes.blockTitleWrapper}>
+                  <Typography variant={'h3'} className={classes.blockTitle}>
+                      Join the registry of
+                      trusted organizations
+                  </Typography>
+                  <Typography variant={'subtitle1'} className={classes.blockSubtitle}>
+                    Find new partners for your business and get discovered by potential clients.
+                  </Typography>
+                </div>
               </Grid>
             </Grid>
           </div>
         </Container>
       </div>
+      {/* ================================================   GRID   =================================================*/}
+      {/*<Container>
+        <Grid container spacing={5}>
+          <Grid item xs={1}><div className={classes.bgRed}>1</div></Grid>
+          <Grid item xs={1}><div className={classes.bgRed}>2</div></Grid>
+          <Grid item xs={1}><div className={classes.bgRed}>3</div></Grid>
+          <Grid item xs={1}><div className={classes.bgRed}>4</div></Grid>
+          <Grid item xs={1}><div className={classes.bgRed}>5</div></Grid>
+          <Grid item xs={1}><div className={classes.bgRed}>6</div></Grid>
+          <Grid item xs={1}><div className={classes.bgRed}>7</div></Grid>
+          <Grid item xs={1}><div className={classes.bgRed}>8</div></Grid>
+          <Grid item xs={1}><div className={classes.bgRed}>9</div></Grid>
+          <Grid item xs={1}><div className={classes.bgRed}>10</div></Grid>
+          <Grid item xs={1}><div className={classes.bgRed}>11</div></Grid>
+          <Grid item xs={1}><div className={classes.bgRed}>12</div></Grid>
+        </Grid>
+        <Grid container spacing={5}>
+          <Grid item xs={12} md={6}><div className={classes.bgRed}>1</div></Grid>
+          <Grid item xs={12} md={6}><div className={classes.bgRed}>2</div></Grid>
+        </Grid>
+      </Container>*/}
+      {/* ================================================ BLOCK 04: We works =================================================*/}
       <Container>
         <div className={classes.contentWrapper}>
-          <Grid container justify={'space-between'} alignItems={'center'}>
-            <Grid item container spacing={2} style={{width: '42%'}}>
-              <Grid item className={classes.partnerCardContainer}>
-                <Card className={classes.partnerCard}>
-                  <img src={AirFinanceImage} alt={'partner'}/>
-                </Card>
-              </Grid>
-              <Grid item className={classes.partnerCardContainer}>
-                <Card className={classes.partnerCard}>
-                  <img src={ERevMaxImage} alt={'partner'}/>
-                </Card>
-              </Grid>
-              <Grid item className={classes.partnerCardContainer}>
-                <Card className={classes.partnerCard}>
-                  <img src={NordicImage} alt={'partner'}/>
-                </Card>
-              </Grid>
-              <Grid item className={classes.partnerCardContainer}>
-                <Card className={classes.partnerCard}>
-                  <img src={MachefertImage} alt={'partner'}/>
-                </Card>
-              </Grid>
-            </Grid>
-            <Grid item style={{width: '45%'}}>
-              <Typography variant={'h3'} className={classes.blockTitle}>We work with industry leaders</Typography>
+          <Grid container spacing={5} direction="row-reverse" justify={'space-between'} alignItems={'center'}>
+            <Grid item xs={12} md={6} >
+              <Typography variant={'h3'} className={classes.blockTitle}>We work with industry leaders
+              </Typography>
               <Typography variant={'subtitle1'} className={classes.blockSubtitle}>
                 Large multinational companies join Arbor community to optimize their due diligence
                 processes and get exposed to prospective clients.</Typography>
             </Grid>
+            <Grid item xs={12} md={6} container spacing={2} >
+              {
+                [AirFinanceImage, ERevMaxImage, NordicImage, MachefertImage].map((src, index) => (
+                  <Grid item xs={6} className={classes.partnerCardContainer} key={index}>
+                    <Card className={classes.partnerCard}>
+                      <img className={classes.partnerCardImage}  src={src} alt={'partner'}/>
+                    </Card>
+                  </Grid>
+                ))
+              }
+            </Grid>
           </Grid>
         </div>
       </Container>
+      {/* ================================================ BLOCK 05: Directories =================================================*/}
       <Container>
         <div className={classes.directoriesWrapper}>
           <div className={classes.directoriesContent}>
@@ -504,17 +566,17 @@ function Home(props) {
               <Typography variant={'h3'} className={classes.blockTitle}>
                 Directories we work with
               </Typography>
-              <Link to={'/directories'} className={classes.navLinkToDirectories}>
-                Explore directories <ArrowLongIcon viewbow={'0 0 24 12'}
-                                                   className={classes.navLinkIcon}/>
-              </Link>
+              <Box only={['md', 'lg', 'xl']} display={{ xs: "none", lg: "block" }}>
+                <Link to={'/directories'} className={classes.navLinkToDirectories} >
+                  Explore directories <ArrowLongIcon viewbow={'0 0 24 12'} className={classes.navLinkIcon}/>
+                </Link>
+              </Box>
             </div>
-            <CardsGridList justify={'space-between'} alignItems={'flex-start'}
-                           className={classes.directoriesCardsContainer}>
+            <CardsGridList justify={'space-between'} alignItems={'flex-start'} className={classes.directoriesCardsContainer}>
               {
                 directories.map((item, index) => {
                   return (
-                    <Grid item key={index.toString()} style={{width: '210px'}}>
+                    <Grid item key={index.toString()} className={classes.directoriesCardsGridItem}>
                       <DirectoryCard
                         homeLayout={true}
                         directoryName={item.name}
@@ -528,10 +590,11 @@ function Home(props) {
           </div>
         </div>
       </Container>
-      <Container>
+      {/* ================================================ BLOCK 06: Use cases =================================================*/}
+      <Container hidden={true}>
         <div className={classes.contentWrapper}>
-          <Grid container justify={'space-between'} alignItems={'center'}>
-            <Grid item className={classes.useCasesInfoContainer}>
+          <Grid container spacing={5} justify={'space-between'} alignItems={'center'}>
+            <Grid item xs={12} md={6} className={classes.useCasesInfoContainer}>
               <div>
                 <Typography variant={'h3'} className={classes.blockTitle}>Use cases</Typography>
                 <Typography variant={'subtitle1'} className={classes.blockSubtitle}>Take a look how
@@ -541,7 +604,7 @@ function Home(props) {
                 {renderUseCasesControllers()}
               </div>
             </Grid>
-            <Grid item className={classes.useCasesCardContainer}>
+            <Grid item xs={12} md={6} className={classes.useCasesCardContainer}>
               <Card className={classes.useCasesCard}>
                 <CardContent
                   style={{position: 'relative', height: 'calc(100% - 56px)', padding: '28px'}}>
@@ -579,11 +642,12 @@ function Home(props) {
           </Grid>
         </div>
       </Container>
+      {/* ================================================ BLOCK 07: Built by =================================================*/}
       <div className={classes.builtByContainer}>
         <Container>
           <div className={classes.builtByContent}>
-            <Grid container justify={'space-between'} alignItems={'center'}>
-              <Grid item style={{width: '45%'}}>
+            <Grid container spacing={5} justify={'space-between'} alignItems={'center'}>
+              <Grid item xs={12} md={6} style={{width: '45%'}}>
                 <Typography variant={'h3'} className={classes.blockTitle}>
                   Built by community for community
                 </Typography>
@@ -605,8 +669,8 @@ function Home(props) {
                   and get in contact with other members.
                 </Typography>
               </Grid>
-              <Grid item style={{width: '50%'}}>
-                <img src={BuiltByIllustration} alt={'illustration'}/>
+              <Grid item xs={12} md={6} style={{width: '50%'}}>
+                <img className={classes.builtByContentImage}src={BuiltByIllustration} alt={'illustration'}/>
               </Grid>
             </Grid>
           </div>

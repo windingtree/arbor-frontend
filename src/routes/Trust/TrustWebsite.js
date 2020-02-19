@@ -1,7 +1,7 @@
 import React from "react";
 import history from '../../redux/history';
 
-import {Container, Typography, Grid, Card, Box, Button} from '@material-ui/core';
+import {Container, Typography, Card, Box, Button} from '@material-ui/core';
 import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
 
 

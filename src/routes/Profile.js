@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import history from '../redux/history';
 import { Container, Typography, Button, List } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -8,6 +8,9 @@ import OrgsListItem from '../components/OrgsListItem';
 import EmptyListIllustration from '../assets/SvgComponents/empty-list-illustration.svg';
 //styles
 import colors from '../styles/colors';
+import { connect } from "react-redux";
+import { fetchProfileOrganizations, isFetchedSelector, profileOrganizationsSelector, metaSelector } from "../ducks/fetchProfile";
+import { selectSignInAddress } from "../ducks/signIn";
 
 const styles = makeStyles({
   rootContainer: {
@@ -64,9 +67,12 @@ const styles = makeStyles({
 });
 
 function Profile(props) {
-  const [isSubsOpen, toggleSubsOpen] = useState(false);
   const classes = styles();
-  const { ownOrgs } = props;
+  const { organizations, address } = props;
+
+  useEffect(() => {
+    props.fetchProfileOrganizations({owner: address});
+  }, []);
 
   return (
     <Container className={classes.rootContainer}>
@@ -75,7 +81,7 @@ function Profile(props) {
           <Typography variant={'h2'} className={classes.title}>My organizations</Typography>
         </div>
         {
-          ownOrgs.length !== 0 && (
+          organizations.length !== 0 && (
             <div>
               <Button onClick={() => history.push('/my-organizations/wizard', { type: 'legalEntity' })} className={classes.button}>
                 <Typography variant={'subtitle2'} className={classes.buttonLabel}>+ Add organization</Typography>
@@ -85,7 +91,7 @@ function Profile(props) {
         }
       </div>
       {
-        ownOrgs.length === 0 ? (
+        organizations.length === 0 ? (
           <div className={classes.emptyListContainer}>
             <div className={classes.emptyListContent}>
               <img src={EmptyListIllustration} alt={'illustration'}/>
@@ -100,17 +106,15 @@ function Profile(props) {
         ) : (
           <List>
             {
-              ownOrgs.map((item, index) => {
+              organizations.map((item, index) => {
                 return (
                   <OrgsListItem
                     key={index.toString()}
-                    id={item.id}
-                    img={item.img}
+                    id={item.orgid}
+                    img={item.avatar}
                     name={item.name}
-                    trustLevel={item.trustLevel}
+                    proofsQty={item.proofsQty}
                     subs={item.subs}
-                    isSubsOpen={isSubsOpen}
-                    toggleSubsOpen={toggleSubsOpen}
                   />
                 )
               })
@@ -122,72 +126,17 @@ function Profile(props) {
   )
 }
 
-export default Profile;
-
-Profile.defaultProps = {
-  ownOrgs: [
-    {
-      id: '0xnfjrfh774854nre7nj442jss6h',
-      img: null,
-      name: 'Default Organization',
-      trustLevel: '5',
-      subs: [
-        {
-          id: '0x67jrfh774854nre7ns8r8f85g',
-          entityName: 'Default Organization',
-          subName: 'Default subOrg',
-          isSub: true,
-          type: 'Travel Agency',
-          entityTrustLevel: '5'
-        },
-        {
-          id: '0x67jrfh774854nre7ns8r8f6ig',
-          entityName: 'Default Organization',
-          subName: 'Default subOrg with very long name',
-          isSub: true,
-          type: 'Hotel',
-          entityTrustLevel: '5'
-        },
-        {
-          id: '0x67jrfh774854nre7ns8r8fmju',
-          entityName: 'Default Organization',
-          subName: 'Default subOrg',
-          isSub: true,
-          type: 'Travel Agency',
-          entityTrustLevel: '5'
-        },
-        {
-          id: '0x67jrfh774854nre7ns8r8f88o',
-          entityName: 'Default Organization',
-          subName: 'Default subOrg',
-          isSub: true,
-          type: 'Insurance',
-          entityTrustLevel: '5'
-        },
-        {
-          id: '0x67jrfh774854nre7ns8r8f54f',
-          entityName: 'Default Organization',
-          subName: 'Suuuuuubbbooooooorg',
-          isSub: true,
-          type: 'Hotel',
-          entityTrustLevel: '5'
-        },
-        {
-          id: '0x67jrfh774854nre7ns8r8fnh6',
-          entityName: 'Default Organization',
-          subName: 'Default subOrg',
-          isSub: true,
-          type: 'Travel Agency',
-          entityTrustLevel: '5'
-        },
-      ],
-    },
-    {
-      id: '0xnfjrfh774854nre7nj44gdse6h',
-      img: null,
-      name: 'Another Default Organization',
-      trustLevel: '5',
-      subs: []
-    }
-  ],
+const mapStateToProps = state => {
+  return {
+    organizations: profileOrganizationsSelector(state),
+    meta: metaSelector(state),
+    isFetched: isFetchedSelector(state),
+    address: selectSignInAddress(state)
+  }
 };
+
+const mapDispatchToProps = {
+  fetchProfileOrganizations
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Profile);

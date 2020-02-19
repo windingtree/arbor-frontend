@@ -115,11 +115,11 @@ function Search(props) {
             return (
                 <Grid item key={index.toString()} style={{width: '264px'}}>
                     <OrgsGridItem
-                        id={item.orgid}
+                        orgid={item.orgid}
                         img={item.avatar}
                         isSub={!!item.parent}
-                        type={item.orgidType}
-                        trustLevel={item.proofsQty}
+                        orgidType={item.orgidType}
+                        proofsQty={item.proofsQty}
                         name={item.name}
                         parent={item.parent}
                         subs={item.subsidiaries}
@@ -137,13 +137,13 @@ function Search(props) {
 
     const handlePageClick = data => {
         let selected = data.selected;
-        props.fetchSearchOrganizations({value: searchValue, page: selected + 1, per_page: per_page});
+        props.fetchSearchOrganizations({name: searchValue, page: selected + 1, per_page: per_page});
     };
 
     const fetchSearchResults = async () => {
         if (searchValue === "" && !request) {
             await props.fetchAllOrganizations({page: page, per_page: per_page});
-        } else await props.fetchSearchOrganizations({value: searchValue, page: page, per_page: per_page});
+        } else await props.fetchSearchOrganizations({name: searchValue, page: page, per_page: per_page});
         setLastSearchValue(searchValue)
     };
 
@@ -151,7 +151,7 @@ function Search(props) {
     useEffect(() => {
         handleSearchFromHome();
         if (request && request !== "") {
-            props.fetchSearchOrganizations({value: request, page: page, per_page: per_page});
+            props.fetchSearchOrganizations({name: request, page: page, per_page: per_page});
         } else props.fetchAllOrganizations({page: page, per_page: per_page});
     }, [request]);
 

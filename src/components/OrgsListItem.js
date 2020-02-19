@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from 'react-router-dom';
 import history from '../redux/history';
 import { Card, CardContent, CardMedia, Grid, Typography, Button, Collapse } from '@material-ui/core';
@@ -157,11 +157,12 @@ const styles = makeStyles({
 
 export default function OrgsListItem(props) {
   const classes = styles();
+  const [isSubsOpen, toggleSubsOpen] = useState(false);
   const {
     id,
     img,
     name,
-    trustLevel,
+    proofsQty,
     subs,
     isSub,
     social,
@@ -175,8 +176,6 @@ export default function OrgsListItem(props) {
     entityTrustLevel,
     details,
     agents,
-    isSubsOpen,
-    toggleSubsOpen,
     error
   } = props;
 
@@ -194,7 +193,7 @@ export default function OrgsListItem(props) {
                 img: img,
                 isSub: isSub,
                 name: name,
-                trustLevel: trustLevel,
+                proofsQty: proofsQty,
                 social: social,
                 verified: verified,
                 address: address,
@@ -227,7 +226,7 @@ export default function OrgsListItem(props) {
                   img: img,
                   isSub: isSub,
                   name: name,
-                  trustLevel: trustLevel,
+                  proofsQty: proofsQty,
                   social: social,
                   verified: verified,
                   address: address,
@@ -278,7 +277,7 @@ export default function OrgsListItem(props) {
                     viewBox={'0 0 16 16'}
                     className={classes.icon}
                   />
-                  <Typography variant={'caption'} className={classes.trustLevelValue}>{trustLevel}</Typography>
+                  <Typography variant={'caption'} className={classes.trustLevelValue}>{proofsQty}</Typography>
                 </div>
                 <div className={classes.addSubOrgButtonWrapper}>
                   <Button
@@ -293,7 +292,7 @@ export default function OrgsListItem(props) {
           }
         </Grid>
         {
-          !error ? subs.length !== 0 ? (
+          !error && subs && subs.length !== 0 ? (
             <div>
               <div className={classes.subOrgsContainer}>
                 <Typography variant={'inherit'} className={classes.subOrgsLabel}>
@@ -322,12 +321,13 @@ export default function OrgsListItem(props) {
                       subs.map((item, index) => (
                         <Grid item key={index.toString()} style={{ width: '264px' }}>
                           <OrgsGridItem
-                            id={item.id}
-                            isSub={item.isSub}
-                            entityName={item.entityName}
-                            name={item.subName}
-                            entityTrustLevel={item.entityTrustLevel}
-                            type={item.type}
+                            orgid={item.orgid}
+                            isSub={true}
+                            entityName={item.parent.name}
+                            name={item.name}
+                            proofsQty={item.parent.proofsQty}
+                            entityTrustLevel={item.parent.proofsQty}
+                            orgidType={item.orgidType}
                           />
                         </Grid>
                       ))
@@ -337,88 +337,20 @@ export default function OrgsListItem(props) {
                 </div>
               </Collapse>
             </div>
-          ) : null : null
+          ) : null
         }
       </CardContent>
     </Card>
   )
 };
 
+/*
 OrgsListItem.defaultProps = {
-  id: '0xnfjrfh774854nre7ns8r8f8fd',
-  img: null,
-  name: 'Default Organization',
-  trustLevel: '5',
-  subs: [
-    {
-      id: '0x67jrfh774854nre7ns8r8f85g',
-      entityName: 'Default Organization',
-      subName: 'Default subOrg',
-      isSub: true,
-      type: 'Travel Agency',
-      entityTrustLevel: '5'
-    },
-    {
-      id: '0x67jrfh774854nre7ns8r8f6ig',
-      entityName: 'Default Organization',
-      subName: 'Default subOrg with very long name',
-      isSub: true,
-      type: 'Hotel',
-      entityTrustLevel: '5'
-    },
-    {
-      id: '0x67jrfh774854nre7ns8r8fmju',
-      entityName: 'Default Organization',
-      subName: 'Default subOrg',
-      isSub: true,
-      type: 'Travel Agency',
-      entityTrustLevel: '5'
-    },
-    {
-      id: '0x67jrfh774854nre7ns8r8f88o',
-      entityName: 'Default Organization',
-      subName: 'Default subOrg',
-      isSub: true,
-      type: 'Insurance',
-      entityTrustLevel: '5'
-    },
-    {
-      id: '0x67jrfh774854nre7ns8r8f54f',
-      entityName: 'Default Organization',
-      subName: 'Suuuuuubbbooooooorg',
-      isSub: true,
-      type: 'Hotel',
-      entityTrustLevel: '5'
-    },
-    {
-      id: '0x67jrfh774854nre7ns8r8fnh6',
-      entityName: 'Default Organization',
-      subName: 'Default subOrg',
-      isSub: true,
-      type: 'Travel Agency',
-      entityTrustLevel: '5'
-    },
-    {
-      id: '0x67jrfh774854nre7ns8r8fgd3',
-      entityName: 'Default Organization',
-      subName: 'Default subOrg',
-      isSub: true,
-      type: 'Airline',
-      entityTrustLevel: '5'
-    },
-    {
-      id: '0x67jrfh774854nre7ns8r8f77g',
-      entityName: 'Default Organization',
-      subName: 'Default subOrg',
-      isSub: true,
-      type: 'Insurance',
-      entityTrustLevel: '5'
-    },
-  ],
-  isSub: false,
+  ...
   error: false
   // error: {
   //   expiresAt: '2h: 20m: 5s',
   //   message: 'Something went wrong and organisation was not created. We saved all you info and you can try again'
   // }
 };
+*/

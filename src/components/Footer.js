@@ -1,9 +1,9 @@
 import React from 'react';
 import history from '../redux/history';
 
-import {Link} from 'react-router-dom';
-import {Container, Grid, Typography} from '@material-ui/core';
-import {makeStyles} from '@material-ui/core/styles';
+import { Link } from 'react-router-dom';
+import { Container, Grid, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
 import Logo from '../assets/SvgComponents/Logo';
 import TwitterIcon from '@material-ui/icons/Twitter';
@@ -15,6 +15,11 @@ import GitHubIcon from '@material-ui/icons/GitHub';
 import colors from '../styles/colors';
 
 const styles = makeStyles({
+    xsHidden: {
+        ['@media (max-width:960px)']: { // eslint-disable-line no-useless-computed-key
+            display: 'none',
+        },
+    },
     footer: {
         background: colors.primary.white,
         border: 0,
@@ -94,14 +99,14 @@ export default function Footer(props) {
         <div id="app-footer" className={classes.footer}>
             <Container>
                 <Grid container className={classes.footerContent}>
-                    <Grid item xs={2}>
+                    <Grid item xs={12} md={2}>
                         <Link to={'/'}>
                             <Logo viewBox={'0 0 90 32'} className={classes.logo}/>
                         </Link>
                     </Grid>
-                    <Grid container item xs={10}>
+                    <Grid container item xs={12} md={10}>
                         <Grid container>
-                            <Grid container direction="column" item xs={3}>
+                            <Grid container direction="column" item xs={12} md={3} className={classes.xsHidden}>
                                 <Typography variant={'h4'} className={classes.columnTitle}>Organizations</Typography>
                                 <Link to={'/search'} className={classes.navLink}>
                                     <Typography variant={'h6'} className={classes.columnItem}>Search</Typography>
@@ -111,25 +116,26 @@ export default function Footer(props) {
                                         organization</Typography>
                                 </Link>
                             </Grid>
-                            <Grid container direction="column" item xs={3}>
+
+                            <Grid container direction="column" item xs={12} md={3} className={classes.xsHidden}>
                                 <Typography variant={'h4'} className={classes.columnTitle}>Directories</Typography>
-                                <Typography onClick={() => history.push('/directories', { dirType: 'airline' })} variant={'h6'} className={classes.navLink}>Airlines</Typography>
-                                <Typography onClick={() => history.push('/directories', { dirType: 'hotel' })} variant={'h6'} className={classes.navLink}>Hotels</Typography>
-                                <Typography variant={'h6'} className={classes.columnItem}>Travel agencies</Typography>
-                                <Typography variant={'h6'} className={classes.columnItem}>Insurance</Typography>
+
+                                <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'airline' })}><Typography variant={'h6'} className={classes.columnItem}>Airlines</Typography></div>
+                                <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'hotel' })} ><Typography variant={'h6'} className={classes.columnItem}>Hotels</Typography></div>
+                                <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'ota' })} ><Typography variant={'h6'} className={classes.columnItem}>Travel agencies</Typography></div>
+                                <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'insurance' })} ><Typography variant={'h6'} className={classes.columnItem}>Insurance</Typography></div>
                             </Grid>
-                            <Grid container direction="column" item xs={3}>
+
+                            <Grid container direction="column" item xs={12} md={3}>
                                 <Typography variant={'h4'} className={classes.columnTitle}>Contacts</Typography>
                                 <Typography variant={'h6'} className={classes.columnItem} noWrap>Gubelstrasse 11, 6300
                                     Zug, Switzerland</Typography>
-                                <a href={'mailto:info@windingtree.com'} className={classes.navLink}>
-                                    <Typography variant={'h6'}
-                                                className={classes.columnItem}>info@windingtree.com</Typography>
+                                <a href={'mailto:join@windingtree.com'} className={classes.navLink}>
+                                    <Typography variant={'h6'} className={classes.columnItem}>info@windingtree.com</Typography>
                                 </a>
                             </Grid>
                         </Grid>
                     </Grid>
-
                 </Grid>
             </Container>
             <div className={classes.legalInfoContainer}>
@@ -201,10 +207,10 @@ export default function Footer(props) {
 
 Footer.defaultProps = {
     socialLinks: [
-        {facebook: 'https://facebook.com/'},
-        {github: 'https://github.com/'},
-        {twitter: 'https://twitter.com/'},
-        {medium: 'https://medium.com/'},
-        {telegram: 'https://web.telegram.org/'},
+        { facebook: 'https://facebook.com/' },
+        { github: 'https://github.com/windingtree' },
+        { twitter: 'https://blog.windingtree.com' },
+        { medium: 'https://blog.windingtree.com/' },
+        { telegram: 'https://t.me/windingtree' },
     ]
 };

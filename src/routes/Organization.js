@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import _ from 'lodash';
 import { connect } from 'react-redux';
-import { fetchOrganizationInfo, fetchOrganizationSubInfo, selectItem, selectSubs } from '../ducks/fetchOrganizationInfo';
+import { fetchOrganizationInfo, fetchOrganizationSubsInfo, selectItem, selectSubs } from '../ducks/fetchOrganizationInfo';
 import history from '../redux/history';
 import { Container, Typography, Box, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -71,11 +71,8 @@ function Organization(props) {
   let subOrgs = _.get(item, 'subsidiaries', []);
 
   useEffect(() => {
-    subOrgs !== 0 && subOrgs !== null && subOrgs.forEach(sub => {
-      props.fetchOrganizationSubInfo({ id: sub });
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [subOrgs]);
+    subOrgs !== 0 && subOrgs !== null && props.fetchOrganizationSubsInfo({ id });
+  }, [id, subOrgs]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const type = item.parent ? 'entity' : 'legalEntity';
   const editState = { action: 'edit', type, id, jsonContent: item.jsonContent };
@@ -132,7 +129,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
   fetchOrganizationInfo,
-  fetchOrganizationSubInfo
+  fetchOrganizationSubsInfo
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Organization);

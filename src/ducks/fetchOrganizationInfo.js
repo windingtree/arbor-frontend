@@ -10,9 +10,10 @@ const prefix = `${appName}/${moduleName}`;
 const FETCH_ORGANIZATION_INFO_REQUEST = `${prefix}/FETCH_ORGANIZATION_INFO_REQUEST`;
 const FETCH_ORGANIZATION_INFO_SUCCESS = `${prefix}/FETCH_ORGANIZATION_INFO_SUCCESS`;
 const FETCH_ORGANIZATION_INFO_FAILURE = `${prefix}/FETCH_ORGANIZATION_INFO_FAILURE`;
-const FETCH_ORGANIZATION_SUB_INFO_REQUEST = `${prefix}/FETCH_ORGANIZATION_SUB_INFO_REQUEST`;
-const FETCH_ORGANIZATION_SUB_INFO_SUCCESS = `${prefix}/FETCH_ORGANIZATION_SUB_INFO_SUCCESS`;
-const FETCH_ORGANIZATION_SUB_INFO_FAILURE = `${prefix}/FETCH_ORGANIZATION_SUB_INFO_FAILURE`;
+
+const FETCH_ORGANIZATION_SUBS_INFO_REQUEST = `${prefix}/FETCH_ORGANIZATION_SUBS_INFO_REQUEST`;
+const FETCH_ORGANIZATION_SUBS_INFO_SUCCESS = `${prefix}/FETCH_ORGANIZATION_SUBS_INFO_SUCCESS`;
+const FETCH_ORGANIZATION_SUBS_INFO_FAILURE = `${prefix}/FETCH_ORGANIZATION_SUBS_INFO_FAILURE`;
 
 const initialState = {
   isFetching: false,
@@ -30,7 +31,7 @@ export default function reducer(state = initialState, action) {
 
   switch (type) {
     case FETCH_ORGANIZATION_INFO_REQUEST:
-    case  FETCH_ORGANIZATION_SUB_INFO_REQUEST:
+    case FETCH_ORGANIZATION_SUBS_INFO_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
         isFetched: false,
@@ -43,16 +44,15 @@ export default function reducer(state = initialState, action) {
         item: payload.data,
         error: null
       });
-    case FETCH_ORGANIZATION_SUB_INFO_SUCCESS:
-      let subs = state.subs.slice();
-      subs.push(payload.data);
+    case FETCH_ORGANIZATION_SUBS_INFO_SUCCESS:
       return Object.assign({}, state, {
         isFetching: false,
         isFetched: true,
-        subs: subs,
+        subs: payload.data,
         error: null,
       });
     case FETCH_ORGANIZATION_INFO_FAILURE:
+    case FETCH_ORGANIZATION_SUBS_INFO_FAILURE:
       return Object.assign({}, state, {
         isFetching: false,
         isFetched: false,
@@ -87,23 +87,23 @@ function fetchOrganizationInfoFailure(error) {
   }
 }
 
-export function fetchOrganizationSubInfo(payload) {
+export function fetchOrganizationSubsInfo(payload) {
   return {
-    type: FETCH_ORGANIZATION_SUB_INFO_REQUEST,
+    type: FETCH_ORGANIZATION_SUBS_INFO_REQUEST,
     payload
   }
 }
 
-function fetchOrganizationSubInfoSuccess(payload) {
+function fetchOrganizationSubsInfoSuccess(payload) {
   return {
-    type: FETCH_ORGANIZATION_SUB_INFO_SUCCESS,
+    type: FETCH_ORGANIZATION_SUBS_INFO_SUCCESS,
     payload
   }
 }
 
-function fetchOrganizationSubInfoFailure(error) {
+function fetchOrganizationSubsInfoFailure(error) {
   return {
-    type: FETCH_ORGANIZATION_SUB_INFO_FAILURE,
+    type: FETCH_ORGANIZATION_SUBS_INFO_FAILURE,
     error
   }
 }
@@ -136,20 +136,20 @@ function* fetchOrganizationInfoSaga({payload}) {
   }
 }
 
-function* fetchOrganizationSubInfoSaga({payload}) {
+function* fetchOrganizationSubsInfoSaga({payload}) {
   try {
-    const result = yield call(ApiFetchOrganizationInfo, payload);
+    const result = yield call(ApiFetchOrganizationSubsInfo, payload);
 
-    yield put(fetchOrganizationSubInfoSuccess(result));
+    yield put(fetchOrganizationSubsInfoSuccess(result));
   } catch(error) {
-    yield put(fetchOrganizationSubInfoFailure(error));
+    yield put(fetchOrganizationSubsInfoFailure(error));
   }
 }
 
 export const saga = function*() {
   return yield all([
     takeEvery(FETCH_ORGANIZATION_INFO_REQUEST, fetchOrganizationInfoSaga),
-    takeEvery(FETCH_ORGANIZATION_SUB_INFO_REQUEST, fetchOrganizationSubInfoSaga),
+    takeEvery(FETCH_ORGANIZATION_SUBS_INFO_REQUEST, fetchOrganizationSubsInfoSaga),
   ]);
 };
 
@@ -158,4 +158,8 @@ export const saga = function*() {
  * */
 function ApiFetchOrganizationInfo(data) {
   return callApi(`orgids/${data.id}`);
+}
+
+function ApiFetchOrganizationSubsInfo(data) {
+  return callApi(`orgids/?parent.orgid=${data.id}`);
 }

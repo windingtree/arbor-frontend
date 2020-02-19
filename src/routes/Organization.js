@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import { fetchOrganizationInfo, fetchOrganizationSubInfo, selectItem, selectSubs } from '../ducks/fetchOrganizationInfo';
@@ -57,10 +57,10 @@ const styles = makeStyles({
 });
 
 function Organization(props) {
-  const [isOpen, toggleOpen] = useState(false);
   const classes = styles();
 
   const id = history.location.state ? history.location.state.id : history.location.pathname.split('/')[2];
+  const canManageOrganization = history.location.pathname !== `/organization/${id}`;
 
   useEffect(() => {
     props.fetchOrganizationInfo({ id: id });
@@ -83,51 +83,6 @@ function Organization(props) {
     editState.parent = item.parent;
   }
 
-  const OrganizationProfile = () => {
-    const location = _.get(item, `jsonContent.${type}.locations[0].address`, {});
-    const contacts = _.get(item, `jsonContent.${type}.contacts[0]`, {});
-
-    const social = [
-      {
-        facebook: contacts.facebook,
-        verified: item.isSocialFBProved
-      },
-      {
-        telegram: contacts.telegram,
-      },
-      {
-        twitter: contacts.twitter,
-        verified: item.isSocialTWProved
-      },
-      {
-        instagram: contacts.instagram,
-        verified: item.isSocialIGProved
-      },
-      {
-        linkedin: contacts.linkedin,
-        verified: item.isSocialLNProved
-      },
-    ];
-
-    return (
-      <OrgProfileView
-        id={item.id}
-        subs={props.subs}
-        trustLevel={item.proofsQty}
-        img={item.avatar}
-        name={item.name}
-        address={location}
-        contacts={contacts}
-        entityName={'parentName'}
-        entityTrustLevel={'parentTrustLevel'}
-        social={social}
-        isSub={!!item.parent}
-        isOpen={isOpen}
-        toggleOpen={toggleOpen}
-      />
-    )
-  };
-
   return (
     <div>
       <Container>
@@ -141,14 +96,14 @@ function Organization(props) {
             </Button>
           </div>
           {
-            history.location.pathname !== `/organization/${id}` ? (
+            canManageOrganization ? (
               <div>
-                <Button onClick={() => null}>
+                <Button onClick={() => history.push(`/organization/${id}`, {id})}>
                   <Typography variant={'caption'} className={classes.buttonLabel}>
                     <EyeIcon viewBox={'0 0 16 12'} className={[classes.itemActionButtonIcon, classes.eyeIcon].join(' ')}/>
                     Public organization view
                   </Typography>
-                </Button>
+                </Button> {/*View*/}
 
                 <Button
                     onClick={() => history.push('/my-organizations/wizard', editState)}
@@ -157,13 +112,13 @@ function Organization(props) {
                     <EditIcon viewBox={'0 0 14 14 '} className={[classes.itemActionButtonIcon, classes.editIcon].join(' ')}/>
                     Edit organization profile
                   </Typography>
-                </Button>
+                </Button> {/*Edit*/}
               </div>
             ) : null
           }
         </Box>
       </Container>
-      <OrganizationProfile/>
+      <OrgProfileView item={item} subs={props.subs} />
     </div>
   )
 }

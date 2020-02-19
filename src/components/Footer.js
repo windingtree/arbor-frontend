@@ -201,33 +201,12 @@ export default function Footer(props) {
                 props.socialLinks.map((item, index) => {
                   const socialIcon = type => {
                     switch (type[0]) {
-                      case 'twitter':
-                        return (
-                          <TwitterIcon
-                            className={[classes.socialIcon, classes.iconTwitter].join(' ')}/>
-                        );
-                      case 'facebook':
-                        return (
-                          <FacebookIcon
-                            className={[classes.socialIcon, classes.iconFacebook].join(' ')}/>
-                        );
-                      case 'telegram':
-                        return (
-                          <TelegramSocialIcon viewBox={'0 0 18 15'}
-                                              className={[classes.socialIcon, classes.iconTelegram].join(' ')}/>
-                        );
-                      case 'medium':
-                        return (
-                          <MediumSocialIcon viewBox={'0 0 14 17'}
-                                            className={[classes.socialIcon, classes.iconMedium].join(' ')}/>
-                        );
-                      case 'github':
-                        return (
-                          <GitHubIcon
-                            className={[classes.socialIcon, classes.iconGitHub].join(' ')}/>
-                        );
-                      default:
-                        return null;
+                      case 'twitter':   return <TwitterIcon className={[classes.socialIcon, classes.iconTwitter].join(' ')}/>;
+                      case 'facebook':  return <FacebookIcon className={[classes.socialIcon, classes.iconFacebook].join(' ')}/>;
+                      case 'telegram':  return <TelegramSocialIcon className={[classes.socialIcon, classes.iconTelegram].join(' ')}/>;
+                      case 'medium':    return <MediumSocialIcon className={[classes.socialIcon, classes.iconMedium].join(' ')}/>;
+                      case 'github':    return <GitHubIcon className={[classes.socialIcon, classes.iconGitHub].join(' ')}/>;
+                      default: return null;
                     }
                   };
                   return (

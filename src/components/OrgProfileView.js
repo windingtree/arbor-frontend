@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import history from '../redux/history';
 import PropTypes from 'prop-types';
 import { Grid, Container, Typography, Button, Collapse, Fade, Tooltip } from '@material-ui/core';
@@ -28,6 +28,7 @@ import AddSubOrgCard from './AddSubOrgCard';
 import CopyIdComponent from './CopyIdComponent';
 
 import colors from '../styles/colors';
+import _ from "lodash";
 
 const styles = makeStyles({
   itemMainInfo: {
@@ -400,26 +401,36 @@ const LightTooltip = withStyles({
 
 function OrgProfileView(props) {
   const classes = styles();
+  const [isOpen, toggleOpen] = useState(false);
 
   const {
-    id,
+    item,
     subs,
-    trustLevel,
-    img,
-    name,
-    address,
-    isSub,
-    entityName,
-    entityTrustLevel,
-    stage,
-    contacts,
-    verified,
-    social,
-    isOpen,
-    toggleOpen,
-    details,
-    agents
+
+    stage,    // TODO: define
+    verified, // TODO: define
+    details,  // TODO: define
+    agents    // TODO: define
   } = props;
+
+  const { orgid: id, proofsQty, avatar, name, parent} = item;
+  const isSub = !!parent;
+  const type = item.parent ? 'entity' : 'legalEntity';
+  const address = _.get(item, `jsonContent.${type}.locations[0].address`, {});
+  const contacts = _.get(item, `jsonContent.${type}.contacts[0]`, {});
+  const entityName = _.get(item, `parent.name`, '');
+  const entityTrustLevel = _.get(item, `parent.proofsQty`, 0);
+  const social = [];
+  const possibleSocial = {
+    'facebook': 'FB',
+    'telegram': 'TG',
+    'twitter': 'TW',
+    'instagram': 'IG',
+    'linkedin': 'LN'
+  };
+  _.each(possibleSocial, (short, name) => {
+    if (contacts[name]) social.push({ network: name, link: contacts[name], verified: !!item[`isSocial${short}Proved`]})
+  });
 
   const ownOrganization = history.location.pathname === `/my-organizations/${id}`;
 
@@ -440,7 +451,7 @@ function OrgProfileView(props) {
                 </LightTooltip>
                 <Typography variant={'caption'} className={classes.itemTrustInfoTitle}>Trust level: </Typography>
                 <TrustLevelIcon viewBox={'0 0 16 16'} className={classes.iconTrustLevel}/>
-                <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{trustLevel}</Typography>
+                <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{proofsQty}</Typography>
               </div>
               {
                 !isSub ? (
@@ -454,26 +465,30 @@ function OrgProfileView(props) {
           )
         }
         <Grid container className={classes.orgMainInfoWrapper} wrap={'nowrap'}>
+
+          {/* TOP-LEFT-BLOCK: IMAGE =================================================================================*/}
           <Grid item style={{ width: '44%' }}>
             <div className={classes.orgImageWrapper}>
               {
-                img ? (
-                    <img className={classes.orgImage} src={img} alt={'Organization'}/>
+                avatar ? (
+                    <img className={classes.orgImage} src={avatar} alt={'Organization'}/>
                 ) : (
                     <img className={classes.orgImage} src={DefaultImage} alt={'Organization'}/>
                 )
               }
             </div>
           </Grid>
+
+          {/* TOP-RIGHT-BLOCK: INFO =================================================================================*/}
           <Grid item style={{ width: '56%' }}>
             <div className={classes.idInfoContainer}>
-              <CopyIdComponent id={id} leftElement={'Org ID: '} fontWeight={500}/>
+              <CopyIdComponent id={id || '0xLOADING'} leftElement={'Org ID: '} fontWeight={500}/>
               {
                 ownOrganization || (
                   <div className={classes.publicTrustLevelWrapper}>
                     <Typography variant={'caption'} className={classes.itemTrustInfoTitle} style={{ color: colors.greyScale.common }}>Trust level: </Typography>
                     <TrustLevelIcon viewBox={'0 0 16 16'} className={classes.iconTrustLevel}/>
-                    <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{trustLevel}</Typography>
+                    <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{proofsQty}</Typography>
                   </div>
                 )
               }
@@ -538,51 +553,30 @@ function OrgProfileView(props) {
             </div>
           </Grid>
         </Grid>
+        {/* SOCIAL NETWORK LINKS ====================================================================================*/}
         <div className={classes.socialInline}>
           {
             social.map((item, index) => {
-              const icon = (socialType) => {
-                switch(socialType[0]) {
-                  case 'twitter':
-                    return (
-                      <TwitterIcon className={[classes.socialIcon, classes.iconTwitter].join(' ')}/>
-                    );
-                  case 'facebook':
-                    return (
-                      <FacebookIcon className={[classes.socialIcon, classes.iconFacebook].join(' ')}/>
-                    );
-                  case 'telegram':
-                    return (
-                      <TelegramSocialIcon viewBox={'0 0 18 15'} className={[classes.socialIcon, classes.iconTelegram].join(' ')}/>
-                    );
-                  case 'medium':
-                    return (
-                      <MediumSocialIcon viewBox={'0 0 14 17'} className={[classes.socialIcon, classes.iconMedium].join(' ')}/>
-                    );
-                  case 'instagram':
-                    return (
-                      <InstagramSocialIcon viewBox={'0 0 17 17'} className={[classes.socialIcon, classes.iconInstagram].join(' ')}/>
-                    );
-                  case 'github':
-                    return (
-                      <GitHubIcon className={[classes.socialIcon, classes.iconGitHub].join(' ')}/>
-                    );
-                  case 'linkedin':
-                    return (
-                      <LinkedInIcon className={[classes.socialIcon, classes.iconLinkedin].join(' ')}/>
-                    );
-                  default:
-                    return null;
+              const icon = (socialNetwork) => {
+                switch(socialNetwork) {
+                  case 'twitter':   return <TwitterIcon className={[classes.socialIcon, classes.iconTwitter].join(' ')}/>;
+                  case 'facebook':  return <FacebookIcon className={[classes.socialIcon, classes.iconFacebook].join(' ')}/>;
+                  case 'telegram':  return <TelegramSocialIcon className={[classes.socialIcon, classes.iconTelegram].join(' ')}/>;
+                  case 'medium':    return <MediumSocialIcon className={[classes.socialIcon, classes.iconMedium].join(' ')}/>;
+                  case 'instagram': return <InstagramSocialIcon className={[classes.socialIcon, classes.iconInstagram].join(' ')}/>;
+                  case 'github':    return <GitHubIcon className={[classes.socialIcon, classes.iconGitHub].join(' ')}/>;
+                  case 'linkedin':  return <LinkedInIcon className={[classes.socialIcon, classes.iconLinkedin].join(' ')}/>;
+                  default: return null;
                 }
               };
               return (
-                <a key={index.toString()} href={Object.values(item)[0]} className={classes.socialLink}>
+                <a key={index.toString()} href={item.link} className={classes.socialLink}>
                   {
-                    icon(Object.keys(item))
+                    icon(item.network)
                   }
-                  <Typography variant={'inherit'}>{Object.keys(item)[0]}</Typography>
+                  <Typography variant={'inherit'}>{item.network}</Typography>
                   {
-                    Object.values(item)[1] ? (
+                    item.verified ? (
                       <TrustLevelIcon viewBox={'0 0 16 16'} className={[classes.iconTrustLevel, classes.iconVerify].join(' ')}/>
                     ) : null
                   }
@@ -591,6 +585,7 @@ function OrgProfileView(props) {
             })
           }
         </div>
+        {/* ORG DETAILS =============================================================================================*/}
         {
           ownOrganization && (
             <Fade in={!isOpen}>
@@ -606,37 +601,40 @@ function OrgProfileView(props) {
         }
       </Container>
       {
-        ownOrganization ? (
-          <Collapse in={isOpen} className={classes.detailsContainer}>
-            <Container className={classes.detailsContent}>
-              <div className={classes.details}>
-                <Typography variant={'inherit'} className={classes.detailsTitle}>{details.title}</Typography>
-                <Typography variant={'inherit'}>{details.text}</Typography>
-                <div className={classes.line}/>
-              </div>
-              <img src={DetailsIllustration} alt={'Details illustration'} className={classes.detailsIllustration}/>
-              <div className={classes.hideDetailsButtonWrapper}>
-                <Button onClick={() => toggleOpen(!isOpen)} className={classes.toggleOpenDetailsButton}>
-                  <Typography variant={'inherit'}>
-                    Hide organization details <MinimizeIcon viewBox={'0 0 20 20'} className={classes.iconToggleDetailsOpen}/>
-                  </Typography>
-                </Button>
-              </div>
-            </Container>
-          </Collapse>
-        ) : (
-          <div className={classes.detailsContainer}>
-            <Container className={classes.detailsContent}>
-              <div className={classes.details}>
-                <Typography variant={'inherit'} className={classes.detailsTitle}>{details.title}</Typography>
-                <Typography variant={'inherit'}>{details.text}</Typography>
-                <div className={classes.line}/>
-              </div>
-              <img src={DetailsIllustration} alt={'Details illustration'} className={classes.detailsIllustration}/>
-            </Container>
-          </div>
-        )
+        details ? (
+          ownOrganization ? (
+            <Collapse in={isOpen} className={classes.detailsContainer}>
+              <Container className={classes.detailsContent}>
+                <div className={classes.details}>
+                  <Typography variant={'inherit'} className={classes.detailsTitle}>{details.title}</Typography>
+                  <Typography variant={'inherit'}>{details.text}</Typography>
+                  <div className={classes.line}/>
+                </div>
+                <img src={DetailsIllustration} alt={'Details illustration'} className={classes.detailsIllustration}/>
+                <div className={classes.hideDetailsButtonWrapper}>
+                  <Button onClick={() => toggleOpen(!isOpen)} className={classes.toggleOpenDetailsButton}>
+                    <Typography variant={'inherit'}>
+                      Hide organization details <MinimizeIcon viewBox={'0 0 20 20'} className={classes.iconToggleDetailsOpen}/>
+                    </Typography>
+                  </Button>
+                </div>
+              </Container>
+            </Collapse>
+          ) : (
+            <div className={classes.detailsContainer}>
+              <Container className={classes.detailsContent}>
+                <div className={classes.details}>
+                  <Typography variant={'inherit'} className={classes.detailsTitle}>{details.title}</Typography>
+                  <Typography variant={'inherit'}>{details.text}</Typography>
+                  <div className={classes.line}/>
+                </div>
+                <img src={DetailsIllustration} alt={'Details illustration'} className={classes.detailsIllustration}/>
+              </Container>
+            </div>
+          )
+        ): null
       }
+      {/* SUB ORGANIZATIONS =========================================================================================*/}
       {
         subs.length !== 0 ? (
           <div className={classes.subsWrapper}>
@@ -673,6 +671,7 @@ function OrgProfileView(props) {
           </div>
         ) : null
       }
+      {/* AGENTS ====================================================================================================*/}
       {
         ownOrganization && (
           <Container>
@@ -748,6 +747,7 @@ function OrgProfileView(props) {
           </Container>
         )
       }
+      {/* TODOLIST ==================================================================================================*/}
     </div>
   )
 }
@@ -757,12 +757,12 @@ OrgProfileView.propTypes = {
   address: PropTypes.object,
   contacts: PropTypes.object,
 };
-
+/*
 OrgProfileView.defaultProps = {
   id: '0x3288gjgndk48d8dsjsf8f9ssjsj88f',
   stage: 'Step 2. Submit LIF stake ',
-  trustLevel: '1',
-  img: null,
+  proofsQty: '1',
+  avatar: null,
   name: 'Default organization',
   address: 'Default address with extremely long description and it will go on the second line',
   tel: '+33144385600',
@@ -826,6 +826,6 @@ OrgProfileView.defaultProps = {
       comment: 'Nice guy'
     },
   ]
-};
+};*/
 
 export default OrgProfileView;

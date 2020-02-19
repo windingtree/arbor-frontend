@@ -11,7 +11,7 @@ import Home from './Home';
 import Search from './Search';
 import Directories from './Directories';
 import Directory from './Directory';
-import Organization from './Organization';
+import Organization from './Organization/Organization';
 import Authorization from './Authorization/Authorization';
 import Trust from './Trust/Trust';
 import TOS from './TOS'

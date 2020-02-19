@@ -20,6 +20,11 @@ const styles = makeStyles({
       display: 'none',
     },
   },
+  xsVisible: {
+    ['@media (max-width:960px)']: { // eslint-disable-line no-useless-computed-key
+      marginTop: '20px',
+    },
+  },
   footer: {
     background: colors.primary.white,
     border: 0,
@@ -30,13 +35,19 @@ const styles = makeStyles({
     }
   },
   footerContent: {
-    padding: '60px 0'
+    padding: '60px 0',
+    ['@media (max-width:960px)']: { // eslint-disable-line no-useless-computed-key
+      padding: '40px 0'
+    },
   },
   columnTitle: {
     fontSize: '16px',
     fontWeight: 500,
     color: colors.greyScale.darkest,
-    paddingBottom: '12px'
+    paddingBottom: '12px',
+    ['@media (max-width:960px)']: { // eslint-disable-line no-useless-computed-key
+      display: 'none',
+    }
   },
   columnItem: {
     display: 'inline-block',
@@ -95,13 +106,32 @@ const styles = makeStyles({
     borderTop: `1px solid ${colors.greyScale.lightest}`
   },
   legalInfo: {
-    padding: '20px 0'
+    padding: '20px 0',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      flexDirection: 'column-reverse',
+      alignItems: 'flex-start',
+      paddingBottom: '40px'
+    },
+  },
+  copyrightInfoWrapper: {
+    width: '40%',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      width: '100%',
+      paddingTop: '20px'
+    },
   },
   legalInfoLabel: {
     fontSize: '12px',
     fontWeight: 400,
     lineHeight: 1.42,
     color: colors.greyScale.dark
+  },
+  socialWrapper: {
+    width: '40%',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      width: '70%',
+      justifyContent: 'space-between'
+    },
   }
 });
 
@@ -138,7 +168,7 @@ export default function Footer(props) {
                 <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'insurance' })} ><Typography variant={'h6'} className={classes.columnItem}>Insurance</Typography></div>
               </Grid>
 
-              <Grid container direction="column" item xs={12} md={3}>
+              <Grid container direction="column" item xs={12} md={3} className={classes.xsVisible}>
                 <Typography variant={'h4'} className={classes.columnTitle}>Contacts</Typography>
                 <Typography variant={'h6'} className={classes.columnItem} noWrap>Gubelstrasse 11, 6300
                   Zug, Switzerland</Typography>
@@ -153,7 +183,7 @@ export default function Footer(props) {
       <div className={classes.legalInfoContainer}>
         <Container>
           <Grid container justify={'space-between'} alignItems={'center'} className={classes.legalInfo}>
-            <Grid item container justify={'space-between'} alignItems={'center'} style={{width: '40%'}}>
+            <Grid item container justify={'space-between'} alignItems={'center'} className={classes.copyrightInfoWrapper}>
               <Grid item>
                 <Typography variant={'caption'} className={classes.legalInfoLabel}>
                   © 2020 Arbor
@@ -166,7 +196,7 @@ export default function Footer(props) {
                 </Link>
               </Grid>
             </Grid>
-            <Grid item container justify={'flex-end'} alignItems={'center'} style={{width: '40%'}}>
+            <Grid item container justify={'flex-end'} alignItems={'center'} className={classes.socialWrapper}>
               {
                 props.socialLinks.map((item, index) => {
                   const socialIcon = type => {

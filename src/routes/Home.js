@@ -387,26 +387,18 @@ function Home(props) {
     'choose directory'
   ];
 
-  const handleSlideChange = value => {
-    setActiveSlide(value);
-  };
-
-  const handleSlideChangeFromControllers = e => {
-    const item = e.target.innerHTML;
-    const itemIndex = sliderControllers.indexOf(item);
-
-    if (activeSlide === itemIndex) return;
-    setActiveSlide(itemIndex);
+  const handleSlideChange = (e) => {
+    setActiveSlide(e.target ? sliderControllers.indexOf(e.target.innerHTML) : e );
   };
 
   const renderSliderControllers = () => {
     const controllers = sliderControllers.map((item, index) => {
       return (
-        <li className={index === activeSlide ? classes.activeController : [classes.controllerItem, classes.joinControllerItem].join(' ')}
+        <li className={activeSlide === index ? classes.activeController : [classes.controllerItem, classes.joinControllerItem].join(' ')}
             key={index.toString()} style={{ margin: '8px 0' }}>
           <button
             className={[classes.controllerButton, classes.joinControllerButton].join(' ')}
-            onClick={handleSlideChangeFromControllers}
+            onClick={handleSlideChange}
           >
             {item}
           </button>
@@ -492,7 +484,8 @@ function Home(props) {
                       <Carousel
                         value={activeSlide}
                         onChange={handleSlideChange}
-                        animationSpeed={500}
+                        animationSpeed={700}
+                        infinite
                       >
                         <img src={CarouselSignUpIllustration} alt={'illustration'} className={classes.carouselImage}/>
                         <img src={CarouselValidateIllustration} alt={'illustration'} className={classes.carouselImage}/>

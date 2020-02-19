@@ -39,19 +39,31 @@ const styles = makeStyles({
     paddingBottom: '12px'
   },
   columnItem: {
+    display: 'inline-block',
     fontSize: '14px',
     fontWeight: 400,
     lineHeight: 1.42,
-    color: colors.greyScale.dark,
-    padding: '4px 0'
+    padding: '4px 0',
+    borderBottomColor: 'transparent',
+    borderBottomStyle: 'solid',
+    borderBottomWidth: '2px',
+    transition: 'border-bottom-color .3s ease'
   },
   navLink: {
+    position: 'relative',
     cursor: 'pointer',
     textDecoration: 'none',
-    color: colors.greyScale.dark
-    /*'&:hover': { //FIXME
-      color: colors.secondary.intenseGreen
-    }*/
+    color: colors.greyScale.dark,
+    borderBottomColor: 'transparent',
+    borderBottomStyle: 'solid',
+    borderBottomWidth: '2px',
+    transition: 'color .3s ease',
+    '&:hover': {
+      color: colors.secondary.intenseGreen,
+      '& > h6': {
+        borderBottomColor: colors.secondary.intenseGreen,
+      }
+    }
   },
   logo: {
     width: '89px',

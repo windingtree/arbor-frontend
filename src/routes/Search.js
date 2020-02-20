@@ -110,7 +110,13 @@ const styles = makeStyles({
   selectFormControl: {
     width: '100%',
     '& > .MuiInputBase-root': {
-      padding: '8px 0'
+      padding: '0'
+    },
+    '& > .MuiInputLabel-formControl': {
+      transform: 'translate(0, 24px) scale(1)'
+    },
+    '& > .MuiInputLabel-shrink': {
+      transform: 'translate(0, 4px) scale(0.75)'
     }
   },
   gridListWrapper: {

@@ -61,6 +61,18 @@ const styles = makeStyles({
       width: '100%'
     },
   },
+  selectControl: {
+    width: '100%',
+    '& > .MuiInputBase-root': {
+      padding: '0'
+    },
+    '& > .MuiInputLabel-formControl': {
+      transform: 'translate(0, 24px) scale(1)'
+    },
+    '& > .MuiInputLabel-shrink': {
+      transform: 'translate(0, 4px) scale(0.75)'
+    }
+  },
   paginationInfoContainer: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -187,24 +199,22 @@ function Directory(props) {
             </Typography>
           </div>
           <div className={classes.filterWrapper}>
-            <div className={classes.filtersController}>
-              <FormControl style={{ width: '100%' }}>
-                <InputLabel>Country</InputLabel>
-                <Select
-                  value={countryFilterValue}
-                  onChange={handleCountryFilterValueChange}
-                >
-                  <MenuItem value={''}>default</MenuItem>
-                  {
-                    options[0].countries.map((option, index) => {
-                      return (
-                        <MenuItem key={index.toString()} value={option}>{option}</MenuItem>
-                      )
-                    })
-                  }
-                </Select>
-              </FormControl>
-            </div>
+            <FormControl className={classes.selectControl}>
+              <InputLabel>Country</InputLabel>
+              <Select
+                value={countryFilterValue}
+                onChange={handleCountryFilterValueChange}
+              >
+                <MenuItem value={''}>default</MenuItem>
+                {
+                  options[0].countries.map((option, index) => {
+                    return (
+                      <MenuItem key={index.toString()} value={option}>{option}</MenuItem>
+                    )
+                  })
+                }
+              </Select>
+            </FormControl>
           </div>
         </div>
       </Container>

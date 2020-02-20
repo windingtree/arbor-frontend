@@ -115,14 +115,16 @@ const styles = makeStyles({
     alignItems: 'center',
     margin: '40px 0',
   },
+  totalSearchTitleContainer: {
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      display: 'none'
+    },
+  },
   totalSearchResultsTitle: {
     fontSize: '14px',
     fontWeight: 400,
     lineHeight: 1.42,
-    color: colors.greyScale.dark,
-    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
-      display: 'none'
-    },
+    color: colors.greyScale.dark
   },
 });
 
@@ -364,9 +366,9 @@ function Search(props) {
               {
                 total > per_page ? (
                   <div className={classes.paginationInfoContainer}>
-                    <div>
-                      <Typography variant={'caption'} className={classes.totalSearchResultsTitle}>Search
-                        results: {total}</Typography>
+                    <div className={classes.totalSearchTitleContainer}>
+                      <Typography variant={'caption'} className={classes.totalSearchResultsTitle}>
+                        Search results: {total}</Typography>
                     </div>
                     <div>
                       <Pagination

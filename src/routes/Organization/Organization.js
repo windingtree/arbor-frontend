@@ -29,7 +29,7 @@ function Organization(props) {
     <div>
       <TopNavigation organization={organization} canManage={canManage} todos={todos}/>
       <Info organization={organization} canManage={canManage}/>
-      {subs && subs.length && <SubOrganizations organization={organization} subs={subs} canManage={canManage} />}
+      {subs && subs.length > 0 && <SubOrganizations organization={organization} subs={subs} canManage={canManage} />}
       {canManage && <Agents organization={organization}/>}
       {canManage && <TodoList organization={organization}/>}
     </div>

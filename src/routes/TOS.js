@@ -11,7 +11,7 @@ const styles = makeStyles({
   },
   mainContainer: {
     marginBottom: '160px',
-    ['@media (max-width: 767px)']: {
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
       marginBottom: '30px'
     }
   },

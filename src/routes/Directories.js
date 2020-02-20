@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import history from '../redux/history';
 import { connect } from 'react-redux';
-import { Container, Typography, Grid, Button } from '@material-ui/core';
+import { Container, Typography, Grid, Button, Hidden } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   fetchSearchOrganizationsByType,
@@ -38,6 +38,9 @@ const styles = makeStyles({
     backgroundColor: colors.primary.white,
     boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
     marginTop: '40px',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      boxShadow: 'none'
+    },
   },
   addDirectoryContent: {
     display: 'flex',
@@ -45,7 +48,8 @@ const styles = makeStyles({
     alignItems: 'center',
     padding: '60px 47px',
     ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
-      flexWrap: 'wrap'
+      flexWrap: 'wrap',
+      padding: '0'
     },
   },
   addDirectoryTitle: {
@@ -53,6 +57,12 @@ const styles = makeStyles({
     fontWeight: 500,
     lineHeight: 1.14,
     color: colors.greyScale.darkest,
+  },
+  addDirectoryTitleMobile: {
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      fontSize: '17px',
+      paddingBottom: '20px'
+    },
   },
   addDirectoryButtonWrapper: {
     backgroundImage: colors.gradients.green,
@@ -110,7 +120,12 @@ function Directories(props){
         <div className={classes.addDirectoryContainer}>
           <div className={classes.addDirectoryContent}>
             <div className={classes.addDirectoryTitleWrapper}>
-              <Typography variant={'h3'} className={classes.addDirectoryTitle}>None of these directories is relevant to your organization?</Typography>
+              <Hidden mdDown>
+                <Typography variant={'h3'} className={classes.addDirectoryTitle}>None of these directories is relevant to your organization?</Typography>
+              </Hidden>
+              <Hidden only={'lg'}>
+                <Typography variant={'h3'} className={[classes.addDirectoryTitle, classes.addDirectoryTitleMobile].join(' ')}>Need new segments?</Typography>
+              </Hidden>
             </div>
             <div className={classes.addDirectoryButtonWrapper}>
               <Button onClick={() => window.location = "mailto:propose@windingtree.com"}>

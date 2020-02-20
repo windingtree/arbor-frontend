@@ -87,6 +87,9 @@ const styles = makeStyles({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: '20px',
+    ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
+      width: '100%'
+    },
   },
   filtersController: {
     width: '48%'

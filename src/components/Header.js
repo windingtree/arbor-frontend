@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link as RouterLink, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import history from '../redux/history';
 import { Container, Grid, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -31,6 +31,9 @@ const styles = makeStyles({
     zIndex: 100,
     borderBottom: `1px solid ${colors.greyScale.lightest}`
   },
+  logoButton: {
+    backgroundColor: 'white',
+  },
   logo: {
     width: '89px',
     height: '32px'
@@ -48,6 +51,12 @@ const styles = makeStyles({
     fontSize: 'initial',
     marginLeft: '10px',
     color: colors.primary.black
+  },
+  navLinksContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%'
   },
   navLink: {
     textDecoration: 'none',
@@ -95,14 +104,14 @@ export default function Header(props) {
     <div id="app-header" className={classes.header}>
       <Container>
         <Grid container justify={'space-between'} alignItems={'center'}>
-          <Grid item xs={2}>
-            <RouterLink to={'/'}>
+          <Grid item lg={2} sm={4} xs={2} >
+            <button onClick={() => history.push('/')} className={classes.logoButton}>
               <Logo viewBox={'0 0 90 32'} className={classes.logo}/>
-            </RouterLink>
+            </button>
           </Grid>
-          <Grid item xs={isAuthenticated ? 6 : 5} container justify={'space-between'} className={classes.navigationContainer}>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+          <Grid item lg={isAuthenticated ? 6 : 5} sm={4} xs={6} container justify={'space-between'} className={classes.navigationContainer}>
+            <div className={classes.navLinksContainer}>
+              <div className={classes.navLinksContainer}>
                 <NavLink
                   to="/directories"
                   className={classes.navLink}

@@ -6,7 +6,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import FacebookIcon from '../../../assets/SvgComponents/facebook-icon.svg';
 import TwitterIcon from '../../../assets/SvgComponents/twitter-icon.svg';
 import InstagramSocialIcon from '../../../assets/SvgComponents/InstagramSocialIcon';
-import colors from '../../../styles/colors';
 
 const styles = makeStyles({
   inputWrapper: {

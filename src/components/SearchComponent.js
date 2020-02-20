@@ -13,8 +13,10 @@ const styles = makeStyles({
     backgroundColor: colors.primary.white,
     borderRadius: '8px 8px 0 0',
     boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
-    '& > div': {
-      padding: '12px 20px'
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
+      '& > div': {
+        padding: '12px 20px'
+      }
     }
   },
   searchInputIcon: {
@@ -25,7 +27,7 @@ const styles = makeStyles({
   },
   buttonContainer: {
     ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
-      display: 'none'
+      display: 'none',
     }
   },
   searchButton: {

@@ -82,7 +82,7 @@ const styles = makeStyles({
   },
   socialIcon: {
     fontSize: 'large',
-    marginRight: '10px'
+    marginRight: '20px',
   },
   iconFacebook: {
     color: colors.social.facebook,
@@ -210,7 +210,7 @@ export default function Footer(props) {
                     }
                   };
                   return (
-                    <Grid item key={index.toString()}>
+                    <Grid item lg={1} key={index.toString()}>
                       <a href={Object.values(item)} className={classes.socialLink}>
                         {socialIcon(Object.keys(item))}
                       </a>

@@ -97,17 +97,24 @@ const styles = makeStyles({
     alignItems: 'center',
     paddingTop: '20px',
     ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
-      width: '100%'
+      width: '100%',
+      flexWrap: 'wrap'
     },
   },
   filtersController: {
-    width: '48%'
+    width: '48%',
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
+      width: '100%',
+    },
+  },
+  selectFormControl: {
+    width: '100%',
+    '& > .MuiInputBase-root': {
+      padding: '8px 0'
+    }
   },
   gridListWrapper: {
     paddingTop: '40px',
-    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
-      margin: '0 auto'
-    },
   },
   paginationInfoContainer: {
     display: 'flex',
@@ -150,7 +157,7 @@ function Search(props) {
         parentTrustLevel = null;
       }
       return (
-        <Grid lg={3} sm={4} xs={10} item key={index.toString()}>
+        <Grid lg={3} sm={4} xs={12} item key={index.toString()}>
           <OrgsGridItem
             orgid={item.orgid}
             img={item.avatar}
@@ -324,7 +331,7 @@ function Search(props) {
               </Typography>
               <div className={classes.filtersControllersWrapper}>
                 <div className={classes.filtersController}>
-                  <FormControl style={{ width: '100%' }}>
+                  <FormControl className={classes.selectFormControl}>
                     <InputLabel>Directories</InputLabel>
                     <Select
                       value={directoryFilterValue}
@@ -342,7 +349,7 @@ function Search(props) {
                   </FormControl>
                 </div>
                 <div className={classes.filtersController}>
-                  <FormControl style={{ width: '100%' }}>
+                  <FormControl className={classes.selectFormControl}>
                     <InputLabel>Country</InputLabel>
                     <Select
                       value={countryFilterValue}

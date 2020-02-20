@@ -79,6 +79,11 @@ export const itemsSelector = createSelector(
   searchResults => searchResults.items
 );
 
+export const isFetchingSelector = createSelector(
+  stateSelector,
+  searchResults => searchResults.isFetching
+);
+
 export const isFetchedSelector = createSelector(
   stateSelector,
   searchResults => searchResults.isFetched
@@ -211,9 +216,15 @@ function ApiFetchSearchOrganizations(data) {
   const per_page = _.get(data, 'per_page', 12);
   delete data['page'];
   delete data['per_page'];
-  const otherParams = _.map(data, (value, param) => `${param}=${value}`).join('&');
-
-  return callApi(`orgids/?page[number]=${page}&page[size]=${per_page}&${otherParams}`);
+  const otherParams = _.map(data, (value, param) => {
+    if(value === '' || value == null) {
+      delete data[param[value]]
+    } else {
+      return `${param}=${value}`
+    }
+  }).filter(item => item !== undefined).join('&');
+  console.log(otherParams);
+  return callApi(`orgids/?${otherParams}&page[number]=${page}&page[size]=${per_page}`);
 }
 
 function ApiFetchSearchByType(data) {

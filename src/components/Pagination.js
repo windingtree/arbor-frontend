@@ -70,7 +70,7 @@ const styles = makeStyles({
 
 function Pagination(props) {
   const classes = styles();
-  const { pageCount, onPageChange } = props;
+  const { pageCount, onPageChange, forcePage } = props;
 
   return (
     <ReactPaginate
@@ -91,6 +91,8 @@ function Pagination(props) {
       breakClassName={classes.paginationBreak}
       pageCount={pageCount}
       marginPagesDisplayed={2}
+      initialPage={0}
+      forcePage={forcePage}
       pageRangeDisplayed={4}
       onPageChange={onPageChange}
       containerClassName={classes.pagination}

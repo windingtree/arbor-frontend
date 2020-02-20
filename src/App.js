@@ -100,6 +100,12 @@ const theme = createMuiTheme({
         fontWeight: 400,
         lineHeight: 1.2,
         letterSpacing: '-0.0068em',
+      },
+      formControl: {
+        '&.Mui-focused > .MuiSelect-icon': {
+          color: colors.secondary.green,
+          transform: 'rotate(180deg)'
+        }
       }
     },
     MuiInput: {
@@ -163,6 +169,16 @@ const theme = createMuiTheme({
         }
       },
     },
+    MuiSelect: {
+      select: {
+        '&:focus': {
+          backgroundColor: 'transparent'
+        }
+      },
+      icon: {
+        transition: 'transform .3s ease, color .3s ease'
+      }
+    },
     MuiFormLabel: {
       root: {
         '&.Mui-focused': {
@@ -197,7 +213,10 @@ const theme = createMuiTheme({
       },
       shrink: {
         transform: 'translate(20px, 1.5px) scale(0.75)',
-      }
+      },
+      formControl: {
+        transform: 'translate(0, 36px) scale(1)',
+      },
     },
     MuiStepper: {
       root: {

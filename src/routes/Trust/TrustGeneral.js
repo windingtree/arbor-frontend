@@ -78,7 +78,6 @@ const styles = makeStyles({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '220px',
     height: '130px',
     backgroundColor: colors.primary.white,
     borderRadius: '6px',
@@ -424,36 +423,36 @@ function TrustGeneral() {
       </div>
       <Container className={classes.partnersSection}>
         <div>
-          <Grid container justify={'space-between'}>
-            <Grid item container spacing={2} className={classes.verificationsWrapper}>
-              <Grid item>
+          <Grid container spacing={5} justify={'space-between'}>
+            <Grid item container spacing={2} xs={12} lg={6} className={classes.verificationsWrapper}>
+              <Grid item xs={6}>
                 <Card className={classes.verification}>
                   <img className={classes.verificationIcon} src={cardWebsiteIllustration}
                        alt={'img'}/>
                   <Typography>Website ownership</Typography>
                 </Card>
               </Grid>
-              <Grid item>
+              <Grid item xs={6}>
                 <Card className={classes.verification}>
                   <img className={classes.verificationIcon} src={cardTwitterIllustration}
                        alt={'img'}/>
                   <Typography>Social media verification</Typography>
                 </Card>
               </Grid>
-              <Grid item>
+              <Grid item xs={6}>
                 <Card className={classes.verification}>
                   <img className={classes.verificationIcon} src={cardLockIllustration} alt={'img'}/>
                   <Typography>Legal entity verification</Typography>
                 </Card>
               </Grid>
-              <Grid item>
+              <Grid item xs={6}>
                 <Card className={classes.verification}>
                   <img className={classes.verificationIcon} src={cardLifIllustration} alt={'img'}/>
                   <Typography>Líf deposit submission</Typography>
                 </Card>
               </Grid>
             </Grid>
-            <Grid item style={{width: '45%'}}>
+            <Grid item xs={12} lg={6}>
               <Typography className={classes.paragraph}>In a literally borderless digital world where
                 companies emerge and vanish as we speak, how can you be confident in your business
                 partners?

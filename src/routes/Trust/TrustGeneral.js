@@ -88,8 +88,12 @@ const styles = makeStyles({
   verificationContent: {
     display: 'flex'
   },
+  verificationIconTitle: {
+    fontSize: '18px',
+    fontWeight: '500'
+  },
   verificationIcon: {
-    margin: '1px 15px 0 15px',
+    margin: '0 15px 0 15px',
     alignSelf: 'flex-start'
   },
   paragraph: {
@@ -429,13 +433,13 @@ function TrustGeneral() {
       <Container className={classes.partnersSection}>
         <div>
           <Grid container spacing={5} justify={'space-between'}>
-            <Grid item container spacing={2} xs={12} lg={6} className={classes.verificationsWrapper}>
+            <Grid item container spacing={4} xs={12} lg={5} className={classes.verificationsWrapper}>
               <Grid item xs={6}>
                 <Card className={classes.verification}>
                   <div className={classes.verificationContent}>
                     <img className={classes.verificationIcon} src={cardWebsiteIllustration}
                          alt={'img'}/>
-                    <Typography>Website<br/> ownership</Typography>
+                    <Typography className={classes.verificationIconTitle}>Website<br/> ownership</Typography>
                   </div>
                 </Card>
               </Grid>
@@ -444,15 +448,15 @@ function TrustGeneral() {
                   <div className={classes.verificationContent}>
                     <img className={classes.verificationIcon} src={cardTwitterIllustration}
                          alt={'img'}/>
-                    <Typography>Social media verification</Typography>
+                    <Typography className={classes.verificationIconTitle}>Social media verification</Typography>
                   </div>
                 </Card>
               </Grid>
               <Grid item xs={6}>
                 <Card className={classes.verification}>
                   <div className={classes.verificationContent}>
-                  <img className={classes.verificationIcon} src={cardLockIllustration} alt={'img'}/>
-                    <Typography>Legal entity verification</Typography>
+                    <img className={classes.verificationIcon} src={cardLockIllustration} alt={'img'}/>
+                    <Typography className={classes.verificationIconTitle}>Legal entity verification</Typography>
                   </div>
                 </Card>
               </Grid>
@@ -460,11 +464,12 @@ function TrustGeneral() {
                 <Card className={classes.verification}>
                   <div className={classes.verificationContent}>
                     <img className={classes.verificationIcon} src={cardLifIllustration} alt={'img'}/>
-                    <Typography>Líf deposit submission</Typography>
+                    <Typography className={classes.verificationIconTitle}>Líf deposit submission</Typography>
                   </div>
                 </Card>
               </Grid>
             </Grid>
+            <Grid item xs={12} lg={1}/>
             <Grid item xs={12} lg={6}>
               <Typography className={classes.paragraph}>In a literally borderless digital world where
                 companies emerge and vanish as we speak, how can you be confident in your business

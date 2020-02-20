@@ -38,6 +38,9 @@ const styles = makeStyles({
     position: 'relative',
     paddingTop: '60px',
     paddingBottom: '60px',
+    ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
+      paddingBottom: '0'
+    },
   },
   searchTitle: {
     fontSize: '24px',
@@ -47,12 +50,27 @@ const styles = makeStyles({
   searchForm: {
     position: 'relative',
     width: '70%',
-    marginTop: '28px'
+    marginTop: '28px',
+    ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
+      width: '100%'
+    },
   },
   illustrationWrapper: {
     position: 'absolute',
     bottom: '-40px',
-    right: '0'
+    right: '0',
+    ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
+      position: 'relative',
+      bottom: 'auto',
+      right: 'auto',
+      top: '40px'
+    },
+  },
+  illustration: {
+    ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
+      display: 'block',
+      width: '80%'
+    },
   },
   filtersContainer: {
     paddingTop: '40px',
@@ -228,12 +246,32 @@ function Search(props) {
     }
   ];
 
-  const handleDirectoryFilterValueChange = e => {
-    setDirectoryFilterValue(e.target.value);
+  const handleDirectoryFilterValueChange = async e => {
+    const data = {
+      orgidType: e.target.value,
+      country: countryFilterValue,
+      name: searchValue,
+      page: 1,
+      per_page: per_page
+    };
+    await props.fetchSearchOrganizations(data);
+    setForcePage(0);
+
+    setDirectoryFilterValue(data.orgidType);
   };
 
-  const handleCountryFilterValueChange = e => {
-    setCountryFilterValue(e.target.value);
+  const handleCountryFilterValueChange = async e => {
+    const data = {
+      orgidType: directoryFilterValue,
+      country: e.target.value,
+      name: searchValue,
+      page: 1,
+      per_page: per_page
+    };
+    await props.fetchSearchOrganizations(data);
+    setForcePage(0);
+
+    setCountryFilterValue(data.country);
   };
 
   return (
@@ -255,7 +293,7 @@ function Search(props) {
             </div>
           </div>
           <div className={classes.illustrationWrapper}>
-            <img src={total === 0 ? SearchNoResultsIllustration : SearchIllustration}
+            <img src={total === 0 ? SearchNoResultsIllustration : SearchIllustration} className={classes.illustration}
                  alt={'illustration'}/>
           </div>
         </Container>
@@ -275,6 +313,7 @@ function Search(props) {
                       value={directoryFilterValue}
                       onChange={handleDirectoryFilterValueChange}
                     >
+                      <MenuItem value={''}>default</MenuItem>
                       {
                         options[0].directories.map((option, index) => {
                           return (
@@ -292,6 +331,7 @@ function Search(props) {
                       value={countryFilterValue}
                       onChange={handleCountryFilterValueChange}
                     >
+                      <MenuItem value={''}>default</MenuItem>
                       {
                         options[1].countries.map((option, index) => {
                           return (

@@ -4,12 +4,16 @@ import {Container, Typography, Grid} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 import colors from '../styles/colors';
 import backgroundSvg from '../assets/SvgComponents/tos-bg.svg'
+
 const styles = makeStyles({
   mainWrapper: {
     backgroundImage: `url(${backgroundSvg})`
   },
   mainContainer: {
-    marginBottom: '160px'
+    marginBottom: '160px',
+    ['@media (max-width: 767px)']: {
+      marginBottom: '30px'
+    }
   },
   mainTitle: {
     fontSize: '40px',

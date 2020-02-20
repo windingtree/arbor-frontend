@@ -110,7 +110,7 @@ function Directory(props) {
         parentTrustLevel = null;
       }
       return (
-        <Grid lg={3} sm={4} xs={10} item key={index.toString()}>
+        <Grid lg={3} sm={4} xs={12} item key={index.toString()}>
           <OrgsGridItem
             orgid={item.orgid}
             img={item.avatar}

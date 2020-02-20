@@ -78,9 +78,7 @@ const styles = makeStyles({
     lineHeight: '28px',
     fontWeight: 500,
     padding: '5px 25px 5px 10px',
-    position: 'relative',
     display: 'flex',
-    justifyContent: 'center',
     alignItems: 'center',
     height: '130px',
     backgroundColor: colors.primary.white,
@@ -437,7 +435,7 @@ function TrustGeneral() {
                   <div className={classes.verificationContent}>
                     <img className={classes.verificationIcon} src={cardWebsiteIllustration}
                          alt={'img'}/>
-                    <Typography>Website ownership</Typography>
+                    <Typography>Website<br/> ownership</Typography>
                   </div>
                 </Card>
               </Grid>

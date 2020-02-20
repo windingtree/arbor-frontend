@@ -20,6 +20,9 @@ const theme = createMuiTheme({
     }
   },
   spacing: 5,
+  typography: {
+    fontFamily: 'Inter'
+  },
   overrides: {
     MuiTypography: {
       h1: {

@@ -16,7 +16,6 @@ import Authorization from './Authorization/Authorization';
 import Trust from './Trust/Trust';
 import TOS from './TOS'
 import FAQ from './FAQ';
-import PrivacyPolicy from './PrivacyPolicy';
 import NotFound from './NotFound';
 //Private routes
 import PrivateRoute from '../components/PrivateRoute';
@@ -69,11 +68,6 @@ class RootRouter extends Component {
             isAuthenticated={isAuthenticated}
             path='/tos'
             component={TOS}
-          />
-          <DefaultRoute
-            isAuthenticated={isAuthenticated}
-            path='/privacy-policy'
-            component={PrivacyPolicy}
           />
           <DefaultRoute
             isAuthenticated={isAuthenticated}

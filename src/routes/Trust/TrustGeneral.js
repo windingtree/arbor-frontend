@@ -23,10 +23,11 @@ import colors from '../../styles/colors';
 
 const styles = makeStyles({
   topDiv: {
-    backgroundColor: colors.secondary.yellowLight
+    width: '100%',
+    backgroundColor: colors.secondary.yellowLight,
   },
   topSectionWrapper: {
-    padding: '57px 40px 135px 40px',
+    padding: '57px 30px 20px 30px',
   },
   mainTitle: {
     fontSize: '40px',
@@ -41,9 +42,10 @@ const styles = makeStyles({
     lineHeight: '28px'
   },
   topIllustrationWrapper: {
-    position: 'absolute',
-    top: '95px',
-    right: '258px'
+    '& img':
+      {
+        width: '100%'
+      }
   },
   line: {
     display: 'inline-block',
@@ -60,7 +62,7 @@ const styles = makeStyles({
     color: colors.greyScale.darkest,
   },
   partnersSection: {
-    padding: '118px 0 106px 0',
+    padding: '118px 30px 106px 30px',
   },
   verificationsWrapper: {
     width: '50%',
@@ -91,29 +93,9 @@ const styles = makeStyles({
     lineHeight: '28px',
     color: colors.greyScale.dark,
   },
-  partnersTextListDot: {
-    position: 'absolute',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    content: '""',
-    backgroundColor: colors.secondary.peach,
-    fontWeight: 'bold',
-    display: 'inline-block',
-    width: '8px',
-    height: '8px',
-    borderRadius: '12px',
-    border: '12px',
-  },
-  partnersTextListItem: {
-    position: 'relative',
-    marginBottom: '16px',
-  },
-  partnersTextListTexts: {
-    marginLeft: '23px',
-    fontWeight: 500,
-    fontSize: '14px',
-    lineHeight: '16px',
-    color: colors.greyScale.dark,
+  stepsSectionWrapper: {
+    backgroundColor: colors.greyScale.moreLighter,
+    padding: '0 30px'
   },
   stepsSection: {
     padding: '87px 15px 87px 0',
@@ -215,9 +197,7 @@ const styles = makeStyles({
     margin: '150px 0 130px 0'
   },
   metamaskIllustration: {
-    position: 'absolute',
-    top: '-36px',
-    right: '38px'
+    width: '100%'
   },
   metamaskIllustrationWrapper: {
     width: '55%',
@@ -423,20 +403,22 @@ function TrustGeneral() {
     <div>
       <div className={classes.topDiv}>
         <Container className={classes.topSectionWrapper}>
-          <Grid item style={{width: '50%'}}>
-            <div><Typography className={classes.mainTitle} variant={'h1'}>How can I prove that my company is
-              <b style={{color: colors.secondary.peach}}> trustworthy</b>
-            </Typography>
-              <Typography className={classes.topText}>Why are you here? Probably, you own a business or
-                work at a company that wants to participate in the global economy and find reliable
-                partners to scale and prosper.</Typography>
-              <div className={classes.line}/>
-            </div>
-          </Grid>
-          <Grid>
-            <div className={classes.topIllustrationWrapper}>
-              <img src={trustTopIllustration} alt={'illustration'}/>
-            </div>
+          <Grid container spacing={5} direction="row">
+            <Grid item xs={12} md={6}>
+              <div><Typography className={classes.mainTitle} variant={'h1'}>How can I prove that my company is
+                <b style={{color: colors.secondary.peach}}> trustworthy</b>
+              </Typography>
+                <Typography className={classes.topText}>Why are you here? Probably, you own a business or
+                  work at a company that wants to participate in the global economy and find reliable
+                  partners to scale and prosper.</Typography>
+                <div className={classes.line}/>
+              </div>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <div className={classes.topIllustrationWrapper}>
+                <img src={trustTopIllustration} alt={'illustration'}/>
+              </div>
+            </Grid>
           </Grid>
         </Container>
       </div>
@@ -488,7 +470,7 @@ function TrustGeneral() {
           </Grid>
         </div>
       </Container>
-      <Grid style={{backgroundColor: colors.greyScale.moreLighter}}>
+      <Grid className={classes.stepsSectionWrapper}>
         <Container className={classes.stepsSection}>
           <Grid style={{width: '50%'}}>
             <Typography variant={'h3'} className={classes.blockTitle}>
@@ -508,12 +490,12 @@ function TrustGeneral() {
       </Grid>
       <Grid className={classes.moreVerifiedSection}>
         <Container>
-          <Grid container wrap={'nowrap'}>
-            <Grid item className={classes.metamaskIllustrationWrapper}>
+          <Grid container spacing={5} wrap={'nowrap'}>
+            <Grid item xs={12} md={6} className={classes.metamaskIllustrationWrapper}>
               <img src={MetamaskIllustration} alt={'illustration'}
                    className={classes.metamaskIllustration}/>
             </Grid>
-            <Grid item style={{width: '50%'}}>
+            <Grid item xs={12} md={6}>
               <Typography variant={'h3'} className={classes.blockTitle}>
                 More verification methods are on their way!
               </Typography>
@@ -533,16 +515,21 @@ function TrustGeneral() {
       </Grid>
       <Grid style={{backgroundColor: colors.secondary.yellowLight}}>
         <Container className={classes.registerSection}>
-          <Grid style={{width: '53%'}} item>
-            <Typography className={classes.registerTitle} variant={'h4'}>
-              Join Arbor today and find trusted partners for your business
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Button className={classes.registerButton} onClick={(event) => {event.preventDefault(); window.open('https://metamask.io/');}}>
-              <Typography className={classes.registerButtonTitle} noWrap>Register with
-                MetaMask</Typography>
-            </Button>
+          <Grid container spacing={5} direction="row">
+            <Grid xs={12} md={7} item>
+              <Typography className={classes.registerTitle} variant={'h4'}>
+                Join Arbor today and find trusted partners for your business
+              </Typography>
+            </Grid>
+            <Grid xs={12} md={5} item>
+              <Button className={classes.registerButton} onClick={(event) => {
+                event.preventDefault();
+                window.open('https://metamask.io/');
+              }}>
+                <Typography className={classes.registerButtonTitle} noWrap>Register with
+                  MetaMask</Typography>
+              </Button>
+            </Grid>
           </Grid>
         </Container>
       </Grid>

@@ -28,7 +28,7 @@ const styles = makeStyles({
     paddingBottom: '108px',
     ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
       paddingBottom: '30px'
-}
+    }
   },
   topSectionWrapper: {
     padding: '57px 30px 20px 30px',
@@ -87,8 +87,11 @@ const styles = makeStyles({
     borderRadius: '6px',
     boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)'
   },
+  verificationContent: {
+    display: 'flex'
+  },
   verificationIcon: {
-    margin: '50px 15px 0 15px',
+    margin: '1px 15px 0 15px',
     alignSelf: 'flex-start'
   },
   paragraph: {
@@ -431,28 +434,36 @@ function TrustGeneral() {
             <Grid item container spacing={2} xs={12} lg={6} className={classes.verificationsWrapper}>
               <Grid item xs={6}>
                 <Card className={classes.verification}>
-                  <img className={classes.verificationIcon} src={cardWebsiteIllustration}
-                       alt={'img'}/>
-                  <Typography>Website ownership</Typography>
+                  <div className={classes.verificationContent}>
+                    <img className={classes.verificationIcon} src={cardWebsiteIllustration}
+                         alt={'img'}/>
+                    <Typography>Website ownership</Typography>
+                  </div>
                 </Card>
               </Grid>
               <Grid item xs={6}>
                 <Card className={classes.verification}>
-                  <img className={classes.verificationIcon} src={cardTwitterIllustration}
-                       alt={'img'}/>
-                  <Typography>Social media verification</Typography>
+                  <div className={classes.verificationContent}>
+                    <img className={classes.verificationIcon} src={cardTwitterIllustration}
+                         alt={'img'}/>
+                    <Typography>Social media verification</Typography>
+                  </div>
                 </Card>
               </Grid>
               <Grid item xs={6}>
                 <Card className={classes.verification}>
+                  <div className={classes.verificationContent}>
                   <img className={classes.verificationIcon} src={cardLockIllustration} alt={'img'}/>
-                  <Typography>Legal entity verification</Typography>
+                    <Typography>Legal entity verification</Typography>
+                  </div>
                 </Card>
               </Grid>
               <Grid item xs={6}>
                 <Card className={classes.verification}>
-                  <img className={classes.verificationIcon} src={cardLifIllustration} alt={'img'}/>
-                  <Typography>Líf deposit submission</Typography>
+                  <div className={classes.verificationContent}>
+                    <img className={classes.verificationIcon} src={cardLifIllustration} alt={'img'}/>
+                    <Typography>Líf deposit submission</Typography>
+                  </div>
                 </Card>
               </Grid>
             </Grid>

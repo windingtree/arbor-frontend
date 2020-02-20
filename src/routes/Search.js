@@ -32,7 +32,11 @@ const styles = makeStyles({
     height: '80vh',
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
+      justifyContent: 'flex-start',
+      alignItems: 'flex-start',
+    },
   },
   searchHeader: {
     position: 'relative',

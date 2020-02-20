@@ -8,8 +8,6 @@ import colors from '../styles/colors';
 import history from '../redux/history';
 
 const styles = makeStyles({
-  searchInputWrapper: {
-  },
   searchInput: {
     position: 'relative',
     backgroundColor: colors.primary.white,

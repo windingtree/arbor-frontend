@@ -1,12 +1,22 @@
 import React from "react";
 
-import { TextField } from "@material-ui/core";
+import { TextField, FormControl, MenuItem, InputLabel, Select } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import _ from "lodash";
 
 const styles = makeStyles({
   selectWrapper: {
-    margin: '14px 0'
+    marginBottom: '28px'
+  },
+  formControl: {
+    width: '100%',
+    '& > .MuiInputLabel-root': {
+      zIndex: 1,
+      transform: 'translate(12px, 22px) scale(1)'
+    },
+    '& > .MuiInputLabel-shrink': {
+      transform: 'translate(20px, 10px) scale(0.75)'
+    }
   }
 });
 
@@ -18,27 +28,23 @@ const SelectField = (props) => {
 
   return (
     <div key={index} className={classes.selectWrapper}>
-      <TextField
-        select
-        fullWidth
-        label={name}
-        name={orgidJsonPath}
-        id={`select-${name.replace(' ','-')}-${index}`}
-        variant={'filled'}
-        value={_.get(values, orgidJsonPath)}
-        error={isError}
-        onChange={handleChange}
-        SelectProps={{
-          native: true,
-        }}
-        onBlur={handleBlur}
-      >
-        {
-          Object.keys(optionsObj).map((value) => (
-            <option value={value} key={value}>{optionsObj[value]}</option>
-          ))
-        }
-      </TextField>
+      <FormControl className={classes.formControl}>
+        <InputLabel>{name}</InputLabel>
+        <Select
+          id={`select-${name.replace(' ','-')}-${index}`}
+          variant={'filled'}
+          value={_.get(values, orgidJsonPath)}
+          error={isError}
+          onChange={handleChange}
+          onBlur={handleBlur}
+        >
+          {
+            Object.keys(optionsObj).map((value) => (
+              <MenuItem value={value} key={value}>{optionsObj[value]}</MenuItem>
+            ))
+          }
+        </Select>
+      </FormControl>
     </div>
   );
 };

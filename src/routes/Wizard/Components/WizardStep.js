@@ -41,9 +41,6 @@ export const styles = makeStyles({
     transform: 'rotate(180deg)',
     marginLeft: '4px'
   },
-  form: {
-    marginTop: '12px'
-  },
   buttonWrapper: {
     display: 'table',
     margin: '40px auto 0 auto'
@@ -120,7 +117,7 @@ const WizardStep = (props) => {
             isSubmitting,
             /* and other goodies */
           }) => (
-          <form onSubmit={handleSubmit} className={classes.form}>
+          <form onSubmit={handleSubmit}>
             {
               !sections ?
                 <div />

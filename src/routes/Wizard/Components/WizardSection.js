@@ -8,13 +8,14 @@ import colors from '../../../styles/colors';
 
 const styles = makeStyles({
   section: {
-    padding: '16px 0'
+    paddingTop: '32px'
   },
   sectionTitle: {
     fontSize: '16px',
     fontWeight: 500,
     lineHeight: 1.45,
     color: colors.greyScale.darkest,
+    paddingBottom: '16px',
   }
 });
 

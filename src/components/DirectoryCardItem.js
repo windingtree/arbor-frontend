@@ -11,7 +11,10 @@ const styles = makeStyles({
     height: '168px',
     borderRadius: '6px',
     boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
-    transition: 'background-color .3s ease, box-shadow .3s ease'
+    transition: 'background-color .3s ease, box-shadow .3s ease',
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
+      height: '100px',
+    }
   },
   itemHome: {
     height: '100px',
@@ -31,13 +34,26 @@ const styles = makeStyles({
     position: 'relative',
     width: '100%',
     height: '100%',
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
+      justifyContent: 'flex-start'
+    }
+  },
+  homeCardButton: {
     ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
-      width: 'auto'
+      justifyContent: 'flex-start'
     }
   },
   cardContent: {
     height: '100%',
     padding: '14px',
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      '&:last-child': {
+        paddingBottom: '16px'
+      }
+    }
   },
   homeCardContent: {
     display: 'flex',
@@ -55,11 +71,15 @@ const styles = makeStyles({
     color: colors.greyScale.dark,
     textTransform: 'capitalize',
     marginTop: '10px',
-    whiteSpace: 'nowrap'
+    whiteSpace: 'nowrap',
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
+      marginTop: 0,
+      marginLeft: '10px',
+    }
   },
   homeDirectoryTitle: {
     marginTop: 0,
-    marginLeft: '10px'
+    marginLeft: '10px',
   },
   directoryImageWrapper: {
     position: 'relative',
@@ -82,7 +102,7 @@ export default function DirectoryCard(props) {
 
   return (
     <Card className={ homeLayout ? [classes.item, classes.itemHome].join(' ') : classes.item}>
-      <Button onClick={handleSearchByType} className={classes.cardButton}>
+      <Button onClick={handleSearchByType} className={homeLayout ? [classes.cardButton, classes.homeCardButton].join(' ') : classes.cardButton}>
         <CardContent className={homeLayout ? [classes.cardContent, classes.homeCardContent].join(' ') : classes.cardContent}>
           <div className={classes.directoryImageWrapper}>
             {

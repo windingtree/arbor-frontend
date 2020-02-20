@@ -38,7 +38,7 @@ function SubOrganizations(props) {
           {
             subs.map((subOrg, index) => {
               return (
-                <Grid item key={index.toString()} style={{ width: '264px' }}>
+                <Grid lg={3} sm={4} xs={10} item key={index.toString()}>
                   <OrgsGridItem
                     orgid={subOrg.orgid}
                     isSub={!!subOrg.parent}

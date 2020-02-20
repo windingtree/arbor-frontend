@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import history from '../redux/history';
 import { connect } from 'react-redux';
-import { Container, Typography, Grid, Button } from '@material-ui/core';
+import { Container, Typography, Grid, Button, Hidden } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   fetchSearchOrganizationsByType,
@@ -38,18 +38,31 @@ const styles = makeStyles({
     backgroundColor: colors.primary.white,
     boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
     marginTop: '40px',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      boxShadow: 'none'
+    },
   },
   addDirectoryContent: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '60px 47px',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      flexWrap: 'wrap',
+      padding: '0'
+    },
   },
   addDirectoryTitle: {
     fontSize: '32px',
     fontWeight: 500,
     lineHeight: 1.14,
     color: colors.greyScale.darkest,
+  },
+  addDirectoryTitleMobile: {
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      fontSize: '17px',
+      paddingBottom: '20px'
+    },
   },
   addDirectoryButtonWrapper: {
     backgroundImage: colors.gradients.green,
@@ -87,11 +100,11 @@ function Directories(props){
           <Typography variant={'h1'} className={classes.title}>Directories</Typography>
         </div>
         <div className={classes.cardsContainer}>
-          <CardsGridList justify={'space-between'} alignItems={'flex-start'}>
+          <CardsGridList spacing={2} justify={'space-between'} alignItems={'flex-start'}>
             {
               directories.map((item, index) => {
                 return (
-                  <Grid item key={index.toString()} style={{ width: '262px' }}>
+                  <Grid item lg={3} sm={6} xs={12} key={index.toString()}>
                     <DirectoryCard
                       directoryName={item.name}
                       directoryImage={item.image}
@@ -107,7 +120,12 @@ function Directories(props){
         <div className={classes.addDirectoryContainer}>
           <div className={classes.addDirectoryContent}>
             <div className={classes.addDirectoryTitleWrapper}>
-              <Typography variant={'h3'} className={classes.addDirectoryTitle}>None of these directories is relevant to your organization?</Typography>
+              <Hidden mdDown>
+                <Typography variant={'h3'} className={classes.addDirectoryTitle}>None of these directories is relevant to your organization?</Typography>
+              </Hidden>
+              <Hidden only={'lg'}>
+                <Typography variant={'h3'} className={[classes.addDirectoryTitle, classes.addDirectoryTitleMobile].join(' ')}>Need new segments?</Typography>
+              </Hidden>
             </div>
             <div className={classes.addDirectoryButtonWrapper}>
               <Button onClick={() => window.location = "mailto:propose@windingtree.com"}>
@@ -154,7 +172,7 @@ Directories.defaultProps = {
     {
       name: 'travel-agencies',
       image: TravelIllustration,
-      searchReq: 'travel-agencies'
+      searchReq: 'travel-agency'
     },
   ]
 };

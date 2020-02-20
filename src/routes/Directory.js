@@ -41,8 +41,10 @@ const styles = makeStyles({
   headingWrapper: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginRight: '65px'
+    alignItems: 'flex-end',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      flexWrap: 'wrap',
+    },
   },
   directoryTitle: {
     fontSize: '32px',
@@ -54,7 +56,10 @@ const styles = makeStyles({
     paddingTop: '30px'
   },
   filterWrapper: {
-    width: '30%'
+    width: '30%',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      width: '100%'
+    },
   },
   paginationInfoContainer: {
     display: 'flex',
@@ -62,15 +67,17 @@ const styles = makeStyles({
     alignItems: 'center',
     margin: '40px 0'
   },
+  totalSearchTitleContainer: {
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      display: 'none'
+    },
+  },
   totalSearchResultsTitle: {
     fontSize: '14px',
     fontWeight: 400,
     lineHeight: 1.42,
     color: colors.greyScale.dark,
     textTransform: 'capitalize'
-  },
-  paginationWrapper: {
-    marginRight: '56px',
   },
 });
 
@@ -103,7 +110,7 @@ function Directory(props) {
         parentTrustLevel = null;
       }
       return (
-        <Grid item key={index.toString()} style={{ width: '264px' }}>
+        <Grid lg={3} sm={4} xs={10} item key={index.toString()}>
           <OrgsGridItem
             orgid={item.orgid}
             img={item.avatar}
@@ -207,10 +214,10 @@ function Directory(props) {
           {
             total > per_page ? (
               <div className={classes.paginationInfoContainer}>
-                <div>
+                <div className={classes.totalSearchTitleContainer}>
                   <Typography variant={'caption'} className={classes.totalSearchResultsTitle}>ORG.ID in {props.match.params.directory + 's'}: {total}</Typography>
                 </div>
-                <div className={classes.paginationWrapper}>
+                <div>
                   <Pagination
                     pageCount={pages}
                     onPageChange={handlePageClick}

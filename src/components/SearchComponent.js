@@ -79,7 +79,7 @@ export default function SearchComponent(props) {
             />
           </div>
         </Grid>
-        <Grid item xs={12} sm={4} className={currentPage === '/search' && classes.buttonContainer}>
+        <Grid item xs={12} sm={4} className={currentPage === '/search' ? classes.buttonContainer : ''}>
           <div className={classes.searchButtonWrapper}>
             <Button onClick={fetchSearchResult} className={classes.searchButton}>
               <Typography variant={'inherit'} className={classes.searchButtonLabel} noWrap>Find organization</Typography>

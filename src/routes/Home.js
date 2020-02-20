@@ -636,7 +636,7 @@ function Home(props) {
               {
                 directories.map((item, index) => {
                   return (
-                    <Grid item key={index.toString()} className={classes.directoriesCardsGridItem}>
+                    <Grid item lg={3} sm={6} xs={12} key={index.toString()} className={classes.directoriesCardsGridItem}>
                       <DirectoryCard
                         homeLayout={true}
                         directoryName={item.name}
@@ -761,7 +761,7 @@ Home.defaultProps = {
     {
       name: 'travel-agencies',
       image: TravelIllustration,
-      searchReq: 'travel-agencies'
+      searchReq: 'travel-agency'
     },
   ],
   useCases: [

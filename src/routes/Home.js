@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { fetchSearchOrganizationsByType } from '../ducks/fetchSearchResults';
 import history from '../redux/history';
 import {Link} from 'react-router-dom';
-import {Container, Typography, Grid, Card, CardContent, Box} from '@material-ui/core';
+import {Container, Typography, Grid, Card, CardContent, Box, Hidden} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 import Ellipsis from 'react-dotdotdot';
 import Carousel from '@brainhubeu/react-carousel';
@@ -44,6 +44,10 @@ const styles = makeStyles({
     position: 'relative',
     paddingTop: '94px',
     paddingBottom: '117px',
+    ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
+      paddingBottom: '40px',
+      paddingTop: '40px',
+    },
   },
   searchTitle: {
     marginTop: '28px',
@@ -51,14 +55,24 @@ const styles = makeStyles({
     fontWeight: 500,
     color: colors.greyScale.darkest,
     lineHeight: 1.3,
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
+      fontSize: '24px',
+      marginTop: '0'
+    },
   },
   subtitleWrapper: {
     marginTop: '5px',
     marginBottom: '30px',
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
+      marginBottom: '24px'
+    },
   },
   searchForm: {
     marginTop: '50px',
     position: 'relative',
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
+      marginTop: '0',
+    },
   },
   bgRed: { // 435+16+191 = 642 | 435/642 = 68% | 29% ||
     backgroundColor: 'red',
@@ -68,7 +82,10 @@ const styles = makeStyles({
     width: '100%'
   },
   kybChecksContent: {
-    padding: '98px 0'
+    padding: '98px 0',
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
+      padding: '32px 0',
+    },
   },
   kybChecksImageWrapper: {
     textAlign: 'center',
@@ -90,13 +107,21 @@ const styles = makeStyles({
     fontWeight: 500,
     lineHeight: 1.14,
     color: colors.greyScale.darkest,
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
+      fontSize: '24px'
+    },
   },
   blockSubtitle: {
     fontSize: '16px',
     fontWeight: 400,
     lineHeight: 1.74,
     color: colors.greyScale.dark,
-    paddingTop: '30px'
+    paddingTop: '30px',
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
+      fontSize: '14px',
+      paddingTop: '20px',
+      color: colors.greyScale.darkest
+    },
   },
   joinContainer: {
     position: 'relative',
@@ -165,7 +190,10 @@ const styles = makeStyles({
   },
   contentWrapper: {
     position: 'relative',
-    padding: '103px 0'
+    padding: '103px 0',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      padding: '32px 0'
+    },
   },
   partnerCard: {
     position: 'relative',
@@ -182,7 +210,10 @@ const styles = makeStyles({
   },
   directoriesWrapper: {
     backgroundColor: colors.greyScale.moreLighter,
-    marginBottom: '75px'
+    marginBottom: '75px',
+    ['@media (max-width:960px)']: { // eslint-disable-line no-useless-computed-key
+      marginBottom: '20px',
+    },
   },
   directoriesContent: {
     padding: '80px 64px 64px',
@@ -343,7 +374,10 @@ const styles = makeStyles({
   },
   builtByContent: {
     position: 'relative',
-    padding: '120px 0'
+    padding: '120px 0',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      padding: '40px 0'
+    },
   },
   builtByContentImage: {
     width: '100%'
@@ -507,16 +541,21 @@ function Home(props) {
                     </div>
                     <div className={classes.joinSliderBaseLine}/>
                     <div className={classes.carouselWrapper}>
-                      <Carousel
-                        value={activeSlide}
-                        onChange={handleSlideChange}
-                        slidesPerScroll={1}
-                        animationSpeed={1000}
-                      >
-                        <img src={CarouselSignUpIllustration} alt={'illustration'} className={classes.carouselImage}/>
-                        <img src={CarouselValidateIllustration} alt={'illustration'} className={classes.carouselImage}/>
+                      <Hidden mdDown>
+                        <Carousel
+                          value={activeSlide}
+                          onChange={handleSlideChange}
+                          slidesPerScroll={1}
+                          animationSpeed={1000}
+                        >
+                          <img src={CarouselSignUpIllustration} alt={'illustration'} className={classes.carouselImage}/>
+                          <img src={CarouselValidateIllustration} alt={'illustration'} className={classes.carouselImage}/>
+                          <img src={CarouselDirectoryIllustration} alt={'illustration'} className={classes.carouselImage}/>
+                        </Carousel>
+                      </Hidden>
+                      <Hidden only={'lg'}>
                         <img src={CarouselDirectoryIllustration} alt={'illustration'} className={classes.carouselImage}/>
-                      </Carousel>
+                      </Hidden>
                     </div>
                   </div>
                 </Grid>

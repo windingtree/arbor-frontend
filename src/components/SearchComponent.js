@@ -12,7 +12,10 @@ const styles = makeStyles({
     position: 'relative',
     backgroundColor: colors.primary.white,
     borderRadius: '8px 8px 0 0',
-    boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)'
+    boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
+    '& > div': {
+      padding: '12px 20px'
+    }
   },
   searchInputIcon: {
     width: '14px',

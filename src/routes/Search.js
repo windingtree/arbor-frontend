@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {connect} from 'react-redux';
+import _ from 'lodash';
 import history from '../redux/history';
 import { Container, Grid, Typography, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
@@ -22,6 +23,7 @@ import SearchIllustration from '../assets/SvgComponents/search-illustration.svg'
 import SearchNoResultsIllustration from '../assets/SvgComponents/search-no-result-illustration.svg';
 //styles
 import colors from '../styles/colors';
+import {countries} from './Wizard/config/countries';
 
 const styles = makeStyles({
   searchHeaderWrapper: {
@@ -229,22 +231,15 @@ function Search(props) {
   }, []);
 
   //handle select fields
-  const options = [
-    {
-      directories: [
-        'hotel',
-        'airline'
-      ]
-    },
-    {
-      countries: [
-        'UK',
-        'US',
-        'RU',
-        'UA',
-      ]
-    }
-  ];
+  const options = {
+      directories: {
+        'hotel': 'Hotels',
+        'airline': 'Airlines',
+        'insurance': 'Insurance',
+        'ota': 'Travel agencies'
+      },
+      countries
+  };
 
   const handleDirectoryFilterValueChange = async e => {
     const data = {
@@ -313,11 +308,11 @@ function Search(props) {
                       value={directoryFilterValue}
                       onChange={handleDirectoryFilterValueChange}
                     >
-                      <MenuItem value={''}>default</MenuItem>
+                      <MenuItem value={''}>All</MenuItem>
                       {
-                        options[0].directories.map((option, index) => {
+                        _.map(options.directories, (name, value) => {
                           return (
-                            <MenuItem key={index.toString()} value={option}>{option}</MenuItem>
+                            <MenuItem key={value.toString()} value={value}>{name}</MenuItem>
                           )
                         })
                       }
@@ -331,11 +326,11 @@ function Search(props) {
                       value={countryFilterValue}
                       onChange={handleCountryFilterValueChange}
                     >
-                      <MenuItem value={''}>default</MenuItem>
+                      <MenuItem value={''}>All</MenuItem>
                       {
-                        options[1].countries.map((option, index) => {
+                        _.map(options.countries, (name, value) => {
                           return (
-                            <MenuItem key={index.toString()} value={option}>{option}</MenuItem>
+                            <MenuItem key={value.toString()} value={value}>{name}</MenuItem>
                           )
                         })
                       }

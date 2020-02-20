@@ -51,7 +51,8 @@ const styles = makeStyles({
   searchIcon: {
     fontSize: 'initial',
     marginLeft: '10px',
-    color: colors.primary.black
+    color: colors.primary.black,
+    transition: 'color .3s ease'
   },
   navLinksContainer: {
     display: 'flex',
@@ -64,11 +65,20 @@ const styles = makeStyles({
     borderTopWidth: '2px',
     borderTopStyle: 'solid',
     borderTopColor: 'transparent',
-    padding: '0 14px'
+    padding: '0 14px',
+    '&:hover': {
+      '& > span': {
+        color: colors.secondary.peach
+      },
+      '& > svg': {
+        color: colors.secondary.peach
+      }
+    }
   },
   navIcon: {
     color: colors.primary.black,
-    marginRight: '10px'
+    marginRight: '10px',
+    transition: 'color .3s ease'
   },
   linkTitle: {
     fontSize: '14px',
@@ -77,6 +87,7 @@ const styles = makeStyles({
     color: colors.primary.black,
     display: 'block',
     padding: '22px 0',
+    transition: 'color .3s ease'
   },
   activeNavLink: {
     borderTopColor: colors.primary.accent,

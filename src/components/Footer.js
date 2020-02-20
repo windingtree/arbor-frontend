@@ -76,6 +76,10 @@ const styles = makeStyles({
       }
     }
   },
+  logoButton: {
+    backgroundColor: colors.primary.white,
+    outline: 'none'
+  },
   logo: {
     width: '89px',
     height: '32px'
@@ -142,9 +146,9 @@ export default function Footer(props) {
       <Container>
         <Grid container className={classes.footerContent}>
           <Grid item xs={12} md={2}>
-            <Link to={'/'}>
+            <button onClick={() => history.push('/')} className={classes.logoButton}>
               <Logo viewBox={'0 0 90 32'} className={classes.logo}/>
-            </Link>
+            </button>
           </Grid>
           <Grid container item xs={12} md={10}>
             <Grid container>

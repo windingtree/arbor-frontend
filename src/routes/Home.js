@@ -553,7 +553,7 @@ function Home(props) {
                           <img src={CarouselDirectoryIllustration} alt={'illustration'} className={classes.carouselImage}/>
                         </Carousel>
                       </Hidden>
-                      <Hidden only={'lg'}>
+                      <Hidden lgUp>
                         <img src={CarouselDirectoryIllustration} alt={'illustration'} className={classes.carouselImage}/>
                       </Hidden>
                     </div>

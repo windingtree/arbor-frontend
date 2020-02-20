@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import SearchIcon from '../assets/SvgComponents/SearchIcon';
 //styles && colors
 import colors from '../styles/colors';
+import history from '../redux/history';
 
 const styles = makeStyles({
   searchInputWrapper: {
@@ -20,6 +21,11 @@ const styles = makeStyles({
     height: '14px',
     color: colors.greyScale.common,
     transition: 'color .2s cubic-bezier(0.0, 0, 0.2, 1) 0ms'
+  },
+  buttonContainer: {
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
+      display: 'none'
+    }
   },
   searchButton: {
     backgroundImage: colors.gradients.green,
@@ -44,6 +50,7 @@ const styles = makeStyles({
 export default function SearchComponent(props) {
   const classes = styles();
   const { searchValue, handleSearchValue, fetchSearchResult, handleFocus} = props;
+  const currentPage = history.location.pathname;
 
   return (
     <div className={classes.searchForm}>
@@ -74,7 +81,7 @@ export default function SearchComponent(props) {
             />
           </div>
         </Grid>
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={4} className={currentPage === '/search' && classes.buttonContainer}>
           <div className={classes.searchButtonWrapper}>
             <Button onClick={fetchSearchResult} className={classes.searchButton}>
               <Typography variant={'inherit'} className={classes.searchButtonLabel} noWrap>Find organization</Typography>

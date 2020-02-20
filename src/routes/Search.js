@@ -65,6 +65,9 @@ const styles = makeStyles({
       right: 'auto',
       top: '40px'
     },
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
+      top: '20px'
+    },
   },
   illustration: {
     ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
@@ -95,22 +98,37 @@ const styles = makeStyles({
     width: '48%'
   },
   gridListWrapper: {
-    paddingTop: '40px'
+    paddingTop: '40px',
+    ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
+      width: '75%',
+      margin: '0 auto'
+    },
   },
   paginationInfoContainer: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    margin: '40px 0'
+    margin: '40px 0',
   },
   totalSearchResultsTitle: {
     fontSize: '14px',
     fontWeight: 400,
     lineHeight: 1.42,
-    color: colors.greyScale.dark
+    color: colors.greyScale.dark,
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
+      display: 'none'
+    },
   },
   paginationWrapper: {
     marginRight: '60px',
+    ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
+      marginRight: '26px'
+    },
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
+      marginRight: '0',
+      position: 'relative',
+      right: '15px'
+    },
   },
 });
 

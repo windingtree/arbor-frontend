@@ -56,9 +56,6 @@ const styles = makeStyles({
     lineHeight: '28px'
   },
   illustrationWrapper: {
-    position: 'absolute',
-    top: '99px',
-    right: '277px'
   },
   line: {
     display: 'inline-block',
@@ -159,17 +156,18 @@ const TrustLifStake = () => {
               </Button>
             </div>
           </Box>
-          <Grid item style={{width: '50%'}}>
-            <div><Typography className={classes.mainTitle} variant={'h1'}>Submit your Líf
+          <Grid container>
+            <Grid item xs={12} lg={6}>
+              <Typography className={classes.mainTitle} variant={'h1'}>Submit your Líf
               deposit</Typography>
               <Typography className={classes.topText}>Líf deposit is a small amount of cryptocurrency that
                 is staked when you register your organization profile on Arbor. This action minimizes
                 spam registrations and proves the seriousness of your intentions.</Typography>
               <div className={classes.line}/>
-            </div>
-            <div className={classes.illustrationWrapper}>
+            </Grid>
+            <Grid item xs={12} lg={6} className={classes.illustrationWrapper}>
               <img src={trustTopIllustation} alt={'illustration'}/>
-            </div>
+            </Grid>
           </Grid>
         </Container>
       </div>
@@ -177,7 +175,7 @@ const TrustLifStake = () => {
         <div>
           <Grid container justify={'space-between'}>
             <Grid item container spacing={4} className={classes.stepsCardsWrapper}>
-              <Box item width={"100%"}>
+              <Box width={"100%"}>
                 <Card className={classes.stepsCard}>
                   <img src={insuranceIcon} alt={'icon'}/>
                   <Typography noWrap className={classes.stepCountText}>Step 1.</Typography>
@@ -186,7 +184,7 @@ const TrustLifStake = () => {
                   </Typography>
                 </Card>
               </Box>
-              <Box item width={"100%"}>
+              <Box width={"100%"}>
                 <Card className={classes.stepsCard}>
                   <img src={insuranceIcon} alt={'icon'}/>
                   <Typography noWrap className={classes.stepCountText}>Step 2.</Typography>
@@ -195,7 +193,7 @@ const TrustLifStake = () => {
                   </Typography>
                 </Card>
               </Box>
-              <Box item width={"100%"}>
+              <Box width={"100%"}>
                 <Card className={classes.stepsCard}>
                   <img src={insuranceIcon} alt={'icon'}/>
                   <Typography noWrap className={classes.stepCountText}>Step 3.</Typography>

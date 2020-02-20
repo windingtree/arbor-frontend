@@ -25,7 +25,7 @@ const styles = makeStyles({
   logoContainer: {
     paddingTop: '16px',
     marginBottom: '100px',
-    ['@media (max-width:767px)']: {
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
       marginBottom: '35px'
     }
   },
@@ -51,7 +51,7 @@ const styles = makeStyles({
   button: {
     border: `1px solid ${colors.secondary.cyan}`,
     backgroundImage: colors.gradients.green,
-    ['@media (max-width:767px)']: {
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
       width: '100%',
     }
   },

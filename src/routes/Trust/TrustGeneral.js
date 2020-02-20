@@ -25,6 +25,10 @@ const styles = makeStyles({
   topDiv: {
     width: '100%',
     backgroundColor: colors.secondary.yellowLight,
+    paddingBottom: '108px',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      paddingBottom: '30px'
+}
   },
   topSectionWrapper: {
     padding: '57px 30px 20px 30px',
@@ -193,7 +197,7 @@ const styles = makeStyles({
     lineHeight: '44px'
   },
   moreVerifiedSection: {
-    margin: '150px 0 130px 0'
+    margin: '70px 0 130px 0'
   },
   metamaskIllustration: {
     width: '100%'

@@ -176,7 +176,7 @@ const styles = makeStyles({
     width: '20px',
     height: '50%',
     display: 'block',
-    background: 'linear-gradient(to right, transparent, white)',
+    background: 'linear-gradient(to right, rgba(255,255,255,0), white)',
     position: 'absolute',
     bottom: 0,
     right: 0

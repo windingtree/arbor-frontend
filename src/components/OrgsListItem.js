@@ -151,7 +151,7 @@ const styles = makeStyles({
     right: '0',
     height: '100%',
     width: '264px',
-    background: 'linear-gradient(to right, transparent, white)',
+    background: 'linear-gradient(to right, rgba(255,255,255,0), white)',
   }
 });
 

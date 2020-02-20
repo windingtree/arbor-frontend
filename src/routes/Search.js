@@ -105,8 +105,7 @@ const styles = makeStyles({
   },
   gridListWrapper: {
     paddingTop: '40px',
-    ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
-      width: '75%',
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
       margin: '0 auto'
     },
   },
@@ -123,17 +122,6 @@ const styles = makeStyles({
     color: colors.greyScale.dark,
     ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
       display: 'none'
-    },
-  },
-  paginationWrapper: {
-    marginRight: '60px',
-    ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
-      marginRight: '26px'
-    },
-    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
-      marginRight: '0',
-      position: 'relative',
-      right: '15px'
     },
   },
 });
@@ -160,7 +148,7 @@ function Search(props) {
         parentTrustLevel = null;
       }
       return (
-        <Grid item key={index.toString()} style={{width: '264px'}}>
+        <Grid lg={3} sm={4} xs={10} item key={index.toString()}>
           <OrgsGridItem
             orgid={item.orgid}
             img={item.avatar}
@@ -380,7 +368,7 @@ function Search(props) {
                       <Typography variant={'caption'} className={classes.totalSearchResultsTitle}>Search
                         results: {total}</Typography>
                     </div>
-                    <div className={classes.paginationWrapper}>
+                    <div>
                       <Pagination
                         pageCount={pages}
                         onPageChange={handlePageClick}

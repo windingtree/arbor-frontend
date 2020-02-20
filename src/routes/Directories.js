@@ -44,6 +44,9 @@ const styles = makeStyles({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '60px 47px',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      flexWrap: 'wrap'
+    },
   },
   addDirectoryTitle: {
     fontSize: '32px',
@@ -87,11 +90,11 @@ function Directories(props){
           <Typography variant={'h1'} className={classes.title}>Directories</Typography>
         </div>
         <div className={classes.cardsContainer}>
-          <CardsGridList justify={'space-between'} alignItems={'flex-start'}>
+          <CardsGridList spacing={2} justify={'space-between'} alignItems={'flex-start'}>
             {
               directories.map((item, index) => {
                 return (
-                  <Grid item key={index.toString()} style={{ width: '262px' }}>
+                  <Grid item lg={3} sm={6} xs={12} key={index.toString()}>
                     <DirectoryCard
                       directoryName={item.name}
                       directoryImage={item.image}
@@ -154,7 +157,7 @@ Directories.defaultProps = {
     {
       name: 'travel-agencies',
       image: TravelIllustration,
-      searchReq: 'travel-agencies'
+      searchReq: 'travel-agency'
     },
   ]
 };

@@ -1,4 +1,6 @@
 import React, {useState, useEffect} from "react";
+import { connect } from 'react-redux';
+import { fetchSearchOrganizationsByType } from '../ducks/fetchSearchResults';
 import history from '../redux/history';
 import {Link} from 'react-router-dom';
 import {Container, Typography, Grid, Card, CardContent, Box} from '@material-ui/core';
@@ -355,6 +357,11 @@ function Home(props) {
   const [activeUseCase, setActiveUseCase] = useState(0);
   const [activeSlide, setActiveSlide] = useState(0);
   const {directories} = props;
+  const dirType = history.location.state && history.location.state.dirType;
+
+  useEffect(() => {
+    if (dirType) props.fetchSearchOrganizationsByType({ type: dirType, page: 1, per_page: 12 })
+  }, [dirType]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSearch = event => {
     setSearchValue(event.target.value);
@@ -634,6 +641,7 @@ function Home(props) {
                         homeLayout={true}
                         directoryName={item.name}
                         directoryImage={item.image}
+                        handleSearchByType={() => props.fetchSearchOrganizationsByType({ type: item.searchReq, page: 1, per_page: 12 })}
                       />
                     </Grid>
                   )
@@ -737,19 +745,23 @@ Home.defaultProps = {
   directories: [
     {
       name: 'hotels',
-      image: HotelIllustration
+      image: HotelIllustration,
+      searchReq: 'hotel'
     },
     {
       name: 'airlines',
-      image: AirlineIllustration
+      image: AirlineIllustration,
+      searchReq: 'airline'
     },
     {
       name: 'insurance',
-      image: InsuranceIllustration
+      image: InsuranceIllustration,
+      searchReq: 'insurance'
     },
     {
       name: 'travel-agencies',
-      image: TravelIllustration
+      image: TravelIllustration,
+      searchReq: 'travel-agencies'
     },
   ],
   useCases: [
@@ -827,5 +839,8 @@ Home.defaultProps = {
     },
   ]
 };
+const mapDispatchToProps = {
+  fetchSearchOrganizationsByType
+};
 
-export default Home;
+export default connect(null, mapDispatchToProps)(Home);

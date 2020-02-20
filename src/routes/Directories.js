@@ -69,16 +69,16 @@ const styles = makeStyles({
 function Directories(props){
   const classes = styles();
   const { directories }  = props;
-    const dirType = history.location.state && history.location.state.dirType;
+  const dirType = history.location.state && history.location.state.dirType;
 
-    useEffect(() => {
-      if (dirType) props.fetchSearchOrganizationsByType({ type: dirType, page: 1, per_page: 12 })
-    }, [dirType]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (dirType) props.fetchSearchOrganizationsByType({ type: dirType, page: 1, per_page: 12 })
+  }, [dirType]); // eslint-disable-line react-hooks/exhaustive-deps
 
 
   useEffect(() => {
-        window.scrollTo(0, 0)
-    }, []);
+      window.scrollTo(0, 0)
+  }, []);
 
   return (
     <Container>

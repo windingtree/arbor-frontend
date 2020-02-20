@@ -67,6 +67,9 @@ const styles = makeStyles({
       right: 'auto',
       top: '40px'
     },
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
+      top: '20px'
+    },
   },
   illustration: {
     ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
@@ -89,27 +92,45 @@ const styles = makeStyles({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: '20px',
+    ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
+      width: '100%'
+    },
   },
   filtersController: {
     width: '48%'
   },
   gridListWrapper: {
-    paddingTop: '40px'
+    paddingTop: '40px',
+    ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
+      width: '75%',
+      margin: '0 auto'
+    },
   },
   paginationInfoContainer: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    margin: '40px 0'
+    margin: '40px 0',
   },
   totalSearchResultsTitle: {
     fontSize: '14px',
     fontWeight: 400,
     lineHeight: 1.42,
-    color: colors.greyScale.dark
+    color: colors.greyScale.dark,
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
+      display: 'none'
+    },
   },
   paginationWrapper: {
     marginRight: '60px',
+    ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
+      marginRight: '26px'
+    },
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
+      marginRight: '0',
+      position: 'relative',
+      right: '15px'
+    },
   },
 });
 
@@ -230,6 +251,13 @@ function Search(props) {
     window.scrollTo(0, 0)
   }, []);
 
+  //handle clear search fields
+  const clearSearchFields = () => {
+    setSearchValue('');
+    setDirectoryFilterValue('');
+    setCountryFilterValue('');
+  };
+
   //handle select fields
   const options = {
       directories: {
@@ -283,7 +311,7 @@ function Search(props) {
                 searchValue={searchValue}
                 handleSearchValue={handleSearch}
                 fetchSearchResult={fetchSearchResults}
-                handleFocus={() => setSearchValue('')}
+                handleFocus={clearSearchFields}
               />
             </div>
           </div>

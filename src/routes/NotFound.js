@@ -16,8 +16,18 @@ const styles = makeStyles({
     height: '100%',
     backgroundColor: colors.secondary.yellowLight,
   },
+  gridContainer: {
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      flexDirection: 'column-reverse',
+      paddingBottom: '40px'
+    },
+  },
   logoContainer: {
-    paddingTop: '16px'
+    paddingTop: '16px',
+    marginBottom: '100px',
+      ['@media (max-width:767px)']: {
+        marginBottom: '35px'
+      }
   },
   logo: {
     width: '89px',
@@ -41,6 +51,9 @@ const styles = makeStyles({
   button: {
     border: `1px solid ${colors.secondary.cyan}`,
     backgroundImage: colors.gradients.green,
+    ['@media (max-width:767px)']: {
+      width: '100%',
+    }
   },
   buttonLabel: {
     fontSize: '16px',
@@ -48,6 +61,9 @@ const styles = makeStyles({
     color: colors.primary.white,
     textTransform: 'none',
     padding: '10px 20px'
+  },
+  img404: {
+    width: '100%'
   }
 });
 
@@ -62,8 +78,8 @@ export default function NotFound(props) {
              <Logo viewBox={'0 0 90 32'} className={classes.logo}/>
            </RouterLink>
          </div>
-         <Grid container justify={'center'} alignItems={'center'} wrap={'nowrap'}>
-           <Grid item>
+         <Grid className={classes.gridContainer} container justify={'center'} alignItems={'center'}>
+           <Grid item xs={12} md={6}>
              <Typography variant={'h1'} className={classes.title}>Oops...Something went wrong</Typography>
              <div className={classes.subtitleWrapper}>
                <Typography variant={'subtitle1'} className={classes.subtitle}>
@@ -76,8 +92,8 @@ export default function NotFound(props) {
                </Button>
              </div>
            </Grid>
-           <Grid item>
-             <img src={Illustration} alt={'illustration'}/>
+           <Grid item xs={12} md={6}>
+             <img className={classes.img404} src={Illustration} alt={'illustration'}/>
            </Grid>
          </Grid>
        </Container>

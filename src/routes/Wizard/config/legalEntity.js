@@ -114,16 +114,19 @@ export const wizardConfig = [
           {
             name: 'Facebook',
             type: 'input',
+            icon: 'facebook',
             orgidJsonPath: 'legalEntity.contacts[0].facebook',
           },
           {
             name: 'Twitter',
             type: 'input',
+            icon: 'twitter',
             orgidJsonPath: 'legalEntity.contacts[0].twitter',
           },
           {
             name: 'Instagram',
             type: 'input',
+            icon: 'instagram',
             orgidJsonPath: 'legalEntity.contacts[0].instagram',
           },
           {

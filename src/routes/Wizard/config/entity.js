@@ -66,32 +66,32 @@ export const wizardConfig = [
             name: 'Country',
             options: countries,
             required: true,
-            orgidJsonPath: 'legalEntity.registeredAddress.country'
+            orgidJsonPath: 'entity.registeredAddress.country'
           },
           {
             type: 'input',
             name: 'Subdivision',
-            orgidJsonPath: 'legalEntity.registeredAddress.subdivision'
+            orgidJsonPath: 'entity.registeredAddress.subdivision'
           },
           {
             type: 'input',
             name: 'Locality',
-            orgidJsonPath: 'legalEntity.registeredAddress.locality'
+            orgidJsonPath: 'entity.registeredAddress.locality'
           },
           {
             type: 'input',
             name: 'postal code',
-            orgidJsonPath: 'legalEntity.registeredAddress.postal_code'
+            orgidJsonPath: 'entity.registeredAddress.postal_code'
           },
           {
             type: 'input',
             name: 'Street, building',
-            orgidJsonPath: 'legalEntity.registeredAddress.street_address'
+            orgidJsonPath: 'entity.registeredAddress.street_address'
           },
           {
             type: 'input',
             name: 'Premise',
-            orgidJsonPath: 'legalEntity.registeredAddress.premise'
+            orgidJsonPath: 'entity.registeredAddress.premise'
           }
         ]
       },
@@ -103,13 +103,13 @@ export const wizardConfig = [
             type: 'input',
             subtype: 'phone',
             name: 'Phone',
-            orgidJsonPath: 'legalEntity.contacts[0].phone'
+            orgidJsonPath: 'entity.contacts[0].phone'
           },
           {
             type: 'input',
             subtype: 'website',
             name: 'Website',
-            orgidJsonPath: 'legalEntity.contacts[0].website',
+            orgidJsonPath: 'entity.contacts[0].website',
             schema: Joi.string().pattern(/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/, 'uri')
           }
         ]
@@ -121,17 +121,20 @@ export const wizardConfig = [
           {
             name: 'Facebook',
             type: 'input',
-            orgidJsonPath: 'legalEntity.contacts[0].facebook',
+            icon: 'facebook',
+            orgidJsonPath: 'entity.contacts[0].facebook',
           },
           {
             name: 'Twitter',
             type: 'input',
-            orgidJsonPath: 'legalEntity.contacts[0].twitter',
+            icon: 'twitter',
+            orgidJsonPath: 'entity.contacts[0].twitter',
           },
           {
             name: 'Instagram',
             type: 'input',
-            orgidJsonPath: 'legalEntity.contacts[0].instagram',
+            icon: 'instagram',
+            orgidJsonPath: 'entity.contacts[0].instagram',
           },
           {
             name: 'Logo',

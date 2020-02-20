@@ -231,6 +231,13 @@ function Search(props) {
     window.scrollTo(0, 0)
   }, []);
 
+  //handle clear search fields
+  const clearSearchFields = () => {
+    setSearchValue('');
+    setDirectoryFilterValue('');
+    setCountryFilterValue('');
+  };
+
   //handle select fields
   const options = [
     {
@@ -291,7 +298,7 @@ function Search(props) {
                 searchValue={searchValue}
                 handleSearchValue={handleSearch}
                 fetchSearchResult={fetchSearchResults}
-                handleFocus={() => setSearchValue('')}
+                handleFocus={clearSearchFields}
               />
             </div>
           </div>

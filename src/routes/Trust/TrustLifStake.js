@@ -55,8 +55,6 @@ const styles = makeStyles({
     marginBottom: '19px',
     lineHeight: '28px'
   },
-  illustrationWrapper: {
-  },
   line: {
     display: 'inline-block',
     verticalAlign: 'middle',
@@ -165,7 +163,7 @@ const TrustLifStake = () => {
                 spam registrations and proves the seriousness of your intentions.</Typography>
               <div className={classes.line}/>
             </Grid>
-            <Grid item xs={12} lg={6} className={classes.illustrationWrapper}>
+            <Grid item xs={12} lg={6}>
               <img src={trustTopIllustation} alt={'illustration'}/>
             </Grid>
           </Grid>

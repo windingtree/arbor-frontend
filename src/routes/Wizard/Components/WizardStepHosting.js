@@ -124,7 +124,7 @@ const WizardStepHosting = (props) => {
 
   return (
     <div key={index}>
-      <Typography variant={'h3'} className={inheritClasses.stepTitle}>Step: {longName}</Typography>
+      <Typography variant={'h3'} className={inheritClasses.stepTitle}>Step {index+1}: {longName}</Typography>
       <div className={inheritClasses.subtitleWrapper}>
         <Typography variant={'subtitle1'} className={inheritClasses.subtitle}>{description}</Typography>
       </div>
@@ -147,7 +147,7 @@ const WizardStepHosting = (props) => {
           handleNext();
 
           setTimeout(() => {
-            alert(JSON.stringify(values, null, 2));
+            console.info(JSON.stringify(values, null, 2));
             setSubmitting(false);
           }, 400);
         }}

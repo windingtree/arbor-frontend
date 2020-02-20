@@ -65,15 +65,15 @@ export const styles = makeStyles({
 
 const WizardStep = (props) => {
   const classes = styles();
-  const { extendOrgidJson, data: { longName, description, sections, cta }, handleNext } = props;
+  const { index, extendOrgidJson, data: { longName, description, sections, cta }, handleNext } = props;
   // next line collect from "sections" all fields with non empty "schema" to object { [fieldName]:schema }
   const validators = sections ?
     _.chain(_.filter(_.flatten(sections.map(({ fields }) => fields.map(({ orgidJsonPath, schema }) => ({ orgidJsonPath, schema })))), 'schema')).keyBy('orgidJsonPath').mapValues('schema').value() :
     {};
 
   return (
-    <div>
-      <Typography variant={'h3'} className={classes.stepTitle}>Step: {longName}</Typography>
+    <div key={index}>
+      <Typography variant={'h3'} className={classes.stepTitle}>Step {index+1}: {longName}</Typography>
       <div className={classes.subtitleWrapper}>
         <Typography variant={'subtitle1'} className={classes.subtitle}>{description}</Typography>
       </div>

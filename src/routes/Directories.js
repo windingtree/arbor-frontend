@@ -107,11 +107,11 @@ function Directories(props){
         <div className={classes.addDirectoryContainer}>
           <div className={classes.addDirectoryContent}>
             <div className={classes.addDirectoryTitleWrapper}>
-              <Typography variant={'h3'} className={classes.addDirectoryTitle}>Your directory is missing? Let’s add it!</Typography>
+              <Typography variant={'h3'} className={classes.addDirectoryTitle}>None of these directories is relevant to your organization?</Typography>
             </div>
             <div className={classes.addDirectoryButtonWrapper}>
-              <Button onClick={() => null}>
-                <Typography variant={'inherit'} className={classes.addDirectoryButtonTitle}>Propose a new directory</Typography>
+              <Button onClick={() => window.location = "mailto:propose@windingtree.com"}>
+                <Typography variant={'inherit'} className={classes.addDirectoryButtonTitle} noWrap={true}>Propose a new directory</Typography>
               </Button>
             </div>
           </div>

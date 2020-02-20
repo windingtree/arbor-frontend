@@ -218,6 +218,7 @@ export default function OrgsGridItem(props) {
     proofsQty,
     name,
     subs,
+    canManage,
     entityName,
     entityTrustLevel,
     error
@@ -234,7 +235,7 @@ export default function OrgsGridItem(props) {
     <Card className={isSub ? [classes.item, classes.itemSubOrg].join(' ') : classes.item} style={{ backgroundColor: error ? colors.secondary.error : colors.primary.white }}>
       <CardContent style={{ padding: '12px' }}>
         <Link to={{
-          pathname: `/organization/${orgid}`,
+          pathname: `/${canManage ? 'my-organizations' : 'organization'}/${orgid}`,
           state: { id: orgid }
         }} className={classes.linkToProfileView}
         >
@@ -268,7 +269,7 @@ export default function OrgsGridItem(props) {
             <div className={classes.idInfoWrapper}>
               <CopyIdComponent id={orgid} leftElement={'ID: '}/>
               <div className={classes.trustLevelInfo}>
-                <TrustLevelIcon viewBox={'0 0 16 16'} className={classes.icon}/>
+                <TrustLevelIcon className={classes.icon}/>
                 <Typography variant={'subtitle2'} className={classes.trustLevelValue}>
                   {proofsQty}
                 </Typography>
@@ -277,7 +278,7 @@ export default function OrgsGridItem(props) {
           ) : null
         }
         <Link to={{
-          pathname: `/organization/${orgid}`,
+          pathname: `/${canManage ? 'my-organizations' : 'organization'}/${orgid}`,
           state: { id: orgid }
         }} className={classes.linkToProfileView}
         >
@@ -302,7 +303,7 @@ export default function OrgsGridItem(props) {
           <Box className={classes.legalEntityInfo}>
             <div className={classes.entityTitleWrapper}>
               <Typography variant={'subtitle2'} className={classes.entityTitle} noWrap>
-                Legal entity: <Typography variant={'caption'}>{entityName}</Typography>
+                Organization: <Typography variant={'caption'}>{entityName}</Typography>
               </Typography>
             </div>
             <div className={classes.entityInfoItem}>

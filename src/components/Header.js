@@ -1,8 +1,8 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import {NavLink} from 'react-router-dom';
 import history from '../redux/history';
-import { Container, Grid, Typography, Button } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import {Container, Grid, Typography, Button} from '@material-ui/core';
+import {makeStyles} from '@material-ui/core/styles';
 
 import Logo from '../assets/SvgComponents/Logo';
 import SearchIcon from '../assets/SvgComponents/SearchIcon';
@@ -42,6 +42,7 @@ const styles = makeStyles({
   },
   navigationContainer: {
     width: '100%',
+    maxWidth: '50%'
   },
   headerButton: {
     margin: '0 20px'
@@ -57,6 +58,12 @@ const styles = makeStyles({
   },
   navLinksContainer: {
     display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    width: '100%'
+  },
+  navLinksDirectoriesSearch: {
+    display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%'
@@ -66,7 +73,7 @@ const styles = makeStyles({
     borderTopWidth: '2px',
     borderTopStyle: 'solid',
     borderTopColor: 'transparent',
-    padding: '0 14px',
+    padding: '0 20px',
     '&:hover': {
       '& > span': {
         color: colors.secondary.peach
@@ -77,6 +84,7 @@ const styles = makeStyles({
     }
   },
   navIcon: {
+    maxHeight: '18px',
     color: colors.primary.black,
     marginRight: '10px',
     transition: 'color .3s ease'
@@ -91,6 +99,7 @@ const styles = makeStyles({
     transition: 'color .3s ease'
   },
   activeNavLink: {
+    padding: '0 20px',
     borderTopColor: colors.primary.accent,
     backgroundImage: colors.gradients.orangeDegOpacity,
   },
@@ -111,20 +120,21 @@ const styles = makeStyles({
 
 export default function Header(props) {
   const classes = styles();
-  const { isAuthenticated } = props;
+  const {isAuthenticated} = props;
 
   return (
     <div id="app-header" className={classes.header}>
       <Container>
         <Grid container justify={'space-between'} alignItems={'center'}>
-          <Grid item lg={2} sm={4} xs={2} >
+          <Grid item lg={2} sm={4} xs={2}>
             <button onClick={() => history.push('/')} className={classes.logoButton}>
               <Logo viewBox={'0 0 90 32'} className={classes.logo}/>
             </button>
           </Grid>
-          <Grid item lg={isAuthenticated ? 6 : 5} sm={4} xs={6} container justify={'space-between'} className={classes.navigationContainer}>
+          <Grid item lg={isAuthenticated ? 6 : 5} sm={4} xs={6} container justify={'space-between'}
+                className={classes.navigationContainer}>
             <div className={classes.navLinksContainer}>
-              <div className={classes.navLinksContainer}>
+              <div className={classes.navLinksDirectoriesSearch}>
                 <NavLink
                   to="/directories"
                   className={classes.navLink}
@@ -136,7 +146,7 @@ export default function Header(props) {
                   to="/search"
                   className={classes.navLink}
                   activeClassName={classes.activeNavLink}
-                  style={{ display: 'flex', alignItems: 'center' }}
+                  style={{display: 'flex', alignItems: 'center'}}
                 >
                   <Typography variant={'caption'} className={classes.linkTitle}>Search</Typography>
                   <SearchIcon
@@ -176,7 +186,7 @@ export default function Header(props) {
                         className={classes.navIcon}
                       />
                       <Typography variant={'caption'} className={classes.linkTitle} noWrap>
-                        My Organizations
+                        My organizations
                       </Typography>
                     </NavLink>
                   </div>
@@ -190,14 +200,15 @@ export default function Header(props) {
                         borderColor: 'transparent'
                       }}
                     >
-                      <Typography variant={'subtitle2'} noWrap className={classes.buttonTitle} style={{ color: colors.primary.black }}>
+                      <Typography variant={'subtitle2'} noWrap className={classes.buttonTitle}
+                                  style={{color: colors.primary.black}}>
                         Sign Up
                       </Typography>
                     </Button>
                     <Button
                       onClick={() => history.push('/authorization/signin')}
                       className={classes.authButton}
-                      style={{ marginLeft: '20px' }}
+                      style={{marginLeft: '20px'}}
                     >
                       <Typography variant={'subtitle2'} noWrap className={classes.buttonTitle}>
                         Sign In

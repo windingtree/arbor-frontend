@@ -489,8 +489,8 @@ function Home(props) {
             </Typography>
               <div className={classes.subtitleWrapper}>
                 <Typography variant={'subtitle1'} className={classes.blockSubtitle}>
-                  Arbor has created an efficient alternative to lengthy and expensive <nobr>Know-Your-Business</nobr>
-                  (KYB) processes. Search for verified organizations across various industries and get
+                  Arbor has created an efficient alternative to lengthy and expensive <nobr>Know-Your-Business</nobr> (KYB) processes.
+                  Search for verified organizations across various industries and get
                   discovered by potential partners.
                 </Typography>
               </div>

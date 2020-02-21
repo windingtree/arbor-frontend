@@ -64,7 +64,7 @@ export default function SearchComponent(props) {
               id={'search-input'}
               autoComplete={''}
               className={classes.searchInput}
-              placeholder={`Search by organization name or ORG.ID`}
+              placeholder={`Search by organization name or identifier`}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position={'start'}>

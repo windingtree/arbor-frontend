@@ -330,7 +330,7 @@ export default function OrgsGridItem(props) {
           <Box className={classes.legalEntityInfo}>
             <div className={classes.entityTitleWrapper}>
               <Typography variant={'subtitle2'} className={classes.entityTitle} noWrap>
-                Organization: <Typography variant={'caption'}>{entityName}</Typography>
+                Managed by: <Typography variant={'caption'}>{entityName}</Typography>
               </Typography>
             </div>
             <div className={classes.entityInfoItem}>
@@ -344,7 +344,7 @@ export default function OrgsGridItem(props) {
           subs && subs.length !== 0
         ) ? (
           <div className={classes.entitySubOrgsWrapper}>
-            <Typography variant={'subtitle2'} className={classes.entityTitle}>Include {subs.length} SubOrgs:</Typography>
+            <Typography variant={'subtitle2'} className={classes.entityTitle}>Include {subs.length} sub-organization{subs.length === 1 ? 's' : ''}:</Typography>
             <Grid container spacing={1} justify="flex-start" alignItems="center" className={classes.entitySubOrgsList}>
               {
                 subs.map((item, index) => {
@@ -372,7 +372,7 @@ export default function OrgsGridItem(props) {
           </div>
         ) : (
           <CardContent className={classes.entitySubOrgsWrapper} style={{ marginBottom: '40px', }}>
-            <Typography variant={'subtitle2'} className={classes.entityTitle}>Does not include SubOrg</Typography>
+            <Typography variant={'subtitle2'} className={classes.entityTitle}>Does not include sub-organizations</Typography>
           </CardContent>
         ) : null
       }

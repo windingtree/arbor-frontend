@@ -69,7 +69,7 @@ const styles = makeStyles({
     fontSize: '16px',
     lineHeight: 1.45,
     color: colors.greyScale.dark,
-    textTransform: 'capitalize',
+    textTransform: 'none',
     marginTop: '10px',
     whiteSpace: 'nowrap',
     ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
@@ -98,7 +98,10 @@ export default function DirectoryCard(props) {
   const classes = styles();
   const { directoryName, directoryImage, homeLayout = false, handleSearchByType } = props;
 
-  const directoryTitle = str => str.split('-').join(' ');
+  const directoryTitle = str => {
+    let s = str.split('-').join(' ');
+    return s[0].toUpperCase()+s.slice(1)
+  };
 
   return (
     <Card className={ homeLayout ? [classes.item, classes.itemHome].join(' ') : classes.item}>

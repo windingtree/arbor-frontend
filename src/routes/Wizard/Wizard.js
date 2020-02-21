@@ -113,7 +113,7 @@ const WizardGeneral = (props) => {
   const action = _.get(history, 'location.state.action', 'create');
   const jsonContent = _.get(history, 'location.state.jsonContent', {});
   const id = _.get(history, 'location.state.id', null);
-  const actionLabel = (action === 'create') ? 'creating' : 'editing';
+  const actionLabel = (action === 'create') ? 'Create' : 'Edit';
   const types = { legalEntity, organizationalUnit };
   const wizardConfig = types[wizardType];
 
@@ -191,7 +191,7 @@ const WizardGeneral = (props) => {
             <div>
               <Typography variant={'h2'} className={classes.formTitle}>
                 {
-                  `${wizardType === 'legalEntity' ? 'Organization' : 'Sub-organization'} ${actionLabel}`
+                  `${actionLabel} ${wizardType === 'legalEntity' ? 'an organization' : 'a sub-organization'} profile`
                 }
               </Typography>
               {

@@ -640,6 +640,7 @@ function Info(props) {
                     className={classes.detailsIllustration}/>
                   </Grid>
                 </Grid>
+                <div className={classes.line}/>
               </Container>
             </div>
           )

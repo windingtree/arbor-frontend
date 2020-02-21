@@ -140,6 +140,7 @@ export const wizardConfig = [
             name: 'Logo',
             type: 'dropzone',
             description: 'Add a logo or any image that represents your organization. It will help you stand out in search results.',
+            orgidJsonPath: 'media.logo',
             helperText: 'Recommended dimensions: 908х400 (minimal: 454x200)\nFormat: JPG, PNG'
           }
         ]

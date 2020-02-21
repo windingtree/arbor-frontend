@@ -200,7 +200,7 @@ function Directory(props) {
                 value={countryFilterValue}
                 onChange={handleCountryFilterValueChange}
               >
-                <MenuItem value={''}>default</MenuItem>
+                <MenuItem value={''}>All</MenuItem>
                 {
                   _.map(options.countries, ((name, value) => (
                     <MenuItem key={name} value={value}>{name}</MenuItem>)

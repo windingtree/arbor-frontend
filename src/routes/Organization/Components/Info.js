@@ -128,7 +128,10 @@ const styles = makeStyles({
     color: colors.greyScale.darkest,
   },
   orgAddressWrapper: {
-    margin: '24px 0 23px 0'
+    margin: '24px 0 23px 0',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      margin: '20px 0'
+    },
   },
   orgAddress: {
     fontSize: '14px',
@@ -151,7 +154,11 @@ const styles = makeStyles({
   },
   orgInfoFieldWrapper: {
     width: '50%',
-    margin: '5px 0'
+    margin: '5px 0',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      width: '100%',
+      margin: '6px 0'
+    },
   },
   orgInfoLegalEntityFieldWrapper: {
     display: 'flex',
@@ -166,6 +173,9 @@ const styles = makeStyles({
     fontWeight: 500,
     lineHeight: 1.3,
     color: colors.greyScale.dark,
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      color: colors.greyScale.darkest,
+    },
   },
   orgInfoField: {
     textDecoration: 'none',
@@ -193,13 +203,12 @@ const styles = makeStyles({
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginTop: '42px'
+    marginTop: '42px',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      marginTop: '20px',
+    }
   },
   socialLink: {
-    fontSize: '16px',
-    lineHeight: 1.03,
-    fontWeight: 500,
-    color: colors.greyScale.darkest,
     textDecoration: 'none',
     textTransform: 'capitalize',
     marginRight: '29px',
@@ -207,30 +216,57 @@ const styles = makeStyles({
     justifyContent: 'flex-start',
     alignItems: 'center'
   },
+  socialTitle: {
+    fontSize: '16px',
+    lineHeight: 1.03,
+    fontWeight: 500,
+    color: colors.greyScale.darkest,
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      display: 'none',
+    }
+  },
   socialIcon: {
     fontSize: 'large',
-    marginRight: '10px'
+    marginRight: '10px',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      fontSize: '3em',
+    }
   },
   iconFacebook: {
     color: colors.social.facebook,
   },
   iconVerify: {
-    margin: '0 0 0 8px'
+    margin: '0 0 0 8px',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      display: 'none',
+    }
   },
   iconTelegram: {
     width: '18px',
-    height: '15px'
+    height: '15px',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      width: '36px',
+      height: '36px',
+    }
   },
   iconTwitter: {
     color: colors.social.twitter,
   },
   iconMedium: {
     width: '17px',
-    height: '14px'
+    height: '14px',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      width: '36px',
+      height: '36px',
+    }
   },
   iconInstagram: {
     width: '17px',
     height: '17px',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      width: '36px',
+      height: '36px',
+    }
   },
   iconGitHub: {
     color: colors.primary.black
@@ -493,7 +529,7 @@ function Info(props) {
               return (
                 <a key={index.toString()} href={social.link} className={classes.socialLink}>
                   {icon(social.network)}
-                  <Typography variant={'inherit'}>{social.network}</Typography>
+                  <Typography variant={'caption'} className={classes.socialTitle}>{social.network}</Typography>
                   {social.verified &&
                   <TrustLevelIcon className={[classes.iconTrustLevel, classes.iconVerify].join(' ')}/>}
                 </a>

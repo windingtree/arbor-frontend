@@ -116,7 +116,10 @@ const styles = makeStyles({
   publicTrustLevelWrapper: {
     display: 'flex',
     justifyContent: 'flex-end',
-    alignItems: 'center'
+    alignItems: 'center',
+    ['@media (max-width:1069px)']: { // eslint-disable-line no-useless-computed-key
+      display: 'none'
+    },
   },
   orgNameWrapper: {
     width: '100%',
@@ -243,6 +246,7 @@ const styles = makeStyles({
     zIndex: 2,
     ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
       display: 'block !important',
+      marginLeft: '0'
     }
   },
   socialIcon: {
@@ -272,6 +276,11 @@ const styles = makeStyles({
   },
   iconTwitter: {
     color: colors.social.twitter,
+    '& + svg': {
+      ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+        bottom: '2px'
+      }
+    }
   },
   iconMedium: {
     width: '17px',
@@ -477,18 +486,16 @@ function Info(props) {
           <Grid item className={classes.orgInfoContainer}>
             <div className={classes.idInfoContainer}>
               <CopyIdComponent id={id || '0xLOADING'} leftElement={'Org ID: '} fontWeight={500}/>
-              <Hidden mdDown>
-                {
-                  canManage || (
-                    <div className={classes.publicTrustLevelWrapper}>
-                      <Typography variant={'caption'} className={classes.itemTrustInfoTitle}
-                                  style={{color: colors.greyScale.common}}>Trust level: </Typography>
-                      <TrustLevelIcon className={classes.iconTrustLevel}/>
-                      <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{proofsQty}</Typography>
-                    </div>
-                  )
-                }
-              </Hidden>
+              {
+                canManage || (
+                  <div className={classes.publicTrustLevelWrapper}>
+                    <Typography variant={'caption'} className={classes.itemTrustInfoTitle}
+                                style={{color: colors.greyScale.common}}>Trust level: </Typography>
+                    <TrustLevelIcon className={classes.iconTrustLevel}/>
+                    <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{proofsQty}</Typography>
+                  </div>
+                )
+              }
             </div>
             <div className={classes.orgNameWrapper}>
               <Typography variant={'h6'} className={classes.orgName} noWrap>{name}</Typography>

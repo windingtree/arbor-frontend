@@ -105,6 +105,10 @@ const styles = makeStyles({
     width: '48%',
     ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
       width: '100%',
+      marginBottom: '12px',
+      '&:last-child': {
+        marginBottom: '0'
+      }
     },
   },
   selectFormControl: {
@@ -143,7 +147,7 @@ const styles = makeStyles({
 
 function Search(props) {
   const classes = styles();
-  const request = history.location.state && history.location.state.request;
+  const request = history.location.state && history.location.state.request && '';
   const [searchValue, setSearchValue] = useState('');
   const [forcePage, setForcePage] = useState(undefined);
   const [lastSearchValue, setLastSearchValue] = useState('');
@@ -267,13 +271,13 @@ function Search(props) {
 
   //handle select fields
   const options = {
-      directories: {
-        'hotel': 'Hotels',
-        'airline': 'Airlines',
-        'insurance': 'Insurance',
-        'ota': 'Travel agencies'
-      },
-      countries
+    directories: {
+      'hotel': 'Hotels',
+      'airline': 'Airlines',
+      'insurance': 'Insurance',
+      'ota': 'Travel agencies'
+    },
+    countries
   };
 
   const handleDirectoryFilterValueChange = async e => {

@@ -18,3 +18,7 @@ export { default as EyeIcon } from './EyeIcon';
 export { default as EditIcon } from './EditIcon';
 export { default as InfoIcon } from "./InfoIcon";
 export { default as StageIcon } from "./StageIcon";
+
+export { default as LifIcon1 } from './LifIcon1.svg';
+export { default as LifIcon2 } from './LifIcon2.svg';
+export { default as LifIcon3 } from './LifIcon3.svg';

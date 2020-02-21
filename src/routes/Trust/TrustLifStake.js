@@ -9,7 +9,7 @@ import {makeStyles} from '@material-ui/core/styles';
 import trustTopIllustation from '../../assets/SvgComponents/lif-deposit-illustration.svg';
 import lifWithdrawIllustration from '../../assets/SvgComponents/lif-deposit-withdraw.svg';
 
-import insuranceIcon from '../../assets/SvgComponents/Insurance-illustration.svg';
+import { LifIcon1, LifIcon2, LifIcon3 } from '../../assets/SvgComponents';
 import colors from '../../styles/colors';
 
 
@@ -74,7 +74,8 @@ const styles = makeStyles({
   },
   stepsCardsWrapper: {
     width: '50%',
-    margin: '43px 0 0 0',
+    margin: '43px 0 23px 0',
+    paddingRight: '73px'
   },
   stepsCard: {
     position: 'relative',
@@ -83,13 +84,16 @@ const styles = makeStyles({
     width: '100%',
     height: '80px',
     boxSizing: 'border-box',
-    padding: '23px 20px',
+    padding: '32px 20px 32px 12px',
     backgroundColor: colors.primary.white,
     borderRadius: '6px',
     boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)'
   },
+  stepsCardImg: {
+    position: 'absolute',
+  },
   stepCountText: {
-    margin: '0 14px 0 30px',
+    margin: '0 14px 0 92px',
     fontSize: '14px',
     lineHeight: '16px',
     minWidth: '52px'
@@ -173,33 +177,27 @@ const TrustLifStake = () => {
         <div>
           <Grid container justify={'space-between'}>
             <Grid item container spacing={4} className={classes.stepsCardsWrapper}>
-              <Box width={"100%"}>
-                <Card className={classes.stepsCard}>
-                  <img src={insuranceIcon} alt={'icon'}/>
-                  <Typography noWrap className={classes.stepCountText}>Step 1.</Typography>
-                  <Typography className={classes.stepTex}>
-                    Register on a decentralized stock exchange
-                  </Typography>
-                </Card>
-              </Box>
-              <Box width={"100%"}>
-                <Card className={classes.stepsCard}>
-                  <img src={insuranceIcon} alt={'icon'}/>
-                  <Typography noWrap className={classes.stepCountText}>Step 2.</Typography>
-                  <Typography className={classes.stepTex}>
-                    Purchase Líf to have at least 1000 in your Metamask account
-                  </Typography>
-                </Card>
-              </Box>
-              <Box width={"100%"}>
-                <Card className={classes.stepsCard}>
-                  <img src={insuranceIcon} alt={'icon'}/>
-                  <Typography noWrap className={classes.stepCountText}>Step 3.</Typography>
-                  <Typography className={classes.stepTex}>
-                    Click "Purchase Lif" to submit your deposit
-                  </Typography>
-                </Card>
-              </Box>
+              <Card className={classes.stepsCard}>
+                <img className={classes.stepsCardImg} src={LifIcon1} alt={'icon'}/>
+                <Typography noWrap className={classes.stepCountText}>Step 1.</Typography>
+                <Typography className={classes.stepTex}>
+                  Register on a decentralized stock exchange
+                </Typography>
+              </Card>
+              <Card className={classes.stepsCard}>
+                <img className={classes.stepsCardImg} src={LifIcon2} alt={'icon'}/>
+                <Typography noWrap className={classes.stepCountText}>Step 2.</Typography>
+                <Typography className={classes.stepTex}>
+                  Purchase Líf to have at least 1000 in your Metamask account
+                </Typography>
+              </Card>
+              <Card className={classes.stepsCard}>
+                <img className={classes.stepsCardImg} src={LifIcon3} alt={'icon'}/>
+                <Typography noWrap className={classes.stepCountText}>Step 3.</Typography>
+                <Typography className={classes.stepTex}>
+                  Click "Purchase Lif" to submit your deposit
+                </Typography>
+              </Card>
             </Grid>
             <Grid item style={{width: '45%'}}>
               <Typography variant={'h3'} className={classes.blockTitle}>

@@ -1,8 +1,19 @@
-import { Button, Container, Grid, Typography } from "@material-ui/core";
+import React, { useState } from "react";
+import {
+  Button,
+  Container,
+  Grid,
+  Typography,
+  Dialog,
+  DialogActions,
+  TextField,
+  withStyles
+} from "@material-ui/core";
+import MuiDialogContent from '@material-ui/core/DialogContent';
+import CloseIcon from '@material-ui/icons/Close';
 import CopyIdComponent from "../../../components/CopyIdComponent";
 import VpnKeyIcon from "@material-ui/icons/VpnKey";
 import colors from "../../../styles/colors";
-import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import _ from "lodash";
 
@@ -67,14 +78,116 @@ const styles = makeStyles({
     color: colors.secondary.peach,
     textTransform: 'none',
   },
+  dialogContainer: {
+    '& > .MuiDialog-paper > .MuiDialogContent-root:first-child': {
+      paddingTop: '80px'
+    }
+  },
+  dialogContentWrapper: {
+    position: 'relative',
+    padding: '80px 100px',
+    boxSizing: 'border-box'
+  },
+  dialogContent: {
+    minWidth: '440px'
+  },
+  dialogCloseButtonWrapper: {
+    position: 'absolute',
+    right: '10px',
+    top: '10px'
+  },
+  dialogButton: {
+    padding: '4px',
+    borderRadius: '50%',
+    minWidth: 'auto'
+  },
+  dialogTitle: {
+    fontSize: '32px',
+    fontWeight: 500,
+    textAlign: 'start',
+    color: colors.greyScale.darkest
+  },
+  dialogSubtitleWrapper: {
+    padding: '20px 0 32px 0'
+  },
+  dialogSubtitle: {
+    fontSize: '16px',
+    lineHeight: 1.45,
+    fontWeight: 400,
+    color: colors.greyScale.common
+  },
+  formWrapper: {
 
+  },
+  inputFieldWrapper: {
+    marginBottom: '28px',
+    '&:last-child': {
+      marginBottom: '0'
+    }
+  }
 });
 
 function Agents(props) {
   const classes = styles();
+  const [isModalOpen, toggleModalOpenState] = useState(false);
   const { organization } = props;
   const { owner } = organization;
   const agents = _.get(organization, `jsonContent.publicKey`, []);
+
+  const handleOpenModal = () => {
+    toggleModalOpenState(true);
+  };
+
+  const handleCloseModal = () => {
+    toggleModalOpenState(false)
+  };
+
+  //mui overrides
+  const DialogContent = withStyles({
+    root: {
+      '&:first-child': {
+        paddingTop: '80px'
+      }
+    }
+  })(MuiDialogContent);
+
+  const addAgentKeyDialog = () => {
+    return (
+      <Dialog onClose={handleCloseModal} open={isModalOpen} className={classes.dialogContainer}>
+        <DialogContent className={classes.dialogContentWrapper}>
+          <div className={classes.dialogContent}>
+            <DialogActions className={classes.dialogCloseButtonWrapper}>
+              <Button onClick={handleCloseModal} className={classes.dialogButton}>
+                <CloseIcon/>
+              </Button>
+            </DialogActions>
+            <Typography variant={'caption'} className={classes.dialogTitle}>Add agent key</Typography>
+            <div className={classes.dialogSubtitleWrapper}>
+              <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>To add an agent, enter its key and write a comment, then confirm the transaction in MetaMask.</Typography>
+            </div>
+            <div className={classes.form}>
+              <div className={classes.inputFieldWrapper}>
+                <TextField
+                  variant={'filled'}
+                  label={'Enter Agent Key'}
+                  // value={''} // TODO handle values from state
+                  // onChange={() => console.log(value)}  // TODO handle
+                />
+              </div>
+              <div className={classes.inputFieldWrapper}>
+                <TextField
+                  variant={'filled'}
+                  label={'Add comment for agent'}
+                  // value={''} // TODO handle values from state
+                  // onChange={() => console.log(value)}  // TODO handle
+                />
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    )
+  };
 
   return (
     <Container>
@@ -103,9 +216,10 @@ function Agents(props) {
             <Typography variant={'inherit'} className={classes.agentTitle}>Agents</Typography>
           </div>
           <div className={classes.buttonWrapper}>
-            <Button onClick={() => console.log('add agent')} className={classes.button}>
+            <Button onClick={handleOpenModal} className={classes.button}>
               <Typography variant={'inherit'}>+ Add Agent key</Typography>
             </Button>
+            {addAgentKeyDialog()}
           </div>
           {
             agents.length !== 0 ? (

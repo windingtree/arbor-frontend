@@ -27,13 +27,13 @@ export const wizardConfig = [
               'ota': 'Travel agencies'
             },
             required: true,
-            orgidJsonPath: 'entity.type'
+            orgidJsonPath: 'organizationalUnit.type'
           },
           {
             type: 'input',
             name: 'Organization name',
             required: true,
-            orgidJsonPath: 'entity.name'
+            orgidJsonPath: 'organizationalUnit.name'
           },
           {
             type: 'select',
@@ -53,7 +53,7 @@ export const wizardConfig = [
               'non-governmental organization',
             ],
             required: true,
-            orgidJsonPath: 'entity.legalType'
+            orgidJsonPath: 'organizationalUnit.legalType'
           },
         ]
       },
@@ -66,32 +66,32 @@ export const wizardConfig = [
             name: 'Country',
             options: countries,
             required: true,
-            orgidJsonPath: 'entity.registeredAddress.country'
+            orgidJsonPath: 'organizationalUnit.registeredAddress.country'
           },
           {
             type: 'input',
             name: 'Subdivision',
-            orgidJsonPath: 'entity.registeredAddress.subdivision'
+            orgidJsonPath: 'organizationalUnit.registeredAddress.subdivision'
           },
           {
             type: 'input',
             name: 'Locality',
-            orgidJsonPath: 'entity.registeredAddress.locality'
+            orgidJsonPath: 'organizationalUnit.registeredAddress.locality'
           },
           {
             type: 'input',
             name: 'postal code',
-            orgidJsonPath: 'entity.registeredAddress.postal_code'
+            orgidJsonPath: 'organizationalUnit.registeredAddress.postal_code'
           },
           {
             type: 'input',
             name: 'Street, building',
-            orgidJsonPath: 'entity.registeredAddress.street_address'
+            orgidJsonPath: 'organizationalUnit.registeredAddress.street_address'
           },
           {
             type: 'input',
             name: 'Premise',
-            orgidJsonPath: 'entity.registeredAddress.premise'
+            orgidJsonPath: 'organizationalUnit.registeredAddress.premise'
           }
         ]
       },
@@ -103,20 +103,20 @@ export const wizardConfig = [
             type: 'input',
             subtype: 'phone',
             name: 'Phone',
-            orgidJsonPath: 'entity.contacts[0].phone'
+            orgidJsonPath: 'organizationalUnit.contacts[0].phone'
           },
           {
             type: 'input',
             subtype: 'website',
             name: 'Website',
-            orgidJsonPath: 'entity.contacts[0].website',
+            orgidJsonPath: 'organizationalUnit.contacts[0].website',
             schema: Joi.string().pattern(/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/, 'uri').label('Website')
           },
           {
             type: 'input',
             subtype: 'email',
             name: 'Email',
-            orgidJsonPath: 'entity.contacts[0].email',
+            orgidJsonPath: 'organizationalUnit.contacts[0].email',
             schema: Joi.string().email({tlds: { allow: false }})
           }
         ]
@@ -129,19 +129,19 @@ export const wizardConfig = [
             name: 'Facebook',
             type: 'input',
             icon: 'facebook',
-            orgidJsonPath: 'entity.contacts[0].facebook',
+            orgidJsonPath: 'organizationalUnit.contacts[0].facebook',
           },
           {
             name: 'Twitter',
             type: 'input',
             icon: 'twitter',
-            orgidJsonPath: 'entity.contacts[0].twitter',
+            orgidJsonPath: 'organizationalUnit.contacts[0].twitter',
           },
           {
             name: 'Instagram',
             type: 'input',
             icon: 'instagram',
-            orgidJsonPath: 'entity.contacts[0].instagram',
+            orgidJsonPath: 'organizationalUnit.contacts[0].instagram',
           },
           {
             name: 'Logo',
@@ -169,12 +169,12 @@ export const wizardConfig = [
           {
             type: 'input',
             name: 'Title',
-            orgidJsonPath: 'entity.details.title'
+            orgidJsonPath: 'organizationalUnit.details.title'
           },
           {
             type: 'input',
             name: 'Organization details',
-            orgidJsonPath: 'entity.details.details'
+            orgidJsonPath: 'organizationalUnit.details.details'
           }
         ]
       }

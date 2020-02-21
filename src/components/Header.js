@@ -33,7 +33,8 @@ const styles = makeStyles({
   },
   logoButton: {
     backgroundColor: 'white',
-    outline: 'none'
+    outline: 'none',
+    cursor: 'pointer'
   },
   logo: {
     width: '89px',

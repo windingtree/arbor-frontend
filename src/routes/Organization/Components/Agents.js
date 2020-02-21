@@ -36,7 +36,7 @@ const styles = makeStyles({
     fontWeight: 400,
     fontSize: '14px',
     color: colors.greyScale.dark,
-    padding: '60px 0'
+    padding: '40px 0'
   },
   agentsTitleWrapper: {
     fontSize: '24px',

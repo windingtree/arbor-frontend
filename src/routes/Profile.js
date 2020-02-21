@@ -116,6 +116,7 @@ function Profile(props) {
                     proofsQty={item.proofsQty}
                     subs={item.subs}
                     canManage={true}
+                    orgidType={item.orgidType}
                   />
                 )
               })

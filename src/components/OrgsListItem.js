@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from 'react-router-dom';
 import history from '../redux/history';
-import { Card, CardContent, CardMedia, Grid, Typography, Button, Collapse } from '@material-ui/core';
+import { Card, CardContent, Grid, Typography, Button, Collapse } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 import TrustLevelIcon from '../assets/SvgComponents/TrustLevelIcon';
@@ -10,6 +10,21 @@ import ImageErrorIcon from '../assets/SvgComponents/ImageErrorIcon';
 import CopyIdComponent from './CopyIdComponent';
 import CardsGridList from './CardsGridList';
 import OrgsGridItem from './OrgsGridItem';
+import DefaultHotelImage1 from '../assets/images/default-image-hotel-1.svg';
+import DefaultHotelImage2 from '../assets/images/default-image-hotel-2.svg';
+import DefaultHotelImage3 from '../assets/images/default-image-hotel-3.svg';
+import DefaultHotelImage4 from '../assets/images/default-image-hotel-4.svg';
+import DefaultHotelImage5 from '../assets/images/default-image-hotel-5.svg';
+import DefaultHotelImage6 from '../assets/images/default-image-hotel-6.svg';
+import DefaultHotelImage7 from '../assets/images/default-image-hotel-7.svg';
+import DefaultHotelImage8 from '../assets/images/default-image-hotel-8.svg';
+import DefaultHotelImage9 from '../assets/images/default-image-hotel-9.svg';
+import DefaultAirlineImage1 from '../assets/images/default-image-airline-1.svg';
+import DefaultAirlineImage2 from '../assets/images/default-image-airline-2.svg';
+import DefaultAirlineImage3 from '../assets/images/default-image-airline-3.svg';
+import DefaultAirlineImage4 from '../assets/images/default-image-airline-4.svg';
+import DefaultAirlineImage5 from '../assets/images/default-image-airline-5.svg';
+import DefaultAirlineImage6 from '../assets/images/default-image-airline-6.svg';
 
 import colors from '../styles/colors';
 
@@ -29,23 +44,23 @@ const styles = makeStyles({
     backgroundColor: colors.primary.white,
     outline: 'none',
   },
-  itemImg: {
-    width: '48px',
-    height: '48px',
-    borderRadius: '4px',
-    background: colors.primary.black,
-  },
-  itemImgError: {
+  itemImgWrapper: {
     position: 'relative',
+    overflow: 'hidden',
     width: '48px',
     height: '48px',
     borderRadius: '4px',
-    background: colors.primary.accent,
   },
-  itemImgErrorIcon: {
+  itemImg: {
     position: 'absolute',
     top: '50%',
     left: '50%',
+    transform: 'translate(-50%, -50%) scale(0.5)',
+  },
+  itemImgError: {
+    background: colors.primary.accent,
+  },
+  itemImgErrorIcon: {
     transform: 'translate(-50%, -50%)',
     width: '22px',
     height: '22px',
@@ -165,20 +180,21 @@ export default function OrgsListItem(props) {
     name,
     proofsQty,
     subs,
-    isSub,
-    social,
-    stage,
-    tel,
-    web,
-    email,
-    verified,
-    address,
-    entityName,
-    entityTrustLevel,
-    details,
-    agents,
+    orgidType,
     error
   } = props;
+
+  const setRandomDefaultImage = () => {
+    function getRandomIndex(max) {
+      return Math.floor(Math.random() * Math.floor(max));
+    }
+
+    let arrayOfDefaultImages = [];
+    if (orgidType === 'hotel' || orgidType === 'legalEntity' || orgidType === 'ota' || orgidType === 'insurance') arrayOfDefaultImages.push(DefaultHotelImage1, DefaultHotelImage2, DefaultHotelImage3, DefaultHotelImage4, DefaultHotelImage5, DefaultHotelImage6, DefaultHotelImage7, DefaultHotelImage8, DefaultHotelImage9);
+    if (orgidType === 'airline') arrayOfDefaultImages.push(DefaultAirlineImage1, DefaultAirlineImage2, DefaultAirlineImage3, DefaultAirlineImage4, DefaultAirlineImage5, DefaultAirlineImage6);
+    const randomIndex = getRandomIndex(arrayOfDefaultImages.length);
+    return arrayOfDefaultImages[randomIndex];
+  };
 
   return (
     <Card className={classes.item}
@@ -191,32 +207,22 @@ export default function OrgsListItem(props) {
               pathname: `/my-organizations/${id}`,
               state: {
                 id: id,
-                img: img,
-                isSub: isSub,
-                name: name,
-                proofsQty: proofsQty,
-                social: social,
-                verified: verified,
-                address: address,
-                subs: subs,
-                details: details,
-                agents: agents,
-                stage: stage,
-                tel: tel,
-                web: web,
-                email: email,
-                entityName: entityName,
-                entityTrustLevel: entityTrustLevel
               }
             }} className={classes.linkToProfileView}>
               {
                 img ? (
-                  <CardMedia label={'Organization picture'} image={img.src} className={classes.itemImg}/>
-                ) : error ? (
-                  <div className={classes.itemImgError}>
-                    <ImageErrorIcon viewbow={'0 0 22 22'} className={classes.itemImgErrorIcon}/>
+                  <div className={classes.itemImgWrapper}>
+                    <img alt={'avatar'} src={img.src} className={classes.itemImg}/>
                   </div>
-                ) : <div className={classes.itemImg}/>
+                ) : error ? (
+                  <div className={[classes.itemImgWrapper, classes.itemImgError].join(' ')}>
+                    <ImageErrorIcon viewbow={'0 0 22 22'} className={[classes.itemImg, classes.itemImgErrorIcon].join(' ')}/>
+                  </div>
+                ) : (
+                  <div className={classes.itemImgWrapper}>
+                    <img src={setRandomDefaultImage()} alt={'avatar'} className={classes.itemImg}/>
+                  </div>
+                )
               }
             </Link>
             <div className={classes.itemInfo}>
@@ -224,22 +230,6 @@ export default function OrgsListItem(props) {
                 pathname: `/my-organizations/${id}`,
                 state: {
                   id: id,
-                  img: img,
-                  isSub: isSub,
-                  name: name,
-                  proofsQty: proofsQty,
-                  social: social,
-                  verified: verified,
-                  address: address,
-                  subs: subs,
-                  details: details,
-                  agents: agents,
-                  stage: stage,
-                  tel: tel,
-                  web: web,
-                  email: email,
-                  entityName: entityName,
-                  entityTrustLevel: entityTrustLevel
                 }
               }} className={classes.linkToProfileView}>
                 <Typography

@@ -144,34 +144,6 @@ function TopNavigation(props) {
 
   return (
     <Container>
-      {
-        canManage && (
-          <div className={classes.itemTrustInfoContainer}>
-            <div className={classes.itemTrustInfoBase}>
-              <LightTooltip
-                title={'Your Trust level reflects the number of completed trust steps.'}
-                placement={'top-start'}
-              >
-                <button className={classes.tooltipRef}>
-                  <InfoIcon viewBox={'0 0 16 16'} className={classes.infoIcon}/>
-                </button>
-              </LightTooltip>
-              <Typography variant={'caption'} className={classes.itemTrustInfoTitle}>Trust level: </Typography>
-              <TrustLevelIcon className={classes.iconTrustLevel}/>
-              <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{proofsQty}</Typography>
-            </div>
-            {
-              todos.length && (
-                <div className={[classes.itemTrustInfoBase, classes.itemStage].join(' ')} onClick={() => history.push(todos[0].link, { id })}>
-                  <StageIcon viewBox={'0 0 20 20'} className={classes.stageIcon}/>
-                  <Typography variant={'caption'} className={[classes.itemTrustInfoTitle, classes.itemStageTitle].join(' ')}>{todos[0].step}</Typography>
-                </div>
-              )
-            }
-          </div>
-        )
-      }
-
       <Box className={classes.screenHeader}>
         <div className={classes.buttonWrapper}>
           <Button onClick={history.goBack}>
@@ -211,6 +183,33 @@ function TopNavigation(props) {
           ) : null
         }
       </Box>
+      {
+        canManage && (
+          <div className={classes.itemTrustInfoContainer}>
+            <div className={classes.itemTrustInfoBase}>
+              <LightTooltip
+                title={'Your Trust level reflects the number of completed trust steps.'}
+                placement={'top-start'}
+              >
+                <button className={classes.tooltipRef}>
+                  <InfoIcon viewBox={'0 0 16 16'} className={classes.infoIcon}/>
+                </button>
+              </LightTooltip>
+              <Typography variant={'caption'} className={classes.itemTrustInfoTitle}>Trust level: </Typography>
+              <TrustLevelIcon className={classes.iconTrustLevel}/>
+              <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{proofsQty}</Typography>
+            </div>
+            {
+              todos.length && (
+                <div className={[classes.itemTrustInfoBase, classes.itemStage].join(' ')} onClick={() => history.push(todos[0].link, { id })}>
+                  <StageIcon viewBox={'0 0 20 20'} className={classes.stageIcon}/>
+                  <Typography variant={'caption'} className={[classes.itemTrustInfoTitle, classes.itemStageTitle].join(' ')} noWrap>{todos[0].step}</Typography>
+                </div>
+              )
+            }
+          </div>
+        )
+      }
     </Container>
   )
 }

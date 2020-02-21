@@ -62,7 +62,7 @@ const styles = makeStyles({
     marginRight: '12px'
   },
   orgMainInfoWrapper: {
-    padding: '20px 0',
+    padding: '10px 0',
     flexWrap: 'nowrap',
     ['@media (max-width:1069px)']: { // eslint-disable-line no-useless-computed-key
       flexWrap: 'wrap'

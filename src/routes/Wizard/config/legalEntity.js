@@ -103,7 +103,14 @@ export const wizardConfig = [
             subtype: 'website',
             name: 'Website',
             orgidJsonPath: 'legalEntity.contacts[0].website',
-            schema: Joi.string().pattern(/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/, 'uri')
+            schema: Joi.string().pattern(/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/, 'uri').label('Website'),
+          },
+          {
+            type: 'input',
+            subtype: 'email',
+            name: 'Email',
+            orgidJsonPath: 'legalEntity.contacts[0].email',
+            schema: Joi.string().email({tlds: { allow: false }})
           }
         ]
       },

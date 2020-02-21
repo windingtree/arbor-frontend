@@ -24,6 +24,9 @@ const styles = makeStyles({
     ['@media (max-width:955px)']: { // eslint-disable-line no-useless-computed-key
       textAlign: 'center',
     },
+    ['@media (min-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      minHeight: 'calc(100vh - 300px)'
+    },
   },
   logoContainer: {
     paddingTop: '16px',
@@ -70,7 +73,7 @@ const styles = makeStyles({
   }
 });
 
-export default function NotFound(props) {
+export default function NotFound() {
   const classes = styles();
 
   return (

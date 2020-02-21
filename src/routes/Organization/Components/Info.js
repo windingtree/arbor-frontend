@@ -568,7 +568,7 @@ function Info(props) {
           {
             socials.map((social, index) => {
               return (
-                <a key={index.toString()} href={social.link} className={classes.socialLink}>
+                <a key={index.toString()} href={social.link} target={'_blank'} className={classes.socialLink}>
                   <Hidden xsDown>
                     {icon(social.network)}
                   </Hidden>

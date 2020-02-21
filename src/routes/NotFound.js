@@ -21,6 +21,9 @@ const styles = makeStyles({
       flexDirection: 'column-reverse',
       paddingBottom: '40px'
     },
+    ['@media (max-width:955px)']: { // eslint-disable-line no-useless-computed-key
+      textAlign: 'center',
+    },
   },
   logoContainer: {
     paddingTop: '16px',

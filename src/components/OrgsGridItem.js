@@ -242,7 +242,7 @@ export default function OrgsGridItem(props) {
   const bgColorsForTypes = {
     'hotel': colors.secondary.green,
     'airline': colors.secondary.yellow,
-    'travel agency': colors.secondary.pink,
+    'ota': colors.secondary.pink,
     'insurance': colors.secondary.intenseGreen,
   };
 

@@ -204,9 +204,9 @@ const styles = makeStyles({
     justifyContent: 'flex-start',
     alignItems: 'center',
     marginTop: '42px',
-    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
-      marginTop: '20px',
-    }
+    ['@media (max-width:1069px)']: { // eslint-disable-line no-useless-computed-key
+      marginTop: '0',
+    },
   },
   socialLink: {
     textDecoration: 'none',
@@ -214,7 +214,13 @@ const styles = makeStyles({
     marginRight: '29px',
     display: 'flex',
     justifyContent: 'flex-start',
-    alignItems: 'center'
+    alignItems: 'center',
+    '&:last-child': {
+      marginRight: '0'
+    },
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      marginRight: '18px',
+    }
   },
   socialTitle: {
     fontSize: '16px',
@@ -225,11 +231,26 @@ const styles = makeStyles({
       display: 'none',
     }
   },
+  mobileSocialWrapper: {
+    position: 'relative',
+  },
+  mobileIconVerify: {
+    position: 'absolute',
+    bottom: '-4px',
+    right: '-4px',
+    width: '18px',
+    height: '20px',
+    zIndex: 2,
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      display: 'block !important',
+    }
+  },
   socialIcon: {
     fontSize: 'large',
     marginRight: '10px',
     ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
       fontSize: '3em',
+      marginRight: '0',
     }
   },
   iconFacebook: {
@@ -302,13 +323,24 @@ const styles = makeStyles({
     width: '100%',
     backgroundColor: colors.secondary.yellowLight,
     marginTop: '20px',
+    ['@media (max-width:1069px)']: { // eslint-disable-line no-useless-computed-key
+      marginTop: '0',
+    },
   },
   detailsContent: {
     position: 'relative',
-    padding: '100px 0',
-    overflow: 'hidden'
+    paddingTop: '100px',
+    paddingBottom: '100px',
+    overflow: 'hidden',
+    ['@media (max-width:1069px)']: { // eslint-disable-line no-useless-computed-key
+      paddingTop: '40px',
+      paddingBottom: '40px',
+    },
   },
   detailsGrid: {
+    ['@media (max-width:1069px)']: { // eslint-disable-line no-useless-computed-key
+      flexDirection: 'column-reverse'
+    },
     ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
       padding: '0 15px'
     }
@@ -530,7 +562,16 @@ function Info(props) {
             socials.map((social, index) => {
               return (
                 <a key={index.toString()} href={social.link} className={classes.socialLink}>
-                  {icon(social.network)}
+                  <Hidden xsDown>
+                    {icon(social.network)}
+                  </Hidden>
+                  <Hidden smUp>
+                    <div className={classes.mobileSocialWrapper}>
+                      {icon(social.network)}
+                      {social.verified &&
+                      <TrustLevelIcon className={[classes.iconTrustLevel, classes.iconVerify, classes.mobileIconVerify].join(' ')}/>}
+                    </div>
+                  </Hidden>
                   <Typography variant={'caption'} className={classes.socialTitle}>{social.network}</Typography>
                   {social.verified &&
                   <TrustLevelIcon className={[classes.iconTrustLevel, classes.iconVerify].join(' ')}/>}
@@ -585,14 +626,13 @@ function Info(props) {
                   <Grid item md={9} xs={12} className={classes.details}>
                     <Typography variant={'inherit'} className={classes.detailsTitle}>{description}</Typography>
                     <Typography variant={'inherit'}>{longDescription}</Typography>
-
                   </Grid>
-                  <Grid className={classes.detailsIllustrationWrapper} item md={3} xs={12}><img
+                  <Grid className={classes.detailsIllustrationWrapper} item md={3} xs={12}>
+                    <img
                     src={DetailsIllustration} alt={'Details illustration'}
                     className={classes.detailsIllustration}/>
                   </Grid>
                 </Grid>
-                <div className={classes.line}/>
               </Container>
             </div>
           )

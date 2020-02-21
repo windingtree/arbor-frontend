@@ -9,11 +9,21 @@ import React from "react";
 const styles = makeStyles({
   subsWrapper: {
     width: '100%',
-    backgroundColor: colors.greyScale.moreLighter
+    backgroundColor: colors.greyScale.moreLighter,
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      backgroundColor: colors.primary.white,
+    },
   },
   subsContent: {
     paddingTop: '60px',
     paddingBottom: '60px',
+    ['@media (max-width:1069px)']: { // eslint-disable-line no-useless-computed-key
+      paddingTop: '20px',
+      paddingBottom: '20px',
+    },
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      paddingTop: '0',
+    },
   },
   subsTitle: {
     fontSize: '24px',
@@ -38,7 +48,7 @@ function SubOrganizations(props) {
           {
             subs.map((subOrg, index) => {
               return (
-                <Grid lg={3} sm={4} xs={10} item key={index.toString()}>
+                <Grid lg={3} sm={4} xs={12} item key={index.toString()}>
                   <OrgsGridItem
                     orgid={subOrg.orgid}
                     isSub={!!subOrg.parent}

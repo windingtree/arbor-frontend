@@ -16,6 +16,8 @@ import Pagination from '../components/Pagination';
 import colors from '../styles/colors';
 import history from '../redux/history';
 import ArrowLeftIcon from '../assets/SvgComponents/ArrowLeftIcon';
+import { countries } from './Wizard/config/countries';
+import _ from 'lodash';
 
 const styles = makeStyles({
   screenHeader: {
@@ -155,16 +157,9 @@ function Directory(props) {
   };
 
   //handle select fields
-  const options = [
-    {
-      countries: [
-        'UK',
-        'US',
-        'RU',
-        'UA',
-      ]
-    }
-  ];
+  const options = {
+    countries
+  };
 
   const handleCountryFilterValueChange = async e => {
     const data = {
@@ -207,11 +202,9 @@ function Directory(props) {
               >
                 <MenuItem value={''}>default</MenuItem>
                 {
-                  options[0].countries.map((option, index) => {
-                    return (
-                      <MenuItem key={index.toString()} value={option}>{option}</MenuItem>
-                    )
-                  })
+                  _.map(options.countries, ((name, value) => (
+                    <MenuItem key={name} value={value}>{name}</MenuItem>)
+                  ))
                 }
               </Select>
             </FormControl>

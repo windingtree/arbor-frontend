@@ -147,7 +147,7 @@ const styles = makeStyles({
 
 function Search(props) {
   const classes = styles();
-  const request = history.location.state && history.location.state.request && '';
+  const request = history.location.state && history.location.state.request;
   const [searchValue, setSearchValue] = useState('');
   const [forcePage, setForcePage] = useState(undefined);
   const [lastSearchValue, setLastSearchValue] = useState('');

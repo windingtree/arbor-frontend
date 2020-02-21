@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { Box, Button, Container, Tooltip, Typography } from "@material-ui/core";
+import { Box, Button, Container, Hidden, Tooltip, Typography } from "@material-ui/core";
 import history from "../../../redux/history";
 import { ArrowLeftIcon, EyeIcon, EditIcon, InfoIcon, TrustLevelIcon, StageIcon } from '../../../assets/SvgComponents';
 import colors from '../../../styles/colors';
@@ -24,6 +24,11 @@ const styles = makeStyles({
     justifyContent: 'flex-start',
     alignItems: 'center',
     marginTop: '15px'
+  },
+  publicTrustLevelWrapper: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center'
   },
   itemTrustInfoBase: {
     position: 'relative',
@@ -176,6 +181,14 @@ function TopNavigation(props) {
             </Typography>
           </Button>
         </div>
+        <Hidden mdUp>
+          <div className={classes.publicTrustLevelWrapper}>
+            <Typography variant={'caption'} className={classes.itemTrustInfoTitle}
+                        style={{color: colors.greyScale.common}}>Trust level: </Typography>
+            <TrustLevelIcon className={classes.iconTrustLevel}/>
+            <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{proofsQty}</Typography>
+          </div>
+        </Hidden>
         {
           canManage ? (
             <div>

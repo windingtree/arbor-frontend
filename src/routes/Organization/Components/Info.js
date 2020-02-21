@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Button, Collapse, Container, Fade, Grid, Typography} from "@material-ui/core";
+import { Button, Collapse, Container, Fade, Grid, Hidden, Typography } from "@material-ui/core";
 import CopyIdComponent from "../../../components/CopyIdComponent";
 import colors from "../../../styles/colors";
 import Ellipsis from "react-dotdotdot";
@@ -63,6 +63,26 @@ const styles = makeStyles({
   },
   orgMainInfoWrapper: {
     padding: '20px 0',
+    flexWrap: 'nowrap',
+    ['@media (max-width:1069px)']: { // eslint-disable-line no-useless-computed-key
+      flexWrap: 'wrap'
+    },
+  },
+  orgImageContainer: {
+    width: '44%',
+    ['@media (max-width:1069px)']: { // eslint-disable-line no-useless-computed-key
+      width: '100%'
+    },
+  },
+  orgInfoContainer: {
+    width: '56%',
+    ['@media (max-width:1069px)']: { // eslint-disable-line no-useless-computed-key
+      width: '100%',
+      marginTop: '20px',
+    },
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      marginTop: '10px',
+    },
   },
   orgImageWrapper: {
     position: 'relative',
@@ -70,6 +90,13 @@ const styles = makeStyles({
     height: '200px',
     overflow: 'hidden',
     borderRadius: '4px',
+    ['@media (max-width:1069px)']: { // eslint-disable-line no-useless-computed-key
+      width: '100%',
+      height: '290px'
+    },
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      height: '180px'
+    },
   },
   orgImage: {
     position: 'absolute',
@@ -81,7 +108,10 @@ const styles = makeStyles({
   idInfoContainer: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      flexWrap: 'wrap',
+    },
   },
   publicTrustLevelWrapper: {
     display: 'flex',
@@ -122,6 +152,14 @@ const styles = makeStyles({
   orgInfoFieldWrapper: {
     width: '50%',
     margin: '5px 0'
+  },
+  orgInfoLegalEntityFieldWrapper: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    ['@media (max-width:1069px)']: { // eslint-disable-line no-useless-computed-key
+      width: '100%',
+    },
   },
   orgInfoFieldTitle: {
     fontSize: '14px',
@@ -352,10 +390,10 @@ function Info(props) {
   return (
     <div>
       <Container className={classes.itemMainInfo}>
-        <Grid container className={classes.orgMainInfoWrapper} wrap={'nowrap'}>
+        <Grid container className={classes.orgMainInfoWrapper}>
 
           {/* TOP-LEFT-BLOCK: IMAGE =================================================================================*/}
-          <Grid item style={{width: '44%'}}>
+          <Grid item className={classes.orgImageContainer}>
             <div className={classes.orgImageWrapper}>
               {
                 avatar ? (
@@ -368,19 +406,21 @@ function Info(props) {
           </Grid>
 
           {/* TOP-RIGHT-BLOCK: INFO =================================================================================*/}
-          <Grid item style={{width: '56%'}}>
+          <Grid item className={classes.orgInfoContainer}>
             <div className={classes.idInfoContainer}>
               <CopyIdComponent id={id || '0xLOADING'} leftElement={'Org ID: '} fontWeight={500}/>
-              {
-                canManage || (
-                  <div className={classes.publicTrustLevelWrapper}>
-                    <Typography variant={'caption'} className={classes.itemTrustInfoTitle}
-                                style={{color: colors.greyScale.common}}>Trust level: </Typography>
-                    <TrustLevelIcon className={classes.iconTrustLevel}/>
-                    <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{proofsQty}</Typography>
-                  </div>
-                )
-              }
+              <Hidden mdDown>
+                {
+                  canManage || (
+                    <div className={classes.publicTrustLevelWrapper}>
+                      <Typography variant={'caption'} className={classes.itemTrustInfoTitle}
+                                  style={{color: colors.greyScale.common}}>Trust level: </Typography>
+                      <TrustLevelIcon className={classes.iconTrustLevel}/>
+                      <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{proofsQty}</Typography>
+                    </div>
+                  )
+                }
+              </Hidden>
             </div>
             <div className={classes.orgNameWrapper}>
               <Typography variant={'h6'} className={classes.orgName} noWrap>{name}</Typography>
@@ -427,8 +467,7 @@ function Info(props) {
               </div>
               {
                 isSub ? (
-                  <div className={classes.orgInfoFieldWrapper}
-                       style={{display: 'flex', justifyContent: 'flex-start', alignItems: 'center'}}>
+                  <div className={`${classes.orgInfoFieldWrapper} ${classes.orgInfoLegalEntityFieldWrapper}`}>
                     <Typography variant={'caption'} className={classes.orgInfoFieldTitle} style={{maxWidth: '88%'}}
                                 noWrap>
                       Legal entity: <Typography variant={'inherit'}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Tooltip, Typography, ClickAwayListener, Button } from '@material-ui/core';
+import { Tooltip, Typography, ClickAwayListener, Button, Hidden } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 
 import CopyIcon from '../assets/SvgComponents/CopyIcon';
@@ -71,7 +71,7 @@ export default function CopyIdComponent(props) {
   return (
     <div className={classes.idInfo}>
       <Typography variant={'subtitle2'} className={classes.id} style={{ fontWeight: fontWeight, fontSize: fontSize }}>
-        {leftElement} <Typography variant={'inherit'} className={classes.subtitle} style={{ color: color }}>{hiddenId}</Typography>
+        <Hidden mdDown>{leftElement}</Hidden><Typography variant={'inherit'} className={classes.subtitle} style={{ color: color }}>{hiddenId}</Typography>
       </Typography>
       <ClickAwayListener
         onClickAway={handleTooltipClose}

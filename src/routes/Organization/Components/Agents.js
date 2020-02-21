@@ -178,7 +178,7 @@ function Agents(props) {
               <div className={classes.inputFieldWrapper}>
                 <TextField
                   variant={'filled'}
-                  label={'Add comment for agent'}
+                  label={'Write a comment for this agent'}
                   fullWidth
                   // value={''} // TODO handle values from state
                   // onChange={() => console.log(value)}  // TODO handle

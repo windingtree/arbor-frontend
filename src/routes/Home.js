@@ -765,7 +765,7 @@ function Home(props) {
                   data will never be sold to third parties and the service will remain non-commercial.
                 </Typography>
                 <Typography variant={'subtitle1'} className={classes.blockSubtitle}>
-                  Organizations of any size and from any industry can voluntary join Arbor community
+                  Organizations of any size and from any industry can voluntarily join Arbor community
                   and get in contact with other members.
                 </Typography>
               </Grid>

@@ -415,7 +415,7 @@ OrgsGridItem.defaultProps = {
   error: false
   // error: {
   //   expiresAt: '2h : 20m : 05s',
-  //   message: 'Something went wrong and suborganisation was not created. We saved all you info for 2 hours',
+  //   message: 'Something went wrong and your sub-organization was not created. We will save your input for a few hours.',
   // }
 };
 */

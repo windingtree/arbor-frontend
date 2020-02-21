@@ -210,9 +210,9 @@ function Search(props) {
   //handle search
   const searchTitle = () => {
     if (!lastSearchValue || lastSearchValue === "") {
-      return 'Search for ORG.ID'
+      return 'Organization search'
     } else if (total === 0 && isFetched) {
-      return `Sorry, can’t find anything for "${lastSearchValue}"`
+      return `Sorry, we haven’t found anything related to "${lastSearchValue}"`
     } else {
       if (isFetching) return `Searching...`;
       return `${total} search results for "${lastSearchValue}"`
@@ -308,6 +308,13 @@ function Search(props) {
     setCountryFilterValue(data.country);
   };
 
+  const renderResultsText = () => {
+    let firstValue, lastValue;
+      firstValue = page === 1 ? '1' : ((page-1)*per_page)+1;
+    lastValue = total < page*per_page ? total : page*per_page;
+    return `Showing ${firstValue}-${lastValue} of ${total} results`
+  };
+
   return (
     <div>
       <div
@@ -385,7 +392,7 @@ function Search(props) {
                   <div className={classes.paginationInfoContainer}>
                     <div className={classes.totalSearchTitleContainer}>
                       <Typography variant={'caption'} className={classes.totalSearchResultsTitle}>
-                        Search results: {total}</Typography>
+                        {renderResultsText()}</Typography>
                     </div>
                     <div>
                       <Pagination

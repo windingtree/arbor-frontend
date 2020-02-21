@@ -236,22 +236,12 @@ function TrustWebsite(props) {
 
                 <li className={classes.howTextListItem}><span
                   className={classes.howListDot}/>
-                  <Typography className={classes.howListTexts}>Make sure it's accessible from
-                    the
-                    root directory</Typography>
+                  <Typography className={classes.howListTexts}>Make this TXT file accessible via a URL: <br/><a
+                    className={classes.link}
+                    href="http(s)://example.com/org.id">http(s)://example.com/org.id</a></Typography>
                 </li>
 
                 <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
-
-
-                <li className={classes.howTextListItem}>
-                  <span className={classes.howListDot}/>
-                  <Typography
-                    className={classes.howListTexts}><a className={classes.link} href="http(s)://example.com/org.id">http(s)://example.com/org.id</a></Typography>
-                </li>
-
-                <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
-
 
                 <li className={classes.howTextListItem}>
                   <span className={classes.howListDot}/>
@@ -286,8 +276,9 @@ function TrustWebsite(props) {
 
                 <li className={classes.howTextListItem}><span
                   className={classes.howListDot}/>
-                  <Typography className={classes.howListTexts}><a className={classes.link}
-                                                                  href="http(s)://example.com/org.id">http(s)://example.com/org.id</a></Typography>
+                  <Typography className={classes.howListTexts}>Make this TXT file accessible via a URL: <br/><a
+                    className={classes.link}
+                    href="http(s)://example.com/org.id">http(s)://example.com/org.id</a></Typography>
                 </li>
 
                 <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>

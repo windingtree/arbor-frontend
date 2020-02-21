@@ -140,7 +140,7 @@ export const saga = function* () {
 
 function ApiFetchProfileOrganizations(data) {
   const page = _.get(data, 'page', 1);
-  const per_page = _.get(data, 'per_page', 12);
+  const per_page = _.get(data, 'per_page', 100);
   delete data['page'];
   delete data['per_page'];
   const otherParams = _.map(data, (value, param) => `${param}=${value}`).join('&');

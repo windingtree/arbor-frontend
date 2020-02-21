@@ -73,7 +73,16 @@ const styles = makeStyles({
   addDirectoryButtonWrapper: {
     backgroundImage: colors.gradients.green,
     borderRadius: '8px',
-    border: `1px solid ${colors.secondary.cyan}`
+    border: `1px solid ${colors.secondary.cyan}`,
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      width: '100%'
+    },
+
+  },
+  addDirectoryButton: {
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      width: '100%'
+    },
   },
   addDirectoryButtonTitle: {
     fontSize: '16px',
@@ -129,12 +138,12 @@ function Directories(props){
               <Hidden mdDown>
                 <Typography variant={'h3'} className={classes.addDirectoryTitle}>None of these directories is relevant to your organization?</Typography>
               </Hidden>
-              <Hidden only={'lg'}>
+              <Hidden lgUp>
                 <Typography variant={'h3'} className={[classes.addDirectoryTitle, classes.addDirectoryTitleMobile].join(' ')}>Need new segments?</Typography>
               </Hidden>
             </div>
             <div className={classes.addDirectoryButtonWrapper}>
-              <Button onClick={() => window.location = "mailto:propose@windingtree.com"}>
+              <Button onClick={() => window.location = "mailto:propose@windingtree.com"} className={classes.addDirectoryButton}>
                 <Typography variant={'inherit'} className={classes.addDirectoryButtonTitle} noWrap={true}>Propose a new directory</Typography>
               </Button>
             </div>

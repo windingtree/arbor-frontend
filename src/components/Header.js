@@ -155,7 +155,7 @@ export default function Header(props) {
                       activeClassName={classes.activeNavLink}
                     >
                       <Typography variant={'caption'} className={classes.linkTitle} noWrap>
-                        General trust guide
+                        Verification methods
                       </Typography>
                     </NavLink>
                     <NavLink

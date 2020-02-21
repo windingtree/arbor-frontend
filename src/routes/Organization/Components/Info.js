@@ -366,6 +366,8 @@ const styles = makeStyles({
     lineHeight: 1.7,
     fontWeight: 400,
     color: colors.greyScale.dark,
+  },
+  detailsCanManage: {
     paddingBottom: '40px'
   },
   detailsTitle: {
@@ -463,6 +465,10 @@ function Info(props) {
     }
   };
 
+  const addCanManageClass = (classNameBase, classNameCanManage) => {
+    if(canManage) return `${classNameBase} ${classNameCanManage}`;
+    return classNameBase;
+  };
 
   return (
     <div>
@@ -630,7 +636,7 @@ function Info(props) {
             <div className={classes.detailsContainer}>
               <Container className={classes.detailsContent}>
                 <Grid className={classes.detailsGrid} container>
-                  <Grid item md={9} xs={12} className={classes.details}>
+                  <Grid item md={9} xs={12} className={addCanManageClass(classes.details, classes.detailsCanManage)}>
                     <Typography variant={'inherit'} className={classes.detailsTitle}>{description}</Typography>
                     <Typography variant={'inherit'}>{longDescription}</Typography>
                   </Grid>
@@ -640,7 +646,7 @@ function Info(props) {
                     className={classes.detailsIllustration}/>
                   </Grid>
                 </Grid>
-                <div className={classes.line}/>
+                {canManage && <div className={classes.line}/>}
               </Container>
             </div>
           )

@@ -245,7 +245,7 @@ export default function OrgsListItem(props) {
                 error ? (
                   <Typography variant={'subtitle2'} className={classes.errorMessage} noWrap>{error.message}</Typography>
                 ) : (
-                  <CopyIdComponent id={id} leftElement={'ID: '} style={{ zIndex: 100 }}/>
+                  <CopyIdComponent id={id} leftElement={''} style={{ zIndex: 100 }}/>
                 )
               }
             </div>

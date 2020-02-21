@@ -485,7 +485,7 @@ function Info(props) {
           {/* TOP-RIGHT-BLOCK: INFO =================================================================================*/}
           <Grid item className={classes.orgInfoContainer}>
             <div className={classes.idInfoContainer}>
-              <CopyIdComponent id={id || '0xLOADING'} leftElement={'Org ID: '} fontWeight={500}/>
+              <CopyIdComponent id={id || '0xLOADING'} leftElement={''} fontWeight={500}/>
               {
                 canManage || (
                   <div className={classes.publicTrustLevelWrapper}>

@@ -145,42 +145,38 @@ export default function Footer(props) {
     <div id="app-footer" className={classes.footer}>
       <Container>
         <Grid container className={classes.footerContent}>
-          <Grid item xs={12} md={2}>
+          <Grid item xs={12} md={5}>
             <button onClick={() => history.push('/')} className={classes.logoButton}>
               <Logo viewBox={'0 0 90 32'} className={classes.logo}/>
             </button>
           </Grid>
-          <Grid container item xs={12} md={10}>
-            <Grid container>
-              <Grid container direction="column" item xs={12} md={3} className={classes.xsHidden}>
-                <Typography variant={'h4'} className={classes.columnTitle}>Organizations</Typography>
-                <Link to={'/search'} className={classes.navLink}>
-                  <Typography variant={'h6'} className={classes.columnItem}>Search</Typography>
-                </Link>
-                <Link to={'/my-organizations/wizard'} className={classes.navLink}>
-                  <Typography variant={'h6'} className={classes.columnItem}>Create
-                    organization</Typography>
-                </Link>
-              </Grid>
+          <Grid container direction="column" item xs={12} md={2} className={classes.xsHidden}>
+            <Typography variant={'h4'} className={classes.columnTitle}>Organizations</Typography>
+            <Link to={'/search'} className={classes.navLink}>
+              <Typography variant={'h6'} className={classes.columnItem}>Search</Typography>
+            </Link>
+            <Link to={'/my-organizations/wizard'} className={classes.navLink}>
+              <Typography variant={'h6'} className={classes.columnItem}>Create
+                organization</Typography>
+            </Link>
+          </Grid>
 
-              <Grid container direction="column" item xs={12} md={3} className={classes.xsHidden}>
-                <Typography variant={'h4'} className={classes.columnTitle}>Directories</Typography>
+          <Grid container direction="column" item xs={12} md={2} className={classes.xsHidden}>
+            <Typography variant={'h4'} className={classes.columnTitle}>Directories</Typography>
 
-                <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'airline' })}><Typography variant={'h6'} className={classes.columnItem}>Airlines</Typography></div>
-                <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'hotel' })} ><Typography variant={'h6'} className={classes.columnItem}>Hotels</Typography></div>
-                <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'ota' })} ><Typography variant={'h6'} className={classes.columnItem}>Travel agencies</Typography></div>
-                <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'insurance' })} ><Typography variant={'h6'} className={classes.columnItem}>Insurance</Typography></div>
-              </Grid>
+            <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'airline' })}><Typography variant={'h6'} className={classes.columnItem}>Airlines</Typography></div>
+            <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'hotel' })} ><Typography variant={'h6'} className={classes.columnItem}>Hotels</Typography></div>
+            <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'ota' })} ><Typography variant={'h6'} className={classes.columnItem}>Travel agencies</Typography></div>
+            <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'insurance' })} ><Typography variant={'h6'} className={classes.columnItem}>Insurance</Typography></div>
+          </Grid>
 
-              <Grid container direction="column" item xs={12} md={3} className={classes.xsVisible}>
-                <Typography variant={'h4'} className={classes.columnTitle}>Contacts</Typography>
-                <Typography variant={'h6'} className={classes.columnItem} noWrap>Gubelstrasse 11, 6300
-                  Zug, Switzerland</Typography>
-                <a href={'mailto:join@windingtree.com'} className={classes.navLink}>
-                  <Typography variant={'h6'} className={classes.columnItem}>info@windingtree.com</Typography>
-                </a>
-              </Grid>
-            </Grid>
+          <Grid container direction="column" item xs={12} md={3} className={classes.xsVisible}>
+            <Typography variant={'h4'} className={classes.columnTitle}>Contacts</Typography>
+            <Typography variant={'h6'} className={classes.columnItem} noWrap>Gubelstrasse 11, 6300
+              Zug, Switzerland</Typography>
+            <a href={'mailto:join@windingtree.com'} className={classes.navLink}>
+              <Typography variant={'h6'} className={classes.columnItem}>info@windingtree.com</Typography>
+            </a>
           </Grid>
         </Grid>
       </Container>

@@ -89,7 +89,7 @@ const styles = makeStyles({
     boxSizing: 'border-box'
   },
   dialogContent: {
-    minWidth: '440px'
+    // minWidth: '440px'
   },
   dialogCloseButtonWrapper: {
     position: 'absolute',
@@ -170,6 +170,7 @@ function Agents(props) {
                 <TextField
                   variant={'filled'}
                   label={'Enter Agent Key'}
+                  fullWidth
                   // value={''} // TODO handle values from state
                   // onChange={() => console.log(value)}  // TODO handle
                 />
@@ -178,6 +179,7 @@ function Agents(props) {
                 <TextField
                   variant={'filled'}
                   label={'Add comment for agent'}
+                  fullWidth
                   // value={''} // TODO handle values from state
                   // onChange={() => console.log(value)}  // TODO handle
                 />

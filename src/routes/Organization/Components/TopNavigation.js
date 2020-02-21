@@ -139,7 +139,7 @@ const styles = makeStyles({
 function TopNavigation(props) {
   const classes = styles();
   const { organization: { orgid: id, parent, jsonContent, proofsQty }, canManage, todos } = props;
-  const type = parent ? 'entity' : 'legalEntity';
+  const type = parent ? 'organizationalUnit' : 'legalEntity';
   const editState = { action: 'edit', type, id, jsonContent };
 
   return (

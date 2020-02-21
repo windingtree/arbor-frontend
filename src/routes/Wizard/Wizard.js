@@ -10,7 +10,7 @@ import colors from '../../styles/colors';
 
 import { WizardStep, WizardStepHosting, WizardStepMetaMask } from "./Components";
 import { wizardConfig as legalEntity } from './config/legalEntity'
-import { wizardConfig as entity} from './config/entity'
+import { wizardConfig as organizationalUnit} from './config/organizationalUnit'
 import { connect } from "react-redux";
 import { rewriteOrgidJson } from "../../ducks/wizard";
 
@@ -114,7 +114,7 @@ const WizardGeneral = (props) => {
   const jsonContent = _.get(history, 'location.state.jsonContent', {});
   const id = _.get(history, 'location.state.id', null);
   const actionLabel = (action === 'create') ? 'creating' : 'editing';
-  const types = { legalEntity, entity };
+  const types = { legalEntity, organizationalUnit };
   const wizardConfig = types[wizardType];
 
 

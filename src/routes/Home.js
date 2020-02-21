@@ -800,7 +800,7 @@ Home.defaultProps = {
     {
       name: 'travel-agencies',
       image: TravelIllustration,
-      searchReq: 'travel-agency'
+      searchReq: 'ota'
     },
   ],
   useCases: [

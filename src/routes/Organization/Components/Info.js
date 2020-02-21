@@ -365,7 +365,7 @@ function Info(props) {
   const {organization, canManage} = props;
   const {orgid: id, proofsQty, avatar, name, parent, isWebsiteProved} = organization;
   const isSub = !!parent;
-  const type = isSub ? 'entity' : 'legalEntity';
+  const type = isSub ? 'organizationalUnit' : 'legalEntity';
   const orgidType = organization.orgidType;
   const address = _.get(organization, `jsonContent.${type}.locations[0].address`, {});
   const contacts = _.get(organization, `jsonContent.${type}.contacts[0]`, {});
@@ -468,7 +468,7 @@ function Info(props) {
                     <Ellipsis clamp={1} tagName={'span'}
                               className={classes.orgAddress}>{address.street_address}</Ellipsis>
                     <p className={classes.orgAddress}>
-                      {`${address.city}, ${address.locality}`}
+                      {`${address.locality}, ${address.subdivision}`}
                       <a href={'https://www.google.com.ua/maps/'} className={classes.mapLink}>show on the map</a>
                     </p>
                   </div>
@@ -478,29 +478,31 @@ function Info(props) {
               }
             </div>
             <div className={classes.orgInfoFieldsContainer}>
+              {contacts.phone &&
               <div className={classes.orgInfoFieldWrapper}>
                 <Typography variant={'caption'} className={classes.orgInfoFieldTitle} noWrap>
                   {'Phone: '}
                   <a href={`tel:${contacts.phone}`} className={classes.orgInfoField}>{contacts.phone}</a>
                 </Typography>
               </div>
+              }
+              {contacts.email &&
               <div className={classes.orgInfoFieldWrapper}>
                 <Typography variant={'caption'} className={classes.orgInfoFieldTitle} noWrap>
                   {'Email: '}
                   <a href={`mailto:${contacts.email}`} className={classes.orgInfoField}>{contacts.email}</a>
                 </Typography>
               </div>
+              }
+              {contacts.website &&
               <div className={classes.orgInfoFieldWrapper} style={{width: '100%'}}>
                 <Typography variant={'caption'} className={classes.orgInfoFieldTitle} noWrap>
                   {'Website: '}
                   <a href={contacts.website} target={'_blank'} className={classes.orgInfoField}>{contacts.website}</a>
-                  {
-                    isWebsiteProved ? (
-                      <TrustLevelIcon className={classes.iconTrustLevel} style={{verticalAlign: 'text-bottom'}}/>
-                    ) : null
-                  }
+                  {isWebsiteProved && <TrustLevelIcon className={classes.iconTrustLevel} style={{verticalAlign: 'text-bottom'}}/>}
                 </Typography>
               </div>
+              }
               {
                 isSub ? (
                   <div className={`${classes.orgInfoFieldWrapper} ${classes.orgInfoLegalEntityFieldWrapper}`}>

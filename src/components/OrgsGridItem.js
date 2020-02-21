@@ -294,7 +294,7 @@ export default function OrgsGridItem(props) {
         {
           !error ? (
             <div className={classes.idInfoWrapper}>
-              <CopyIdComponent id={orgid} leftElement={'ID: '}/>
+              <CopyIdComponent id={orgid} leftElement={''}/>
               <div className={classes.trustLevelInfo}>
                 <TrustLevelIcon className={classes.icon}/>
                 <Typography variant={'subtitle2'} className={classes.trustLevelValue}>

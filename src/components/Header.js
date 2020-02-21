@@ -68,12 +68,13 @@ const styles = makeStyles({
     alignItems: 'center',
     width: '100%'
   },
-  navLink: {
+  navLinkMyOrgs: {
     textDecoration: 'none',
     borderTopWidth: '2px',
     borderTopStyle: 'solid',
     borderTopColor: 'transparent',
-    padding: '0 20px',
+    padding: '0 12px',
+    marginLeft: '16px',
     '&:hover': {
       '& > span': {
         color: colors.secondary.peach
@@ -82,6 +83,27 @@ const styles = makeStyles({
         color: colors.secondary.peach
       }
     }
+  },
+  navLink: {
+    textDecoration: 'none',
+    borderTopWidth: '2px',
+    borderTopStyle: 'solid',
+    borderTopColor: 'transparent',
+    padding: '0 12px',
+    margin: '0 7px',
+    '&:hover': {
+      '& > span': {
+        color: colors.secondary.peach
+      },
+      '& > svg': {
+        color: colors.secondary.peach
+      }
+    }
+  },
+  activeNavLink: {
+    padding: '0 12px',
+    borderTopColor: colors.primary.accent,
+    backgroundImage: colors.gradients.orangeDegOpacity,
   },
   navIcon: {
     maxHeight: '18px',
@@ -97,11 +119,6 @@ const styles = makeStyles({
     display: 'block',
     padding: '22px 0',
     transition: 'color .3s ease'
-  },
-  activeNavLink: {
-    padding: '0 20px',
-    borderTopColor: colors.primary.accent,
-    backgroundImage: colors.gradients.orangeDegOpacity,
   },
   authButton: {
     backgroundImage: colors.gradients.orange,
@@ -171,7 +188,7 @@ export default function Header(props) {
                     </NavLink>
                     <NavLink
                       to={'/my-organizations'}
-                      className={classes.navLink}
+                      className={classes.navLinkMyOrgs}
                       activeClassName={classes.activeNavLink}
                       style={{
                         display: 'flex',

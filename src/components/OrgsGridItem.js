@@ -284,7 +284,7 @@ export default function OrgsGridItem(props) {
               {
                 orgidType && (
                   <Typography variant={'subtitle2'} className={classes.itemMark} style={{ backgroundColor: bgColorsForTypes[orgidType] }}>
-                    {orgidType}
+                    {orgidType === 'ota' ? 'Travel' : orgidType}
                   </Typography>
                 )
               }

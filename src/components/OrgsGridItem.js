@@ -344,7 +344,7 @@ export default function OrgsGridItem(props) {
           subs && subs.length !== 0
         ) ? (
           <div className={classes.entitySubOrgsWrapper}>
-            <Typography variant={'subtitle2'} className={classes.entityTitle}>Include {subs.length} sub-organization{subs.length === 1 ? 's' : ''}:</Typography>
+            <Typography variant={'subtitle2'} className={classes.entityTitle}>Includes {subs.length} sub-organization{subs.length === 1 ? '' : 's'}:</Typography>
             <Grid container spacing={1} justify="flex-start" alignItems="center" className={classes.entitySubOrgsList}>
               {
                 subs.map((item, index) => {

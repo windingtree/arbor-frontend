@@ -242,8 +242,8 @@ function Agents(props) {
                 <div className={classes.dialogSubtitleWrapper}>
                   <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>
                     {
-                      isFetched && success ? 'You new agent now has the rights to act on behalf of your organization. You can add more agents or delete agent keys.' : 'To add an agent, enter its key and
-                write a comment, then confirm the transaction in MetaMask.'
+                      isFetched && success ? 'You new agent now has the rights to act on behalf of your organization. You can add more agents or delete agent keys.' :
+                        'To add an agent, enter its key and  write a comment, then confirm the transaction in MetaMask.'
                     }
                   </Typography>
                 </div>

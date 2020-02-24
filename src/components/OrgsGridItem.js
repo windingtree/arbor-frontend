@@ -4,27 +4,12 @@ import PropTypes from 'prop-types';
 import {Box, Card, CardContent, CardMedia, Button, Grid, Typography} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Ellipsis from 'react-dotdotdot';
+import {setRandomDefaultImage} from "../utils/helpers";
 
 import CopyIdComponent from './CopyIdComponent';
 import TrustLevelIcon from '../assets/SvgComponents/TrustLevelIcon';
 import EntityTrustLevelIcon from '../assets/SvgComponents/EntityTrustLevelIcon';
 import ImageErrorIcon from '../assets/SvgComponents/ImageErrorIcon';
-//default images
-import DefaultHotelImage1 from '../assets/images/default-image-hotel-1.svg';
-import DefaultHotelImage2 from '../assets/images/default-image-hotel-2.svg';
-import DefaultHotelImage3 from '../assets/images/default-image-hotel-3.svg';
-import DefaultHotelImage4 from '../assets/images/default-image-hotel-4.svg';
-import DefaultHotelImage5 from '../assets/images/default-image-hotel-5.svg';
-import DefaultHotelImage6 from '../assets/images/default-image-hotel-6.svg';
-import DefaultHotelImage7 from '../assets/images/default-image-hotel-7.svg';
-import DefaultHotelImage8 from '../assets/images/default-image-hotel-8.svg';
-import DefaultHotelImage9 from '../assets/images/default-image-hotel-9.svg';
-import DefaultAirlineImage1 from '../assets/images/default-image-airline-1.svg';
-import DefaultAirlineImage2 from '../assets/images/default-image-airline-2.svg';
-import DefaultAirlineImage3 from '../assets/images/default-image-airline-3.svg';
-import DefaultAirlineImage4 from '../assets/images/default-image-airline-4.svg';
-import DefaultAirlineImage5 from '../assets/images/default-image-airline-5.svg';
-import DefaultAirlineImage6 from '../assets/images/default-image-airline-6.svg';
 
 import colors from '../styles/colors';
 
@@ -246,18 +231,6 @@ export default function OrgsGridItem(props) {
     'insurance': colors.secondary.intenseGreen,
   };
 
-  const setRandomDefaultImage = () => {
-    let arrayOfDefaultImages = [];
-    if (orgidType === 'hotel' || orgidType === 'legalEntity' || orgidType === 'ota' || orgidType === 'insurance') arrayOfDefaultImages.push(DefaultHotelImage1, DefaultHotelImage2, DefaultHotelImage3, DefaultHotelImage4, DefaultHotelImage5, DefaultHotelImage6, DefaultHotelImage7, DefaultHotelImage8, DefaultHotelImage9);
-    if (orgidType === 'airline') arrayOfDefaultImages.push(DefaultAirlineImage1, DefaultAirlineImage2, DefaultAirlineImage3, DefaultAirlineImage4, DefaultAirlineImage5, DefaultAirlineImage6);
-
-    let firstCharFromOrgid = orgid.toString().slice(0,3);
-    let index = parseInt(firstCharFromOrgid);
-    index = index < arrayOfDefaultImages.length ? index : index % arrayOfDefaultImages.length;
-
-    return arrayOfDefaultImages[index];
-  };
-
   return (
     <Card className={isSub ? [classes.item, classes.itemSubOrg].join(' ') : classes.item} style={{ backgroundColor: error ? colors.secondary.error : colors.primary.white }}>
       <CardContent style={{ padding: '12px' }}>
@@ -274,7 +247,7 @@ export default function OrgsGridItem(props) {
                 <ImageErrorIcon viewbow={'0 0 22 22'} className={classes.itemImgErrorIcon}/>
               </div>
             ) : (
-              <CardMedia label={'Organization picture'} image={setRandomDefaultImage()} className={classes.itemImg}/>
+              <CardMedia label={'Organization picture'} image={setRandomDefaultImage(orgid, orgidType)} className={classes.itemImg}/>
             )
           }
         </Link>

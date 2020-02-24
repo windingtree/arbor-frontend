@@ -205,7 +205,7 @@ function TrustWebsite(props) {
       <Container className={classes.howSection}>
         <Container>
           <Typography className={classes.howSectionTitle}>
-            How it works
+            Choose one of these ways to verify your ownership
           </Typography>
           <Typography className={classes.paragraph}>Choose one of these ways to verify your ownership:
           </Typography>

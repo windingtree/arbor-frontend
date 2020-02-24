@@ -287,7 +287,7 @@ export default function OrgsListItem(props) {
             <div>
               <div className={classes.subOrgsContainer}>
                 <Typography variant={'inherit'} className={classes.subOrgsLabel}>
-                  Organizational units ({subs.length})
+                  Sub-organizations ({subs.length})
                 </Typography>
                 <Button
                   onClick={() => toggleSubsOpen(!isSubsOpen)}

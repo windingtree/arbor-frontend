@@ -42,7 +42,7 @@ function SubOrganizations(props) {
     <div className={classes.subsWrapper}>
       <Container className={classes.subsContent}>
         <Typography variant={'h6'} className={classes.subsTitle}>
-          Organizational units ({subs.length})
+          Sub-organizations ({subs.length})
         </Typography>
         <CardsGridList spacing={2}>
           {

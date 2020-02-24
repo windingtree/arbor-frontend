@@ -165,7 +165,7 @@ const WizardStepHosting = (props) => {
           <form onSubmit={handleSubmit}>
 
             <FormControl component="fieldset" className={classes.formControlGroup}>
-              <Typography variant={'subtitle2'} className={classes.formControlTitle}>Choose type of JSON Hosting</Typography>
+              <Typography variant={'subtitle2'} className={classes.formControlTitle}>Choose your preferred type of JSON hosting</Typography>
               <RadioGroup aria-label="hostingType" name="hostingType" value={valueHostingType} onChange={handleChangeHostingType}>
                 <div className={classes.formControlItem}>
                   <FormControlLabel value="default-hosting" control={<Radio color='primary' />} label="Hosting with Arbor" className={classes.radioItem}/>

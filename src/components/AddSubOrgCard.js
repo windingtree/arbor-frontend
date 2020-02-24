@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import history from '../redux/history';
 
 import AddSubDiagramIcon from '../assets/SvgComponents/AddSubDiagramIcon';
 
@@ -50,6 +51,7 @@ const styles = makeStyles({
 
 export default function AddSubOrgCard(props) {
   const classes = styles();
+  const {parentOrgid, parentName} = props;
 
   return (
     <Card className={classes.container}>
@@ -61,7 +63,8 @@ export default function AddSubOrgCard(props) {
           <div className={classes.buttonWrapper}>
             <Button
               className={classes.button}
-              onClick={() => console.log('add sub')}
+              onClick={() => history.push('/my-organizations/wizard', { type: 'organizationalUnit', parent: parentOrgid, parentName: parentName  })}
+
             >
               <Typography variant={'inherit'} noWrap>+ Add Sub-Organization</Typography>
             </Button>

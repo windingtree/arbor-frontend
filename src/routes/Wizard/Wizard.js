@@ -8,7 +8,6 @@ import BgPattern from '../../assets/SvgComponents/wizard-pattern.svg';
 import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
 import colors from '../../styles/colors';
 
-import { selectWizardOrgidJson } from '../../ducks/wizard'
 
 import { WizardStep, WizardStepHosting, WizardStepMetaMask } from "./Components";
 import { wizardConfig as legalEntity } from './config/legalEntity'
@@ -109,7 +108,7 @@ const useStepStyles = makeStyles({
 
 const WizardGeneral = (props) => {
   const { rewriteOrgidJson } = props;
-  const legalName =  _.get(props, 'orgidJson.legalEntity.legalName', 'owner');
+  const parentName =  _.get(history, 'location.state.parentName', 'owner');
   const classes = styles();
   const [activeStep, setActiveStep] = useState(0);
   const wizardType = _.get(history, 'location.state.type', 'legalEntity');
@@ -199,7 +198,7 @@ const WizardGeneral = (props) => {
               </Typography>
               {
                 wizardType !== 'legalEntity' ? (
-                  <Typography variant={'caption'} className={classes.formSubtitle}>Operated by: {legalName}</Typography>
+                  <Typography variant={'caption'} className={classes.formSubtitle}>Operated by: {parentName}</Typography>
                 ) : null
               }
             </div>
@@ -221,9 +220,7 @@ const WizardGeneral = (props) => {
 };
 
 const mapStateToProps = state => {
-  return {
-    orgidJson: selectWizardOrgidJson(state),
-  }
+  return {}
 };
 
 const mapDispatchToProps = {

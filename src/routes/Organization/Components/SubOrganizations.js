@@ -36,7 +36,7 @@ const styles = makeStyles({
 
 function SubOrganizations(props) {
   const classes = styles();
-  const { organization: { orgid }, subs, canManage } = props;
+  const { organization: { orgid, name }, subs, canManage } = props;
 
   return (
     <div className={classes.subsWrapper}>
@@ -65,7 +65,7 @@ function SubOrganizations(props) {
           {
             canManage && (
               <Grid item style={{ width: '264px' }}>
-                <AddSubOrgCard parentOrgid={orgid}/>
+                <AddSubOrgCard parentOrgid={orgid} parentName={name}/>
               </Grid>
             )
           }

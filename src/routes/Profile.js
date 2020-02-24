@@ -68,8 +68,8 @@ const styles = makeStyles({
 
 function Profile(props) {
   const classes = styles();
-  const { organizations, address } = props;
-
+  const { organizations, address, meta } = props;
+console.log(meta, address);
   useEffect(() => {
     props.fetchProfileOrganizations({owner: address});
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -84,7 +84,7 @@ function Profile(props) {
           organizations.length !== 0 && (
             <div>
               <Button onClick={() => history.push('/my-organizations/wizard', { type: 'legalEntity' })} className={classes.button}>
-                <Typography variant={'subtitle2'} className={classes.buttonLabel}>+ Add organization</Typography>
+                <Typography variant={'subtitle2'} className={classes.buttonLabel}>+ Create organization profile</Typography>
               </Button>
             </div>
           )

@@ -1,17 +1,16 @@
 import React from "react";
-import history from '../../redux/history';
-
 import {Container, Typography, Card, Box, Button} from '@material-ui/core';
-import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
-
-
 import {makeStyles} from '@material-ui/core/styles';
+
+import history from '../../redux/history';
+import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
 
 import verifyWebsiteSvg from '../../assets/SvgComponents/verify-your-website.svg';
 import globeIconSvg from '../../assets/SvgComponents/globe-icon.svg';
 import listPlaceholderSvg from '../../assets/SvgComponents/list-placeholder.svg';
 
 import colors from '../../styles/colors';
+import _ from "lodash";
 
 export const styles = makeStyles({
   topDiv: {
@@ -163,8 +162,8 @@ export const styles = makeStyles({
   }
 });
 
-
-function TrustWebsite(props) {
+function TrustWebsite() {
+  const website = _.get(history, 'location.state.website', 'example.com');
 
   const classes = styles();
 
@@ -188,8 +187,7 @@ function TrustWebsite(props) {
               website </Typography>
               <Card className={classes.websiteAddressCard}>
                 <img className={classes.websiteAddressGlobe} src={globeIconSvg} alt={"icon"}/>
-                <Typography className={classes.link}>
-                  http://userwebsitexample.com/</Typography></Card>
+                <Typography className={classes.link} noWrap={true}>{website}</Typography></Card>
               <Typography className={classes.topSectionText}>Most users get acquainted with companies via
                 their
                 websites. Prove that you are a proud owner of your corporate website in a few
@@ -238,7 +236,8 @@ function TrustWebsite(props) {
                   className={classes.howListDot}/>
                   <Typography className={classes.howListTexts}>Make this TXT file accessible via a URL: <br/><a
                     className={classes.link}
-                    href="http(s)://example.com/org.id">http(s)://example.com/org.id</a></Typography>
+                    target={'_blank'}
+                    href={website+'/org.id'}>{website+'/org.id'}</a></Typography>
                 </li>
 
                 <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
@@ -278,7 +277,8 @@ function TrustWebsite(props) {
                   className={classes.howListDot}/>
                   <Typography className={classes.howListTexts}>Make this TXT file accessible via a URL: <br/><a
                     className={classes.link}
-                    href="http(s)://example.com/org.id">http(s)://example.com/org.id</a></Typography>
+                    target={'_blank'}
+                    href={website}>{website}</a></Typography>
                 </li>
 
                 <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>

@@ -1,12 +1,14 @@
 import React, {useState, useEffect} from "react";
 import { connect } from 'react-redux';
+import { fadeInUp } from 'react-animations';
+import Radium, { StyleRoot } from 'radium';
 import { fetchSearchOrganizationsByType } from '../ducks/fetchSearchResults';
 import history from '../redux/history';
 import {Link} from 'react-router-dom';
 import {Container, Typography, Grid, Card, CardContent, Box, Hidden} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 import Ellipsis from 'react-dotdotdot';
-import Carousel from '@brainhubeu/react-carousel';
+import VizSensor from 'react-visibility-sensor';
 //components
 import SearchComponent from '../components/SearchComponent';
 //icons && illustrations
@@ -381,14 +383,22 @@ const styles = makeStyles({
   },
   builtByContentImage: {
     width: '100%'
-  }
+  },
 });
+
+const animation = {
+  fadeInUp: {
+    animation: 'x 1s',
+    animationName: Radium.keyframes(fadeInUp, 'fadeInUp'),
+  }
+};
 
 function Home(props) {
   const classes = styles();
   const trustClasses = trustStyles();
   const [searchValue, setSearchValue] = useState('');
   const [activeUseCase, setActiveUseCase] = useState(0);
+  const [sensor, setSensorState] = useState(true);
   const [activeSlide, setActiveSlide] = useState(0);
   const {directories} = props;
   const dirType = history.location.state && history.location.state.dirType;
@@ -441,11 +451,64 @@ function Home(props) {
     setActiveUseCase(itemIndex);
   };
 
+  const carouselWheelEvent = (isVisible) => {
+    function throttle(fn, wait) {
+      let time = Date.now();
+      return function(...args) {
+        if((time + wait - Date.now()) < 0) {
+          fn(...args);
+          time = Date.now();
+        }
+      }
+    }
+
+    const handleWheelEvent = (event) => {
+      let scrollValue = event.deltaY;
+
+      if (scrollValue > 1) {
+        setActiveSlide(prevState => {
+          if(prevState === 2) {
+            document.body.style.overflow = 'auto';
+            setSensorState(false);
+            return prevState;
+          } else {
+            return prevState + 1;
+          }
+        });
+      } else {
+        setActiveSlide(prevState => {
+          if(prevState === 1 || prevState === 0) {
+            return prevState;
+          } else {
+            return prevState - 1;
+          }
+        });
+      }
+    };
+
+    if (isVisible) {
+      document.body.style.overflow = 'hidden';
+      document.addEventListener('wheel', throttle((event => handleWheelEvent(event)), 500));
+    } else {
+      document.removeEventListener('wheel', throttle((event => handleWheelEvent(event)), 500));
+    }
+  };
+
   const sliderControllers = [
     'sign up',
     'validate info',
     'choose directory'
   ];
+
+  const sliderImages = [CarouselSignUpIllustration, CarouselValidateIllustration, CarouselDirectoryIllustration];
+
+  const SliderAnimatedImage = () => {
+    return (
+      <StyleRoot>
+        <img src={sliderImages[activeSlide]} style={animation.fadeInUp} alt={'illustration'} className={classes.carouselImage}/>
+      </StyleRoot>
+    )
+  };
 
   const handleSlideChange = (e) => {
     setActiveSlide(e.target ? sliderControllers.indexOf(e.target.innerHTML) : e );
@@ -528,89 +591,84 @@ function Home(props) {
         </Grid>
       </Container>
       {/* ================================================ BLOCK 03: Slider  =================================================*/}
-      <div className={classes.joinContainer}>
-        <Container>
-          <div className={classes.contentWrapper}>
-            <Grid container spacing={5} direction="row-reverse" justify={'space-between'} alignItems={'center'}>
-              <Grid item xm={12} md={6} container justify={'space-between'} alignItems={'center'} className={classes.joinSliderContainer}>
-                <Grid item xm={12} md={6}>
-                  <div className={classes.joinSliderBase}>
-                    <div className={classes.joinSliderBaseHeader}>
-                      <Logo viewBox={'0 0 90 32'} className={classes.joinSliderBaseLogo}/>
-                      <HomeIcon width={'16px'} height={'16px'} viewBox={'0 0 16 16'} className={classes.joinSliderBaseHomeIcon}/>
-                    </div>
-                    <div className={classes.joinSliderBaseLine}/>
-                    <div className={classes.carouselWrapper}>
-                      <Hidden mdDown>
-                        <Carousel
-                          value={activeSlide}
-                          onChange={handleSlideChange}
-                          slidesPerScroll={1}
-                          animationSpeed={1000}
-                        >
-                          <img src={CarouselSignUpIllustration} alt={'illustration'} className={classes.carouselImage}/>
-                          <img src={CarouselValidateIllustration} alt={'illustration'} className={classes.carouselImage}/>
+      <VizSensor onChange={carouselWheelEvent} minTopValue={300} active={sensor}>
+        <div className={classes.joinContainer} id='slider'>
+          <Container>
+            <div className={classes.contentWrapper}>
+              <Grid container spacing={5} direction="row-reverse" justify={'space-between'} alignItems={'center'}>
+                <Grid item xm={12} md={6} container justify={'space-between'} alignItems={'center'} className={classes.joinSliderContainer}>
+                  <Grid item xm={12} md={6}>
+                    <div className={classes.joinSliderBase}>
+                      <div className={classes.joinSliderBaseHeader}>
+                        <Logo viewBox={'0 0 90 32'} className={classes.joinSliderBaseLogo}/>
+                        <HomeIcon width={'16px'} height={'16px'} viewBox={'0 0 16 16'} className={classes.joinSliderBaseHomeIcon}/>
+                      </div>
+                      <div className={classes.joinSliderBaseLine}/>
+                      <div className={classes.carouselWrapper}>
+                        <Hidden mdDown>
+                          {
+                            SliderAnimatedImage()
+                          }
+                        </Hidden>
+                        <Hidden lgUp>
                           <img src={CarouselDirectoryIllustration} alt={'illustration'} className={classes.carouselImage}/>
-                        </Carousel>
-                      </Hidden>
-                      <Hidden lgUp>
-                        <img src={CarouselDirectoryIllustration} alt={'illustration'} className={classes.carouselImage}/>
-                      </Hidden>
+                        </Hidden>
+                      </div>
                     </div>
-                  </div>
+                  </Grid>
+                  <Grid item className={classes.joinSliderControllersContainer}>
+                    {
+                      renderSliderControllers()
+                    }
+                  </Grid>
                 </Grid>
-                <Grid item className={classes.joinSliderControllersContainer}>
-                  {
-                    renderSliderControllers()
-                  }
-                </Grid>
-              </Grid>
-              <Grid item xm={12} md={6} className={classes.joinTextContainer}>
-                <div className={classes.blockTitleWrapper}>
-                  <Typography variant={'h3'} className={classes.blockTitle}>
+                <Grid item xm={12} md={6} className={classes.joinTextContainer}>
+                  <div className={classes.blockTitleWrapper}>
+                    <Typography variant={'h3'} className={classes.blockTitle}>
                       Join the registry of
                       trusted organizations
-                  </Typography>
-                  <Typography variant={'subtitle1'} className={classes.blockSubtitle}>
-                    Find new partners for your business and get discovered by potential clients.
-                  </Typography>
-                  <ul style={{marginTop: '42px'}}>
-                    <li className={trustClasses.howTextListItem}>
-                      <span className={trustClasses.howListDot}/>
-                      <Typography className={trustClasses.howListTexts}>
-                        Register your organization and get a unique identifier
-                      </Typography>
-                    </li>
-                    <li><img className={trustClasses.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
-                    <li className={trustClasses.howTextListItem}><span
-                      className={trustClasses.howListDot}/>
-                      <Typography className={trustClasses.howListTexts}>
-                        Add information on your business activities
-                      </Typography>
-                    </li>
-                    <li><img className={trustClasses.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
-                    <li className={trustClasses.howTextListItem}>
-                      <span className={trustClasses.howListDot}/>
-                      <Typography
-                        className={trustClasses.howListTexts}>
-                        Verify your data to gain
-                        <Link className={classes.trustLink} to={'/trust/general'}> trust points</Link>
-                      </Typography>
-                    </li>
-                    <li><img className={trustClasses.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
-                    <li className={trustClasses.howTextListItem}>
-                      <span className={trustClasses.howListDot}/>
-                      <Typography className={trustClasses.howListTexts}>
-                        Join one of the directories to be easily found
-                      </Typography>
-                    </li>
-                  </ul>
-                </div>
+                    </Typography>
+                    <Typography variant={'subtitle1'} className={classes.blockSubtitle}>
+                      Find new partners for your business and get discovered by potential clients.
+                    </Typography>
+                    <ul style={{marginTop: '42px'}}>
+                      <li className={trustClasses.howTextListItem}>
+                        <span className={trustClasses.howListDot}/>
+                        <Typography className={trustClasses.howListTexts}>
+                          Register your organization and get a unique identifier
+                        </Typography>
+                      </li>
+                      <li><img className={trustClasses.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
+                      <li className={trustClasses.howTextListItem}><span
+                        className={trustClasses.howListDot}/>
+                        <Typography className={trustClasses.howListTexts}>
+                          Add information on your business activities
+                        </Typography>
+                      </li>
+                      <li><img className={trustClasses.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
+                      <li className={trustClasses.howTextListItem}>
+                        <span className={trustClasses.howListDot}/>
+                        <Typography
+                          className={trustClasses.howListTexts}>
+                          Verify your data to gain
+                          <Link className={classes.trustLink} to={'/trust/general'}> trust points</Link>
+                        </Typography>
+                      </li>
+                      <li><img className={trustClasses.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
+                      <li className={trustClasses.howTextListItem}>
+                        <span className={trustClasses.howListDot}/>
+                        <Typography className={trustClasses.howListTexts}>
+                          Join one of the directories to be easily found
+                        </Typography>
+                      </li>
+                    </ul>
+                  </div>
+                </Grid>
               </Grid>
-            </Grid>
-          </div>
-        </Container>
-      </div>
+            </div>
+          </Container>
+        </div>
+      </VizSensor>
       {/* ================================================   GRID   =================================================*/}
       {/*<Container>
         <Grid container spacing={5}>
@@ -648,7 +706,7 @@ function Home(props) {
                 [AirFinanceImage, ERevMaxImage, NordicImage, MachefertImage].map((src, index) => (
                   <Grid item xs={6} className={classes.partnerCardContainer} key={index}>
                     <Card className={classes.partnerCard}>
-                      <img className={classes.partnerCardImage}  src={src} alt={'partner'}/>
+                      <img className={classes.partnerCardImage} src={src} alt={'partner'}/>
                     </Card>
                   </Grid>
                 ))

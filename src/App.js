@@ -304,6 +304,16 @@ const theme = createMuiTheme({
       checked: {
         color: colors.secondary.cyan
       }
+    },
+    MuiDialog: {
+      paperWidthSm: {
+        maxWidth: 'fit-content'
+      }
+    },
+    MuiCircularProgress: {
+      colorPrimary: {
+        color: colors.primary.accent
+      }
     }
   }
 });

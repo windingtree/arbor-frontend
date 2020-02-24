@@ -14,8 +14,6 @@ const styles = makeStyles({
       marginBottom: '0'
     },
   },
-  socialIconWrapper: {
-  },
   icon: {
     width:'16px',
     height: '16px',

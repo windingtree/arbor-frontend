@@ -34,6 +34,7 @@ const initialState = {
   isFetched: false,
   orgidJson: {
     "@context": "https://windingtree.com/ns/did/v1",
+    "id": `did:orgid:0x${keccak256(`${Date.now()}${Math.random()}`)}`,
     "created": new Date().toJSON(),
     "publicKey": [],
     "service": [],
@@ -131,6 +132,11 @@ export const selectWizardOrgidJson = createSelector(
 export const selectWizardOrgidUri = createSelector(
   stateSelector,
   wizard => wizard.orgidUri
+);
+
+export const selectWizardOrgidHash = createSelector(
+  stateSelector,
+  wizard => wizard.orgidHash
 );
 //endregion
 

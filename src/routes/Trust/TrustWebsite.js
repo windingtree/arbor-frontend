@@ -162,7 +162,7 @@ export const styles = makeStyles({
   }
 });
 
-function TrustWebsite(/*props*/) {
+function TrustWebsite() {
   const website = _.get(history, 'location.state.website', 'example.com');
 
   const classes = styles();

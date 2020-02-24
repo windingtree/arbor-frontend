@@ -185,15 +185,15 @@ export default function OrgsListItem(props) {
   } = props;
 
   const setRandomDefaultImage = () => {
-    function getRandomIndex(max) {
-      return Math.floor(Math.random() * Math.floor(max));
-    }
-
     let arrayOfDefaultImages = [];
     if (orgidType === 'hotel' || orgidType === 'legalEntity' || orgidType === 'ota' || orgidType === 'insurance') arrayOfDefaultImages.push(DefaultHotelImage1, DefaultHotelImage2, DefaultHotelImage3, DefaultHotelImage4, DefaultHotelImage5, DefaultHotelImage6, DefaultHotelImage7, DefaultHotelImage8, DefaultHotelImage9);
     if (orgidType === 'airline') arrayOfDefaultImages.push(DefaultAirlineImage1, DefaultAirlineImage2, DefaultAirlineImage3, DefaultAirlineImage4, DefaultAirlineImage5, DefaultAirlineImage6);
-    const randomIndex = getRandomIndex(arrayOfDefaultImages.length);
-    return arrayOfDefaultImages[randomIndex];
+
+    let firstCharFromOrgid = id.toString().slice(0,3);
+    let index = parseInt(firstCharFromOrgid);
+    index = index < arrayOfDefaultImages.length ? index : index % arrayOfDefaultImages.length;
+
+    return arrayOfDefaultImages[index];
   };
 
   return (

@@ -99,6 +99,10 @@ export const styles = makeStyles({
     marginTop: '23px',
     lineHeight: '28px',
     color: colors.greyScale.dark,
+    '& b': {
+      color: colors.secondary.peach,
+      fontWeight: 500
+    }
   },
 });
 
@@ -140,13 +144,12 @@ const WizardStep = (props) => {
         <Typography className={classes.paragraph}>It is common to obtain Ether through online exchange platforms that
           operate in your country and accept your preferred currency. Reputable exchange platforms have strict KYC
           processes and will ask you to share your personal data.</Typography>
-        <Typography className={classes.paragraph}>MetaMask is linked with two exchanges, Coinbase and
-          ShapeShift, so you can purchase Ether directly from your account.</Typography>
+        <Typography className={classes.paragraph}>MetaMask is linked with two exchanges, <b>Coinbase</b> and <b>ShapeShift</b>, so you can purchase Ether directly from your account.</Typography>
         <Typography className={classes.paragraph}>It is also possible to buy Ether from crypto
-          ATMs or through Peer-to-Peer options like LocalCryptos, Hodl Hodl or similar services. The latter can be
+          ATMs or through Peer-to-Peer options like <b>LocalCryptos</b>, <b>Hodl Hodl</b> or similar services. The latter can be
           private or centralized and offer a wide selection of buying and selling options, from in-person meetings to
           online gift cards, wire or PayPal transfers.</Typography>
-        <Typography className={classes.paragraph}>Finally, there are fintech apps like Uphold, Revolut and other
+        <Typography className={classes.paragraph}>Finally, there are fintech apps like <b>Uphold</b>, <b>Revolut</b> and other
           services that allow users buy, sell and transfer cryptocurrencies as well as trade for a broad spectrum of
           fiat currencies.</Typography>
 

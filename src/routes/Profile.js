@@ -68,8 +68,8 @@ const styles = makeStyles({
 
 function Profile(props) {
   const classes = styles();
-  const { organizations, address, meta } = props;
-console.log(meta, address);
+  const { organizations, address } = props;
+
   useEffect(() => {
     props.fetchProfileOrganizations({owner: address});
   }, []); // eslint-disable-line react-hooks/exhaustive-deps

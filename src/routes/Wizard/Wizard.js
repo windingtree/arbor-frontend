@@ -108,13 +108,13 @@ const useStepStyles = makeStyles({
 
 const WizardGeneral = (props) => {
   const { rewriteOrgidJson } = props;
-  const parentName =  _.get(history, 'location.state.parentName', 'owner');
   const classes = styles();
   const [activeStep, setActiveStep] = useState(0);
   const wizardType = _.get(history, 'location.state.type', 'legalEntity');
   const action = _.get(history, 'location.state.action', 'create');
   const jsonContent = _.get(history, 'location.state.jsonContent', {});
   const id = _.get(history, 'location.state.id', null);
+  const parentName =  _.get(history, 'location.state.parentName', '');
   const actionLabel = (action === 'create') ? 'Create' : 'Edit';
   const types = { legalEntity, organizationalUnit };
   const wizardConfig = types[wizardType];

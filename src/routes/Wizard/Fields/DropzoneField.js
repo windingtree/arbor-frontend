@@ -108,8 +108,6 @@ function Previews(props) {
     maxSize: 500 * 1024,
     multiple: false,
     onDrop: (acceptedFiles) => {
-      console.log(acceptedFiles);
-
       window['file_0'] = acceptedFiles[0];
       saveMediaToArbor({address, id, file: acceptedFiles[0]});
 

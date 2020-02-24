@@ -18,6 +18,7 @@ function Organization(props) {
   }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const { organization, subs } = props;
+  organization.orgid = id;
   const todos = getTodo(organization);
   let subsidiaries = _.get(organization, 'subsidiaries', []);
 

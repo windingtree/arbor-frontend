@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import {Formik} from 'formik';
 import _ from "lodash";
 import {
@@ -132,6 +132,7 @@ const styles = makeStyles({
     fontWeight: 400,
     color: colors.greyScale.common
   },
+
   inputFieldWrapper: {
     position: 'relative',
     marginBottom: '28px',
@@ -187,8 +188,7 @@ const LightTooltip = withStyles({
 function Agents(props) {
   const classes = styles();
   const [isModalOpen, toggleModalOpenState] = useState(false);
-  const [isTooltipOpen, setTooltipOpen] = useState(false);
-  const { organization, isFetched, isFetching, success } = props;
+  const [isTooltipOpen, setTooltipOpen] = useState(false);const { organization , isFetched, isFetching, success} = props;
   const { owner } = organization;
   const agents = _.get(organization, `jsonContent.publicKey`, []);
 
@@ -242,7 +242,8 @@ function Agents(props) {
                 <div className={classes.dialogSubtitleWrapper}>
                   <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>
                     {
-                      isFetched && success ? 'You new agent now has the rights to act on behalf of your organization. You can add more agents or delete agent keys.' : 'To add an agent, enter its key and write a comment, then confirm the transaction in MetaMask.'
+                      isFetched && success ? 'You new agent now has the rights to act on behalf of your organization. You can add more agents or delete agent keys.' :
+                        'To add an agent, enter its key and  write a comment, then confirm the transaction in MetaMask.'
                     }
                   </Typography>
                 </div>
@@ -355,12 +356,12 @@ function Agents(props) {
     <Container>
       <div className={classes.agentsContent}>
         <div className={classes.agentsTitleWrapper}>
-          <Typography variant={'inherit'}>Manage owners and agents</Typography>
+          <Typography variant={'inherit'}>Owner and agent management</Typography>
         </div>
         <div>
           <Typography variant={'inherit'} className={classes.agentsSubtitle}>
-            Assign agents that could act on behalf of your organization. You can add public keys of your employees (or devices) that will be able to sign and encrypt communication on behalf of your organization
-          </Typography>
+            Assign agents that could act as your representatives. Add public keys of your employees (or devices) that
+            will be able to sign and encrypt communication on behalf of your organization.</Typography>
         </div>
         <div className={classes.ownerInfoWrapper}>
           <Typography variant={'inherit'} className={classes.agentTitle}>Owner</Typography>
@@ -379,7 +380,7 @@ function Agents(props) {
           </div>
           <div className={classes.buttonWrapper}>
             <Button onClick={handleOpenModal} className={classes.button}>
-              <Typography variant={'inherit'}>+ Add Agent key</Typography>
+              <Typography variant={'inherit'}>+ Add agent key</Typography>
             </Button>
             {addAgentKeyDialog()}
           </div>

@@ -8,6 +8,7 @@ import BgPattern from '../../assets/SvgComponents/wizard-pattern.svg';
 import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
 import colors from '../../styles/colors';
 
+
 import { WizardStep, WizardStepHosting, WizardStepMetaMask } from "./Components";
 import { wizardConfig as legalEntity } from './config/legalEntity'
 import { wizardConfig as organizationalUnit} from './config/organizationalUnit'
@@ -113,6 +114,7 @@ const WizardGeneral = (props) => {
   const action = _.get(history, 'location.state.action', 'create');
   const jsonContent = _.get(history, 'location.state.jsonContent', {});
   const id = _.get(history, 'location.state.id', null);
+  const parentName =  _.get(history, 'location.state.parentName', '');
   const actionLabel = (action === 'create') ? 'Create' : 'Edit';
   const types = { legalEntity, organizationalUnit };
   const wizardConfig = types[wizardType];
@@ -196,7 +198,7 @@ const WizardGeneral = (props) => {
               </Typography>
               {
                 wizardType !== 'legalEntity' ? (
-                  <Typography variant={'caption'} className={classes.formSubtitle}>Operated by: {'legalEntity.name'}</Typography>
+                  <Typography variant={'caption'} className={classes.formSubtitle}>Operated by: {parentName}</Typography>
                 ) : null
               }
             </div>

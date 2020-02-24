@@ -90,7 +90,7 @@ function TodoList(props) {
   const todos = getTodo(organization);
   return (
     <Container>
-      <Typography className={classes.listTitle}>To do list ({todos.length})</Typography>
+      <Typography className={classes.listTitle}>To-do list ({todos.length})</Typography>
       {
         todos.map(({link, title, description, icon}, index) => {
           return (

@@ -9,7 +9,7 @@ import {makeStyles} from '@material-ui/core/styles';
 import trustTopIllustation from '../../assets/SvgComponents/lif-deposit-illustration.svg';
 import lifWithdrawIllustration from '../../assets/SvgComponents/lif-deposit-withdraw.svg';
 
-import { LifIcon1, LifIcon2, LifIcon3 } from '../../assets/SvgComponents';
+import {LifIcon1, LifIcon2, LifIcon3} from '../../assets/SvgComponents';
 import colors from '../../styles/colors';
 
 
@@ -161,7 +161,7 @@ const TrustLifStake = () => {
           <Grid container>
             <Grid item xs={12} lg={6}>
               <Typography className={classes.mainTitle} variant={'h1'}>Submit your Líf
-              deposit</Typography>
+                deposit</Typography>
               <Typography className={classes.topText}>Líf deposit is a small amount of cryptocurrency that
                 is staked when you register your organization profile on Arbor. This action minimizes
                 spam registrations and proves the seriousness of your intentions.</Typography>
@@ -203,13 +203,14 @@ const TrustLifStake = () => {
               <Typography variant={'h3'} className={classes.blockTitle}>
                 Participate in platform governance with Líf deposit
               </Typography>
-              <Typography className={classes.paragraph}>Líf deposit gives your the right to participate in
-                platform governance.
+              <Typography className={classes.paragraph}>Líf deposit gives every member of Arbor community a possibility
+                to vote for particular features and upgrades in a democratic way. Eligible members can decide on adding
+                and removing directories, introducing upgrades and new governance rules as well as managing Líf
+                deposits.
               </Typography>
               <Typography className={classes.paragraph}>
-                Before you proceed, make sure that you have at least 1000 Líf in
-                your Metamask account. Líf deposit will automatically generate Lög tokens required for
-                voting.
+                Make sure that you have at least 1000 Líf in your MetaMask account. Líf deposit will automatically
+                generate Lög tokens required for voting.
               </Typography>
               <Button className={classes.buttonPurchaseWithdraw}>
                 <Typography variant={'subtitle2'} noWrap className={classes.buttonTitle}>

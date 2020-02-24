@@ -1,8 +1,8 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { fetchSignInRequest } from '../../ducks/signIn';
-import { Container, Grid, Typography, Box, Button } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import {connect} from 'react-redux';
+import {fetchSignInRequest} from '../../ducks/signIn';
+import {Container, Grid, Typography, Box, Button} from '@material-ui/core';
+import {makeStyles} from '@material-ui/styles';
 
 import LoginIllustration from '../../assets/SvgComponents/login-illustration.svg';
 
@@ -74,24 +74,26 @@ const SignIn = (props) => {
           <img src={LoginIllustration} alt={'Login illustration'} className={classes.illustration}/>
         </Grid>
         <Grid item className={classes.itemContainer}>
-          <Box style={{ width: '80%', margin: '0 auto' }}>
+          <Box style={{width: '80%', margin: '0 auto'}}>
             <div className={classes.screenTitleWrapper}>
-              <Typography variant={'h1'} className={classes.screenTitle}>Sign in with MetaMask</Typography>
-              <div className={classes.line}/>
+              <Typography variant={'h1'} className={classes.screenTitle}>Welcome to Arbor</Typography>
+                <div className={classes.line}/>
             </div>
             <div className={classes.subtitleWrapper}>
-              <Typography variant={'subtitle2'} className={classes.subtitle}>Welcome back! Let’s get back to business. </Typography>
+              <Typography variant={'subtitle2'} className={classes.subtitle}>MetaMask is a browser extension that allows
+                you to hold Ether and tokens as well as create and manage your organization profile on
+                Arbor.</Typography>
             </div>
             <div className={classes.buttonWrapper}>
               <Button onClick={props.fetchSignInRequest} className={classes.button}>
-                <Typography variant={'caption'} className={classes.buttonLabel}>Sign in</Typography>
+                <Typography variant={'caption'} className={classes.buttonLabel}>Sign in with MetaMask</Typography>
               </Button>
             </div>
           </Box>
         </Grid>
       </Grid>
     </Container>
-  )
+)
 };
 
 const mapDispatchToProps = {

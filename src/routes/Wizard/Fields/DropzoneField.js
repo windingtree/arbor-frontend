@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import { connect } from "react-redux";
+import {connect} from "react-redux";
 import {useDropzone} from 'react-dropzone';
 import _ from 'lodash';
-import { saveMediaToArbor, selectWizardOrgidJson } from '../../../ducks/wizard'
-import { selectSignInAddress } from '../../../ducks/signIn'
+import {saveMediaToArbor, selectWizardOrgidJson} from '../../../ducks/wizard'
+import {selectSignInAddress} from '../../../ducks/signIn'
 
-import { Tab, Tabs, TextField, Typography, Button } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import {Tab, Tabs, TextField, Typography, Button} from '@material-ui/core';
+import {makeStyles} from '@material-ui/core/styles';
 import DragAndDropImage from '../../../assets/SvgComponents/dragNDrop-image.svg';
 
 import colors from '../../../styles/colors';
@@ -101,15 +101,12 @@ const img = {
 
 function Previews(props) {
   const classes = styles();
-  const { saveMediaToArbor, helperText, description, address, orgidJson: { id } } = props;
-  const [files, setFiles] = useState([]);
+  const {saveMediaToArbor, setFiles, files, helperText, description, address, orgidJson: {id}} = props;
   const {getRootProps, getInputProps} = useDropzone({
     accept: 'image/*',
     maxSize: 500 * 1024,
     multiple: false,
     onDrop: (acceptedFiles) => {
-      console.log(acceptedFiles);
-
       window['file_0'] = acceptedFiles[0];
       saveMediaToArbor({address, id, file: acceptedFiles[0]});
 
@@ -131,10 +128,6 @@ function Previews(props) {
     </div>
   ));
 
-  useEffect(() => () => {
-    // Make sure to revoke the data uris to avoid memory leaks
-    files.forEach(file => URL.revokeObjectURL(file.preview));
-  }, [files]);
 
   return (
     <div>
@@ -167,7 +160,15 @@ function Previews(props) {
 const DropzoneField = (props) => {
   const classes = styles();
   const [value, setValue] = useState(0);
-  const { saveMediaToArbor, address, orgidJson, type, name, description, orgidJsonPath, index, helperText, required, values, errors, touched, handleChange, handleBlur } = props;
+  const [files, setFiles] = useState([]);
+
+  useEffect(() =>    () => {
+      // Make sure to revoke the data uris to avoid memory leaks
+      files.forEach(file => URL.revokeObjectURL(file.preview));
+
+    }, [files]);
+
+  const {saveMediaToArbor, address, orgidJson, type, name, description, orgidJsonPath, index, helperText, required, values, errors, touched, handleChange, handleBlur} = props;
   const isError = _.get(errors, orgidJsonPath) && _.get(touched, orgidJsonPath);
 
   const handleChangeTab = (event, newValue) => {
@@ -175,7 +176,7 @@ const DropzoneField = (props) => {
   };
 
   const TabPanel = (props) => {
-    const { children, value, index, ...other } = props
+    const {children, value, index, ...other} = props;
 
     return (
       <Typography
@@ -205,6 +206,8 @@ const DropzoneField = (props) => {
       </div>
       <TabPanel value={value} index={0}>
         <Previews
+          files={files}
+          setFiles={setFiles}
           address={address}
           orgidJson={orgidJson}
           saveMediaToArbor={saveMediaToArbor}

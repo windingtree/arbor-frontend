@@ -1,6 +1,8 @@
 import React, {useState} from "react";
-import { Button, Collapse, Container, Fade, Grid, Hidden, Typography } from "@material-ui/core";
+import {Button, Collapse, Container, Fade, Grid, Hidden, Typography} from "@material-ui/core";
 import CopyIdComponent from "../../../components/CopyIdComponent";
+import {setRandomDefaultImage} from "../../../utils/helpers";
+
 import colors from "../../../styles/colors";
 import Ellipsis from "react-dotdotdot";
 import {
@@ -17,21 +19,7 @@ import {
   MaximizeIcon,
   MinimizeIcon
 } from '../../../assets/SvgComponents';
-import DefaultHotelImage1 from '../../../assets/images/default-image-hotel-1.svg';
-import DefaultHotelImage2 from '../../../assets/images/default-image-hotel-2.svg';
-import DefaultHotelImage3 from '../../../assets/images/default-image-hotel-3.svg';
-import DefaultHotelImage4 from '../../../assets/images/default-image-hotel-4.svg';
-import DefaultHotelImage5 from '../../../assets/images/default-image-hotel-5.svg';
-import DefaultHotelImage6 from '../../../assets/images/default-image-hotel-6.svg';
-import DefaultHotelImage7 from '../../../assets/images/default-image-hotel-7.svg';
-import DefaultHotelImage8 from '../../../assets/images/default-image-hotel-8.svg';
-import DefaultHotelImage9 from '../../../assets/images/default-image-hotel-9.svg';
-import DefaultAirlineImage1 from '../../../assets/images/default-image-airline-1.svg';
-import DefaultAirlineImage2 from '../../../assets/images/default-image-airline-2.svg';
-import DefaultAirlineImage3 from '../../../assets/images/default-image-airline-3.svg';
-import DefaultAirlineImage4 from '../../../assets/images/default-image-airline-4.svg';
-import DefaultAirlineImage5 from '../../../assets/images/default-image-airline-5.svg';
-import DefaultAirlineImage6 from '../../../assets/images/default-image-airline-6.svg';
+
 import _ from "lodash";
 import {makeStyles} from "@material-ui/core/styles";
 
@@ -432,17 +420,6 @@ function Info(props) {
     })
   });
 
-  const setRandomDefaultImage = () => {
-    function getRandomIndex(max) {
-      return Math.floor(Math.random() * Math.floor(max));
-    }
-
-    let arrayOfDefaultImages = [];
-    if (orgidType === 'hotel' || orgidType === 'legalEntity' || orgidType === 'ota' || orgidType === 'insurance') arrayOfDefaultImages.push(DefaultHotelImage1, DefaultHotelImage2, DefaultHotelImage3, DefaultHotelImage4, DefaultHotelImage5, DefaultHotelImage6, DefaultHotelImage7, DefaultHotelImage8, DefaultHotelImage9);
-    if (orgidType === 'airline') arrayOfDefaultImages.push(DefaultAirlineImage1, DefaultAirlineImage2, DefaultAirlineImage3, DefaultAirlineImage4, DefaultAirlineImage5, DefaultAirlineImage6);
-    const randomIndex = getRandomIndex(arrayOfDefaultImages.length);
-    return arrayOfDefaultImages[randomIndex];
-  };
 
   const icon = (socialNetwork) => {
     switch (socialNetwork) {
@@ -466,7 +443,7 @@ function Info(props) {
   };
 
   const addCanManageClass = (classNameBase, classNameCanManage) => {
-    if(canManage) return `${classNameBase} ${classNameCanManage}`;
+    if (canManage) return `${classNameBase} ${classNameCanManage}`;
     return classNameBase;
   };
 
@@ -482,7 +459,7 @@ function Info(props) {
                 avatar ? (
                   <img className={classes.orgImage} src={avatar} alt={'Organization'}/>
                 ) : (
-                  <img className={classes.orgImage} src={setRandomDefaultImage()} alt={'Organization'}/>
+                  <img className={classes.orgImage} src={setRandomDefaultImage(id, orgidType)} alt={'Organization'}/>
                 )
               }
             </div>
@@ -544,7 +521,8 @@ function Info(props) {
                 <Typography variant={'caption'} className={classes.orgInfoFieldTitle} noWrap>
                   {'Website: '}
                   <a href={contacts.website} target={'_blank'} className={classes.orgInfoField}>{contacts.website}</a>
-                  {isWebsiteProved && <TrustLevelIcon className={classes.iconTrustLevel} style={{verticalAlign: 'text-bottom'}}/>}
+                  {isWebsiteProved &&
+                  <TrustLevelIcon className={classes.iconTrustLevel} style={{verticalAlign: 'text-bottom'}}/>}
                 </Typography>
               </div>
               }
@@ -582,7 +560,8 @@ function Info(props) {
                     <div className={classes.mobileSocialWrapper}>
                       {icon(social.network)}
                       {social.verified &&
-                      <TrustLevelIcon className={[classes.iconTrustLevel, classes.iconVerify, classes.mobileIconVerify].join(' ')}/>}
+                      <TrustLevelIcon
+                        className={[classes.iconTrustLevel, classes.iconVerify, classes.mobileIconVerify].join(' ')}/>}
                     </div>
                   </Hidden>
                   <Typography variant={'caption'} className={classes.socialTitle}>{social.network}</Typography>
@@ -642,8 +621,8 @@ function Info(props) {
                   </Grid>
                   <Grid className={classes.detailsIllustrationWrapper} item md={3} xs={12}>
                     <img
-                    src={DetailsIllustration} alt={'Details illustration'}
-                    className={classes.detailsIllustration}/>
+                      src={DetailsIllustration} alt={'Details illustration'}
+                      className={classes.detailsIllustration}/>
                   </Grid>
                 </Grid>
                 {canManage && <div className={classes.line}/>}

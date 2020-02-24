@@ -9,7 +9,7 @@ import EmptyListIllustration from '../assets/SvgComponents/empty-list-illustrati
 //styles
 import colors from '../styles/colors';
 import { connect } from "react-redux";
-import { fetchProfileOrganizations, isFetchedSelector, profileOrganizationsSelector, metaSelector } from "../ducks/fetchProfile";
+import { fetchProfileOrganizations, isFetchedSelector, profileOrganizationsSelector} from "../ducks/fetchProfile";
 import { selectSignInAddress } from "../ducks/signIn";
 
 const styles = makeStyles({
@@ -84,7 +84,7 @@ function Profile(props) {
           organizations.length !== 0 && (
             <div>
               <Button onClick={() => history.push('/my-organizations/wizard', { type: 'legalEntity' })} className={classes.button}>
-                <Typography variant={'subtitle2'} className={classes.buttonLabel}>+ Add organization</Typography>
+                <Typography variant={'subtitle2'} className={classes.buttonLabel}>+ Create organization profile</Typography>
               </Button>
             </div>
           )
@@ -131,7 +131,6 @@ function Profile(props) {
 const mapStateToProps = state => {
   return {
     organizations: profileOrganizationsSelector(state),
-    meta: metaSelector(state),
     isFetched: isFetchedSelector(state),
     address: selectSignInAddress(state)
   }

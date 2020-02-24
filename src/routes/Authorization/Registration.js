@@ -1,7 +1,7 @@
 import React from 'react';
-import { Container, Grid, Typography, Box, Button } from '@material-ui/core';
-import { ArrowForward } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/styles';
+import {Container, Grid, Typography, Box, Button} from '@material-ui/core';
+import {ArrowForward} from '@material-ui/icons';
+import {makeStyles} from '@material-ui/styles';
 
 import RegisterIllustration from '../../assets/SvgComponents/registration-illustration.svg';
 
@@ -81,7 +81,7 @@ const styles = makeStyles({
   },
 });
 
-const  Registration = () => {
+const Registration = () => {
   const classes = styles();
 
   return (
@@ -91,17 +91,22 @@ const  Registration = () => {
           <img src={RegisterIllustration} alt={'Register-illustration'} className={classes.illustration}/>
         </Grid>
         <Grid item className={classes.itemContainer}>
-          <Box style={{ width: '80%', margin: '0 auto' }}>
+          <Box style={{width: '80%', margin: '0 auto'}}>
             <div className={classes.screenTitleWrapper}>
               <Typography variant={'h1'} className={classes.screenTitle}>Welcome to Arbor</Typography>
               <div className={classes.line}/>
             </div>
             <div className={classes.subtitleWrapper}>
-              <Typography variant={'subtitle2'} className={classes.subtitle}>To start off, register with MetaMask - a browser extension that lets you create and manage your company profile in Arbor database.</Typography>
+              <Typography variant={'subtitle2'} className={classes.subtitle}>To start off, you need to install MetaMask
+                — a browser extension that allows you to hold Ether and tokens as well as create and manage your
+                organization profile on Arbor. </Typography>
             </div>
             <div className={classes.buttonWrapper}>
-              <Button onClick={(event) => {event.preventDefault(); window.open('https://metamask.io/');}} className={classes.button}>
-                <Typography variant={'caption'} className={classes.buttonLabel}>Register with MetaMask</Typography>
+              <Button onClick={(event) => {
+                event.preventDefault();
+                window.open('https://metamask.io/');
+              }} className={classes.button}>
+                <Typography variant={'caption'} className={classes.buttonLabel}>Install MetaMask</Typography>
               </Button>
             </div>
             <div className={classes.linkWrapper}>

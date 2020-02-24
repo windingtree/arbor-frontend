@@ -11,10 +11,10 @@ export const wizardConfig = [
     name: 'General',
     icon: StepperGeneralIcon,
     longName: 'General information',
-    description: 'You will need at least 0.1 ether in your MetaMask account.',
+    description: 'Creating an organization profile requires an Ethereum transaction. Make sure you have enough funds in your MetaMask account to cover the transaction fee.',
     sections: [
       {
-        name: 'Main info',
+        name: 'General information',
         type: 'section',
         fields: [
           {
@@ -58,7 +58,7 @@ export const wizardConfig = [
         ]
       },
       {
-        name: 'Location',
+        name: 'Address of your organization',
         type: 'section',
         fields: [
           {
@@ -70,18 +70,13 @@ export const wizardConfig = [
           },
           {
             type: 'input',
-            name: 'Subdivision',
+            name: 'State or region',
             orgidJsonPath: 'organizationalUnit.registeredAddress.subdivision'
           },
           {
             type: 'input',
-            name: 'Locality',
+            name: 'City',
             orgidJsonPath: 'organizationalUnit.registeredAddress.locality'
-          },
-          {
-            type: 'input',
-            name: 'postal code',
-            orgidJsonPath: 'organizationalUnit.registeredAddress.postal_code'
           },
           {
             type: 'input',
@@ -90,9 +85,14 @@ export const wizardConfig = [
           },
           {
             type: 'input',
-            name: 'Premise',
+            name: 'Apartment or office',
             orgidJsonPath: 'organizationalUnit.registeredAddress.premise'
-          }
+          },
+          {
+            type: 'input',
+            name: 'Postal code',
+            orgidJsonPath: 'organizationalUnit.registeredAddress.postal_code'
+          },
         ]
       },
       {
@@ -117,7 +117,7 @@ export const wizardConfig = [
             subtype: 'email',
             name: 'Email',
             orgidJsonPath: 'organizationalUnit.contacts[0].email',
-            schema: Joi.string().email({tlds: { allow: false }})
+            schema: Joi.string().email({tlds: {allow: false}})
           }
         ]
       },
@@ -163,7 +163,7 @@ export const wizardConfig = [
     description: 'You can tell us a bit more about your sub-organization or skip this step.',
     sections: [
       {
-        name: 'Main info',
+        name: 'General information',
         type: 'section',
         fields: [
           {
@@ -186,7 +186,7 @@ export const wizardConfig = [
     name: 'Hosting',
     icon: StepperHostingIcon,
     longName: 'Hosting information',
-    description: 'The description that Arbor offers two types of hosting, depending on your needs.',
+    description: 'Choose where to store your organization profile data: on Arbor servers or on a hosting of your choice.',
     sections: [
       {
         name: 'Choose type of JSON hosting',
@@ -209,8 +209,8 @@ export const wizardConfig = [
     type: 'step_metamask',
     name: 'Confirmation',
     icon: StepperMetaMaskIcon,
-    longName: 'MetaMask confirming',
-    description: 'MetaMask also lets the user create and manage their own identities, so when a Dapp wants to perform a transaction and write to the blockchain, the user gets a secure interface to review the transaction, before approving or rejecting it.',
-    cta: 'Register my organization'
+    longName: 'Сonfirmation',
+    description: 'Once you click on the button below, you will get redirected to your MetaMask account. Submit a transaction fee to create your organization profile.',
+    cta: 'Create profile'
   }
 ];

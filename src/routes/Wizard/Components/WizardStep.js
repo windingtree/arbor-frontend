@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import {Link} from 'react-router-dom'
 import {connect} from "react-redux";
 import {makeStyles, withStyles} from '@material-ui/core/styles';
 import {Typography, Button, Dialog, DialogActions} from '@material-ui/core';
@@ -152,7 +151,6 @@ const WizardStep = (props) => {
         <Typography className={classes.paragraph}>Finally, there are fintech apps like <b>Uphold</b>, <b>Revolut</b> and other
           services that allow users buy, sell and transfer cryptocurrencies as well as trade for a broad spectrum of
           fiat currencies.</Typography>
-
       </DialogContent>
     </Dialog>;
   };

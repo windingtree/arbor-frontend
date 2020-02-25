@@ -6,14 +6,14 @@ import { Container, Button, Typography, Stepper, StepConnector, Step, StepLabel 
 
 import BgPattern from '../../assets/SvgComponents/wizard-pattern.svg';
 import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
+import PendingTransactionIllustration from '../../assets/SvgComponents/org-creation-illustration.svg';
 import colors from '../../styles/colors';
-
 
 import { WizardStep, WizardStepHosting, WizardStepMetaMask } from "./Components";
 import { wizardConfig as legalEntity } from './config/legalEntity'
 import { wizardConfig as organizationalUnit} from './config/organizationalUnit'
 import { connect } from "react-redux";
-import { rewriteOrgidJson } from "../../ducks/wizard";
+import { rewriteOrgidJson, selectPendingState } from "../../ducks/wizard";
 
 const styles = makeStyles({
   mainContainer: {
@@ -21,7 +21,6 @@ const styles = makeStyles({
     width: '100%',
     height: '100%',
     backgroundColor: colors.greyScale.moreLighter,
-    paddingBottom: '160px'
   },
   screenHeading: {
     paddingTop: '16px',
@@ -46,6 +45,7 @@ const styles = makeStyles({
   mainContent: {
     background: `top no-repeat url(${BgPattern})`,
     marginTop: '40px',
+    paddingBottom: '160px'
   },
   formContainer: {
     border: `1px solid ${colors.greyScale.lighter}`,
@@ -71,6 +71,47 @@ const styles = makeStyles({
     fontWeight: 400,
     lineHeight: 1.42,
     color: colors.greyScale.common,
+  },
+  pendingContentWrapper: {
+    padding: '46px 80px 80px'
+  },
+  pendingIllustration: {
+    width: '100%'
+  },
+  pendingTextContainer: {
+    marginBottom: '10px',
+  },
+  pendingTitle: {
+    fontSize: '24px',
+    fontWeight: 500,
+    color: colors.greyScale.darkest,
+  },
+  pendingSubtitle: {
+    fontSize: '16px',
+    fontWeight: 400,
+    lineHeight: 1.5,
+    color: colors.greyScale.common,
+    padding: '16px 0'
+  },
+  pendingButtonWrapper: {
+    display: 'table',
+    margin: '0 auto',
+  },
+  pendingButton: {
+    textTransform: 'none',
+  },
+  pendingButtonLabel: {
+    fontSize: '16px',
+    fontWeight: 500,
+    letterSpacing: '.005em',
+    color: colors.secondary.cyan
+  },
+  pendingButtonIcon: {
+    width: '12px',
+    height: '12px',
+    color: colors.secondary.cyan,
+    transform: 'rotate(180deg)',
+    marginLeft: '14px'
   }
 });
 
@@ -107,7 +148,7 @@ const useStepStyles = makeStyles({
 });
 
 const WizardGeneral = (props) => {
-  const { rewriteOrgidJson } = props;
+  const { rewriteOrgidJson, pending } = props;
   const classes = styles();
   const [activeStep, setActiveStep] = useState(0);
   const wizardType = _.get(history, 'location.state.type', 'legalEntity');
@@ -189,30 +230,47 @@ const WizardGeneral = (props) => {
       </Container>
       <Container className={classes.mainContent}>
         <Container maxWidth="sm" className={classes.formContainer}>
-          <div className={classes.formContentWrapper}>
-            <div>
-              <Typography variant={'h2'} className={classes.formTitle}>
+          {
+            !!pending ? (
+              <div className={classes.pendingContentWrapper}>
+                <img src={PendingTransactionIllustration} alt={'illustration'} className={classes.pendingIllustration}/>
+                <div className={classes.pendingTextContainer}>
+                  <Typography variant={'h3'} className={classes.pendingTitle}>Almost there!</Typography>
+                  <Typography variant={'subtitle2'} className={classes.pendingSubtitle}>Creating your organization profile might take some time. You can wait here or add another organization in the meantime. We will let you know once everything is ready. </Typography>
+                </div>
+                <div className={classes.pendingButtonWrapper}>
+                  <Button className={classes.pendingButton} onClick={() => history.push('/my-organizations')}>
+                    <Typography variant={'caption'} className={classes.pendingButtonLabel}>Go to my organizations <ArrowLeftIcon viewBox={'0 0 12 12'} className={classes.pendingButtonIcon}/></Typography>
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className={classes.formContentWrapper}>
+                <div>
+                  <Typography variant={'h2'} className={classes.formTitle}>
+                    {
+                      `${actionLabel} ${wizardType === 'legalEntity' ? 'an organization' : 'a sub-organization'} profile`
+                    }
+                  </Typography>
+                  {
+                    wizardType !== 'legalEntity' ? (
+                      <Typography variant={'caption'} className={classes.formSubtitle}>Operated by: {parentName}</Typography>
+                    ) : null
+                  }
+                </div>
+                <Stepper alternativeLabel activeStep={activeStep} connector={<StepperStyles/>}>
+                  {steps.map((label, index) => (
+                    <Step key={index} className={classes.stepItem}>
+                      <StepLabel StepIconComponent={StepStyle}><p>{`${index + 1}.`}</p>{label}</StepLabel>
+                    </Step>
+                  ))}
+                </Stepper>
                 {
-                  `${actionLabel} ${wizardType === 'legalEntity' ? 'an organization' : 'a sub-organization'} profile`
+                  stepsContent(activeStep)
                 }
-              </Typography>
-              {
-                wizardType !== 'legalEntity' ? (
-                  <Typography variant={'caption'} className={classes.formSubtitle}>Operated by: {parentName}</Typography>
-                ) : null
-              }
-            </div>
-            <Stepper alternativeLabel activeStep={activeStep} connector={<StepperStyles/>}>
-              {steps.map((label, index) => (
-                <Step key={index} className={classes.stepItem}>
-                  <StepLabel StepIconComponent={StepStyle}><p>{`${index + 1}.`}</p>{label}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-            {
-              stepsContent(activeStep)
-            }
-          </div>
+              </div>
+            )
+          }
         </Container>
       </Container>
     </div>
@@ -220,7 +278,9 @@ const WizardGeneral = (props) => {
 };
 
 const mapStateToProps = state => {
-  return {}
+  return {
+    pending: selectPendingState(state)
+  }
 };
 
 const mapDispatchToProps = {

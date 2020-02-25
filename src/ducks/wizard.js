@@ -29,6 +29,10 @@ const SAVE_ORGID_JSON_URI_REQUEST = `${prefix}/SAVE_ORGID_JSON_URI_REQUEST`;
 const SAVE_ORGID_JSON_URI_SUCCESS = `${prefix}/SAVE_ORGID_JSON_URI_SUCCESS`;
 const SAVE_ORGID_JSON_URI_FAILURE = `${prefix}/SAVE_ORGID_JSON_URI_FAILURE`;
 
+const SET_PENDING_STATE_TO_TRANSACTION_REQUEST = `${prefix}/SET_PENDING_STATE_TO_TRANSACTION_REQUEST`;
+const SET_PENDING_STATE_TO_TRANSACTION_SUCCESS = `${prefix}/SET_PENDING_STATE_TO_TRANSACTION_SUCCESS`;
+const SET_PENDING_STATE_TO_TRANSACTION_FAILURE = `${prefix}/SET_PENDING_STATE_TO_TRANSACTION_FAILURE`;
+
 const initialState = {
   isFetching: false,
   isFetched: false,
@@ -42,6 +46,7 @@ const initialState = {
   },
   orgidUri: null,
   orgidHash: null,
+  pending: null,
   error: null
 };
 //endregion
@@ -57,6 +62,7 @@ export default function reducer( state = initialState, action) {
     case SAVE_MEDIA_TO_ARBOR_REQUEST:
     case SAVE_ORGID_JSON_TO_ARBOR_REQUEST:
     case SAVE_ORGID_JSON_URI_REQUEST:
+    case SET_PENDING_STATE_TO_TRANSACTION_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
         isFetched: false,
@@ -64,18 +70,19 @@ export default function reducer( state = initialState, action) {
       });
     // SUCCESS
     case REWRITE_ORGID_JSON_SUCCESS:
-      return {
+      return Object.assign({}, state, {
         isFetching: false,
         isFetched: true,
         orgidJson: payload,
         orgidHash: `0x${keccak256(JSON.stringify(payload, null, 2))}`,
+        pending: null,
         error: null
-      };
+      });
     case EXTEND_ORGID_JSON_SUCCESS:
       if (payload) {
         payload.updated = new Date().toJSON();
       }
-      return _.merge({}, state, {
+      return Object.assign({}, state, {
         isFetching: false,
         isFetched: true,
         orgidJson: payload,
@@ -89,19 +96,27 @@ export default function reducer( state = initialState, action) {
           logo: payload
         }
       });
-      return {
+      return Object.assign({}, state, {
         isFetching: false,
         isFetched: true,
         orgidJson: orgidJsonUpdates,
         orgidHash: `0x${keccak256(JSON.stringify(orgidJsonUpdates, null, 2))}`,
         error: null
-      };
+      });
     case SAVE_ORGID_JSON_TO_ARBOR_SUCCESS:
     case SAVE_ORGID_JSON_URI_SUCCESS:
-      return _.merge({}, state, {
+      return Object.assign({}, state, {
         isFetching: false,
         isFetched: true,
         orgidUri: payload,
+        pending: null,
+        error: null
+      });
+    case SET_PENDING_STATE_TO_TRANSACTION_SUCCESS:
+      return Object.assign({}, state, {
+        isFetching: false,
+        isFetched: true,
+        pending: payload.data,
         error: null
       });
     // FAILURE
@@ -114,6 +129,12 @@ export default function reducer( state = initialState, action) {
         isFetching: false,
         isFetched: false,
         error: error
+      });
+    case SET_PENDING_STATE_TO_TRANSACTION_FAILURE:
+      return Object.assign({}, state, {
+        isFetching: false,
+        isFetched: false,
+        error: payload.err
       });
     default:
       return state;
@@ -137,6 +158,10 @@ export const selectWizardOrgidUri = createSelector(
 export const selectWizardOrgidHash = createSelector(
   stateSelector,
   wizard => wizard.orgidHash
+);
+export const selectPendingState = createSelector(
+  stateSelector,
+  wizard => wizard.pending
 );
 //endregion
 
@@ -254,6 +279,28 @@ function saveOrgidUriFailure(error) {
     error
   }
 }
+
+//region == [ACTIONS: setPendingStateToTransaction] ====================================================================================
+export function setPendingStateToTransaction(payload) {
+  return {
+    type: SET_PENDING_STATE_TO_TRANSACTION_REQUEST,
+    payload
+  }
+}
+
+function setPendingStateToTransactionSuccess(payload) {
+  return {
+    type: SET_PENDING_STATE_TO_TRANSACTION_SUCCESS,
+    payload
+  }
+}
+
+function setPendingStateToTransactionFailure(error) {
+  return {
+    type: SET_PENDING_STATE_TO_TRANSACTION_REQUEST,
+    error
+  }
+}
 //endregion
 //endregion
 
@@ -310,13 +357,24 @@ function* saveOrgidUriSaga({payload}) {
   }
 }
 
+function* setPendingStateToTransactionSaga({payload}) {
+  try {
+    const result = yield call((data) => data, payload);
+
+    yield put(setPendingStateToTransactionSuccess(result));
+  } catch(error) {
+    yield put(setPendingStateToTransactionFailure(error));
+  }
+}
+
 export const saga = function* () {
   return yield all([
     takeEvery(REWRITE_ORGID_JSON_REQUEST, rewriteOrgidJsonSaga),
     takeEvery(EXTEND_ORGID_JSON_REQUEST, extendOrgidJsonSaga),
     takeEvery(SAVE_MEDIA_TO_ARBOR_REQUEST, saveMediaToArborSaga),
     takeEvery(SAVE_ORGID_JSON_TO_ARBOR_REQUEST, saveOrgidJsonToArborSaga),
-    takeEvery(SAVE_ORGID_JSON_URI_REQUEST, saveOrgidUriSaga)
+    takeEvery(SAVE_ORGID_JSON_URI_REQUEST, saveOrgidUriSaga),
+    takeEvery(SET_PENDING_STATE_TO_TRANSACTION_REQUEST, setPendingStateToTransactionSaga)
   ])
 };
 //endregion

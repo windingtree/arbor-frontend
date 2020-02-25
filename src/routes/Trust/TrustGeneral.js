@@ -415,7 +415,7 @@ function TrustGeneral() {
   };
 
   const cardContentWheelEvent = (isVisible) => {
-    const listener = throttle((event => handleWheelEvent(event)), 500);
+    const listener = throttle((event => handleWheelEvent(event)), 1200);
     const handleWheelEvent = (event) => {
       let scrollValue = event.deltaY;
 

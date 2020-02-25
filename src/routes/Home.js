@@ -463,6 +463,7 @@ function Home(props) {
   }
 
   const carouselWheelEvent = (isVisible) => {
+    const listener = throttle((event => handleWheelEvent(event)), 500);
     const handleWheelEvent = (event) => {
       let scrollValue = event.deltaY;
 
@@ -471,6 +472,7 @@ function Home(props) {
           if(prevState === 2) {
             setSensorState(false);
             document.body.style.overflow = 'auto';
+            document.removeEventListener('wheel', listener);
             return prevState;
           } else {
             return prevState + 1;
@@ -489,9 +491,8 @@ function Home(props) {
 
     if (isVisible) {
       document.body.style.overflow = 'hidden';
-      document.addEventListener('wheel', throttle((event => handleWheelEvent(event)), 500));
+      document.addEventListener('wheel', listener);
     }
-    document.removeEventListener('wheel', throttle((event => handleWheelEvent(event)), 500));
   };
 
   const sliderControllers = [

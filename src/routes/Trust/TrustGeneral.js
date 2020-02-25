@@ -415,6 +415,7 @@ function TrustGeneral() {
   };
 
   const cardContentWheelEvent = (isVisible) => {
+    const listener = throttle((event => handleWheelEvent(event)), 500);
     const handleWheelEvent = (event) => {
       let scrollValue = event.deltaY;
 
@@ -423,6 +424,7 @@ function TrustGeneral() {
           if(prevState === 6) {
             setSensorState(false);
             document.body.style.overflow = 'auto';
+            document.removeEventListener('wheel', listener);
             return prevState;
           } else {
             return prevState + 1;
@@ -441,9 +443,8 @@ function TrustGeneral() {
 
     if (isVisible) {
       document.body.style.overflow = 'hidden';
-      document.addEventListener('wheel', throttle((event => handleWheelEvent(event)), 500));
+      document.addEventListener('wheel', listener);
     }
-    document.removeEventListener('wheel', throttle((event => handleWheelEvent(event)), 500));
   };
 
   function CardAnimatedContent(props) {

@@ -141,7 +141,8 @@ function TopNavigation(props) {
   const { organization: { orgid: id, parent, jsonContent, proofsQty }, canManage, todos } = props;
   const type = parent ? 'organizationalUnit' : 'legalEntity';
   const editState = { action: 'edit', type, id, jsonContent };
-
+  const trustAssertions = jsonContent ? jsonContent.trust.assertions : []; //TODO check (maybe on back-end) if website starts with http,
+                                                                           // otherwise links will be broken
   return (
     <Container>
       <Box className={classes.screenHeader}>
@@ -201,7 +202,7 @@ function TopNavigation(props) {
             </div>
             {
               todos.length && (
-                <div className={[classes.itemTrustInfoBase, classes.itemStage].join(' ')} onClick={() => history.push(todos[0].link, { id })}>
+                <div className={[classes.itemTrustInfoBase, classes.itemStage].join(' ')} onClick={() => history.push(todos[0].link, { id, trustAssertions })}>
                   <StageIcon viewBox={'0 0 20 20'} className={classes.stageIcon}/>
                   <Typography variant={'caption'} className={[classes.itemTrustInfoTitle, classes.itemStageTitle].join(' ')} noWrap>{todos[0].step}</Typography>
                 </div>

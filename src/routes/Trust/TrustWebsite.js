@@ -163,8 +163,9 @@ export const styles = makeStyles({
 });
 
 function TrustWebsite() {
-  const website = _.get(history, 'location.state.website', 'example.com');
-
+  const trustAssertions = history.location.state.trustAssertions ? history.location.state.trustAssertions : [];
+  const websiteAssertion = trustAssertions.find(a => a.type === 'website');
+  const website = websiteAssertion ? websiteAssertion.claim : 'http://userwebsitexample.com/';
   const classes = styles();
 
   return (

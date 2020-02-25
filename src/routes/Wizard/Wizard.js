@@ -159,7 +159,7 @@ const useStepStyles = makeStyles({
 });
 
 const WizardGeneral = (props) => {
-  const { rewriteOrgidJson, pending, success } = props;
+  const { rewriteOrgidJson, pendingTransaction, successTransaction } = props;
   const classes = styles();
   const [activeStep, setActiveStep] = useState(0);
   const wizardType = _.get(history, 'location.state.type', 'legalEntity');
@@ -242,7 +242,7 @@ const WizardGeneral = (props) => {
       <Container className={classes.mainContent}>
         <Container maxWidth="sm" className={classes.formContainer}>
           {
-            !!pending ? (
+            !!pendingTransaction ? (
               <div className={classes.pendingContentWrapper}>
                 <img src={PendingTransactionIllustration} alt={'illustration'} className={classes.pendingIllustration}/>
                 <div className={classes.pendingTextContainer}>
@@ -255,7 +255,7 @@ const WizardGeneral = (props) => {
                   </Button>
                 </div>
               </div>
-            ) : !!success ? (
+            ) : !!successTransaction ? (
               <div className={classes.pendingContentWrapper}>
                 <img src={SuccessTransactionIllustration} alt={'illustration'} className={classes.pendingIllustration}/>
                 <div className={classes.pendingTextContainer}>
@@ -308,8 +308,8 @@ const WizardGeneral = (props) => {
 
 const mapStateToProps = state => {
   return {
-    pending: selectPendingState(state),
-    success: selectSuccessState(state),
+    pendingTransaction: selectPendingState(state),
+    successTransaction: selectSuccessState(state),
   }
 };
 

@@ -32,7 +32,7 @@ const WizardStep = (props) => {
       },
       (err, data) => {
         // todo: set waiting state => maybe redirect to next screen
-        props.setPendingStateToTransaction({data, err});
+        props.setPendingStateToTransaction(data);
         console.log(err, data);
         setTimeout(() => {
           props.fetchTransactionState(data);

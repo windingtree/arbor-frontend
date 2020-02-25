@@ -9,6 +9,7 @@ import {Container, Typography, Grid, Card, CardContent, Box, Hidden} from '@mate
 import {makeStyles} from '@material-ui/core/styles';
 import Ellipsis from 'react-dotdotdot';
 import VizSensor from 'react-visibility-sensor';
+import { throttle } from '../utils/helpers';
 //components
 import SearchComponent from '../components/SearchComponent';
 //icons && illustrations
@@ -462,24 +463,14 @@ function Home(props) {
   }
 
   const carouselWheelEvent = (isVisible) => {
-    function throttle(fn, wait) {
-      let time = Date.now();
-      return function(...args) {
-        if((time + wait - Date.now()) < 0) {
-          fn(...args);
-          time = Date.now();
-        }
-      }
-    }
-
     const handleWheelEvent = (event) => {
       let scrollValue = event.deltaY;
 
       if (scrollValue > 1) {
         setActiveSlide(prevState => {
           if(prevState === 2) {
-            document.body.style.overflow = 'auto';
             setSensorState(false);
+            document.body.style.overflow = 'auto';
             return prevState;
           } else {
             return prevState + 1;
@@ -499,9 +490,8 @@ function Home(props) {
     if (isVisible) {
       document.body.style.overflow = 'hidden';
       document.addEventListener('wheel', throttle((event => handleWheelEvent(event)), 500));
-    } else {
-      document.removeEventListener('wheel', throttle((event => handleWheelEvent(event)), 500));
     }
+    document.removeEventListener('wheel', throttle((event => handleWheelEvent(event)), 500));
   };
 
   const sliderControllers = [

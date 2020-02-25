@@ -1,6 +1,11 @@
 import React, {useState} from 'react';
 import {Container, Typography, Grid, Card, Button} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
+import { fadeIn } from 'react-animations';
+import Radium, { StyleRoot } from 'radium';
+import VizSensor from 'react-visibility-sensor';
+import { throttle } from '../../utils/helpers';
+
 import trustTopIllustration from '../../assets/SvgComponents/trust-g-top.svg';
 import cardWebsiteIllustration from '../../assets/SvgComponents/trust-g-website.svg';
 import cardTwitterIllustration from '../../assets/SvgComponents/trust-g-twitter.svg';
@@ -17,7 +22,6 @@ import stepSocialIcon from '../../assets/SvgComponents/trust-step-social-icon.sv
 import stepLifIcon from '../../assets/SvgComponents/trust-step-lif-icon.svg';
 import stepDirectoryIcon from '../../assets/SvgComponents/trust-step-directory-icon.svg';
 import stepsBg from '../../assets/SvgComponents/tiles-bg.svg';
-
 
 import colors from '../../styles/colors';
 
@@ -102,7 +106,7 @@ const styles = makeStyles({
     color: colors.greyScale.dark,
   },
   stepsSectionWrapper: {
-    backgroundColor: colors.greyScale.moreLighter,
+    background: `linear-gradient(180deg, ${colors.greyScale.moreLighter} 75%, ${colors.primary.white} 25%)`,
     padding: '0 30px'
   },
   stepsSection: {
@@ -118,7 +122,7 @@ const styles = makeStyles({
     position: 'relative',
     left: '-12px',
   },
-  joinControllerItem: {
+  stepControllerItem: {
     left: 'auto',
     right: '-12px'
   },
@@ -141,6 +145,19 @@ const styles = makeStyles({
     cursor: 'pointer',
     color: colors.greyScale.common,
     transition: 'color .3s ease'
+  },
+  controllerLine: {
+    display: 'inline-block',
+    verticalAlign: 'middle',
+    height: '2px',
+    width: '0',
+    marginRight: '12px',
+    backgroundColor: colors.primary.accent,
+    transition: 'width .3s ease'
+  },
+  stepControllerLine: {
+    marginRight: '0',
+    marginLeft: '12px'
   },
   stepCardsWrapper: {
     display: 'flex',
@@ -194,7 +211,9 @@ const styles = makeStyles({
     position: 'relative',
     display: 'inline-flex',
     justifyContent: 'space-evenly',
-    left: '24px'
+    left: '24px',
+    borderRadius: '6px',
+    boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)'
   },
   trustPointBadgeText: {
     fontWeight: 500,
@@ -240,9 +259,16 @@ const styles = makeStyles({
   }
 });
 
+const animation = {
+  fadeIn: {
+    animation: 'x 1s',
+    animationName: Radium.keyframes(fadeIn, 'fadeIn'),
+  }
+};
 
 function TrustGeneral() {
   const [activeStep, setActiveStep] = useState(0);
+  const [sensor, setSensorState] = useState(true);
   const classes = styles();
 
   const stepCards = [
@@ -362,15 +388,15 @@ function TrustGeneral() {
     const controllers = stepControllers.map((item, index) => {
       const name = index === activeStep ? item : item.slice(0, 6);
       return (
-        <li className={index === activeStep ? classes.activeController : classes.controllerItem}
+        <li className={index === activeStep ? classes.activeController : [classes.controllerItem, classes.stepControllerItem].join(' ')}
             key={index.toString()} style={{margin: '15px 0'}}>
-          <span className={classes.controllerLine}/>
           <button
-            className={classes.controllerButton}
+            className={[classes.controllerButton, classes.stepControllerButton].join(' ')}
             onClick={handleChangeActiveStep}
           >
             {name}
           </button>
+          <span className={[classes.controllerLine, classes.stepControllerLine].join(' ')}/>
         </li>
       )
     });
@@ -388,26 +414,68 @@ function TrustGeneral() {
     setActiveStep(itemIndex);
   };
 
-  const renderStepCard = (activeStep) => {
-    return <div style={{display: 'flex'}}>
-      <Card className={classes.stepCard}>
-        <div style={{display: 'flex', justifyContent: 'space-between'}}>
-          <Typography className={classes.stepCardPreTitle}>step {activeStep + 1}.</Typography>
-          <div className={classes.stepCardIconWrapper}>
-            <img className={classes.stepCardIcon} src={stepCards[activeStep].icon} alt="icon"/>
-          </div>
-        </div>
-        <Typography className={classes.stepCardTitle}>{stepCards[activeStep].title}</Typography>
-        {stepCards[activeStep].content}
-      </Card>
-      <Card className={classes.trustPointsBadge}>
-        <img src={trustPointsIcon} alt="trust points"/>
-        <Typography className={classes.trustPointBadgeText}>{stepCards[activeStep].trustPoints}</Typography>
-      </Card></div>
+  const cardContentWheelEvent = (isVisible) => {
+    const handleWheelEvent = (event) => {
+      let scrollValue = event.deltaY;
+
+      if (scrollValue > 1) {
+        setActiveStep(prevState => {
+          if(prevState === 6) {
+            setSensorState(false);
+            document.body.style.overflow = 'auto';
+            return prevState;
+          } else {
+            return prevState + 1;
+          }
+        });
+      } else {
+        setActiveStep(prevState => {
+          if(prevState === 0) {
+            return prevState;
+          } else {
+            return prevState - 1;
+          }
+        });
+      }
+    };
+
+    if (isVisible) {
+      document.body.style.overflow = 'hidden';
+      document.addEventListener('wheel', throttle((event => handleWheelEvent(event)), 500));
+    }
+    document.removeEventListener('wheel', throttle((event => handleWheelEvent(event)), 500));
   };
 
-  return (
+  function CardAnimatedContent(props) {
+    const cardContent = <div style={animation.fadeIn}>{props.cardContent}</div>;
+    const step = <span style={animation.fadeIn}>{props.step + 1}</span>;
+    const image = <img style={animation.fadeIn} className={classes.stepCardIcon} src={props.icon} alt="icon"/>;
+    const title = <span style={animation.fadeIn}>{props.cardTitle}</span>;
+    const trustLevel = <span style={animation.fadeIn} >{props.trustPoints}</span>;
 
+    return (
+      <StyleRoot>
+        <div style={{display: 'flex'}}>
+          <Card className={classes.stepCard}>
+            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+              <Typography className={classes.stepCardPreTitle}>step {step}.</Typography>
+              <div className={classes.stepCardIconWrapper}>
+                {image}
+              </div>
+            </div>
+            <Typography className={classes.stepCardTitle}>{title}</Typography>
+            {cardContent}
+          </Card>
+          <Card className={classes.trustPointsBadge}>
+            <img src={trustPointsIcon} alt="trust points"/>
+            <Typography className={classes.trustPointBadgeText}>{trustLevel}</Typography>
+          </Card>
+        </div>
+      </StyleRoot>
+    )
+  }
+
+  return (
     <div>
       <div className={classes.topDiv}>
         <Container className={classes.topSectionWrapper}>
@@ -488,22 +556,30 @@ function TrustGeneral() {
         </div>
       </Container>
       <Grid className={classes.stepsSectionWrapper}>
-        <Container className={classes.stepsSection}>
-          <Grid style={{width: '50%'}}>
-            <Typography variant={'h3'} className={classes.blockTitle}>
-              How to achieve the ultimate trust level?
-            </Typography>
-            <Typography className={classes.paragraph}>
-              Arbor allows organizations all over the world to opt-in and verify themselves without involving a
-              third-party
-              intermediary.
-            </Typography>
-          </Grid>
-          <Grid className={classes.stepCardsWrapper} container justify={'space-between'}>
-            {renderStepCard(activeStep)}
-            {renderStepControllers()}
-          </Grid>
-        </Container>
+        <VizSensor onChange={cardContentWheelEvent} minTopValue={300} active={sensor}>
+          <Container className={classes.stepsSection}>
+            <Grid style={{width: '50%'}}>
+              <Typography variant={'h3'} className={classes.blockTitle}>
+                How to achieve the ultimate trust level?
+              </Typography>
+              <Typography className={classes.paragraph}>
+                Arbor allows organizations all over the world to opt-in and verify themselves without involving a
+                third-party
+                intermediary.
+              </Typography>
+            </Grid>
+            <Grid className={classes.stepCardsWrapper} container justify={'space-between'}>
+              <CardAnimatedContent
+                step={activeStep}
+                cardContent={stepCards[activeStep].content}
+                icon={stepCards[activeStep].icon}
+                cardTitle={stepCards[activeStep].title}
+                trustPoints={stepCards[activeStep].trustPoints}
+              />
+              {renderStepControllers()}
+            </Grid>
+          </Container>
+        </VizSensor>
       </Grid>
       <Grid className={classes.moreVerifiedSection}>
         <Container>

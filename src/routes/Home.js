@@ -487,7 +487,7 @@ function Home(props) {
         });
       } else {
         setActiveSlide(prevState => {
-          if(prevState === 1 || prevState === 0) {
+          if(prevState === 0) {
             return prevState;
           } else {
             return prevState - 1;

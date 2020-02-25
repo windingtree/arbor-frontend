@@ -33,7 +33,7 @@ const SET_PENDING_STATE_TO_TRANSACTION_REQUEST = `${prefix}/SET_PENDING_STATE_TO
 const SET_PENDING_STATE_TO_TRANSACTION_SUCCESS = `${prefix}/SET_PENDING_STATE_TO_TRANSACTION_SUCCESS`;
 const SET_PENDING_STATE_TO_TRANSACTION_FAILURE = `${prefix}/SET_PENDING_STATE_TO_TRANSACTION_FAILURE`;
 
-//rewrite pending and this state ? move to another duck
+//rewrite pendingTransaction and this state ? move to another duck
 const FETCH_TRANSACTION_STATE_REQUEST = `${prefix}/FETCH_TRANSACTION_STATE_REQUEST`;
 const FETCH_TRANSACTION_STATE_SUCCESS = `${prefix}/FETCH_TRANSACTION_STATE_SUCCESS`;
 const FETCH_TRANSACTION_STATE_FAILURE = `${prefix}/FETCH_TRANSACTION_STATE_FAILURE`;
@@ -51,8 +51,8 @@ const initialState = {
   },
   orgidUri: null,
   orgidHash: null,
-  pending: null,
-  success: null,
+  pendingTransaction: null,
+  successTransaction: null,
   error: null
 };
 //endregion
@@ -70,30 +70,33 @@ export default function reducer( state = initialState, action) {
     case SAVE_ORGID_JSON_URI_REQUEST:
     case SET_PENDING_STATE_TO_TRANSACTION_REQUEST:
     case FETCH_TRANSACTION_STATE_REQUEST:
-      return Object.assign({}, state, {
+      return _.merge({}, state, {
         isFetching: true,
         isFetched: false,
         error: null
       });
     // SUCCESS
     case REWRITE_ORGID_JSON_SUCCESS:
-      return Object.assign({}, state, {
+      return {
         isFetching: false,
         isFetched: true,
         orgidJson: payload,
         orgidHash: `0x${keccak256(JSON.stringify(payload, null, 2))}`,
-        pending: null,
+        pendingTransaction: null,
+        successTransaction: null,
         error: null
-      });
+      };
     case EXTEND_ORGID_JSON_SUCCESS:
       if (payload) {
         payload.updated = new Date().toJSON();
       }
-      return Object.assign({}, state, {
+      return _.merge({}, state, {
         isFetching: false,
         isFetched: true,
         orgidJson: payload,
         orgidHash: `0x${keccak256(JSON.stringify(payload, null, 2))}`,
+        pendingTransaction: null,
+        successTransaction: null,
         error: null
       });
     case SAVE_MEDIA_TO_ARBOR_SUCCESS:
@@ -103,36 +106,36 @@ export default function reducer( state = initialState, action) {
           logo: payload
         }
       });
-      return Object.assign({}, state, {
+      return {
         isFetching: false,
         isFetched: true,
         orgidJson: orgidJsonUpdates,
         orgidHash: `0x${keccak256(JSON.stringify(orgidJsonUpdates, null, 2))}`,
         error: null
-      });
+      };
     case SAVE_ORGID_JSON_TO_ARBOR_SUCCESS:
     case SAVE_ORGID_JSON_URI_SUCCESS:
-      return Object.assign({}, state, {
+      return _.merge({}, state, {
         isFetching: false,
         isFetched: true,
         orgidUri: payload,
-        pending: null,
+        pendingTransaction: null,
         error: null
       });
     case SET_PENDING_STATE_TO_TRANSACTION_SUCCESS:
-      return Object.assign({}, state, {
+      return _.merge({}, state, {
         isFetching: false,
         isFetched: true,
-        pending: payload.data,
-        success: null,
+        pendingTransaction: payload,
+        successTransaction: null,
         error: null
       });
     case FETCH_TRANSACTION_STATE_SUCCESS:
-      return Object.assign({}, state, {
+      return _.merge({}, state, {
         isFetching: false,
         isFetched: true,
-        pending: null,
-        success: payload,
+        pendingTransaction: null,
+        successTransaction: payload,
         error: null
       });
     // FAILURE
@@ -142,16 +145,16 @@ export default function reducer( state = initialState, action) {
     case SAVE_ORGID_JSON_URI_FAILURE:
     case SAVE_ORGID_JSON_TO_ARBOR_FAILURE:
     case FETCH_TRANSACTION_STATE_FAILURE:
-      return Object.assign({}, state, {
+      return _.merge({}, state, {
         isFetching: false,
         isFetched: false,
         error: error
       });
     case SET_PENDING_STATE_TO_TRANSACTION_FAILURE:
-      return Object.assign({}, state, {
+      return _.merge({}, state, {
         isFetching: false,
         isFetched: false,
-        error: payload.err
+        error: error
       });
     default:
       return state;
@@ -179,12 +182,12 @@ export const selectWizardOrgidHash = createSelector(
 
 export const selectPendingState = createSelector(
   stateSelector,
-  wizard => wizard.pending
+  wizard => wizard.pendingTransaction
 );
 
 export const selectSuccessState = createSelector(
   stateSelector,
-  wizard => wizard.success
+  wizard => wizard.successTransaction
 );
 //endregion
 
@@ -303,6 +306,7 @@ function saveOrgidUriFailure(error) {
   }
 }
 //endregion
+
 //region == [ACTIONS: setPendingStateToTransaction] ====================================================================================
 export function setPendingStateToTransaction(payload) {
   return {
@@ -325,7 +329,8 @@ function setPendingStateToTransactionFailure(error) {
   }
 }
 //endregion
-//region == [ACTIONS: setSuccessStateToTransaction] ====================================================================================
+
+//region == [ACTIONS: fetchTransactionState] ====================================================================================
 export function fetchTransactionState(payload) {
   return {
     type: FETCH_TRANSACTION_STATE_REQUEST,

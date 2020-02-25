@@ -451,6 +451,16 @@ function Home(props) {
     setActiveUseCase(itemIndex);
   };
 
+  function SliderAnimatedImage(props) {
+    const image = <img src={props.image} style={animation.fadeInUp} alt={'illustration'} className={classes.carouselImage}/>;
+
+    return (
+      <StyleRoot>
+        {image}
+      </StyleRoot>
+    )
+  }
+
   const carouselWheelEvent = (isVisible) => {
     function throttle(fn, wait) {
       let time = Date.now();
@@ -502,14 +512,6 @@ function Home(props) {
 
   const sliderImages = [CarouselSignUpIllustration, CarouselValidateIllustration, CarouselDirectoryIllustration];
 
-  const SliderAnimatedImage = () => {
-    return (
-      <StyleRoot>
-        <img src={sliderImages[activeSlide]} style={animation.fadeInUp} alt={'illustration'} className={classes.carouselImage}/>
-      </StyleRoot>
-    )
-  };
-
   const handleSlideChange = (e) => {
     setActiveSlide(e.target ? sliderControllers.indexOf(e.target.innerHTML) : e );
   };
@@ -552,7 +554,7 @@ function Home(props) {
             </Typography>
               <div className={classes.subtitleWrapper}>
                 <Typography variant={'subtitle1'} className={classes.blockSubtitle}>
-                  Arbor has created an efficient alternative to lengthy and expensive <nobr>Know-Your-Business</nobr> (KYB) processes.
+                  Arbor has created an efficient alternative to lengthy and expensive <Typography variant={'inherit'} noWrap>Know-Your-Business</Typography> (KYB) processes.
                   Search for verified organizations across various industries and get
                   discovered by potential partners.
                 </Typography>
@@ -606,9 +608,7 @@ function Home(props) {
                       <div className={classes.joinSliderBaseLine}/>
                       <div className={classes.carouselWrapper}>
                         <Hidden mdDown>
-                          {
-                            SliderAnimatedImage()
-                          }
+                          <SliderAnimatedImage image={sliderImages[activeSlide]}/>
                         </Hidden>
                         <Hidden lgUp>
                           <img src={CarouselDirectoryIllustration} alt={'illustration'} className={classes.carouselImage}/>

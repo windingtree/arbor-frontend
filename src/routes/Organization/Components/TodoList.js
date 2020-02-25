@@ -3,6 +3,7 @@ import {Container, Grid, Typography, Card} from "@material-ui/core";
 import {Link} from 'react-router-dom';
 import {makeStyles} from "@material-ui/core/styles";
 import colors from '../../../styles/colors';
+import _ from 'lodash';
 
 import websiteIcon from '../../../assets/SvgComponents/trust-step-website-icon.svg';
 import socialIcon from '../../../assets/SvgComponents/trust-step-social-icon.svg';
@@ -14,6 +15,7 @@ const allTodo = {
   social: {
     step: 'Step 1. Confirm social network',
     link: '/trust/social',
+    state: {},
     icon: socialIcon,
     title: 'Verify your social media profiles',
     description: 'Post a specific message or comment on behalf of your corporate profiles on Twitter, Facebook and Instagram to prove your ownership.'
@@ -21,6 +23,7 @@ const allTodo = {
   website: {
     step: 'Step 2. Confirm Website',
     link: '/trust/website',
+    state: {},
     icon: websiteIcon,
     title: 'Verify your website ownership',
     description: 'It’s easy to prove that a website is linked to your organization profile via a DNS record or a text file in the root directory. '
@@ -28,6 +31,7 @@ const allTodo = {
   ssl: {
     step: 'Step 3. Submit LIF stake',
     link: '/trust/lif-stake',
+    state: {},
     icon: lifIcon,
     title: 'Submit your Líf deposit and participate in platform governance ',
     description: 'Líf deposit serves as an anti-spam protection. You are required to submit 1000 Líf ($100) for every organization profile you create.'
@@ -35,6 +39,7 @@ const allTodo = {
   lif: {
     step: 'Step 4. Setup Extended SSL',
     link: '/trust/ssl',
+    state: {},
     icon: sslIcon,
     title: 'Request an Extended Validation Certificate',
     description: 'Request a legal entity verification from a Certificate Authority of your choice. '
@@ -43,8 +48,13 @@ const allTodo = {
 
 export const getTodo = (organization) => {
   const todo = [];
+  const orgidType = _.get(organization, `orgidType`, 'unknown');
   if (!(organization.isSocialFBProved || organization.isSocialTWProved || organization.isSocialIGProved || organization.isSocialLNProved)) todo.push(allTodo.social);
-  if (!organization.isWebsiteProved) todo.push(allTodo.website);
+  if (!organization.isWebsiteProved) {
+    let website =  _.get(organization, `jsonContent.${orgidType}.contacts[0].website`, false);
+    if(typeof website === 'string' && website.indexOf('://') === -1) website = `https://${website}`;
+    todo.push(Object.assign({}, allTodo.website, {state: {website}}));
+  }
   if (!organization.isSslProved) todo.push(allTodo.ssl);
   if (!organization.isLifProved) todo.push(allTodo.lif);
   return todo;
@@ -92,7 +102,7 @@ function TodoList(props) {
     <Container>
       <Typography className={classes.listTitle}>To-do list ({todos.length})</Typography>
       {
-        todos.map(({link, title, description, icon}, index) => {
+        todos.map(({link, title, description, icon, state}, index) => {
           return (
             <Card key={index} className={classes.todoItemContainer}>
               <Grid container>
@@ -104,7 +114,7 @@ function TodoList(props) {
                   <Typography variant={'inherit'}>{description}</Typography>
                 </Grid>
                 <Grid className={classes.buttonWrapper} item xs={2}>
-                  <Link className={classes.proceedButton} to={{pathname: link, state: {orgid}}}>Proceed -></Link>
+                  <Link className={classes.proceedButton} to={{pathname: link, state: {orgid, ...state}}}>Proceed -></Link>
                 </Grid>
               </Grid>
             </Card>

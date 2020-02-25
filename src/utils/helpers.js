@@ -23,8 +23,8 @@ export const setRandomDefaultImage = (orgid, orgidType) => {
   if (orgidType === 'hotel' || orgidType === 'legalEntity' || orgidType === 'ota' || orgidType === 'insurance') arrayOfDefaultImages.push(DefaultHotelImage1, DefaultHotelImage2, DefaultHotelImage3, DefaultHotelImage4, DefaultHotelImage5, DefaultHotelImage6, DefaultHotelImage7, DefaultHotelImage8, DefaultHotelImage9);
   if (orgidType === 'airline') arrayOfDefaultImages.push(DefaultAirlineImage1, DefaultAirlineImage2, DefaultAirlineImage3, DefaultAirlineImage4, DefaultAirlineImage5, DefaultAirlineImage6);
   try {
-    let firstCharFromOrgid = orgid.toString().slice(0, 3);
-    index = parseInt(firstCharFromOrgid);
+    let lastCharFromOrgid = orgid.toString().slice(-1);
+    index = parseInt(`0x${lastCharFromOrgid}`);
     index = index < arrayOfDefaultImages.length ? index : index % arrayOfDefaultImages.length;
   } catch (e) {
     console.error(e);

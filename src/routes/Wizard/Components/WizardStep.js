@@ -34,7 +34,8 @@ export const styles = makeStyles({
     fontWeight: 500,
     color: colors.secondary.cyan,
     letterSpacing: '0.005em',
-    textDecoration: 'none'
+    textDecoration: 'none',
+    cursor: 'pointer'
   },
   linkIcon: {
     width: '13px',
@@ -62,6 +63,8 @@ export const styles = makeStyles({
   },
   // TODO refactor into one component
   dialogContainer: {
+    margin: 'auto',
+    maxWidth: '800px',
     '& > .MuiDialog-paper > .MuiDialogContent-root:first-child': {
       paddingTop: '80px'
     }

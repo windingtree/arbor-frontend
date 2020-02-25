@@ -33,6 +33,11 @@ const SET_PENDING_STATE_TO_TRANSACTION_REQUEST = `${prefix}/SET_PENDING_STATE_TO
 const SET_PENDING_STATE_TO_TRANSACTION_SUCCESS = `${prefix}/SET_PENDING_STATE_TO_TRANSACTION_SUCCESS`;
 const SET_PENDING_STATE_TO_TRANSACTION_FAILURE = `${prefix}/SET_PENDING_STATE_TO_TRANSACTION_FAILURE`;
 
+//rewrite pending and this state ? move to another duck
+const FETCH_TRANSACTION_STATE_REQUEST = `${prefix}/FETCH_TRANSACTION_STATE_REQUEST`;
+const FETCH_TRANSACTION_STATE_SUCCESS = `${prefix}/FETCH_TRANSACTION_STATE_SUCCESS`;
+const FETCH_TRANSACTION_STATE_FAILURE = `${prefix}/FETCH_TRANSACTION_STATE_FAILURE`;
+
 const initialState = {
   isFetching: false,
   isFetched: false,
@@ -47,6 +52,7 @@ const initialState = {
   orgidUri: null,
   orgidHash: null,
   pending: null,
+  success: null,
   error: null
 };
 //endregion
@@ -63,6 +69,7 @@ export default function reducer( state = initialState, action) {
     case SAVE_ORGID_JSON_TO_ARBOR_REQUEST:
     case SAVE_ORGID_JSON_URI_REQUEST:
     case SET_PENDING_STATE_TO_TRANSACTION_REQUEST:
+    case FETCH_TRANSACTION_STATE_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
         isFetched: false,
@@ -117,6 +124,15 @@ export default function reducer( state = initialState, action) {
         isFetching: false,
         isFetched: true,
         pending: payload.data,
+        success: null,
+        error: null
+      });
+    case FETCH_TRANSACTION_STATE_SUCCESS:
+      return Object.assign({}, state, {
+        isFetching: false,
+        isFetched: true,
+        pending: null,
+        success: payload,
         error: null
       });
     // FAILURE
@@ -125,6 +141,7 @@ export default function reducer( state = initialState, action) {
     case SAVE_MEDIA_TO_ARBOR_FAILURE:
     case SAVE_ORGID_JSON_URI_FAILURE:
     case SAVE_ORGID_JSON_TO_ARBOR_FAILURE:
+    case FETCH_TRANSACTION_STATE_FAILURE:
       return Object.assign({}, state, {
         isFetching: false,
         isFetched: false,
@@ -159,9 +176,15 @@ export const selectWizardOrgidHash = createSelector(
   stateSelector,
   wizard => wizard.orgidHash
 );
+
 export const selectPendingState = createSelector(
   stateSelector,
   wizard => wizard.pending
+);
+
+export const selectSuccessState = createSelector(
+  stateSelector,
+  wizard => wizard.success
 );
 //endregion
 
@@ -279,7 +302,7 @@ function saveOrgidUriFailure(error) {
     error
   }
 }
-
+//endregion
 //region == [ACTIONS: setPendingStateToTransaction] ====================================================================================
 export function setPendingStateToTransaction(payload) {
   return {
@@ -298,6 +321,28 @@ function setPendingStateToTransactionSuccess(payload) {
 function setPendingStateToTransactionFailure(error) {
   return {
     type: SET_PENDING_STATE_TO_TRANSACTION_REQUEST,
+    error
+  }
+}
+//endregion
+//region == [ACTIONS: setSuccessStateToTransaction] ====================================================================================
+export function fetchTransactionState(payload) {
+  return {
+    type: FETCH_TRANSACTION_STATE_REQUEST,
+    payload
+  }
+}
+
+function fetchTransactionStateSuccess(payload) {
+  return {
+    type: FETCH_TRANSACTION_STATE_SUCCESS,
+    payload
+  }
+}
+
+function fetchTransactionStateFailure(error) {
+  return {
+    type: FETCH_TRANSACTION_STATE_REQUEST,
     error
   }
 }
@@ -367,6 +412,16 @@ function* setPendingStateToTransactionSaga({payload}) {
   }
 }
 
+function* fetchTransactionStateSaga({payload}) {
+  try {
+    const result = yield call((data) => data, payload);
+
+    yield put(fetchTransactionStateSuccess(result));
+  } catch(error) {
+    yield put(fetchTransactionStateFailure(error));
+  }
+}
+
 export const saga = function* () {
   return yield all([
     takeEvery(REWRITE_ORGID_JSON_REQUEST, rewriteOrgidJsonSaga),
@@ -374,7 +429,8 @@ export const saga = function* () {
     takeEvery(SAVE_MEDIA_TO_ARBOR_REQUEST, saveMediaToArborSaga),
     takeEvery(SAVE_ORGID_JSON_TO_ARBOR_REQUEST, saveOrgidJsonToArborSaga),
     takeEvery(SAVE_ORGID_JSON_URI_REQUEST, saveOrgidUriSaga),
-    takeEvery(SET_PENDING_STATE_TO_TRANSACTION_REQUEST, setPendingStateToTransactionSaga)
+    takeEvery(SET_PENDING_STATE_TO_TRANSACTION_REQUEST, setPendingStateToTransactionSaga),
+    takeEvery(FETCH_TRANSACTION_STATE_REQUEST, fetchTransactionStateSaga),
   ])
 };
 //endregion

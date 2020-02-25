@@ -2,18 +2,19 @@ import React, { useState, useEffect } from 'react';
 import history from '../../redux/history';
 import _ from 'lodash';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { Container, Button, Typography, Stepper, StepConnector, Step, StepLabel } from "@material-ui/core";
+import { Container, Button, Typography, Stepper, StepConnector, Step, StepLabel, Grid } from "@material-ui/core";
 
 import BgPattern from '../../assets/SvgComponents/wizard-pattern.svg';
 import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
 import PendingTransactionIllustration from '../../assets/SvgComponents/org-creation-illustration.svg';
+import SuccessTransactionIllustration from '../../assets/SvgComponents/detailsIllustration.svg';
 import colors from '../../styles/colors';
 
 import { WizardStep, WizardStepHosting, WizardStepMetaMask } from "./Components";
 import { wizardConfig as legalEntity } from './config/legalEntity'
 import { wizardConfig as organizationalUnit} from './config/organizationalUnit'
 import { connect } from "react-redux";
-import { rewriteOrgidJson, selectPendingState } from "../../ducks/wizard";
+import { rewriteOrgidJson, selectPendingState, selectSuccessState } from "../../ducks/wizard";
 
 const styles = makeStyles({
   mainContainer: {
@@ -112,6 +113,16 @@ const styles = makeStyles({
     color: colors.secondary.cyan,
     transform: 'rotate(180deg)',
     marginLeft: '14px'
+  },
+  successButton: {
+    height: '44px',
+    backgroundImage: colors.gradients.orange,
+    border: `1px solid ${colors.primary.accent}`,
+    borderRadius: '6px',
+    padding: '6px 20px',
+  },
+  successButtonLabel: {
+    color: colors.primary.white
   }
 });
 
@@ -148,7 +159,7 @@ const useStepStyles = makeStyles({
 });
 
 const WizardGeneral = (props) => {
-  const { rewriteOrgidJson, pending } = props;
+  const { rewriteOrgidJson, pending, success } = props;
   const classes = styles();
   const [activeStep, setActiveStep] = useState(0);
   const wizardType = _.get(history, 'location.state.type', 'legalEntity');
@@ -244,6 +255,26 @@ const WizardGeneral = (props) => {
                   </Button>
                 </div>
               </div>
+            ) : !!success ? (
+              <div className={classes.pendingContentWrapper}>
+                <img src={SuccessTransactionIllustration} alt={'illustration'} className={classes.pendingIllustration}/>
+                <div className={classes.pendingTextContainer}>
+                  <Typography variant={'h3'} className={classes.pendingTitle}>Your organization profile is live!</Typography>
+                  <Typography variant={'subtitle2'} className={classes.pendingSubtitle}>Your organization is already in our registry and can be discovered by other community members. Now you can create another organization profile or go ahead and  improve your trust level.</Typography>
+                </div>
+                <Grid container justify={'space-between'} alignItems={'center'} wrap={'nowrap'}>
+                  <Grid item lg={6}>
+                    <Button className={[classes.pendingButton, classes.successButton].join(' ')} onClick={() => history.push('/trust/general')}>
+                      <Typography variant={'caption'} className={[classes.pendingButtonLabel, classes.successButtonLabel].join(' ')}>Improve trust level</Typography>
+                    </Button>
+                  </Grid>
+                  <Grid item lg={7}>
+                    <Button className={classes.pendingButton} onClick={() => history.push('/my-organizations')}>
+                      <Typography variant={'caption'} className={classes.pendingButtonLabel} noWrap>Go to my organizations <ArrowLeftIcon viewBox={'0 0 12 12'} className={classes.pendingButtonIcon}/></Typography>
+                    </Button>
+                  </Grid>
+                </Grid>
+              </div>
             ) : (
               <div className={classes.formContentWrapper}>
                 <div>
@@ -265,9 +296,7 @@ const WizardGeneral = (props) => {
                     </Step>
                   ))}
                 </Stepper>
-                {
-                  stepsContent(activeStep)
-                }
+                {stepsContent(activeStep)}
               </div>
             )
           }
@@ -279,7 +308,8 @@ const WizardGeneral = (props) => {
 
 const mapStateToProps = state => {
   return {
-    pending: selectPendingState(state)
+    pending: selectPendingState(state),
+    success: selectSuccessState(state),
   }
 };
 

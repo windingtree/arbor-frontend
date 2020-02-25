@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Button, Typography } from '@material-ui/core';
 import { ORGID_PROXY_ADDRESS, ORGID_ABI } from "../../../utils/constants";
 
-import { selectWizardOrgidJson, selectWizardOrgidHash, selectWizardOrgidUri, setPendingStateToTransaction } from '../../../ducks/wizard';
+import { selectWizardOrgidJson, selectWizardOrgidHash, selectWizardOrgidUri, setPendingStateToTransaction, fetchTransactionState } from '../../../ducks/wizard';
 import { selectSignInAddress } from '../../../ducks/signIn';
 import { styles } from './WizardStep';
 
@@ -34,6 +34,9 @@ const WizardStep = (props) => {
         // todo: set waiting state => maybe redirect to next screen
         props.setPendingStateToTransaction({data, err});
         console.log(err, data);
+        setTimeout(() => {
+          props.fetchTransactionState(data);
+        }, 4000);
       }
     )
 
@@ -66,7 +69,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-  setPendingStateToTransaction
+  setPendingStateToTransaction,
+  fetchTransactionState
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WizardStep);

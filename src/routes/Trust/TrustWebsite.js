@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {Container, Typography, Card, Box, Button} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 
@@ -150,7 +150,10 @@ export const styles = makeStyles({
     backgroundImage: colors.gradients.orange,
     boxShadow: '0 2px 12px rgba(12, 64, 78, 0.1)',
     border: `1px solid ${colors.primary.accent}`,
-    borderRadius: '8px'
+    borderRadius: '8px',
+    '& a': {
+      textDecoration: 'none'
+    }
   },
   downloadButtonTitle: {
     fontWeight: 600,
@@ -163,9 +166,11 @@ export const styles = makeStyles({
 });
 
 function TrustWebsite() {
-  const trustAssertions = history.location.state.trustAssertions ? history.location.state.trustAssertions : [];
+  const id = (!!history.location.state && !!history.location.state.id) ? history.location.state.id : '0xERROR';
+  const trustAssertions = (history.location.state && history.location.state.trustAssertions) ? history.location.state.trustAssertions : [];
   const websiteAssertion = trustAssertions.find(a => a.type === 'website');
   const website = websiteAssertion ? websiteAssertion.claim : 'http://userwebsitexample.com/';
+  const txtFileData = "data:text/json;charset=utf-8," + `orgid=${id}`;
   const classes = styles();
 
   return (
@@ -238,7 +243,7 @@ function TrustWebsite() {
                   <Typography className={classes.howListTexts}>Make this TXT file accessible via a URL: <br/><a
                     className={classes.link}
                     target={'_blank'}
-                    href={website+'/org.id'}>{website+'/org.id'}</a></Typography>
+                    href={website + '/org.id'}>{website + '/org.id'}</a></Typography>
                 </li>
 
                 <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
@@ -295,11 +300,12 @@ function TrustWebsite() {
           </Container>
         </Container>
         <Box>
-          <Button
-            className={classes.downloadButton}>
-            <Typography variant={'subtitle2'} noWrap className={classes.downloadButtonTitle}>
-              Download file
-            </Typography>
+          <Button className={classes.downloadButton}>
+            <a href={txtFileData} download='ORG.ID.TXT'>
+              <Typography variant={'subtitle2'} noWrap className={classes.downloadButtonTitle}>
+                Download file
+              </Typography>
+            </a>
           </Button>
         </Box>
       </Container>

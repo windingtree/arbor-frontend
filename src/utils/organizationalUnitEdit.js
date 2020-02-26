@@ -1,6 +1,6 @@
 import {countries} from './countries';
-import Joi from '@hapi/joi';
 import _ from 'lodash';
+import validators from './validators'
 
 export const config = [
   {
@@ -128,7 +128,7 @@ export const config = [
               subtype: 'website',
               name: 'Website',
               orgidJsonPath: 'organizationalUnit.contacts[0].website',
-              schema: Joi.string().pattern(/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/, 'uri').label('Website'),
+              schema: validators.website,
               trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'domain'}).get('[0]', false).value()
             },
             {
@@ -136,7 +136,7 @@ export const config = [
               subtype: 'email',
               name: 'Email',
               orgidJsonPath: 'organizationalUnit.contacts[0].email',
-              schema: Joi.string().email({tlds: {allow: false}})
+              schema: validators.email
             }
           ]
         }
@@ -167,13 +167,6 @@ export const config = [
               orgidJsonPath: 'organizationalUnit.contacts[0].instagram',
               trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'instagram'}).get('[0]', false).value()
             },
-            {
-              name: 'Logo',
-              type: 'dropzone',
-              orgidJsonPath: 'media[0].uri',
-              description: 'Add a logo or any image that represents your organization. It will help you stand out in search results.',
-              helperText: 'Recommended dimensions: 908х400 (minimal: 454x200)\nFormat: JPG, PNG'
-            }
           ]
         }
       ]

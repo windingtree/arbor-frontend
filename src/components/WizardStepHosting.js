@@ -14,13 +14,13 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
 import { Formik } from "formik";
 import Joi from '@hapi/joi';
-import { saveOrgidUri, saveOrgidJsonToArbor, selectWizardOrgidUri, selectWizardOrgidJson } from '../../../ducks/wizard'
-import { selectSignInAddress } from '../../../ducks/signIn'
+import { saveOrgidUri, saveOrgidJsonToArbor, selectWizardOrgidUri, selectWizardOrgidJson } from '../ducks/wizard'
+import { selectSignInAddress } from '../ducks/signIn'
 
-import InfoIcon from '../../../assets/SvgComponents/InfoIcon';
-import DownloadIcon from '../../../assets/SvgComponents/download-icon.svg';
+import InfoIcon from '../assets/SvgComponents/InfoIcon';
+import DownloadIcon from '../assets/SvgComponents/download-icon.svg';
 import { styles } from './WizardStep';
-import colors from '../../../styles/colors';
+import colors from '../styles/colors';
 
 const useStyles = makeStyles({
   formControlGroup: {

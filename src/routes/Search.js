@@ -23,7 +23,7 @@ import SearchIllustration from '../assets/SvgComponents/search-illustration.svg'
 import SearchNoResultsIllustration from '../assets/SvgComponents/search-no-result-illustration.svg';
 //styles
 import colors from '../styles/colors';
-import {countries} from './Wizard/config/countries';
+import {countries} from '../utils/countries';
 
 const styles = makeStyles({
   searchHeaderWrapper: {

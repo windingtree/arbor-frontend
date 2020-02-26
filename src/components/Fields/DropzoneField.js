@@ -2,14 +2,14 @@ import React, {useEffect, useState} from 'react';
 import {connect} from "react-redux";
 import {useDropzone} from 'react-dropzone';
 import _ from 'lodash';
-import {saveMediaToArbor, selectWizardOrgidJson} from '../../../ducks/wizard'
-import {selectSignInAddress} from '../../../ducks/signIn'
+import {saveMediaToArbor, selectWizardOrgidJson} from '../../ducks/wizard'
+import {selectSignInAddress} from '../../ducks/signIn'
 
 import {Tab, Tabs, TextField, Typography, Button} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
-import DragAndDropImage from '../../../assets/SvgComponents/dragNDrop-image.svg';
+import DragAndDropImage from '../../assets/SvgComponents/dragNDrop-image.svg';
 
-import colors from '../../../styles/colors';
+import colors from '../../styles/colors';
 
 const styles = makeStyles({
   tabsContainer: {

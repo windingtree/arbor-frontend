@@ -8,11 +8,11 @@ import CloseIcon from '@material-ui/icons/Close';
 import {Formik} from 'formik';
 import _ from 'lodash';
 
-import {extendOrgidJson, selectWizardOrgidJson} from '../../../ducks/wizard'
-import {WizardSection} from '../Components';
-import ArrowLeftIcon from '../../../assets/SvgComponents/ArrowLeftIcon';
+import {extendOrgidJson, selectWizardOrgidJson} from '../ducks/wizard'
+import {Section} from './index';
+import ArrowLeftIcon from '../assets/SvgComponents/ArrowLeftIcon';
 
-import colors from '../../../styles/colors';
+import colors from '../styles/colors';
 
 export const styles = makeStyles({
   stepTitle: {
@@ -219,9 +219,9 @@ const WizardStep = (props) => {
               !sections ?
                 <div/>
                 : sections.map((section, index) => {
-                  // console.log(`<WizardSection key="${index}" name="${section.name}" ... />`);
+                  // console.log(`<Section key="${index}" name="${section.name}" ... />`);
                   return (
-                    <WizardSection
+                    <Section
                       key={index}
                       handleChange={handleChange}
                       handleBlur={handleBlur}

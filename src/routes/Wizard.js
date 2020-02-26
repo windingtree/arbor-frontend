@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import history from '../../redux/history';
+import history from '../redux/history';
 import _ from 'lodash';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { Container, Button, Typography, Stepper, StepConnector, Step, StepLabel, Grid } from "@material-ui/core";
 
-import BgPattern from '../../assets/SvgComponents/wizard-pattern.svg';
-import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
-import PendingTransactionIllustration from '../../assets/SvgComponents/org-creation-illustration.svg';
-import SuccessTransactionIllustration from '../../assets/SvgComponents/detailsIllustration.svg';
-import colors from '../../styles/colors';
+import BgPattern from '../assets/SvgComponents/wizard-pattern.svg';
+import ArrowLeftIcon from '../assets/SvgComponents/ArrowLeftIcon';
+import PendingTransactionIllustration from '../assets/SvgComponents/org-creation-illustration.svg';
+import SuccessTransactionIllustration from '../assets/SvgComponents/detailsIllustration.svg';
+import colors from '../styles/colors';
 
-import { WizardStep, WizardStepHosting, WizardStepMetaMask } from "./Components";
-import { wizardConfig as legalEntity } from './config/legalEntity'
-import { wizardConfig as organizationalUnit} from './config/organizationalUnit'
+import { WizardStep, WizardStepHosting, WizardStepMetaMask } from "../components";
+import { wizardConfig as legalEntity } from '../utils/legalEntity'
+import { wizardConfig as organizationalUnit} from '../utils/organizationalUnit'
 import { connect } from "react-redux";
-import { rewriteOrgidJson, selectPendingState, selectSuccessState, selectWizardOrgidJson } from "../../ducks/wizard";
+import { rewriteOrgidJson, selectPendingState, selectSuccessState, selectWizardOrgidJson } from "../ducks/wizard";
 
 const styles = makeStyles({
   mainContainer: {

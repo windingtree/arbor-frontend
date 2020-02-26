@@ -22,3 +22,8 @@ export { default as StageIcon } from "./StageIcon";
 export { default as LifIcon1 } from './LifIcon1.svg';
 export { default as LifIcon2 } from './LifIcon2.svg';
 export { default as LifIcon3 } from './LifIcon3.svg';
+
+export { default as StepperGeneralIcon } from './StepperGeneralIcon'
+export { default as StepperDetailsIcon } from './StepperDetailsIcon'
+export { default as StepperHostingIcon } from './StepperHostingIcon'
+export { default as StepperMetaMaskIcon } from './StepperMetaMaskIcon'

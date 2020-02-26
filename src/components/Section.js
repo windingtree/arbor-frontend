@@ -2,9 +2,9 @@ import React from "react";
 
 import {  Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { InputField, SelectField, JsonHostingField, DropzoneField } from "../Fields";
+import { InputField, SelectField, JsonHostingField, DropzoneField } from "./Fields";
 
-import colors from '../../../styles/colors';
+import colors from '../styles/colors';
 
 const styles = makeStyles({
   section: {
@@ -19,7 +19,7 @@ const styles = makeStyles({
   }
 });
 
-const WizardSection = (props) => {
+const Section = (props) => {
   const classes = styles();
   let { handleChange, handleBlur, values, errors, touched, data: { name, fields } } = props;
   // console.log(`<Section name="${name}" fields="`, fields);
@@ -67,4 +67,4 @@ const WizardSection = (props) => {
   );
 };
 
-export default WizardSection;
+export default Section;

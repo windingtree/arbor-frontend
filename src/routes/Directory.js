@@ -16,7 +16,7 @@ import Pagination from '../components/Pagination';
 import colors from '../styles/colors';
 import history from '../redux/history';
 import ArrowLeftIcon from '../assets/SvgComponents/ArrowLeftIcon';
-import { countries } from './Wizard/config/countries';
+import { countries } from '../utils/countries';
 import _ from 'lodash';
 
 const styles = makeStyles({

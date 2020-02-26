@@ -1,8 +1,6 @@
-import {countries} from './countries';
-import Joi from '@hapi/joi';
-import StepperGeneralIcon from '../../../assets/SvgComponents/StepperGeneralIcon';
-import StepperHostingIcon from '../../../assets/SvgComponents/StepperHostingIcon';
-import StepperMetaMaskIcon from '../../../assets/SvgComponents/StepperMetaMaskIcon';
+import { countries } from './countries';
+import validators from './validators'
+import { StepperGeneralIcon, StepperDetailsIcon, StepperHostingIcon, StepperMetaMaskIcon } from '../assets/SvgComponents';
 
 export const wizardConfig = [
   {
@@ -18,7 +16,25 @@ export const wizardConfig = [
         fields: [
           {
             type: 'select',
-            name: 'Legal entity type',
+            name: 'Directory',
+            options: {
+              'hotel': 'Hotel',
+              'airline': 'Airline',
+              'insurance': 'Insurance',
+              'ota': 'Travel agencies'
+            },
+            required: true,
+            orgidJsonPath: 'organizationalUnit.type'
+          },
+          {
+            type: 'input',
+            name: 'Organization name',
+            required: true,
+            orgidJsonPath: 'organizationalUnit.name'
+          },
+          {
+            type: 'select',
+            name: 'Legal form',
             options: [
               'private entrepreneur',
               'private company limited by shares or Ltd. (UK, Ireland and the Commonwealth)',
@@ -34,20 +50,8 @@ export const wizardConfig = [
               'non-governmental organization',
             ],
             required: true,
-            orgidJsonPath: 'legalEntity.legalType'
+            orgidJsonPath: 'organizationalUnit.legalType'
           },
-          {
-            type: 'input',
-            name: 'Legal name',
-            required: true,
-            orgidJsonPath: 'legalEntity.legalName'
-          },
-          {
-            type: 'input',
-            name: 'Registration number',
-            helperText: 'Number of your organization in the country-specific business registry',
-            orgidJsonPath: 'legalEntity.legalIdentifier'
-          }
         ]
       },
       {
@@ -59,33 +63,33 @@ export const wizardConfig = [
             name: 'Country',
             options: countries,
             required: true,
-            orgidJsonPath: 'legalEntity.registeredAddress.country'
+            orgidJsonPath: 'organizationalUnit.registeredAddress.country'
           },
           {
             type: 'input',
             name: 'State or region',
-            orgidJsonPath: 'legalEntity.registeredAddress.subdivision'
+            orgidJsonPath: 'organizationalUnit.registeredAddress.subdivision'
           },
           {
             type: 'input',
             name: 'City',
-            orgidJsonPath: 'legalEntity.registeredAddress.locality'
+            orgidJsonPath: 'organizationalUnit.registeredAddress.locality'
           },
           {
             type: 'input',
             name: 'Street, building',
-            orgidJsonPath: 'legalEntity.registeredAddress.street_address'
+            orgidJsonPath: 'organizationalUnit.registeredAddress.street_address'
           },
           {
             type: 'input',
             name: 'Apartment or office',
-            orgidJsonPath: 'legalEntity.registeredAddress.premise'
+            orgidJsonPath: 'organizationalUnit.registeredAddress.premise'
           },
           {
             type: 'input',
             name: 'Postal code',
-            orgidJsonPath: 'legalEntity.registeredAddress.postal_code'
-          }
+            orgidJsonPath: 'organizationalUnit.registeredAddress.postal_code'
+          },
         ]
       },
       {
@@ -96,21 +100,21 @@ export const wizardConfig = [
             type: 'input',
             subtype: 'phone',
             name: 'Phone',
-            orgidJsonPath: 'legalEntity.contacts[0].phone'
+            orgidJsonPath: 'organizationalUnit.contacts[0].phone'
           },
           {
             type: 'input',
             subtype: 'website',
             name: 'Website',
-            orgidJsonPath: 'legalEntity.contacts[0].website',
-            schema: Joi.string().pattern(/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/, 'uri').label('Website'),
+            orgidJsonPath: 'organizationalUnit.contacts[0].website',
+            schema: validators.website
           },
           {
             type: 'input',
             subtype: 'email',
             name: 'Email',
-            orgidJsonPath: 'legalEntity.contacts[0].email',
-            schema: Joi.string().email({tlds: { allow: false }})
+            orgidJsonPath: 'organizationalUnit.contacts[0].email',
+            schema: validators.email
           }
         ]
       },
@@ -122,26 +126,52 @@ export const wizardConfig = [
             name: 'Facebook',
             type: 'input',
             icon: 'facebook',
-            orgidJsonPath: 'legalEntity.contacts[0].facebook',
+            orgidJsonPath: 'organizationalUnit.contacts[0].facebook',
           },
           {
             name: 'Twitter',
             type: 'input',
             icon: 'twitter',
-            orgidJsonPath: 'legalEntity.contacts[0].twitter',
+            orgidJsonPath: 'organizationalUnit.contacts[0].twitter',
           },
           {
             name: 'Instagram',
             type: 'input',
             icon: 'instagram',
-            orgidJsonPath: 'legalEntity.contacts[0].instagram',
+            orgidJsonPath: 'organizationalUnit.contacts[0].instagram',
           },
           {
             name: 'Logo',
             type: 'dropzone',
+            orgidJsonPath: 'media[0].uri',
             description: 'Add a logo or any image that represents your organization. It will help you stand out in search results.',
-            orgidJsonPath: 'media.logo',
             helperText: 'Recommended dimensions: 908х400 (minimal: 454x200)\nFormat: JPG, PNG'
+          }
+        ]
+      }
+    ],
+    cta: 'Next'
+  },
+  {
+    type: 'step',
+    name: 'Details',
+    icon: StepperDetailsIcon,
+    longName: 'Details',
+    description: 'You can tell us a bit more about your sub-organization or skip this step.',
+    sections: [
+      {
+        name: 'General information',
+        type: 'section',
+        fields: [
+          {
+            type: 'input',
+            name: 'Title',
+            orgidJsonPath: 'organizationalUnit.details.title'
+          },
+          {
+            type: 'input',
+            name: 'Organization details',
+            orgidJsonPath: 'organizationalUnit.details.details'
           }
         ]
       }
@@ -176,7 +206,7 @@ export const wizardConfig = [
     type: 'step_metamask',
     name: 'Confirmation',
     icon: StepperMetaMaskIcon,
-    longName: 'Сonfirmation',
+    longName: 'Confirmation',
     description: 'Once you click on the button below, you will get redirected to your MetaMask account. Submit a transaction fee to create your organization profile.',
     cta: 'Create profile'
   }

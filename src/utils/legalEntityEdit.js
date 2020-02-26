@@ -1,6 +1,6 @@
 import {countries} from './countries';
-import Joi from '@hapi/joi';
 import _ from 'lodash';
+import validators from "./validators";
 
 export const config = [
   {
@@ -122,7 +122,7 @@ export const config = [
               subtype: 'website',
               name: 'Website',
               orgidJsonPath: 'legalEntity.contacts[0].website',
-              schema: Joi.string().pattern(/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/, 'uri').label('Website'),
+              schema: validators.website,
               trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'domain'}).get('[0]', false).value()
             },
             {
@@ -130,7 +130,7 @@ export const config = [
               subtype: 'email',
               name: 'Email',
               orgidJsonPath: 'legalEntity.contacts[0].email',
-              schema: Joi.string().email({tlds: { allow: false }})
+              schema: validators.email
             }
           ]
         }

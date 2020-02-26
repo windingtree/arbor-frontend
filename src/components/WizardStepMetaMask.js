@@ -3,8 +3,8 @@ import { connect } from "react-redux";
 import { Button, Typography } from '@material-ui/core';
 // import { ORGID_PROXY_ADDRESS, ORGID_ABI } from "../../../utils/constants";
 
-import { selectWizardOrgidJson, selectWizardOrgidHash, selectWizardOrgidUri, sendOrganizationCreationRequest, setPendingStateToTransaction, fetchTransactionState } from '../../../ducks/wizard';
-import { selectSignInAddress } from '../../../ducks/signIn';
+import { selectWizardOrgidJson, selectWizardOrgidHash, selectWizardOrgidUri, sendOrganizationCreationRequest, setPendingStateToTransaction, fetchTransactionState } from '../ducks/wizard';
+import { selectSignInAddress } from '../ducks/signIn';
 import { styles } from './WizardStep';
 
 const WizardStep = (props) => {

@@ -1,9 +1,6 @@
 import {countries} from './countries';
-import Joi from '@hapi/joi';
-import StepperGeneralIcon from '../../../assets/SvgComponents/StepperGeneralIcon';
-import StepperDetailsIcon from '../../../assets/SvgComponents/StepperDetailsIcon';
-import StepperHostingIcon from '../../../assets/SvgComponents/StepperHostingIcon';
-import StepperMetaMaskIcon from '../../../assets/SvgComponents/StepperMetaMaskIcon';
+import validators from "./validators";
+import { StepperGeneralIcon, StepperHostingIcon, StepperMetaMaskIcon } from '../assets/SvgComponents';
 
 export const wizardConfig = [
   {
@@ -19,25 +16,7 @@ export const wizardConfig = [
         fields: [
           {
             type: 'select',
-            name: 'Directory',
-            options: {
-              'hotel': 'Hotel',
-              'airline': 'Airline',
-              'insurance': 'Insurance',
-              'ota': 'Travel agencies'
-            },
-            required: true,
-            orgidJsonPath: 'organizationalUnit.type'
-          },
-          {
-            type: 'input',
-            name: 'Organization name',
-            required: true,
-            orgidJsonPath: 'organizationalUnit.name'
-          },
-          {
-            type: 'select',
-            name: 'Legal form',
+            name: 'Legal entity type',
             options: [
               'private entrepreneur',
               'private company limited by shares or Ltd. (UK, Ireland and the Commonwealth)',
@@ -53,8 +32,20 @@ export const wizardConfig = [
               'non-governmental organization',
             ],
             required: true,
-            orgidJsonPath: 'organizationalUnit.legalType'
+            orgidJsonPath: 'legalEntity.legalType'
           },
+          {
+            type: 'input',
+            name: 'Legal name',
+            required: true,
+            orgidJsonPath: 'legalEntity.legalName'
+          },
+          {
+            type: 'input',
+            name: 'Registration number',
+            helperText: 'Number of your organization in the country-specific business registry',
+            orgidJsonPath: 'legalEntity.legalIdentifier'
+          }
         ]
       },
       {
@@ -66,33 +57,33 @@ export const wizardConfig = [
             name: 'Country',
             options: countries,
             required: true,
-            orgidJsonPath: 'organizationalUnit.registeredAddress.country'
+            orgidJsonPath: 'legalEntity.registeredAddress.country'
           },
           {
             type: 'input',
             name: 'State or region',
-            orgidJsonPath: 'organizationalUnit.registeredAddress.subdivision'
+            orgidJsonPath: 'legalEntity.registeredAddress.subdivision'
           },
           {
             type: 'input',
             name: 'City',
-            orgidJsonPath: 'organizationalUnit.registeredAddress.locality'
+            orgidJsonPath: 'legalEntity.registeredAddress.locality'
           },
           {
             type: 'input',
             name: 'Street, building',
-            orgidJsonPath: 'organizationalUnit.registeredAddress.street_address'
+            orgidJsonPath: 'legalEntity.registeredAddress.street_address'
           },
           {
             type: 'input',
             name: 'Apartment or office',
-            orgidJsonPath: 'organizationalUnit.registeredAddress.premise'
+            orgidJsonPath: 'legalEntity.registeredAddress.premise'
           },
           {
             type: 'input',
             name: 'Postal code',
-            orgidJsonPath: 'organizationalUnit.registeredAddress.postal_code'
-          },
+            orgidJsonPath: 'legalEntity.registeredAddress.postal_code'
+          }
         ]
       },
       {
@@ -103,21 +94,21 @@ export const wizardConfig = [
             type: 'input',
             subtype: 'phone',
             name: 'Phone',
-            orgidJsonPath: 'organizationalUnit.contacts[0].phone'
+            orgidJsonPath: 'legalEntity.contacts[0].phone'
           },
           {
             type: 'input',
             subtype: 'website',
             name: 'Website',
-            orgidJsonPath: 'organizationalUnit.contacts[0].website',
-            schema: Joi.string().pattern(/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/, 'uri').label('Website')
+            orgidJsonPath: 'legalEntity.contacts[0].website',
+            schema: validators.website
           },
           {
             type: 'input',
             subtype: 'email',
             name: 'Email',
-            orgidJsonPath: 'organizationalUnit.contacts[0].email',
-            schema: Joi.string().email({tlds: {allow: false}})
+            orgidJsonPath: 'legalEntity.contacts[0].email',
+            schema: validators.email
           }
         ]
       },
@@ -129,52 +120,26 @@ export const wizardConfig = [
             name: 'Facebook',
             type: 'input',
             icon: 'facebook',
-            orgidJsonPath: 'organizationalUnit.contacts[0].facebook',
+            orgidJsonPath: 'legalEntity.contacts[0].facebook',
           },
           {
             name: 'Twitter',
             type: 'input',
             icon: 'twitter',
-            orgidJsonPath: 'organizationalUnit.contacts[0].twitter',
+            orgidJsonPath: 'legalEntity.contacts[0].twitter',
           },
           {
             name: 'Instagram',
             type: 'input',
             icon: 'instagram',
-            orgidJsonPath: 'organizationalUnit.contacts[0].instagram',
+            orgidJsonPath: 'legalEntity.contacts[0].instagram',
           },
           {
             name: 'Logo',
             type: 'dropzone',
-            orgidJsonPath: 'media[0].uri',
             description: 'Add a logo or any image that represents your organization. It will help you stand out in search results.',
+            orgidJsonPath: 'media.logo',
             helperText: 'Recommended dimensions: 908х400 (minimal: 454x200)\nFormat: JPG, PNG'
-          }
-        ]
-      }
-    ],
-    cta: 'Next'
-  },
-  {
-    type: 'step',
-    name: 'Details',
-    icon: StepperDetailsIcon,
-    longName: 'Details',
-    description: 'You can tell us a bit more about your sub-organization or skip this step.',
-    sections: [
-      {
-        name: 'General information',
-        type: 'section',
-        fields: [
-          {
-            type: 'input',
-            name: 'Title',
-            orgidJsonPath: 'organizationalUnit.details.title'
-          },
-          {
-            type: 'input',
-            name: 'Organization details',
-            orgidJsonPath: 'organizationalUnit.details.details'
           }
         ]
       }

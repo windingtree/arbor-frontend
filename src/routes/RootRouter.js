@@ -19,7 +19,8 @@ import FAQ from './FAQ';
 import NotFound from './NotFound';
 //Private routes
 import PrivateRoute from '../components/PrivateRoute';
-import Wizard from './Wizard/Wizard';
+import Wizard from './Wizard';
+import Edit from './Edit';
 import Profile from './Profile';
 
 class RootRouter extends Component {
@@ -78,6 +79,11 @@ class RootRouter extends Component {
             isAuthenticated={isAuthenticated}
             path='/my-organizations/wizard'
             component={Wizard}
+          />
+          <PrivateRoute
+            isAuthenticated={isAuthenticated}
+            path='/my-organizations/:orgId/edit'
+            component={Edit}
           />
           <PrivateRoute
             isAuthenticated={isAuthenticated}

@@ -9,9 +9,9 @@ import { callApi } from "../redux/api";
 export const moduleName = 'wizard';
 const prefix = `${appName}/${moduleName}`;
 
-const REWRITE_ORGID_JSON_REQUEST = `${prefix}/EXTEND_ORGID_JSON_REQUEST`;
-const REWRITE_ORGID_JSON_SUCCESS = `${prefix}/EXTEND_ORGID_JSON_SUCCESS`;
-const REWRITE_ORGID_JSON_FAILURE = `${prefix}/EXTEND_ORGID_JSON_FAILURE`;
+const REWRITE_ORGID_JSON_REQUEST = `${prefix}/REWRITE_ORGID_JSON_REQUEST`;
+const REWRITE_ORGID_JSON_SUCCESS = `${prefix}/REWRITE_ORGID_JSON_SUCCESS`;
+const REWRITE_ORGID_JSON_FAILURE = `${prefix}/REWRITE_ORGID_JSON_FAILURE`;
 
 const EXTEND_ORGID_JSON_REQUEST = `${prefix}/EXTEND_ORGID_JSON_REQUEST`;
 const EXTEND_ORGID_JSON_SUCCESS = `${prefix}/EXTEND_ORGID_JSON_SUCCESS`;
@@ -33,7 +33,7 @@ const SET_PENDING_STATE_TO_TRANSACTION_REQUEST = `${prefix}/SET_PENDING_STATE_TO
 const SET_PENDING_STATE_TO_TRANSACTION_SUCCESS = `${prefix}/SET_PENDING_STATE_TO_TRANSACTION_SUCCESS`;
 const SET_PENDING_STATE_TO_TRANSACTION_FAILURE = `${prefix}/SET_PENDING_STATE_TO_TRANSACTION_FAILURE`;
 
-//rewrite pendingTransaction and this state ? move to another duck
+//maybe rewrite pendingTransaction and this state ? move to another duck
 const FETCH_TRANSACTION_STATE_REQUEST = `${prefix}/FETCH_TRANSACTION_STATE_REQUEST`;
 const FETCH_TRANSACTION_STATE_SUCCESS = `${prefix}/FETCH_TRANSACTION_STATE_SUCCESS`;
 const FETCH_TRANSACTION_STATE_FAILURE = `${prefix}/FETCH_TRANSACTION_STATE_FAILURE`;
@@ -195,21 +195,21 @@ export const selectSuccessState = createSelector(
 //region == [ACTIONS: rewriteOrgidJson] ================================================================================
 export function rewriteOrgidJson(payload) {
   return {
-    type: EXTEND_ORGID_JSON_REQUEST,
+    type: REWRITE_ORGID_JSON_REQUEST,
     payload
   }
 }
 
 function rewriteOrgidJsonSuccess(payload) {
   return {
-    type: EXTEND_ORGID_JSON_SUCCESS,
+    type: REWRITE_ORGID_JSON_SUCCESS,
     payload
   }
 }
 
 function rewriteOrgidJsonFailure(error) {
   return {
-    type: EXTEND_ORGID_JSON_FAILURE,
+    type: REWRITE_ORGID_JSON_FAILURE,
     error
   }
 }
@@ -454,4 +454,23 @@ function ApiPostMedia(data) {
 function ApiPostOrgidJson(data) {
   return callApi(`json`, 'POST', { body: JSON.stringify(data),  headers: { 'Content-Type': 'application/json' } });
 }
+
+function ApiCreateLegalEntity() {
+  // return txId
+}
+
+function ApiCreateOrganizationalUnit() {
+  // return txId
+}
+
+function ApiEditOrganization() {
+  // return txId
+}
+
+function ApiGetTxStatus(transactionIn) {
+  return new Promise((resolve, reject) => {
+
+  })
+}
+
 //endregion

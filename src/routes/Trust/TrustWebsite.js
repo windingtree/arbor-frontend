@@ -1,4 +1,5 @@
 import React from "react";
+import { Redirect } from 'react-router-dom';
 import {Container, Typography, Card, Box, Button} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 
@@ -165,16 +166,14 @@ export const styles = makeStyles({
 });
 
 function TrustWebsite() {
-  const id = (!!history.location.state && !!history.location.state.id) ? history.location.state.id : '0xERROR';
-  const trustAssertions = (history.location.state && history.location.state.trustAssertions) ? history.location.state.trustAssertions : [];
-  const websiteAssertion = trustAssertions.find(a => a.type === 'website');
-  const website = websiteAssertion ? websiteAssertion.claim : 'http://userwebsitexample.com/';
+  const id = (!!history.location.state && !!history.location.state.id) ? history.location.state.id : false;
+  const website = _.get(history, 'location.state.website', 'example.com');
   const txtFileData = `data:text/json;charset=utf-8,orgid=${id}`;
   const classes = styles();
 
   return (
     <div>
-      <div className={classes.topDiv}>
+      {!website ? <Redirect exact path={'/trust/website'} to={'/my-organizations'}/> : <div className={classes.topDiv}>
         <Container className={classes.topSectionWrapper}
                    style={{backgroundColor: colors.greyScale.moreLighter}}>
           <Box className={classes.screenHeader}>
@@ -204,7 +203,7 @@ function TrustWebsite() {
             </div>
           </Container>
         </Container>
-      </div>
+      </div>}
       <Container className={classes.howSection}>
         <Container>
           <Typography className={classes.howSectionTitle}>
@@ -242,7 +241,7 @@ function TrustWebsite() {
                   <Typography className={classes.howListTexts}>Make this TXT file accessible via a URL: <br/><a
                     className={classes.link}
                     target={'_blank'}
-                    href={website + '/org.id'}>{website + '/org.id'}</a></Typography>
+                    href={website+'/org.id'}>{website+'/org.id'}</a></Typography>
                 </li>
 
                 <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>

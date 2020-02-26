@@ -48,11 +48,20 @@ const allTodo = {
 
 export const getTodo = (organization) => {
   const todo = [];
-  const orgidType = _.get(organization, `orgidType`, 'unknown');
-  if (!(organization.isSocialFBProved || organization.isSocialTWProved || organization.isSocialIGProved || organization.isSocialLNProved)) todo.push(allTodo.social);
-  if (!organization.isWebsiteProved) {
-    let website =  _.get(organization, `jsonContent.${orgidType}.contacts[0].website`, false);
-    if(typeof website === 'string' && website.indexOf('://') === -1) website = `https://${website}`;
+  const jsonContent = _.get(organization, `jsonContent`, {});
+  const orgidType = _.get(jsonContent, `legalEntity`, 'organizationalUnit');
+  const contacts = _.get(jsonContent, `${orgidType}.contacts[0]`, {});
+
+  if (!(organization.isSocialFBProved && organization.isSocialTWProved && organization.isSocialIGProved)) {
+    if ((contacts.twitter && !organization.isSocialTWProved) || (contacts.facebook && !organization.isSocialFBProved) ||
+      (contacts.instagram && !organization.isSocialIGProved)) {
+      todo.push(Object.assign({}, allTodo.social, {state: {contacts}}))
+    }
+  }
+  let website = contacts.website;
+
+  if (!organization.isWebsiteProved && website) {
+    if (typeof website === 'string' && website.indexOf('://') === -1) website = `https://${website}`;
     todo.push(Object.assign({}, allTodo.website, {state: {website}}));
   }
   if (!organization.isSslProved) todo.push(allTodo.ssl);
@@ -114,7 +123,8 @@ function TodoList(props) {
                   <Typography variant={'inherit'}>{description}</Typography>
                 </Grid>
                 <Grid className={classes.buttonWrapper} item xs={2}>
-                  <Link className={classes.proceedButton} to={{pathname: link, state: {orgid, ...state}}}>Proceed -></Link>
+                  <Link className={classes.proceedButton} to={{pathname: link, state: {id: orgid, ...state}}}>Proceed
+                    -></Link>
                 </Grid>
               </Grid>
             </Card>

@@ -171,30 +171,20 @@ const WizardGeneral = (props) => {
   const types = { legalEntity, organizationalUnit };
   const wizardConfig = types[wizardType];
 
-  // const hasPropertyType = orgidJson.hasOwnProperty(wizardType);
-  // const orgidJsonTypeValue = _.get(orgidJson, `${wizardType}`, undefined);
-
   useEffect(() => {
     if(id) {
       props.rewriteOrgidJson(jsonContent)
     }
-    // if(!hasPropertyType && orgidJsonTypeValue === undefined) {
-    //   props.rewriteOrgidJson({});
-    // }
-    // console.log(hasPropertyType, wizardType, orgidJsonTypeValue);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   useEffect(() => {
-    const id = orgidJson.id;
     props.rewriteOrgidJson({
       "@context": "https://windingtree.com/ns/did/v1",
-      id: id,
+      "id": orgidJson.id,
       "created": new Date().toJSON(),
       [wizardType]: {}
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wizardType]);
+  }, [wizardType]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     window.scrollTo(0, 0)

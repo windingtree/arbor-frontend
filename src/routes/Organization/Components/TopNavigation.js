@@ -1,8 +1,10 @@
 import React from "react";
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { Box, Button, Container, Hidden, Tooltip, Typography } from "@material-ui/core";
+import _ from 'lodash';
+
+import {makeStyles, withStyles} from '@material-ui/core/styles';
+import {Box, Button, Container, Hidden, Tooltip, Typography} from "@material-ui/core";
 import history from "../../../redux/history";
-import { ArrowLeftIcon, EyeIcon, EditIcon, InfoIcon, TrustLevelIcon, StageIcon } from '../../../assets/SvgComponents';
+import {ArrowLeftIcon, EyeIcon, EditIcon, InfoIcon, TrustLevelIcon, StageIcon} from '../../../assets/SvgComponents';
 import colors from '../../../styles/colors';
 
 const LightTooltip = withStyles({
@@ -138,11 +140,11 @@ const styles = makeStyles({
 
 function TopNavigation(props) {
   const classes = styles();
-  const { organization: { orgid: id, parent, jsonContent, proofsQty }, canManage, todos } = props;
-  const type = parent ? 'organizationalUnit' : 'legalEntity';
-  const editState = { action: 'edit', type, id, jsonContent };
-  const trustAssertions = jsonContent ? jsonContent.trust.assertions : []; //TODO check (maybe on back-end) if website starts with http,
-                                                                           // otherwise links will be broken
+  const {organization, canManage, todos} = props;
+  const {orgid: id, jsonContent, proofsQty} = organization;
+  const orgidType = _.get(props.organization, `legalEntity`, 'organizationalUnit');
+  const editState = {action: 'edit', type: orgidType, id, jsonContent};
+
   return (
     <Container>
       <Box className={classes.screenHeader}>
@@ -176,7 +178,8 @@ function TopNavigation(props) {
                 onClick={() => history.push('/my-organizations/wizard', editState)}
                 className={classes.itemActionButton}>
                 <Typography variant={'caption'} className={classes.buttonLabel}>
-                  <EditIcon viewBox={'0 0 14 14 '} className={[classes.itemActionButtonIcon, classes.editIcon].join(' ')}/>
+                  <EditIcon viewBox={'0 0 14 14 '}
+                            className={[classes.itemActionButtonIcon, classes.editIcon].join(' ')}/>
                   Edit organization profile
                 </Typography>
               </Button> {/*Edit*/}
@@ -202,9 +205,11 @@ function TopNavigation(props) {
             </div>
             {
               todos.length && (
-                <div className={[classes.itemTrustInfoBase, classes.itemStage].join(' ')} onClick={() => history.push(todos[0].link, { id, trustAssertions })}>
+                <div className={[classes.itemTrustInfoBase, classes.itemStage].join(' ')}
+                     onClick={() => history.push(todos[0].link, {id, ...todos[0].state})}>
                   <StageIcon viewBox={'0 0 20 20'} className={classes.stageIcon}/>
-                  <Typography variant={'caption'} className={[classes.itemTrustInfoTitle, classes.itemStageTitle].join(' ')} noWrap>{todos[0].step}</Typography>
+                  <Typography variant={'caption'}
+                              className={[classes.itemTrustInfoTitle, classes.itemStageTitle].join(' ')}>{todos[0].step}</Typography>
                 </div>
               )
             }

@@ -119,7 +119,6 @@ const DialogContent = withStyles({
 
 
 const WizardStep = (props) => {
-  console.log('%cINIT Component Wizard Step', 'background-color: yellow; color: black');
   const [isModalOpen, toggleModalOpenState] = useState(false);
   const classes = styles();
 
@@ -166,11 +165,6 @@ const WizardStep = (props) => {
     toggleModalOpenState(false)
   };
 
-  const initialValues = (() => {
-    console.log('%cvalues', 'background-color: yellow;');
-    return Object.assign({}, props.orgidJson)
-  })()
-
   return (
     <div key={index}>
       <Typography variant={'h3'} className={classes.stepTitle}>Step {index + 1}: {longName}</Typography>
@@ -189,7 +183,8 @@ const WizardStep = (props) => {
       }
 
       <Formik
-        initialValues={initialValues}
+        initialValues={Object.assign({}, props.orgidJson)}
+        enableReinitialize={true}
         validate={values => {
           const errors = {};
           _.each(validators, (validator, orgidJsonPath) => {
@@ -204,10 +199,7 @@ const WizardStep = (props) => {
           if (!_.isEmpty(errors)) console.log('ERRORS', errors);
           return errors;
         }}
-        onSubmit={(values, {setSubmitting}) => {
-          console.log('%conSubmit', 'background:red; color:white;', values);
-          setSubmitting(false);
-
+        onSubmit={(values, /*{setSubmitting}*/) => {
           extendOrgidJson(values);
           handleNext();
         }}

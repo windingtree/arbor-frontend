@@ -10,7 +10,7 @@ import TrustLifStake from './TrustLifStake';
 export default function Trust() {
   return (
     <Switch>
-      <Route path={'/trust/general'} component={TrustGeneral}/>
+      <Route path='/trust/general' component={TrustGeneral}/>
       <Route path='/trust/website' component={TrustWebsite}/>
       <Route path='/trust/social' component={TrustSocial}/>
       <Route path='/trust/ssl' component={TrustSSL}/>

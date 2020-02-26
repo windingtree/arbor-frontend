@@ -1,4 +1,5 @@
-import React, {useState} from "react";
+import React from "react";
+import { Redirect } from 'react-router-dom';
 import {Container, Typography, Card, Box, Button} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 
@@ -10,7 +11,6 @@ import globeIconSvg from '../../assets/SvgComponents/globe-icon.svg';
 import listPlaceholderSvg from '../../assets/SvgComponents/list-placeholder.svg';
 
 import colors from '../../styles/colors';
-import _ from "lodash";
 
 export const styles = makeStyles({
   topDiv: {
@@ -166,16 +166,15 @@ export const styles = makeStyles({
 });
 
 function TrustWebsite() {
+
   const id = (!!history.location.state && !!history.location.state.id) ? history.location.state.id : '0xERROR';
-  const trustAssertions = (history.location.state && history.location.state.trustAssertions) ? history.location.state.trustAssertions : [];
-  const websiteAssertion = trustAssertions.find(a => a.type === 'website');
-  const website = websiteAssertion ? websiteAssertion.claim : 'http://userwebsitexample.com/';
+  const website = (!!history.location.state && !!history.location.state.website) ? history.location.state.website : false;
   const txtFileData = "data:text/json;charset=utf-8," + `orgid=${id}`;
   const classes = styles();
 
   return (
     <div>
-      <div className={classes.topDiv}>
+      {!website ? <Redirect exact path={'/trust/website'} to={'/my-organizations'}/> : <div className={classes.topDiv}>
         <Container className={classes.topSectionWrapper}
                    style={{backgroundColor: colors.greyScale.moreLighter}}>
           <Box className={classes.screenHeader}>
@@ -205,7 +204,7 @@ function TrustWebsite() {
             </div>
           </Container>
         </Container>
-      </div>
+      </div>}
       <Container className={classes.howSection}>
         <Container>
           <Typography className={classes.howSectionTitle}>

@@ -29,13 +29,13 @@ const SAVE_ORGID_JSON_URI_REQUEST = `${prefix}/SAVE_ORGID_JSON_URI_REQUEST`;
 const SAVE_ORGID_JSON_URI_SUCCESS = `${prefix}/SAVE_ORGID_JSON_URI_SUCCESS`;
 const SAVE_ORGID_JSON_URI_FAILURE = `${prefix}/SAVE_ORGID_JSON_URI_FAILURE`;
 
-const SEND_ORGANIZATION_CREATION_REQUEST = `${prefix}/SEND_ORGANIZATION_CREATION_REQUEST`;
-const SEND_ORGANIZATION_CREATION_SUCCESS = `${prefix}/SEND_ORGANIZATION_CREATION_SUCCESS`;
-const SEND_ORGANIZATION_CREATION_FAILURE = `${prefix}/SEND_ORGANIZATION_CREATION_FAILURE`;
+const SEND_CREATE_LEGAL_ENTITY_REQUEST = `${prefix}/SEND_CREATE_LEGAL_ENTITY_REQUEST`;
+const SEND_CREATE_LEGAL_ENTITY_SUCCESS = `${prefix}/SEND_CREATE_LEGAL_ENTITY_SUCCESS`;
+const SEND_CREATE_LEGAL_ENTITY_FAILURE = `${prefix}/SEND_CREATE_LEGAL_ENTITY_FAILURE`;
 
-const SEND_ORGANIZATION_UNIT_CREATION_REQUEST = `${prefix}/SEND_ORGANIZATION_UNIT_CREATION_REQUEST`;
-const SEND_ORGANIZATION_UNIT_CREATION_SUCCESS = `${prefix}/SEND_ORGANIZATION_UNIT_CREATION_SUCCESS`;
-const SEND_ORGANIZATION_UNIT_CREATION_FAILURE = `${prefix}/SEND_ORGANIZATION_UNIT_CREATION_FAILURE`;
+const SEND_CREATE_ORGANIZATIONAL_UNIT_REQUEST = `${prefix}/SEND_CREATE_ORGANIZATIONAL_UNIT_REQUEST`;
+const SEND_CREATE_ORGANIZATIONAL_UNIT_SUCCESS = `${prefix}/SEND_CREATE_ORGANIZATIONAL_UNIT_SUCCESS`;
+const SEND_CREATE_ORGANIZATIONAL_UNIT_FAILURE = `${prefix}/SEND_CREATE_ORGANIZATIONAL_UNIT_FAILURE`;
 
 const SEND_EDITING_REQUEST = `${prefix}/SEND_EDITING_REQUEST`;
 const SEND_EDITING_SUCCESS = `${prefix}/SEND_EDITING_SUCCESS`;
@@ -77,14 +77,19 @@ const initialState = {
 export default function reducer( state = initialState, action) {
   const { type, payload, error } = action;
 
+
+
   switch(type) {
-    // REQUEST
+    /////////////
+    // REQUEST //
+    /////////////
     case REWRITE_ORGID_JSON_REQUEST:
     case EXTEND_ORGID_JSON_REQUEST:
     case SAVE_MEDIA_TO_ARBOR_REQUEST:
     case SAVE_ORGID_JSON_TO_ARBOR_REQUEST:
     case SAVE_ORGID_JSON_URI_REQUEST:
-    case SEND_ORGANIZATION_CREATION_REQUEST:
+    case SEND_CREATE_LEGAL_ENTITY_REQUEST:
+    case SEND_CREATE_ORGANIZATIONAL_UNIT_REQUEST:
     case SET_PENDING_STATE_TO_TRANSACTION_REQUEST:
     case FETCH_TRANSACTION_STATE_REQUEST:
       return _.merge({}, state, {
@@ -100,7 +105,9 @@ export default function reducer( state = initialState, action) {
         successTransaction: false,
         error: null
       });
-    // SUCCESS
+    /////////////
+    // SUCCESS //
+    /////////////
     case REWRITE_ORGID_JSON_SUCCESS:
       return {
         isFetching: false,
@@ -142,7 +149,13 @@ export default function reducer( state = initialState, action) {
         orgidUri: payload,
         error: null
       });
-    case SEND_ORGANIZATION_CREATION_SUCCESS:
+    case SEND_CREATE_LEGAL_ENTITY_SUCCESS:
+      return  _.merge({}, state, {
+        isFetching: false,
+        isFetched: true,
+        error: null
+      });
+    case SEND_CREATE_ORGANIZATIONAL_UNIT_SUCCESS:
       return  _.merge({}, state, {
         isFetching: false,
         isFetched: true,
@@ -172,13 +185,16 @@ export default function reducer( state = initialState, action) {
         successTransaction: payload,
         error: null
       });
-    // FAILURE
+    /////////////
+    // FAILURE //
+    /////////////
     case REWRITE_ORGID_JSON_FAILURE:
     case EXTEND_ORGID_JSON_FAILURE:
     case SAVE_MEDIA_TO_ARBOR_FAILURE:
     case SAVE_ORGID_JSON_URI_FAILURE:
     case SAVE_ORGID_JSON_TO_ARBOR_FAILURE:
-    case SEND_ORGANIZATION_CREATION_FAILURE:
+    case SEND_CREATE_LEGAL_ENTITY_FAILURE:
+    case SEND_CREATE_ORGANIZATIONAL_UNIT_FAILURE:
     case FETCH_TRANSACTION_STATE_FAILURE:
     case SET_PENDING_STATE_TO_TRANSACTION_FAILURE:
       return _.merge({}, state, {
@@ -345,47 +361,47 @@ function saveOrgidUriFailure(error) {
 }
 //endregion
 
-//region == [ACTIONS: sendOrganizationCreationRequest] ====================================================================================
-export function sendOrganizationCreationRequest(payload) {
+//region == [ACTIONS: sendCreateLegalEntityRequest] ====================================================================================
+export function sendCreateLegalEntityRequest(payload) {
   return {
-    type: SEND_ORGANIZATION_CREATION_REQUEST,
+    type: SEND_CREATE_LEGAL_ENTITY_REQUEST,
     payload
   }
 }
 
-function sendOrganizationCreationSuccess(payload) {
+function sendCreateLegalEntitySuccess(payload) {
   return {
-    type: SEND_ORGANIZATION_CREATION_SUCCESS,
+    type: SEND_CREATE_LEGAL_ENTITY_SUCCESS,
     payload
   }
 }
 
-function sendOrganizationCreationFailure(error) {
+function sendCreateLegalEntityFailure(error) {
   return {
-    type: SEND_ORGANIZATION_CREATION_FAILURE,
+    type: SEND_CREATE_LEGAL_ENTITY_FAILURE,
     error
   }
 }
 //endregion
 
-//region == [ACTIONS: sendOrganizationUnitCreationRequest] ====================================================================================
-export function sendOrganizationUnitCreationRequest(payload) {
+//region == [ACTIONS: sendCreateOrganizationalUnitRequest] ====================================================================================
+export function sendCreateOrganizationalUnitRequest(payload) {
   return {
-    type: SEND_ORGANIZATION_UNIT_CREATION_REQUEST,
+    type: SEND_CREATE_ORGANIZATIONAL_UNIT_REQUEST,
     payload
   }
 }
 
-function sendOrganizationUnitCreationSuccess(payload) {
+function sendCreateOrganizationalUnitSuccess(payload) {
   return {
-    type: SEND_ORGANIZATION_UNIT_CREATION_SUCCESS,
+    type: SEND_CREATE_ORGANIZATIONAL_UNIT_SUCCESS,
     payload
   }
 }
 
-function sendOrganizationUnitCreationFailure(error) {
+function sendCreateOrganizationalUnitFailure(error) {
   return {
-    type: SEND_ORGANIZATION_UNIT_CREATION_FAILURE,
+    type: SEND_CREATE_ORGANIZATIONAL_UNIT_FAILURE,
     error
   }
 }
@@ -514,22 +530,25 @@ function* saveOrgidUriSaga({payload}) {
   }
 }
 
-function* organizationCreationSaga({payload}) {
+function* sendCreateLegalEntitySaga({payload}) {
   try {
     const result = yield call(ApiCreateLegalEntity, payload);
 
     yield call(getTransactionStatus, result);
-    yield put(sendOrganizationCreationSuccess(result));
+    yield put(sendCreateLegalEntitySuccess(result));
   } catch(error) {
-    yield put(sendOrganizationCreationFailure(error));
+    yield put(sendCreateLegalEntityFailure(error));
   }
 }
 
-function* organizationUnitCreationSaga({payload}) {
+function* sendCreateOrganizationalUnitSaga({payload}) {
   try {
+    const result = yield call(ApiCreateOrganizationalUnit, payload);
 
+    yield call(getTransactionStatus, result);
+    yield put(sendCreateOrganizationalUnitSuccess(result));
   } catch(error) {
-    // yield put()
+    yield put(sendCreateOrganizationalUnitFailure(error));
   }
 }
 
@@ -570,13 +589,33 @@ export const saga = function* () {
     takeEvery(SAVE_MEDIA_TO_ARBOR_REQUEST, saveMediaToArborSaga),
     takeEvery(SAVE_ORGID_JSON_TO_ARBOR_REQUEST, saveOrgidJsonToArborSaga),
     takeEvery(SAVE_ORGID_JSON_URI_REQUEST, saveOrgidUriSaga),
-    takeEvery(SEND_ORGANIZATION_CREATION_REQUEST, organizationCreationSaga),
+    takeEvery(SEND_CREATE_LEGAL_ENTITY_REQUEST, sendCreateLegalEntitySaga),
+    takeEvery(SEND_CREATE_ORGANIZATIONAL_UNIT_REQUEST, sendCreateOrganizationalUnitSaga),
     takeEvery(GET_TRANSACTION_STATUS_REQUEST, getTransactionStatusSaga),
     takeEvery(SET_PENDING_STATE_TO_TRANSACTION_REQUEST, setPendingStateToTransactionSaga),
     takeEvery(FETCH_TRANSACTION_STATE_REQUEST, fetchTransactionStateSaga),
   ])
 };
 //endregion
+
+//region == [utils] ====================================================================================================
+function getOrgidContract() {
+  if (typeof window.web3 === 'undefined') {
+    alert('MetaMask not found. If you just install MetaMask please refresh page to continue');
+    throw `MetaMask not found`
+  }
+  const orgidAbi = window.web3.eth.contract(ORGID_ABI); // todo: load ABI on this step only from backend to optimize react size
+  return  orgidAbi.at(ORGID_PROXY_ADDRESS); // todo: can be loaded from back-end as well
+}
+
+function getGasPrice() {
+  if (typeof window.web3 === 'undefined') {
+    alert('MetaMask not found. If you just install MetaMask please refresh page to continue');
+    throw `MetaMask not found`
+  }
+  return window.web3.toWei("10", "gwei"); // todo: calculate gwei
+}
+//region
 
 //region == [API] ======================================================================================================
 function ApiPostMedia(data) {
@@ -594,31 +633,31 @@ function ApiPostOrgidJson(data) {
 }
 
 function ApiCreateLegalEntity(data) {
-  const web3 = window.web3; // we signed in - so it should be already loaded
-  const orgidAbi = web3.eth.contract(ORGID_ABI); // todo: load ABI on this step only from backend to optimize react size
-  const orgidContract = orgidAbi.at(ORGID_PROXY_ADDRESS); // todo: can be loaded from back-end as well
-  const orgidId = data.orgidJson.id.replace('did:orgid:', '');
+  const orgidContract = getOrgidContract();
+  const { orgidUri, orgidHash, address, orgidJson } = data;
+  const orgidId = orgidJson.id.replace('did:orgid:', '');
 
   return new Promise((resolve, reject) => {
     orgidContract.createOrganization(
-      orgidId,
-      data.orgidUri,
-      data.orgidHash,
-      {
-        from: data.address,
-        gas: 500000,
-        gasPrice: web3.toWei("10", "gwei"), // todo: calculate gwei
-      },
-      (err, data) => {
-        if(err) return reject(err);
-        resolve(data);
-      }
+      orgidId, orgidUri, orgidHash,
+      { from: address, gas: 500000, gasPrice: getGasPrice() },
+      (err, data) => { if(err) return reject(err);resolve(data); }
     );
   });
 }
 
-function ApiCreateOrganizationalUnit() {
-  // return txId
+function ApiCreateOrganizationalUnit(data) {
+  const orgidContract = getOrgidContract();
+  const { parent: { orgid: orgidParent }, orgidUri, orgidHash, address, orgidJson } = data;
+  const orgidId = orgidJson.id.replace('did:orgid:', '');
+
+  return new Promise((resolve, reject) => {
+    orgidContract.createSubsidiary(
+      orgidParent, orgidId, address /*subsidiaryDirector*/, orgidUri, orgidHash,
+      { from: address, gas: 500000, gasPrice: getGasPrice() },
+      (err, data) => { if(err) return reject(err);resolve(data); }
+    );
+  });
 }
 
 function ApiEditOrganization() {

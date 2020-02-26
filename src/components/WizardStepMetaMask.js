@@ -1,24 +1,24 @@
 import React from 'react';
 import { connect } from "react-redux";
 import { Button, Typography } from '@material-ui/core';
-// import { ORGID_PROXY_ADDRESS, ORGID_ABI } from "../../../utils/constants";
 
-import { selectWizardOrgidJson, selectWizardOrgidHash, selectWizardOrgidUri, sendOrganizationCreationRequest, setPendingStateToTransaction, fetchTransactionState } from '../ducks/wizard';
+import { selectWizardOrgidJson, selectWizardOrgidHash, selectWizardOrgidUri, sendCreateLegalEntityRequest, sendCreateOrganizationalUnitRequest, setPendingStateToTransaction, fetchTransactionState } from '../ducks/wizard';
 import { selectSignInAddress } from '../ducks/signIn';
 import { styles } from './WizardStep';
 
 const WizardStep = (props) => {
   const inheritClasses = styles();
-  const { index, orgidJson, orgidHash, orgidUri, address, data: { longName, description, cta } } = props;
+  const { index, orgidJson, orgidHash, orgidUri, address, parent, data: { longName, description, cta } } = props;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    props.sendOrganizationCreationRequest({
-      orgidJson: orgidJson,
-      orgidHash: orgidHash,
-      orgidUri: orgidUri,
-      address: address,
-    });
+    if(typeof orgidJson.legalEntity === 'object') {
+      props.sendCreateLegalEntityRequest({orgidJson, orgidHash, orgidUri, address});
+    } if (typeof orgidJson.organizationalUnit === 'object' && parent.orgid) {
+      props.sendCreateOrganizationalUnitRequest({orgidJson, orgidHash, orgidUri, address, parent});
+    } else {
+      console.error('Something going wrong with MetaMask request', {orgidJson, orgidHash, orgidUri, address, parent})
+    }
   };
 
   return (
@@ -48,7 +48,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-  sendOrganizationCreationRequest,
+  sendCreateLegalEntityRequest,
+  sendCreateOrganizationalUnitRequest,
   setPendingStateToTransaction,
   fetchTransactionState
 };

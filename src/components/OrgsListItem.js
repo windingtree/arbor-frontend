@@ -246,7 +246,7 @@ export default function OrgsListItem(props) {
                 </div>
                 <div className={classes.addSubOrgButtonWrapper}>
                   <Button
-                    onClick={() => history.push('/my-organizations/wizard', { type: 'organizationalUnit', parent: id, parentName: name  })}
+                    onClick={() => history.push('/my-organizations/wizard', { type: 'organizationalUnit', parent: { orgid: id, name } })}
                     className={classes.addSubOrgButton}
                   >
                     <Typography variant={'caption'} className={classes.buttonTitle} noWrap>+ Add organizational unit</Typography>

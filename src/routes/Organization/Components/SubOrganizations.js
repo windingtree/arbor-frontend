@@ -65,7 +65,7 @@ function SubOrganizations(props) {
           {
             canManage && (
               <Grid item style={{ width: '264px' }}>
-                <AddSubOrgCard parentOrgid={orgid} parentName={name}/>
+                <AddSubOrgCard parent={{orgid, name}}/>
               </Grid>
             )
           }

@@ -166,7 +166,7 @@ const WizardGeneral = (props) => {
   const action = _.get(history, 'location.state.action', 'create');
   const jsonContent = _.get(history, 'location.state.jsonContent', {});
   const id = _.get(history, 'location.state.id', null);
-  const parentName =  _.get(history, 'location.state.parentName', '');
+  const parent =  _.get(history, 'location.state.parent', {});
   const actionLabel = (action === 'create') ? 'Create' : 'Edit';
   const types = { legalEntity, organizationalUnit };
   const wizardConfig = types[wizardType];
@@ -190,14 +190,14 @@ const WizardGeneral = (props) => {
     window.scrollTo(0, 0)
   }, []);
 
-  const stepsContent = (stepIndex) => {
+  const stepsContent = (stepIndex, parent) => {
     const content = wizardConfig[stepIndex];
     const { type } = content;
 
     switch (type) {
       case 'step': return <WizardStep data={content} action={action} handleNext={handleNext} key={stepIndex} index={stepIndex}/>;
       case 'step_hosting': return <WizardStepHosting data={content} action={action} handleNext={handleNext} key={stepIndex} index={stepIndex}/>;
-      case 'step_metamask': return <WizardStepMetaMask data={content} action={action} handleNext={handleNext} key={stepIndex} index={stepIndex}/>;
+      case 'step_metamask': return <WizardStepMetaMask data={content} action={action} handleNext={handleNext} key={stepIndex} index={stepIndex} parent={parent}/>;
       default: return (
         <div key={stepIndex}>Step <pre>${content.name}</pre> has unknown type: <pre>{content.type}</pre></div>
       );
@@ -292,7 +292,7 @@ const WizardGeneral = (props) => {
                   </Typography>
                   {
                     wizardType !== 'legalEntity' ? (
-                      <Typography variant={'caption'} className={classes.formSubtitle}>Operated by: {parentName}</Typography>
+                      <Typography variant={'caption'} className={classes.formSubtitle}>Operated by: {parent.name}</Typography>
                     ) : null
                   }
                 </div>
@@ -303,7 +303,7 @@ const WizardGeneral = (props) => {
                     </Step>
                   ))}
                 </Stepper>
-                {stepsContent(activeStep)}
+                {stepsContent(activeStep, parent)}
               </div>
             )
           }

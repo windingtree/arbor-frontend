@@ -51,7 +51,7 @@ const styles = makeStyles({
 
 export default function AddSubOrgCard(props) {
   const classes = styles();
-  const {parentOrgid, parentName} = props;
+  const { parent } = props;
 
   return (
     <Card className={classes.container}>
@@ -63,8 +63,7 @@ export default function AddSubOrgCard(props) {
           <div className={classes.buttonWrapper}>
             <Button
               className={classes.button}
-              onClick={() => history.push('/my-organizations/wizard', { type: 'organizationalUnit', parent: parentOrgid, parentName: parentName  })}
-
+              onClick={() => history.push('/my-organizations/wizard', { type: 'organizationalUnit', parent })}
             >
               <Typography variant={'inherit'} noWrap>+ Add Sub-Organization</Typography>
             </Button>

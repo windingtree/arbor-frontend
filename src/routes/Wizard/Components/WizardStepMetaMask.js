@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from "react-redux";
 import { Button, Typography } from '@material-ui/core';
-import { ORGID_PROXY_ADDRESS, ORGID_ABI } from "../../../utils/constants";
+// import { ORGID_PROXY_ADDRESS, ORGID_ABI } from "../../../utils/constants";
 
-import { selectWizardOrgidJson, selectWizardOrgidHash, selectWizardOrgidUri, setPendingStateToTransaction, fetchTransactionState } from '../../../ducks/wizard';
+import { selectWizardOrgidJson, selectWizardOrgidHash, selectWizardOrgidUri, sendOrganizationCreationRequest, setPendingStateToTransaction, fetchTransactionState } from '../../../ducks/wizard';
 import { selectSignInAddress } from '../../../ducks/signIn';
 import { styles } from './WizardStep';
 
@@ -13,33 +13,12 @@ const WizardStep = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const web3 = window.web3; // we signed in - so it should be already loaded
-    const orgidAbi = web3.eth.contract(ORGID_ABI); // todo: load ABI on this step only from backend to optimize react size
-    const orgidContract = orgidAbi.at(ORGID_PROXY_ADDRESS); // todo: can be loaded from back-end as well
-    const orgidId = orgidJson.id.replace('did:orgid:', '');
-
-    console.log(`orgidContract.createOrganization( ${orgidId}, ${orgidUri}, ${orgidHash}, {from: ${address}`); // todo: remove debug lines
-    Object.assign(window, { orgidAbi, orgidContract, orgidId, address }); // for in-browser debug purposes // todo: remove debug lines
-
-    orgidContract.createOrganization(
-      orgidId,
-      orgidUri,
-      orgidHash,
-      {
-        from: address,
-        gas: 500000,
-        gasPrice: web3.toWei("10", "gwei"), // todo: calculate gwei
-      },
-      (err, data) => {
-        // todo: set waiting state => maybe redirect to next screen
-        props.setPendingStateToTransaction(data);
-        console.log(err, data);
-        setTimeout(() => {
-          props.fetchTransactionState(data);
-        }, 4000);
-      }
-    )
-
+    props.sendOrganizationCreationRequest({
+      orgidJson: orgidJson,
+      orgidHash: orgidHash,
+      orgidUri: orgidUri,
+      address: address,
+    });
   };
 
   return (
@@ -69,6 +48,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
+  sendOrganizationCreationRequest,
   setPendingStateToTransaction,
   fetchTransactionState
 };

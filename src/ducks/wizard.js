@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import {appName} from "../utils/constants";
+import { appName, ORGID_ABI, ORGID_PROXY_ADDRESS } from "../utils/constants";
 import { all, takeEvery, call, put, select } from 'redux-saga/effects';
 import {createSelector} from "reselect";
 import { keccak256 } from 'js-sha3';
@@ -29,6 +29,22 @@ const SAVE_ORGID_JSON_URI_REQUEST = `${prefix}/SAVE_ORGID_JSON_URI_REQUEST`;
 const SAVE_ORGID_JSON_URI_SUCCESS = `${prefix}/SAVE_ORGID_JSON_URI_SUCCESS`;
 const SAVE_ORGID_JSON_URI_FAILURE = `${prefix}/SAVE_ORGID_JSON_URI_FAILURE`;
 
+const SEND_ORGANIZATION_CREATION_REQUEST = `${prefix}/SEND_ORGANIZATION_CREATION_REQUEST`;
+const SEND_ORGANIZATION_CREATION_SUCCESS = `${prefix}/SEND_ORGANIZATION_CREATION_SUCCESS`;
+const SEND_ORGANIZATION_CREATION_FAILURE = `${prefix}/SEND_ORGANIZATION_CREATION_FAILURE`;
+
+const SEND_ORGANIZATION_UNIT_CREATION_REQUEST = `${prefix}/SEND_ORGANIZATION_UNIT_CREATION_REQUEST`;
+const SEND_ORGANIZATION_UNIT_CREATION_SUCCESS = `${prefix}/SEND_ORGANIZATION_UNIT_CREATION_SUCCESS`;
+const SEND_ORGANIZATION_UNIT_CREATION_FAILURE = `${prefix}/SEND_ORGANIZATION_UNIT_CREATION_FAILURE`;
+
+const SEND_EDITING_REQUEST = `${prefix}/SEND_EDITING_REQUEST`;
+const SEND_EDITING_SUCCESS = `${prefix}/SEND_EDITING_SUCCESS`;
+const SEND_EDITING_FAILURE = `${prefix}/SEND_EDITING_FAILURE`;
+
+const GET_TRANSACTION_STATUS_REQUEST = `${prefix}/GET_TRANSACTION_STATUS_REQUEST`;
+const GET_TRANSACTION_STATUS_SUCCESS = `${prefix}/GET_TRANSACTION_STATUS_SUCCESS`;
+const GET_TRANSACTION_STATUS_FAILURE = `${prefix}/GET_TRANSACTION_STATUS_FAILURE`;
+
 const SET_PENDING_STATE_TO_TRANSACTION_REQUEST = `${prefix}/SET_PENDING_STATE_TO_TRANSACTION_REQUEST`;
 const SET_PENDING_STATE_TO_TRANSACTION_SUCCESS = `${prefix}/SET_PENDING_STATE_TO_TRANSACTION_SUCCESS`;
 const SET_PENDING_STATE_TO_TRANSACTION_FAILURE = `${prefix}/SET_PENDING_STATE_TO_TRANSACTION_FAILURE`;
@@ -51,8 +67,8 @@ const initialState = {
   },
   orgidUri: null,
   orgidHash: null,
-  pendingTransaction: null,
-  successTransaction: null,
+  pendingTransaction: false,
+  successTransaction: false,
   error: null
 };
 //endregion
@@ -68,11 +84,20 @@ export default function reducer( state = initialState, action) {
     case SAVE_MEDIA_TO_ARBOR_REQUEST:
     case SAVE_ORGID_JSON_TO_ARBOR_REQUEST:
     case SAVE_ORGID_JSON_URI_REQUEST:
+    case SEND_ORGANIZATION_CREATION_REQUEST:
     case SET_PENDING_STATE_TO_TRANSACTION_REQUEST:
     case FETCH_TRANSACTION_STATE_REQUEST:
       return _.merge({}, state, {
         isFetching: true,
         isFetched: false,
+        error: null
+      });
+    case GET_TRANSACTION_STATUS_REQUEST:
+      return _.merge({}, state, {
+        isFetching: true,
+        isFetched: false,
+        pendingTransaction: true,
+        successTransaction: false,
         error: null
       });
     // SUCCESS
@@ -82,8 +107,6 @@ export default function reducer( state = initialState, action) {
         isFetched: true,
         orgidJson: payload,
         orgidHash: `0x${keccak256(JSON.stringify(payload, null, 2))}`,
-        pendingTransaction: null,
-        successTransaction: null,
         error: null
       };
     case EXTEND_ORGID_JSON_SUCCESS:
@@ -95,8 +118,6 @@ export default function reducer( state = initialState, action) {
         isFetched: true,
         orgidJson: payload,
         orgidHash: `0x${keccak256(JSON.stringify(payload, null, 2))}`,
-        pendingTransaction: null,
-        successTransaction: null,
         error: null
       });
     case SAVE_MEDIA_TO_ARBOR_SUCCESS:
@@ -119,7 +140,20 @@ export default function reducer( state = initialState, action) {
         isFetching: false,
         isFetched: true,
         orgidUri: payload,
-        pendingTransaction: null,
+        error: null
+      });
+    case SEND_ORGANIZATION_CREATION_SUCCESS:
+      return  _.merge({}, state, {
+        isFetching: false,
+        isFetched: true,
+        error: null
+      });
+    case GET_TRANSACTION_STATUS_SUCCESS:
+      return _.merge({}, state, {
+        isFetching: false,
+        isFetched: true,
+        pendingTransaction: false,
+        successTransaction: true,
         error: null
       });
     case SET_PENDING_STATE_TO_TRANSACTION_SUCCESS:
@@ -144,16 +178,20 @@ export default function reducer( state = initialState, action) {
     case SAVE_MEDIA_TO_ARBOR_FAILURE:
     case SAVE_ORGID_JSON_URI_FAILURE:
     case SAVE_ORGID_JSON_TO_ARBOR_FAILURE:
+    case SEND_ORGANIZATION_CREATION_FAILURE:
     case FETCH_TRANSACTION_STATE_FAILURE:
+    case SET_PENDING_STATE_TO_TRANSACTION_FAILURE:
       return _.merge({}, state, {
         isFetching: false,
         isFetched: false,
         error: error
       });
-    case SET_PENDING_STATE_TO_TRANSACTION_FAILURE:
+    case GET_TRANSACTION_STATUS_FAILURE:
       return _.merge({}, state, {
         isFetching: false,
         isFetched: false,
+        pendingTransaction: false,
+        successTransaction: false,
         error: error
       });
     default:
@@ -307,6 +345,75 @@ function saveOrgidUriFailure(error) {
 }
 //endregion
 
+//region == [ACTIONS: sendOrganizationCreationRequest] ====================================================================================
+export function sendOrganizationCreationRequest(payload) {
+  return {
+    type: SEND_ORGANIZATION_CREATION_REQUEST,
+    payload
+  }
+}
+
+function sendOrganizationCreationSuccess(payload) {
+  return {
+    type: SEND_ORGANIZATION_CREATION_SUCCESS,
+    payload
+  }
+}
+
+function sendOrganizationCreationFailure(error) {
+  return {
+    type: SEND_ORGANIZATION_CREATION_FAILURE,
+    error
+  }
+}
+//endregion
+
+//region == [ACTIONS: sendOrganizationUnitCreationRequest] ====================================================================================
+export function sendOrganizationUnitCreationRequest(payload) {
+  return {
+    type: SEND_ORGANIZATION_UNIT_CREATION_REQUEST,
+    payload
+  }
+}
+
+function sendOrganizationUnitCreationSuccess(payload) {
+  return {
+    type: SEND_ORGANIZATION_UNIT_CREATION_SUCCESS,
+    payload
+  }
+}
+
+function sendOrganizationUnitCreationFailure(error) {
+  return {
+    type: SEND_ORGANIZATION_UNIT_CREATION_FAILURE,
+    error
+  }
+}
+//endregion
+
+//region == [ACTIONS: getTransactionStatus] ====================================================================================
+export function getTransactionStatus(payload) {
+  return {
+    type: GET_TRANSACTION_STATUS_REQUEST,
+    payload
+  }
+}
+
+function getTransactionStatusSuccess(payload) {
+  return {
+    type: GET_TRANSACTION_STATUS_SUCCESS,
+    payload
+  }
+}
+
+function getTransactionStatusFailure(error) {
+  return {
+    type: GET_TRANSACTION_STATUS_FAILURE,
+    error
+  }
+}
+//endregion
+
 //region == [ACTIONS: setPendingStateToTransaction] ====================================================================================
 export function setPendingStateToTransaction(payload) {
   return {
@@ -324,7 +431,7 @@ function setPendingStateToTransactionSuccess(payload) {
 
 function setPendingStateToTransactionFailure(error) {
   return {
-    type: SET_PENDING_STATE_TO_TRANSACTION_REQUEST,
+    type: SET_PENDING_STATE_TO_TRANSACTION_FAILURE,
     error
   }
 }
@@ -347,7 +454,7 @@ function fetchTransactionStateSuccess(payload) {
 
 function fetchTransactionStateFailure(error) {
   return {
-    type: FETCH_TRANSACTION_STATE_REQUEST,
+    type: FETCH_TRANSACTION_STATE_FAILURE,
     error
   }
 }
@@ -407,6 +514,35 @@ function* saveOrgidUriSaga({payload}) {
   }
 }
 
+function* organizationCreationSaga({payload}) {
+  try {
+    const result = yield call(ApiCreateLegalEntity, payload);
+
+    yield call(getTransactionStatus, result);
+    yield put(sendOrganizationCreationSuccess(result));
+  } catch(error) {
+    yield put(sendOrganizationCreationFailure(error));
+  }
+}
+
+function* organizationUnitCreationSaga({payload}) {
+  try {
+
+  } catch(error) {
+    // yield put()
+  }
+}
+
+function* getTransactionStatusSaga({payload}) {
+  try {
+    const result = yield call(ApiGetTxStatus, payload);
+
+    yield put(getTransactionStatusSuccess(result));
+  } catch(error) {
+    yield put(getTransactionStatusFailure(error));
+  }
+}
+
 function* setPendingStateToTransactionSaga({payload}) {
   try {
     const result = yield call((data) => data, payload);
@@ -434,6 +570,8 @@ export const saga = function* () {
     takeEvery(SAVE_MEDIA_TO_ARBOR_REQUEST, saveMediaToArborSaga),
     takeEvery(SAVE_ORGID_JSON_TO_ARBOR_REQUEST, saveOrgidJsonToArborSaga),
     takeEvery(SAVE_ORGID_JSON_URI_REQUEST, saveOrgidUriSaga),
+    takeEvery(SEND_ORGANIZATION_CREATION_REQUEST, organizationCreationSaga),
+    takeEvery(GET_TRANSACTION_STATUS_REQUEST, getTransactionStatusSaga),
     takeEvery(SET_PENDING_STATE_TO_TRANSACTION_REQUEST, setPendingStateToTransactionSaga),
     takeEvery(FETCH_TRANSACTION_STATE_REQUEST, fetchTransactionStateSaga),
   ])
@@ -455,8 +593,28 @@ function ApiPostOrgidJson(data) {
   return callApi(`json`, 'POST', { body: JSON.stringify(data),  headers: { 'Content-Type': 'application/json' } });
 }
 
-function ApiCreateLegalEntity() {
-  // return txId
+function ApiCreateLegalEntity(data) {
+  const web3 = window.web3; // we signed in - so it should be already loaded
+  const orgidAbi = web3.eth.contract(ORGID_ABI); // todo: load ABI on this step only from backend to optimize react size
+  const orgidContract = orgidAbi.at(ORGID_PROXY_ADDRESS); // todo: can be loaded from back-end as well
+  const orgidId = data.orgidJson.id.replace('did:orgid:', '');
+
+  return new Promise((resolve, reject) => {
+    orgidContract.createOrganization(
+      orgidId,
+      data.orgidUri,
+      data.orgidHash,
+      {
+        from: data.address,
+        gas: 500000,
+        gasPrice: web3.toWei("10", "gwei"), // todo: calculate gwei
+      },
+      (err, data) => {
+        if(err) return reject(err);
+        resolve(data);
+      }
+    );
+  });
 }
 
 function ApiCreateOrganizationalUnit() {

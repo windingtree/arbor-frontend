@@ -175,7 +175,7 @@ const WizardGeneral = (props) => {
     if(id) {
       props.rewriteOrgidJson(jsonContent)
     }
-  }, [id]);
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     props.rewriteOrgidJson({

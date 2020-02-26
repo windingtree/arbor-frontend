@@ -1,4 +1,5 @@
 import React from "react";
+import _ from 'lodash';
 import { Redirect } from 'react-router-dom';
 import {Container, Typography, Card, Box, Button} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
@@ -11,7 +12,6 @@ import globeIconSvg from '../../assets/SvgComponents/globe-icon.svg';
 import listPlaceholderSvg from '../../assets/SvgComponents/list-placeholder.svg';
 
 import colors from '../../styles/colors';
-import _ from "lodash";
 
 export const styles = makeStyles({
   topDiv: {

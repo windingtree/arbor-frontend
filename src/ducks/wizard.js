@@ -37,9 +37,9 @@ const SEND_CREATE_ORGANIZATIONAL_UNIT_REQUEST = `${prefix}/SEND_CREATE_ORGANIZAT
 const SEND_CREATE_ORGANIZATIONAL_UNIT_SUCCESS = `${prefix}/SEND_CREATE_ORGANIZATIONAL_UNIT_SUCCESS`;
 const SEND_CREATE_ORGANIZATIONAL_UNIT_FAILURE = `${prefix}/SEND_CREATE_ORGANIZATIONAL_UNIT_FAILURE`;
 
-const SEND_EDITING_REQUEST = `${prefix}/SEND_EDITING_REQUEST`;
-const SEND_EDITING_SUCCESS = `${prefix}/SEND_EDITING_SUCCESS`;
-const SEND_EDITING_FAILURE = `${prefix}/SEND_EDITING_FAILURE`;
+const SEND_CHANGE_ORGID_URI_AND_HASH_REQUEST = `${prefix}/SEND_CHANGE_ORGID_URI_AND_HASH_REQUEST`;
+const SEND_CHANGE_ORGID_URI_AND_HASH_SUCCESS = `${prefix}/SEND_CHANGE_ORGID_URI_AND_HASH_SUCCESS`;
+const SEND_CHANGE_ORGID_URI_AND_HASH_FAILURE = `${prefix}/SEND_CHANGE_ORGID_URI_AND_HASH_FAILURE`;
 
 const GET_TRANSACTION_STATUS_REQUEST = `${prefix}/GET_TRANSACTION_STATUS_REQUEST`;
 const GET_TRANSACTION_STATUS_SUCCESS = `${prefix}/GET_TRANSACTION_STATUS_SUCCESS`;
@@ -77,8 +77,6 @@ const initialState = {
 export default function reducer( state = initialState, action) {
   const { type, payload, error } = action;
 
-
-
   switch(type) {
     /////////////
     // REQUEST //
@@ -90,6 +88,7 @@ export default function reducer( state = initialState, action) {
     case SAVE_ORGID_JSON_URI_REQUEST:
     case SEND_CREATE_LEGAL_ENTITY_REQUEST:
     case SEND_CREATE_ORGANIZATIONAL_UNIT_REQUEST:
+    case SEND_CHANGE_ORGID_URI_AND_HASH_REQUEST:
     case SET_PENDING_STATE_TO_TRANSACTION_REQUEST:
     case FETCH_TRANSACTION_STATE_REQUEST:
       return _.merge({}, state, {
@@ -161,6 +160,12 @@ export default function reducer( state = initialState, action) {
         isFetched: true,
         error: null
       });
+    case SEND_CHANGE_ORGID_URI_AND_HASH_SUCCESS:
+      return  _.merge({}, state, {
+        isFetching: false,
+        isFetched: true,
+        error: null
+      });
     case GET_TRANSACTION_STATUS_SUCCESS:
       return _.merge({}, state, {
         isFetching: false,
@@ -195,6 +200,7 @@ export default function reducer( state = initialState, action) {
     case SAVE_ORGID_JSON_TO_ARBOR_FAILURE:
     case SEND_CREATE_LEGAL_ENTITY_FAILURE:
     case SEND_CREATE_ORGANIZATIONAL_UNIT_FAILURE:
+    case SEND_CHANGE_ORGID_URI_AND_HASH_FAILURE:
     case FETCH_TRANSACTION_STATE_FAILURE:
     case SET_PENDING_STATE_TO_TRANSACTION_FAILURE:
       return _.merge({}, state, {
@@ -407,6 +413,30 @@ function sendCreateOrganizationalUnitFailure(error) {
 }
 //endregion
 
+//region == [ACTIONS: sendChangeOrgidUriAndHashRequest] ====================================================================================
+//TODO: user for Edit (src/routes/Edit.js)
+export function sendChangeOrgidUriAndHashRequest(payload) {
+  return {
+    type: SEND_CREATE_ORGANIZATIONAL_UNIT_REQUEST,
+    payload
+  }
+}
+
+function sendChangeOrgidUriAndHashSuccess(payload) {
+  return {
+    type: SEND_CREATE_ORGANIZATIONAL_UNIT_SUCCESS,
+    payload
+  }
+}
+
+function sendChangeOrgidUriAndHashFailure(error) {
+  return {
+    type: SEND_CREATE_ORGANIZATIONAL_UNIT_FAILURE,
+    error
+  }
+}
+//endregion
+
 //region == [ACTIONS: getTransactionStatus] ====================================================================================
 export function getTransactionStatus(payload) {
   return {
@@ -532,7 +562,7 @@ function* saveOrgidUriSaga({payload}) {
 
 function* sendCreateLegalEntitySaga({payload}) {
   try {
-    const result = yield call(ApiCreateLegalEntity, payload);
+    const result = yield call(ApiSendCreateLegalEntity, payload);
 
     yield put(getTransactionStatus(result));
     yield put(sendCreateLegalEntitySuccess(result));
@@ -543,12 +573,23 @@ function* sendCreateLegalEntitySaga({payload}) {
 
 function* sendCreateOrganizationalUnitSaga({payload}) {
   try {
-    const result = yield call(ApiCreateOrganizationalUnit, payload);
+    const result = yield call(ApiSendCreateOrganizationalUnit, payload);
 
     yield call(getTransactionStatus, result);
     yield put(sendCreateOrganizationalUnitSuccess(result));
   } catch(error) {
     yield put(sendCreateOrganizationalUnitFailure(error));
+  }
+}
+
+function* sendChangeOrgidUriAndHashSaga({payload}) {
+  try {
+    const result = yield call(ApiSendChangeOrgidUriAndHash, payload);
+
+    yield call(getTransactionStatus, result);
+    yield put(sendChangeOrgidUriAndHashSuccess(result));
+  } catch(error) {
+    yield put(sendChangeOrgidUriAndHashFailure(error));
   }
 }
 
@@ -591,6 +632,7 @@ export const saga = function* () {
     takeEvery(SAVE_ORGID_JSON_URI_REQUEST, saveOrgidUriSaga),
     takeEvery(SEND_CREATE_LEGAL_ENTITY_REQUEST, sendCreateLegalEntitySaga),
     takeEvery(SEND_CREATE_ORGANIZATIONAL_UNIT_REQUEST, sendCreateOrganizationalUnitSaga),
+    takeEvery(SEND_CREATE_ORGANIZATIONAL_UNIT_REQUEST, sendChangeOrgidUriAndHashSaga),
     takeEvery(GET_TRANSACTION_STATUS_REQUEST, getTransactionStatusSaga),
     takeEvery(SET_PENDING_STATE_TO_TRANSACTION_REQUEST, setPendingStateToTransactionSaga),
     takeEvery(FETCH_TRANSACTION_STATE_REQUEST, fetchTransactionStateSaga),
@@ -634,7 +676,7 @@ function ApiPostOrgidJson(data) {
   return callApi(`json`, 'POST', { body: JSON.stringify(data),  headers: { 'Content-Type': 'application/json' } });
 }
 
-function ApiCreateLegalEntity(data) {
+function ApiSendCreateLegalEntity(data) {
   const orgidContract = getOrgidContract();
   const { orgidUri, orgidHash, address, orgidJson } = data;
   const orgidId = orgidJson.id.replace('did:orgid:', '');
@@ -648,7 +690,7 @@ function ApiCreateLegalEntity(data) {
   });
 }
 
-function ApiCreateOrganizationalUnit(data) {
+function ApiSendCreateOrganizationalUnit(data) {
   const orgidContract = getOrgidContract();
   const { parent: { orgid: orgidParent }, orgidUri, orgidHash, address, orgidJson } = data;
   const orgidId = orgidJson.id.replace('did:orgid:', '');
@@ -662,8 +704,18 @@ function ApiCreateOrganizationalUnit(data) {
   });
 }
 
-function ApiEditOrganization() {
-  // return txId
+function ApiSendChangeOrgidUriAndHash() {
+  const orgidContract = getOrgidContract();
+  const { orgidUri, orgidHash, address, orgidJson } = data;
+  const orgidId = orgidJson.id.replace('did:orgid:', '');
+
+  return new Promise((resolve, reject) => {
+    orgidContract.changeOrgJsonUriAndHash(
+      orgidId, orgidUri, orgidHash,
+      { from: address, gas: 500000, gasPrice: getGasPrice() },
+      (err, data) => { if(err) return reject(err); console.log('data', data); resolve(data); }
+    );
+  });
 }
 
 function ApiGetTxStatus(transactionIn) {

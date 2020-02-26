@@ -167,9 +167,9 @@ export const styles = makeStyles({
 });
 
 function TrustWebsite() {
-  const orgid = (!!history.location.state && !!history.location.state.orgid) ? history.location.state.orgid : false;
+  const id = (!!history.location.state && !!history.location.state.id) ? history.location.state.id : false;
   const website = _.get(history, 'location.state.website', 'example.com');
-  const txtFileData = `data:text/json;charset=utf-8,orgid=${orgid}`;
+  const txtFileData = `data:text/json;charset=utf-8,orgid=${id}`;
   const classes = styles();
 
   return (
@@ -307,7 +307,6 @@ function TrustWebsite() {
             </a>
           </Button>
         </Box>
-        }
       </Container>
     </div>
   )

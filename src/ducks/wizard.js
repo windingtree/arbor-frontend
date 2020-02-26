@@ -534,7 +534,7 @@ function* sendCreateLegalEntitySaga({payload}) {
   try {
     const result = yield call(ApiCreateLegalEntity, payload);
 
-    yield call(getTransactionStatus, result);
+    yield put(getTransactionStatus(result));
     yield put(sendCreateLegalEntitySuccess(result));
   } catch(error) {
     yield put(sendCreateLegalEntityFailure(error));
@@ -599,21 +599,23 @@ export const saga = function* () {
 //endregion
 
 //region == [utils] ====================================================================================================
-function getOrgidContract() {
+function getWeb3() {
   if (typeof window.web3 === 'undefined') {
     alert('MetaMask not found. If you just install MetaMask please refresh page to continue');
     throw `MetaMask not found`
   }
-  const orgidAbi = window.web3.eth.contract(ORGID_ABI); // todo: load ABI on this step only from backend to optimize react size
+  return window.web3
+}
+
+function getOrgidContract() {
+  const web3 = getWeb3();
+  const orgidAbi = web3.eth.contract(ORGID_ABI); // todo: load ABI on this step only from backend to optimize react size
   return  orgidAbi.at(ORGID_PROXY_ADDRESS); // todo: can be loaded from back-end as well
 }
 
 function getGasPrice() {
-  if (typeof window.web3 === 'undefined') {
-    alert('MetaMask not found. If you just install MetaMask please refresh page to continue');
-    throw `MetaMask not found`
-  }
-  return window.web3.toWei("10", "gwei"); // todo: calculate gwei
+  const web3 = getWeb3();
+  return web3.toWei("10", "gwei"); // todo: calculate gwei
 }
 //region
 
@@ -641,7 +643,7 @@ function ApiCreateLegalEntity(data) {
     orgidContract.createOrganization(
       orgidId, orgidUri, orgidHash,
       { from: address, gas: 500000, gasPrice: getGasPrice() },
-      (err, data) => { if(err) return reject(err);resolve(data); }
+      (err, data) => { if(err) return reject(err); console.log('data', data); resolve(data); }
     );
   });
 }
@@ -666,7 +668,24 @@ function ApiEditOrganization() {
 
 function ApiGetTxStatus(transactionIn) {
   return new Promise((resolve, reject) => {
+    const web3 = getWeb3();
+    let interval = setInterval(() => {
+      web3.eth.getTransactionReceipt(transactionIn, (err, data) => {
+        if (err) {
+          reject(err);
+          return clearInterval(interval);
+        } else if (data) {
+          resolve(data);
+          return clearInterval(interval);
+        } else {
+          console.log(`...waiting for ... ${transactionIn}`)
+        }
+      })
+    }, 3000);
 
+    setTimeout(() => {
+      clearInterval(interval);
+    }, 60000);
   })
 }
 

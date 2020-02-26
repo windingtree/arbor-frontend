@@ -14,10 +14,11 @@ const WizardStep = (props) => {
     e.preventDefault();
     if(typeof orgidJson.legalEntity === 'object') {
       props.sendCreateLegalEntityRequest({orgidJson, orgidHash, orgidUri, address});
-    } if (typeof orgidJson.organizationalUnit === 'object' && parent.orgid) {
+    } else if (typeof orgidJson.organizationalUnit === 'object' && parent.orgid) {
       props.sendCreateOrganizationalUnitRequest({orgidJson, orgidHash, orgidUri, address, parent});
     } else {
-      console.error('Something going wrong with MetaMask request', {orgidJson, orgidHash, orgidUri, address, parent})
+      console.error('Something going wrong with MetaMask request', {orgidJson, orgidHash, orgidUri, address, parent});
+      console.log(typeof orgidJson.legalEntity, typeof orgidJson.organizationalUnit, parent.orgid);
     }
   };
 

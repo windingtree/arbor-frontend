@@ -49,14 +49,12 @@ const allTodo = {
 export const getTodo = (organization) => {
   const todo = [];
   const jsonContent = _.get(organization, `jsonContent`, {});
-  const orgidType = _.get(jsonContent, `legalEntity`, 'organizationalUnit');
+  const orgidType = jsonContent.legalEntity ? 'legalEntity' : 'organizationalUnit';
   const contacts = _.get(jsonContent, `${orgidType}.contacts[0]`, {});
+  const { id } = jsonContent;
 
-  if (!(organization.isSocialFBProved && organization.isSocialTWProved && organization.isSocialIGProved)) {
-    if ((contacts.twitter && !organization.isSocialTWProved) || (contacts.facebook && !organization.isSocialFBProved) ||
-      (contacts.instagram && !organization.isSocialIGProved)) {
-      todo.push(Object.assign({}, allTodo.social, {state: {contacts}}))
-    }
+  if ((contacts.twitter && !organization.isSocialTWProved) || (contacts.facebook && !organization.isSocialFBProved) || (contacts.instagram && !organization.isSocialIGProved)) {
+    todo.push(Object.assign({}, allTodo.social, {state: {contacts, id }}));
   }
   let website = contacts.website;
 

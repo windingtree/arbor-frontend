@@ -316,10 +316,12 @@ function TrustSocial(props) {
                   <img className={classes.socialCardIcon} src={facebookIconSvg} alt={"fb"}/>
                   <Typography>
                     {facebook}</Typography></Card>}
-                {twitter && <Card className={classes.socialAddressCard}>
+                {twitter &&
+                <Card className={classes.socialAddressCard}>
                   <img className={classes.socialCardIcon} src={twitterIconSvg} alt={"tw"}/>
-                  <Typography>
-                    {twitter}</Typography></Card>}
+                  <Typography>{twitter}</Typography>
+                </Card>
+                }
                 {instagram && <Card className={classes.socialAddressCard}>
                   <img className={classes.socialCardIcon} src={instagramIconSvg} alt={"ig"}/>
                   <Typography>
@@ -358,7 +360,9 @@ function TrustSocial(props) {
               <ul style={{marginTop: '30px'}}>
                 {renderStepsList(props.socials[activeSocial].steps, verifyingCodes[activeSocial])}
               </ul>
-              <Button className={classes.buttonVerify}>
+              <Button className={classes.buttonVerify}
+                 onClick={() => {window.open('https://twitter.com/intent/tweet?text=Our%20ORG.ID%20is%20did:orgid:0x00000000000000000000000000000000000tree','popup','width=600,height=255'); return false;}}
+              >
                 <Typography variant={'subtitle2'} noWrap className={classes.buttonVerifyTitle}>
                   {props.socials[activeSocial].button}
                 </Typography>

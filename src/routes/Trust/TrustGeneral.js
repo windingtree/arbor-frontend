@@ -487,7 +487,8 @@ function TrustGeneral() {
               </Typography>
                 <Typography className={classes.topText}>Why are you here? Probably, you own a business or
                   work at a company that wants to participate in the global economy and find reliable
-                  partners to scale and prosper.</Typography>
+                  partners to scale and prosper.
+                </Typography>
                 <div className={classes.line}/>
               </div>
             </Grid>

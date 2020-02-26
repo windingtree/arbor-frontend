@@ -242,7 +242,7 @@ function TrustWebsite() {
                   <Typography className={classes.howListTexts}>Make this TXT file accessible via a URL: <br/><a
                     className={classes.link}
                     target={'_blank'}
-                    href={website + '/org.id'}>{website + '/org.id'}</a></Typography>
+                    href={website+'/org.id'}>{website+'/org.id'}</a></Typography>
                 </li>
 
                 <li><img className={classes.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
@@ -298,6 +298,7 @@ function TrustWebsite() {
             </Card>
           </Container>
         </Container>
+        {orgid &&
         <Box>
           <Button className={classes.downloadButton}>
             <a href={txtFileData} download='ORG.ID.TXT'>
@@ -307,6 +308,7 @@ function TrustWebsite() {
             </a>
           </Button>
         </Box>
+        }
       </Container>
     </div>
   )

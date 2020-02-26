@@ -108,7 +108,6 @@ export const styles = makeStyles({
   },
 });
 
-
 //mui overrides
 const DialogContent = withStyles({
   root: {
@@ -185,6 +184,7 @@ const WizardStep = (props) => {
 
       <Formik
         initialValues={Object.assign({}, props.orgidJson)}
+        enableReinitialize={true}
         validate={values => {
           const errors = {};
           _.each(validators, (validator, orgidJsonPath) => {
@@ -199,9 +199,7 @@ const WizardStep = (props) => {
           if (!_.isEmpty(errors)) console.log('ERRORS', errors);
           return errors;
         }}
-        onSubmit={(values, {setSubmitting}) => {
-          console.log('%conSubmit', 'background:red; color:white;', values);
-
+        onSubmit={(values, /*{setSubmitting}*/) => {
           extendOrgidJson(values);
           handleNext();
         }}

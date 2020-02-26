@@ -1,0 +1,214 @@
+import {countries} from './countries';
+import Joi from '@hapi/joi';
+import _ from 'lodash';
+
+export const config = [
+  {
+    type: 'tab',
+    name: 'General info',
+    sections: {
+      left: [
+        {
+          name: 'Main info',
+          type: 'section',
+          fields: [
+            {
+              type: 'select',
+              name: 'Directory',
+              options: {
+                'hotel': 'Hotel',
+                'airline': 'Airline',
+                'insurance': 'Insurance',
+                'ota': 'Travel agencies'
+              },
+              required: true,
+              orgidJsonPath: 'organizationalUnit.type'
+            },
+            {
+              type: 'input',
+              name: 'Organization name',
+              required: true,
+              orgidJsonPath: 'organizationalUnit.name'
+            },
+            {
+              type: 'select',
+              name: 'Legal form',
+              options: [
+                'private entrepreneur',
+                'private company limited by shares or Ltd. (UK, Ireland and the Commonwealth)',
+                'public limited company (UK, Ireland and the Commonwealth)',
+                'limited partnership',
+                'unlimited partnership',
+                'chartered company',
+                'statutory company',
+                'holding company',
+                'subsidiary company',
+                'one man company (sole proprietorship)',
+                'charitable incorporated organisation (UK)',
+                'non-governmental organization',
+              ],
+              required: true,
+              orgidJsonPath: 'organizationalUnit.legalType'
+            },
+          ]
+        },
+        {
+          name: 'Address of your organization',
+          type: 'section',
+          fields: [
+            {
+              type: 'select',
+              name: 'Country',
+              options: countries,
+              required: true,
+              orgidJsonPath: 'organizationalUnit.registeredAddress.country'
+            },
+            {
+              type: 'input',
+              name: 'State or region',
+              orgidJsonPath: 'organizationalUnit.registeredAddress.subdivision'
+            },
+            {
+              type: 'input',
+              name: 'City',
+              orgidJsonPath: 'organizationalUnit.registeredAddress.locality'
+            },
+            {
+              type: 'input',
+              name: 'Street, building',
+              orgidJsonPath: 'organizationalUnit.registeredAddress.street_address'
+            },
+            {
+              type: 'input',
+              name: 'Apartment or office',
+              orgidJsonPath: 'organizationalUnit.registeredAddress.premise'
+            },
+            {
+              type: 'input',
+              name: 'Postal code',
+              orgidJsonPath: 'organizationalUnit.registeredAddress.postal_code'
+            }
+          ]
+        }
+      ],
+      right: [
+        {
+          name: 'Profile image',
+          type: 'section',
+          fields: [
+            {
+              name: 'Profile image',
+              type: 'dropzone',
+              orgidJsonPath: 'media[0].uri',
+              description: 'Add a logo or any image that represents your organization. It will help you stand out in search results.',
+              helperText: 'Recommended dimensions: 908х400 (minimal: 454x200)\nFormat: JPG, PNG'
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    type: 'tab',
+    name: 'Contact info',
+    sections: {
+      left: [
+        {
+          name: 'Contact information',
+          type: 'section',
+          fields: [
+            {
+              type: 'input',
+              subtype: 'phone',
+              name: 'Phone',
+              orgidJsonPath: 'organizationalUnit.contacts[0].phone'
+            },
+            {
+              type: 'input',
+              subtype: 'website',
+              name: 'Website',
+              orgidJsonPath: 'organizationalUnit.contacts[0].website',
+              schema: Joi.string().pattern(/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/, 'uri').label('Website'),
+              trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'domain'}).get('[0]', false).value()
+            },
+            {
+              type: 'input',
+              subtype: 'email',
+              name: 'Email',
+              orgidJsonPath: 'organizationalUnit.contacts[0].email',
+              schema: Joi.string().email({tlds: {allow: false}})
+            }
+          ]
+        }
+      ],
+      right: [
+        {
+          name: 'Social media accounts',
+          type: 'section',
+          fields: [
+            {
+              name: 'Facebook',
+              type: 'input',
+              icon: 'facebook',
+              orgidJsonPath: 'organizationalUnit.contacts[0].facebook',
+              trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'facebook'}).get('[0]', false).value()
+            },
+            {
+              name: 'Twitter',
+              type: 'input',
+              icon: 'twitter',
+              orgidJsonPath: 'organizationalUnit.contacts[0].twitter',
+              trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'twitter'}).get('[0]', false).value()
+            },
+            {
+              name: 'Instagram',
+              type: 'input',
+              icon: 'instagram',
+              orgidJsonPath: 'organizationalUnit.contacts[0].instagram',
+              trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'instagram'}).get('[0]', false).value()
+            },
+            {
+              name: 'Logo',
+              type: 'dropzone',
+              orgidJsonPath: 'media[0].uri',
+              description: 'Add a logo or any image that represents your organization. It will help you stand out in search results.',
+              helperText: 'Recommended dimensions: 908х400 (minimal: 454x200)\nFormat: JPG, PNG'
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    type: 'tab',
+    name: 'Organization details',
+    sections: {
+      left: [
+        {
+          name: 'Title',
+          type: 'section',
+          fields: [
+            {
+              type: 'input',
+              name: 'Title',
+              orgidJsonPath: 'organizationalUnit.details.title'
+            }
+          ]
+        }
+      ],
+      right: [
+        {
+          name: 'Organization details',
+          type: 'section',
+          fields: [
+            {
+              type: 'input',
+              name: 'Organization details',
+              orgidJsonPath: 'organizationalUnit.details.details'
+            }
+          ]
+        }
+      ]
+    }
+  }
+];

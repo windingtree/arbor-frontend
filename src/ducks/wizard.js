@@ -704,7 +704,7 @@ function ApiSendCreateOrganizationalUnit(data) {
   });
 }
 
-function ApiSendChangeOrgidUriAndHash() {
+function ApiSendChangeOrgidUriAndHash(data) {
   const orgidContract = getOrgidContract();
   const { orgidUri, orgidHash, address, orgidJson } = data;
   const orgidId = orgidJson.id.replace('did:orgid:', '');

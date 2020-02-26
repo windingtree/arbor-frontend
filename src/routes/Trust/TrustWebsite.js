@@ -298,7 +298,6 @@ function TrustWebsite() {
             </Card>
           </Container>
         </Container>
-        {orgid &&
         <Box>
           <Button className={classes.downloadButton}>
             <a href={txtFileData} download='ORG.ID.TXT'>

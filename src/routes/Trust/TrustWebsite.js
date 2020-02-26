@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React from "react";
 import {Container, Typography, Card, Box, Button} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 
@@ -10,7 +10,6 @@ import globeIconSvg from '../../assets/SvgComponents/globe-icon.svg';
 import listPlaceholderSvg from '../../assets/SvgComponents/list-placeholder.svg';
 
 import colors from '../../styles/colors';
-import _ from "lodash";
 
 export const styles = makeStyles({
   topDiv: {
@@ -170,7 +169,7 @@ function TrustWebsite() {
   const trustAssertions = (history.location.state && history.location.state.trustAssertions) ? history.location.state.trustAssertions : [];
   const websiteAssertion = trustAssertions.find(a => a.type === 'website');
   const website = websiteAssertion ? websiteAssertion.claim : 'http://userwebsitexample.com/';
-  const txtFileData = "data:text/json;charset=utf-8," + `orgid=${id}`;
+  const txtFileData = `data:text/json;charset=utf-8,orgid=${id}`;
   const classes = styles();
 
   return (

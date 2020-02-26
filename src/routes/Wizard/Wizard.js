@@ -14,7 +14,7 @@ import { WizardStep, WizardStepHosting, WizardStepMetaMask } from "./Components"
 import { wizardConfig as legalEntity } from './config/legalEntity'
 import { wizardConfig as organizationalUnit} from './config/organizationalUnit'
 import { connect } from "react-redux";
-import { rewriteOrgidJson, selectPendingState, selectSuccessState } from "../../ducks/wizard";
+import { rewriteOrgidJson, selectPendingState, selectSuccessState, selectWizardOrgidJson } from "../../ducks/wizard";
 
 const styles = makeStyles({
   mainContainer: {
@@ -159,7 +159,7 @@ const useStepStyles = makeStyles({
 });
 
 const WizardGeneral = (props) => {
-  const { rewriteOrgidJson, pendingTransaction, successTransaction } = props;
+  const { pendingTransaction, successTransaction, orgidJson } = props;
   const classes = styles();
   const [activeStep, setActiveStep] = useState(0);
   const wizardType = _.get(history, 'location.state.type', 'legalEntity');
@@ -171,13 +171,30 @@ const WizardGeneral = (props) => {
   const types = { legalEntity, organizationalUnit };
   const wizardConfig = types[wizardType];
 
+  // const hasPropertyType = orgidJson.hasOwnProperty(wizardType);
+  // const orgidJsonTypeValue = _.get(orgidJson, `${wizardType}`, undefined);
 
   useEffect(() => {
     if(id) {
-      rewriteOrgidJson(jsonContent)
+      props.rewriteOrgidJson(jsonContent)
     }
+    // if(!hasPropertyType && orgidJsonTypeValue === undefined) {
+    //   props.rewriteOrgidJson({});
+    // }
+    // console.log(hasPropertyType, wizardType, orgidJsonTypeValue);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  useEffect(() => {
+    const id = orgidJson.id;
+    props.rewriteOrgidJson({
+      "@context": "https://windingtree.com/ns/did/v1",
+      id: id,
+      "created": new Date().toJSON(),
+      [wizardType]: {}
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wizardType]);
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -310,6 +327,7 @@ const mapStateToProps = state => {
   return {
     pendingTransaction: selectPendingState(state),
     successTransaction: selectSuccessState(state),
+    orgidJson: selectWizardOrgidJson(state),
   }
 };
 

@@ -1,4 +1,5 @@
 import React from "react";
+import { Redirect } from 'react-router-dom';
 import {Container, Typography, Card, Box, Button} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 
@@ -173,7 +174,7 @@ function TrustWebsite() {
 
   return (
     <div>
-      <div className={classes.topDiv}>
+      {!website ? <Redirect exact path={'/trust/website'} to={'/my-organizations'}/> : <div className={classes.topDiv}>
         <Container className={classes.topSectionWrapper}
                    style={{backgroundColor: colors.greyScale.moreLighter}}>
           <Box className={classes.screenHeader}>
@@ -203,7 +204,7 @@ function TrustWebsite() {
             </div>
           </Container>
         </Container>
-      </div>
+      </div>}
       <Container className={classes.howSection}>
         <Container>
           <Typography className={classes.howSectionTitle}>

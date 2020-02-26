@@ -454,4 +454,23 @@ function ApiPostMedia(data) {
 function ApiPostOrgidJson(data) {
   return callApi(`json`, 'POST', { body: JSON.stringify(data),  headers: { 'Content-Type': 'application/json' } });
 }
+
+function ApiCreateLegalEntity() {
+  // return txId
+}
+
+function ApiCreateOrganizationalUnit() {
+  // return txId
+}
+
+function ApiEditOrganization() {
+  // return txId
+}
+
+function ApiGetTxStatus(transactionIn) {
+  return new Promise((resolve, reject) => {
+
+  })
+}
+
 //endregion

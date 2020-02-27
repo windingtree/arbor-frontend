@@ -31,7 +31,7 @@ const SelectField = (props) => {
       <FormControl className={classes.formControl}>
         <InputLabel>{name}</InputLabel>
         <Select
-          id={`select-${name.replace(' ','-')}-${index}`}
+          name={orgidJsonPath}
           variant={'filled'}
           value={_.get(values, orgidJsonPath)}
           error={isError}

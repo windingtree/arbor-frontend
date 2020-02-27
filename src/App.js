@@ -274,6 +274,11 @@ const theme = createMuiTheme({
         color: colors.primary.white
       }
     },
+    MuiTabs: {
+      flexContainer: {
+        borderBottom: `1px solid ${colors.greyScale.lightest}`
+      },
+    },
     MuiTab: {
       root: {
         fontFamily: 'Inter',
@@ -283,7 +288,10 @@ const theme = createMuiTheme({
         textTransform: 'none',
         letterSpacing: '-0.0068em',
         padding: 'unset',
-        marginRight: '20px'
+        marginRight: '20px',
+      },
+      wrapper: {
+        alignItems: 'flex-start'
       },
       textColorPrimary: {
         color: colors.greyScale.common,
@@ -293,6 +301,9 @@ const theme = createMuiTheme({
       }
     },
     PrivateTabIndicator: {
+      root: {
+        height: '1px',
+      },
       colorPrimary: {
         backgroundColor: colors.secondary.peach
       }

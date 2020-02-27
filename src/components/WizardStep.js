@@ -1,13 +1,12 @@
 import React, {useState} from 'react';
 import {connect} from "react-redux";
-import {makeStyles, withStyles} from '@material-ui/core/styles';
-import {Typography, Button, Dialog, DialogActions} from '@material-ui/core';
+import {makeStyles} from '@material-ui/core/styles';
+import {Typography, Button} from '@material-ui/core';
 
-import MuiDialogContent from '@material-ui/core/DialogContent';
-import CloseIcon from '@material-ui/icons/Close';
 import {Formik} from 'formik';
 import _ from 'lodash';
 
+import DialogComponent from './Dialog';
 import {extendOrgidJson, selectWizardOrgidJson} from '../ducks/wizard'
 import {Section} from './index';
 import ArrowLeftIcon from '../assets/SvgComponents/ArrowLeftIcon';
@@ -61,35 +60,6 @@ export const styles = makeStyles({
     color: colors.primary.white,
     padding: '4px 12px'
   },
-  // TODO refactor into one component
-  dialogContainer: {
-    margin: 'auto',
-    maxWidth: '800px',
-    '& > .MuiDialog-paper > .MuiDialogContent-root:first-child': {
-      paddingTop: '80px'
-    }
-  },
-  dialogContentWrapper: {
-    position: 'relative',
-    padding: '80px 100px',
-    boxSizing: 'border-box'
-  },
-  dialogCloseButtonWrapper: {
-    position: 'absolute',
-    right: '10px',
-    top: '10px'
-  },
-  dialogCloseButton: {
-    padding: '4px',
-    borderRadius: '50%',
-    minWidth: 'auto',
-    '& .MuiButton-label > .MuiSvgIcon-root': {
-      fill: colors.greyScale.common
-    }
-  },
-  dialogCloseButtonIcon: {
-    fontSize: 'medium',
-  },
   dialogContent: {
     width: '440px'
   },
@@ -108,16 +78,6 @@ export const styles = makeStyles({
   },
 });
 
-//mui overrides
-const DialogContent = withStyles({
-  root: {
-    '&:first-child': {
-      paddingTop: '80px'
-    }
-  }
-})(MuiDialogContent);
-
-
 const WizardStep = (props) => {
   const [isModalOpen, toggleModalOpenState] = useState(false);
   const classes = styles();
@@ -132,29 +92,31 @@ const WizardStep = (props) => {
     {};
 
   const renderModal = () => {
-    return <Dialog onClose={handleCloseModal} open={isModalOpen} className={classes.dialogContainer}>
-      <DialogContent className={classes.dialogContentWrapper}>
-        <DialogActions className={classes.dialogCloseButtonWrapper}>
-          <Button onClick={handleCloseModal} className={classes.dialogCloseButton}>
-            <CloseIcon className={classes.dialogCloseButtonIcon}/>
-          </Button>
-        </DialogActions>
-        <Typography className={classes.modalTitle}>Learn how to obtain Ether</Typography>
-        <Typography className={classes.paragraph}>Ether is Ethereum’s native cryptocurrency, the second most established
-          and popular cryptocurrency after Bitcoin.</Typography>
-        <Typography className={classes.paragraph}>It is common to obtain Ether through online exchange platforms that
-          operate in your country and accept your preferred currency. Reputable exchange platforms have strict KYC
-          processes and will ask you to share your personal data.</Typography>
-        <Typography className={classes.paragraph}>MetaMask is linked with two exchanges, <b>Coinbase</b> and <b>ShapeShift</b>, so you can purchase Ether directly from your account.</Typography>
-        <Typography className={classes.paragraph}>It is also possible to buy Ether from crypto
-          ATMs or through Peer-to-Peer options like <b>LocalCryptos</b>, <b>Hodl Hodl</b> or similar services. The latter can be
-          private or centralized and offer a wide selection of buying and selling options, from in-person meetings to
-          online gift cards, wire or PayPal transfers.</Typography>
-        <Typography className={classes.paragraph}>Finally, there are fintech apps like <b>Uphold</b>, <b>Revolut</b> and other
-          services that allow users buy, sell and transfer cryptocurrencies as well as trade for a broad spectrum of
-          fiat currencies.</Typography>
-      </DialogContent>
-    </Dialog>;
+    return (
+      <DialogComponent
+        handleClose={handleCloseModal}
+        isOpen={isModalOpen}
+        children={(
+          <div>
+            <Typography className={classes.modalTitle}>Learn how to obtain Ether</Typography>
+            <Typography className={classes.paragraph}>Ether is Ethereum’s native cryptocurrency, the second most established
+              and popular cryptocurrency after Bitcoin.</Typography>
+            <Typography className={classes.paragraph}>It is common to obtain Ether through online exchange platforms that
+              operate in your country and accept your preferred currency. Reputable exchange platforms have strict KYC
+              processes and will ask you to share your personal data.</Typography>
+            <Typography className={classes.paragraph}>MetaMask is linked with two exchanges, <b>Coinbase</b> and <b>ShapeShift</b>, so you can purchase Ether directly from your account.</Typography>
+            <Typography className={classes.paragraph}>It is also possible to buy Ether from crypto
+              ATMs or through Peer-to-Peer options like <b>LocalCryptos</b>, <b>Hodl Hodl</b> or similar services. The latter can be
+              private or centralized and offer a wide selection of buying and selling options, from in-person meetings to
+              online gift cards, wire or PayPal transfers.</Typography>
+            <Typography className={classes.paragraph}>Finally, there are fintech apps like <b>Uphold</b>, <b>Revolut</b> and other
+              services that allow users buy, sell and transfer cryptocurrencies as well as trade for a broad spectrum of
+              fiat currencies.
+            </Typography>
+          </div>
+        )}
+      />
+    );
   };
 
   const handleOpenModal = () => {

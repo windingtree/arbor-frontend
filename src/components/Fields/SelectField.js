@@ -33,7 +33,7 @@ const SelectField = (props) => {
         <Select
           id={`select-${name.replace(' ','-')}-${index}`}
           variant={'filled'}
-          value={_.get(values, orgidJsonPath, Object.keys(optionsObj)[0])}
+          value={_.get(values, orgidJsonPath)}
           error={isError}
           onChange={handleChange}
           onBlur={handleBlur}

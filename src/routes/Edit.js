@@ -3,7 +3,14 @@ import history from '../redux/history';
 import _ from 'lodash';
 import { makeStyles } from '@material-ui/core/styles';
 import { connect } from "react-redux";
-import { Container, Grid, Typography, Tabs, Tab, Button } from "@material-ui/core";
+import {
+  Container,
+  Grid,
+  Typography,
+  Tabs,
+  Tab,
+  Button
+} from "@material-ui/core";
 import { Formik } from "formik";
 
 import colors from '../styles/colors';
@@ -11,17 +18,20 @@ import colors from '../styles/colors';
 import { config as legalEntity } from '../utils/legalEntityEdit'
 import { config as organizationalUnit} from '../utils/organizationalUnitEdit'
 
-import { rewriteOrgidJson, selectPendingState, selectSuccessState, selectWizardOrgidJson } from "../ducks/wizard";
+import { rewriteOrgidJson, selectPendingState, selectSuccessState, selectWizardOrgidJson, extendOrgidJson, sendChangeOrgidUriAndHashRequest } from "../ducks/wizard";
 
 import { Section } from "../components";
 import ArrowLeftIcon from "../assets/SvgComponents/ArrowLeftIcon";
+import DialogComponent from '../components/Dialog';
 
 const styles = makeStyles({
   mainContainer: {
     position: 'relative',
     width: '100%',
     height: '100%',
-    backgroundColor: colors.greyScale.moreLighter,
+  },
+  form: {
+    paddingBottom: '60px'
   },
   screenHeading: {
     paddingTop: '16px',
@@ -42,6 +52,41 @@ const styles = makeStyles({
     verticalAlign: 'bottom',
     color: colors.primary.black,
     marginRight: '11px'
+  },
+  editHeaderContainer: {
+    paddingTop: '20px',
+  },
+  editHeaderTitle: {
+    fontSize: '24px',
+    fontWeight: 500,
+    color: colors.greyScale.darkest
+  },
+  editHeaderSubtitleContainer: {
+    padding: '20px 0 10px'
+  },
+  editHeaderSubtitle: {
+    fontSize: '16px',
+    fontWeight: 400,
+    lineHeight: 1.45,
+    color: colors.greyScale.common
+  },
+  editButtonContainer: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+  },
+  editButton: {
+    height: '44px',
+    textTransform: 'none',
+    backgroundImage: colors.gradients.orange,
+    border: `1px solid ${colors.primary.accent}`,
+    borderRadius: '6px',
+    padding: '6px 20px',
+  },
+  editButtonLabel: {
+    fontSize: '16px',
+    fontWeight: 600,
+    lineHeight: 1.24,
+    color: colors.primary.white
   },
   mainContent: {
     marginTop: '40px',
@@ -71,6 +116,11 @@ const styles = makeStyles({
     fontWeight: 400,
     lineHeight: 1.42,
     color: colors.greyScale.common,
+  },
+  dropzoneContent: {
+    '& > div > p + div': {
+      marginTop: '0'
+    }
   },
   pendingContentWrapper: {
     padding: '46px 80px 80px'
@@ -144,10 +194,12 @@ const TabPanel = (props) => {
 const Edit = (props) => {
   const orgid = history.location.pathname.split('/')[2];
   const classes = styles();
+  const [isModalOpen, toggleModalOpenState] = useState(false);
   const wizardType = _.get(history, 'location.state.type', 'legalEntity');
   const jsonContent = _.get(history, 'location.state.jsonContent', {});
   const types = { legalEntity, organizationalUnit };
   const editConfig = types[wizardType];
+  console.log(editConfig, wizardType);
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -166,9 +218,31 @@ const Edit = (props) => {
 
   const validators = {};
 
+  const handleOpenModal = () => {
+    toggleModalOpenState(true);
+  };
+
+  const handleCloseModal = () => {
+    toggleModalOpenState(false)
+  };
+
+  const setHostingDialog = () => {
+    return (
+      <DialogComponent
+        handleClose={handleCloseModal}
+        isOpen={isModalOpen}
+        children={(
+          <div>
+            hosting
+          </div>
+        )}
+      />
+    )
+  };
+
   return (
     <div className={classes.mainContainer}>
-      <div className={classes.tabsContainer}>
+      <div>
         <Formik
           initialValues={Object.assign({}, props.orgidJson)}
           enableReinitialize={true}
@@ -186,12 +260,9 @@ const Edit = (props) => {
             if (!_.isEmpty(errors)) console.log('ERRORS', errors);
             return errors;
           }}
-          onSubmit={(values, /*{setSubmitting}*/) => {
+          onSubmit={(values) => {
             console.log('onSubmit', values);
-            /*
-            extendOrgidJson(values);
-            handleNext();
-            */
+            props.extendOrgidJson(values);
           }}
         >
           {({
@@ -204,7 +275,7 @@ const Edit = (props) => {
               isSubmitting,
               /* and other goodies */
             }) => (
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className={classes.form}>
 
               <Container>
                 <div className={classes.screenHeading}>
@@ -220,21 +291,21 @@ const Edit = (props) => {
               </Container>
 
               <Container>
-                <Grid container spacing={5}>
+                <Grid container spacing={5} justify={'space-between'} alignItems={'center'} className={classes.editHeaderContainer}>
                   <Grid item sm={9}>
-                    <Typography variant={'h4'}>
+                    <Typography variant={'h4'} className={classes.editHeaderTitle}>
                       Editing organization profile
                     </Typography>
-                    <Typography>
-                      Every profile change requires an Ethereum transaction. Make sure to have at least 0.1 Ether in your MetaMask account before you save your changes and update your profile.
-                    </Typography>
-                  </Grid>
-                  <Grid item sm={3}>
-                    <div className={classes.buttonWrapper}>
-                      <Button type="submit" disabled={isSubmitting} className={classes.button}>
-                        <Typography variant={'caption'} className={classes.buttonLabel}>{'Save and Update'}</Typography>
-                      </Button>
+                    <div className={classes.editHeaderSubtitleContainer}>
+                      <Typography variant={'subtitle2'} className={classes.editHeaderSubtitle}>
+                        Every profile change requires an Ethereum transaction. Make sure to have at least 0.1 Ether in your MetaMask account before you save your changes and update your profile.
+                      </Typography>
                     </div>
+                  </Grid>
+                  <Grid item sm={3} className={classes.editButtonContainer}>
+                    <Button type="submit" disabled={isSubmitting} onClick={handleOpenModal} className={classes.editButton}>
+                      <Typography variant={'caption'} className={classes.editButtonLabel}>{'Save and Update'}</Typography>
+                    </Button>
                   </Grid>
                 </Grid>
               </Container>
@@ -271,7 +342,7 @@ const Edit = (props) => {
                         }
                       </Grid>
                       <Grid item xs={12} lg={1}/>
-                      <Grid item xs={12} lg={5}>
+                      <Grid item xs={12} lg={5} className={classes.dropzoneContent}>
                         {
                           tab.sections.right.map((section, index) => {
                             return (
@@ -293,6 +364,7 @@ const Edit = (props) => {
                   </Container>
                 </TabPanel>
               ))}
+              {setHostingDialog()}
             </form>
           )}
         </Formik>
@@ -310,7 +382,9 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-  rewriteOrgidJson
+  rewriteOrgidJson,
+  sendChangeOrgidUriAndHashRequest,
+  extendOrgidJson
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Edit);

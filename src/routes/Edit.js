@@ -9,20 +9,32 @@ import {
   Typography,
   Tabs,
   Tab,
-  Button
+  Button,
+  Stepper, Step, StepLabel
 } from "@material-ui/core";
 import { Formik } from "formik";
 
 import colors from '../styles/colors';
 
-import { config as legalEntity } from '../utils/legalEntityEdit'
-import { config as organizationalUnit} from '../utils/organizationalUnitEdit'
+import { config as legalEntity } from '../utils/legalEntityEdit';
+import { config as organizationalUnit} from '../utils/organizationalUnitEdit';
+import { wizardConfig } from '../utils/legalEntity';
 
-import { rewriteOrgidJson, selectPendingState, selectSuccessState, selectWizardOrgidJson, extendOrgidJson, sendChangeOrgidUriAndHashRequest } from "../ducks/wizard";
+import {
+  rewriteOrgidJson,
+  selectPendingState,
+  selectSuccessState,
+  selectWizardOrgidJson,
+  extendOrgidJson,
+  sendChangeOrgidUriAndHashRequest,
+  selectWizardOrgidUri, saveOrgidUri, saveOrgidJsonToArbor
+} from "../ducks/wizard";
 
-import { Section } from "../components";
+import { Section, WizardStepMetaMask } from "../components";
 import ArrowLeftIcon from "../assets/SvgComponents/ArrowLeftIcon";
 import DialogComponent from '../components/Dialog';
+import WizardStepHosting from '../components/WizardStepHosting';
+import { selectSignInAddress } from '../ducks/signIn';
 
 const styles = makeStyles({
   mainContainer: {
@@ -172,7 +184,10 @@ const styles = makeStyles({
   },
   successButtonLabel: {
     color: colors.primary.white
-  }
+  },
+  dialogContent: {
+    maxWidth: '440px',
+  },
 });
 
 const TabPanel = (props) => {
@@ -195,11 +210,13 @@ const Edit = (props) => {
   const orgid = history.location.pathname.split('/')[2];
   const classes = styles();
   const [isModalOpen, toggleModalOpenState] = useState(false);
+  const [value, setValue] = useState(0);
+  const [activeStep, setActiveStep] = useState(1);
   const wizardType = _.get(history, 'location.state.type', 'legalEntity');
   const jsonContent = _.get(history, 'location.state.jsonContent', {});
   const types = { legalEntity, organizationalUnit };
   const editConfig = types[wizardType];
-  console.log(editConfig, wizardType);
+  console.log(editConfig, types[wizardType]);
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -211,7 +228,6 @@ const Edit = (props) => {
     }
   }, [orgid]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const [value, setValue] = useState(0);
   const handleChangeTab = (event, newValue) => {
     setValue(newValue);
   };
@@ -226,14 +242,40 @@ const Edit = (props) => {
     toggleModalOpenState(false)
   };
 
-  const setHostingDialog = () => {
+  const dialogStepsContent = (stepIndex) => {
+    const content = wizardConfig[stepIndex];
+    const { type } = content;
+
+    switch (type) {
+      case 'step_hosting': return <WizardStepHosting data={content} action={'edit'} handleNext={handleNext} key={stepIndex} index={stepIndex} stepTitle={false}/>;
+      case 'step_metamask': return <WizardStepMetaMask data={content} action={'edit'} handleNext={handleNext} key={stepIndex} index={stepIndex} stepTitle={false}/>;
+      default: return (
+        <div key={stepIndex}>Step <pre>${content.name}</pre> has unknown type: <pre>{content.type}</pre></div>
+      );
+    }
+  };
+
+  const handleNext = () => {
+    setActiveStep(prevActiveStep => prevActiveStep + 1);
+  };
+
+  const steps = wizardConfig.map(step => step.name);
+
+  const setDialog = () => {
     return (
       <DialogComponent
         handleClose={handleCloseModal}
         isOpen={isModalOpen}
         children={(
-          <div>
-            hosting
+          <div className={classes.dialogContent}>
+            <div style={{ display: 'none' }}>
+              <Stepper activeStep={activeStep}>
+                {steps.map((label, index) => (
+                  <Step key={index}/>
+                ))}
+              </Stepper>
+            </div>
+            {dialogStepsContent(activeStep)}
           </div>
         )}
       />
@@ -364,7 +406,7 @@ const Edit = (props) => {
                   </Container>
                 </TabPanel>
               ))}
-              {setHostingDialog()}
+              {setDialog()}
             </form>
           )}
         </Formik>
@@ -378,13 +420,17 @@ const mapStateToProps = state => {
     pendingTransaction: selectPendingState(state),
     successTransaction: selectSuccessState(state),
     orgidJson: selectWizardOrgidJson(state),
+    orgidUri: selectWizardOrgidUri(state),
+    address: selectSignInAddress(state)
   }
 };
 
 const mapDispatchToProps = {
   rewriteOrgidJson,
   sendChangeOrgidUriAndHashRequest,
-  extendOrgidJson
+  extendOrgidJson,
+  saveOrgidUri,
+  saveOrgidJsonToArbor,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Edit);

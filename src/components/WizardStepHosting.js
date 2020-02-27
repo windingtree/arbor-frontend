@@ -115,7 +115,7 @@ const WizardStepHosting = (props) => {
     setValueHostingType(event.target.value);
   };
 
-  const { index, saveOrgidUri, saveOrgidJsonToArbor, orgidUri, orgidJson, address, data: { longName, description, cta }, handleNext } = props;
+  const { index, saveOrgidUri, saveOrgidJsonToArbor, orgidUri, orgidJson, address, data: { longName, description, cta }, handleNext, action, stepTitle = true } = props;
   // next line collect from "sections" all fields with non empty "schema" to object { [fieldName]:schema }
 
   const data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(orgidJson, null, 2));
@@ -124,7 +124,10 @@ const WizardStepHosting = (props) => {
 
   return (
     <div key={index}>
-      <Typography variant={'h3'} className={inheritClasses.stepTitle}>Step {index+1}: {longName}</Typography>
+      <Typography variant={'h3'} className={inheritClasses.stepTitle}>
+        {stepTitle && `Step ${index+1}:`}
+        {longName}
+      </Typography>
       <div className={inheritClasses.subtitleWrapper}>
         <Typography variant={'subtitle1'} className={inheritClasses.subtitle}>{description}</Typography>
       </div>
@@ -239,7 +242,7 @@ const WizardStepHosting = (props) => {
 
             <div className={inheritClasses.buttonWrapper}>
               <Button type="submit" disabled={isSubmitting} className={inheritClasses.button}>
-                <Typography variant={'caption'} className={inheritClasses.buttonLabel}>{cta}</Typography>
+                <Typography variant={'caption'} className={inheritClasses.buttonLabel}>{action === 'edit' ? 'Next' : {cta}}</Typography>
               </Button>
             </div>
           </form>

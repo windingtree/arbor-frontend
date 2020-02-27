@@ -298,7 +298,7 @@ const WizardGeneral = (props) => {
                 </div>
                 <Stepper alternativeLabel activeStep={activeStep} connector={<StepperStyles/>}>
                   {steps.map((label, index) => (
-                    <Step key={index} className={classes.stepItem}>
+                    <Step key={index}>
                       <StepLabel StepIconComponent={StepStyle}><p>{`${index + 1}.`}</p>{label}</StepLabel>
                     </Step>
                   ))}

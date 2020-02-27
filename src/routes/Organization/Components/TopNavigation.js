@@ -142,7 +142,7 @@ function TopNavigation(props) {
   const classes = styles();
   const {organization, canManage, todos} = props;
   const {orgid: id, jsonContent, proofsQty} = organization;
-  const orgidType = _.get(props.organization, `legalEntity`, 'unknown') === 'legalEntity' ? 'legalEntity' : 'organizationalUnit';
+  const orgidType = _.get(organization, 'orgidType', '') === 'legalEntity' ? 'legalEntity' : 'organizationalUnit';
   const editState = {action: 'edit', type: orgidType, id, jsonContent};
 
   return (

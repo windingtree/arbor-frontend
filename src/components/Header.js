@@ -29,7 +29,11 @@ const styles = makeStyles({
   header: {
     backgroundColor: colors.primary.white,
     zIndex: 100,
-    borderBottom: `1px solid ${colors.greyScale.lightest}`
+    borderBottom: `1px solid ${colors.greyScale.lightest}`,
+    ['@media (max-width:767px)']: {
+      position: 'fixed',
+      width: '100%'
+    }
   },
   logoButton: {
     backgroundColor: 'white',

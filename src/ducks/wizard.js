@@ -375,7 +375,7 @@ function sendCreateOrganizationalUnitFailure(error) {
 //endregion
 
 //region == [ACTIONS: sendChangeOrgidUriAndHashRequest] ====================================================================================
-//TODO: user for Edit (src/routes/Edit.js)
+//EDIT organization
 export function sendChangeOrgidUriAndHashRequest(payload) {
   return {
     type: SEND_CHANGE_ORGID_URI_AND_HASH_REQUEST,

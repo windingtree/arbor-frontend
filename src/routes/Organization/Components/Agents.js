@@ -1,4 +1,6 @@
 import React, {useState} from "react";
+import { connect } from 'react-redux';
+import { extendOrgidJson, selectPendingState, selectSuccessState } from '../../../ducks/wizard';
 import {Formik} from 'formik';
 import _ from "lodash";
 import {
@@ -14,14 +16,15 @@ import {
   withStyles,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import colors from "../../../styles/colors";
 
+import { copyStrToClipboard } from '../../../utils/helpers';
+import { wizardConfig } from '../../../utils/legalEntity';
+
+import { WizardStepHosting, WizardStepMetaMask } from '../../../components';
 import DialogComponent from '../../../components/Dialog';
 import CopyIdComponent from "../../../components/CopyIdComponent";
 import VpnKeyIcon from "@material-ui/icons/VpnKey";
-
-import { copyStrToClipboard } from '../../../utils/helpers';
-
-import colors from "../../../styles/colors";
 import CopyIcon from '../../../assets/SvgComponents/CopyIcon';
 
 const styles = makeStyles({
@@ -141,6 +144,9 @@ const styles = makeStyles({
     height: '20px',
     color: colors.secondary.green,
   },
+  progressWrapper: {
+    margin: '0 auto'
+  }
 });
 
 const LightTooltip = withStyles({
@@ -159,7 +165,9 @@ const LightTooltip = withStyles({
 function Agents(props) {
   const classes = styles();
   const [isModalOpen, toggleModalOpenState] = useState(false);
-  const [isTooltipOpen, setTooltipOpen] = useState(false);const { organization , isFetched, isFetching, success} = props;
+  const [isTooltipOpen, setTooltipOpen] = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
+  const { organization , pendingTransaction, successTransaction } = props;
   const { owner } = organization;
   const agents = _.get(organization, `jsonContent.publicKey`, []);
 
@@ -184,127 +192,136 @@ function Agents(props) {
     toggleModalOpenState(false)
   };
 
+  const dialogStepsContent = (stepIndex) => {
+    const content = wizardConfig[stepIndex];
+    const { type } = content;
+
+    switch (type) {
+      case 'step_hosting': return <WizardStepHosting data={content} action={'edit'} handleNext={handleNext} key={stepIndex} index={stepIndex} stepTitle={false}/>;
+      case 'step_metamask': return <WizardStepMetaMask data={content} action={'edit'} handleNext={handleNext} key={stepIndex} index={stepIndex} stepTitle={false}/>;
+      default: return (
+        <>
+          <Typography variant={'caption'} className={classes.dialogTitle}>Add agent key</Typography>
+          <div className={classes.dialogSubtitleWrapper}>
+            <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>To add an agent, enter its key and  write a comment, then confirm the transaction in MetaMask. </Typography>
+          </div>
+          <Formik
+            initialValues={{ key: '', comment: '' }}
+            onSubmit={(values) => {
+              props.extendOrgidJson(values); //TODO add and replace action to push values to publicKey ?
+            }}
+          >
+            {({
+                values,
+                errors,
+                touched,
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                isSubmitting
+              }) => (
+              <form onSubmit={handleSubmit}>
+                <div className={classes.inputFieldWrapper}>
+                  <TextField
+                    name={'key'}
+                    autoComplete={'none'}
+                    variant={'filled'}
+                    label={'Enter Agent Key'}
+                    fullWidth
+                    values={values.key}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    helperText={errors && touched && errors.message}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position={'end'}>
+                          <ClickAwayListener
+                            onClickAway={handleTooltipClose}
+                          >
+                            <div>
+                              <LightTooltip
+                                PopperProps={{
+                                  disablePortal: true,
+                                }}
+                                onClose={handleTooltipClose}
+                                open={isTooltipOpen}
+                                disableFocusListener
+                                disableHoverListener
+                                disableTouchListener
+                                title={'Key copied to clipboard'}
+                                placement={'top'}
+                              >
+                                <Button onClick={() => copyIdWithFeedback(values.key)} className={classes.inputCopyKeyButton}>
+                                  <CopyIcon viewBox={'0 0 16 16'} className={classes.iconCopy}/>
+                                </Button>
+                              </LightTooltip>
+                            </div>
+                          </ClickAwayListener>
+                        </InputAdornment>
+                      )
+                    }}
+                  />
+                </div>
+                <div className={classes.inputFieldWrapper}>
+                  <TextField
+                    name={'comment'}
+                    autoComplete={'none'}
+                    variant={'filled'}
+                    label={'Write a comment for this agent'}
+                    fullWidth
+                    values={values.comment}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    helperText={errors && touched && errors.message}
+                  />
+                </div>
+                <div className={classes.dialogButtonWrapper}>
+                  <Button type={'submit'} onClick={handleNext} disabled={isSubmitting} className={classes.dialogButton}>
+                    <Typography variant={'caption'} className={classes.dialogButtonLabel}>
+                      Confirm in MetaMask
+                    </Typography>
+                  </Button>
+                </div>
+              </form>
+            )}
+          </Formik>
+        </>
+      );
+    }
+  };
+
+  const handleNext = () => {
+    setActiveStep(prevActiveStep => prevActiveStep + 1);
+  };
+
   const addAgentKeyDialog = () => {
     return (
       <DialogComponent
         handleClose={handleCloseModal}
         isOpen={isModalOpen}
         children={(
-          <div>
+          <div className={classes.dialogContent}>
             {
-              !isFetching ? (
-                <div className={classes.dialogContent}>
-                  <Typography variant={'caption'} className={classes.dialogTitle}>
-                    {
-                      isFetched && success ? 'Agent successfully created' : 'Add agent key'
-                    }
-                  </Typography>
-                  <div className={classes.dialogSubtitleWrapper}>
-                    <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>
-                      {
-                        isFetched && success ? 'You new agent now has the rights to act on behalf of your organization. You can add more agents or delete agent keys.' :
-                          'To add an agent, enter its key and  write a comment, then confirm the transaction in MetaMask.'
-                      }
-                    </Typography>
-                  </div>
-                  {
-                    !isFetched && !success && (
-                      <Formik
-                        initialValues={{ key: '', comment: '' }}
-                        onSubmit={(values) => {
-                          console.log(values);
-                        }}
-                      >
-                        {({
-                            values,
-                            errors,
-                            touched,
-                            handleChange,
-                            handleBlur,
-                            handleSubmit,
-                            isSubmitting
-                          }) => (
-                          <form onSubmit={handleSubmit}>
-                            <div className={classes.inputFieldWrapper}>
-                              <TextField
-                                name={'key'}
-                                autoComplete={'none'}
-                                variant={'filled'}
-                                label={'Enter Agent Key'}
-                                fullWidth
-                                values={values.key}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                helperText={errors && touched && errors.message}
-                                InputProps={{
-                                  endAdornment: (
-                                    <InputAdornment position={'end'}>
-                                      <ClickAwayListener
-                                        onClickAway={handleTooltipClose}
-                                      >
-                                        <div>
-                                          <LightTooltip
-                                            PopperProps={{
-                                              disablePortal: true,
-                                            }}
-                                            onClose={handleTooltipClose}
-                                            open={isTooltipOpen}
-                                            disableFocusListener
-                                            disableHoverListener
-                                            disableTouchListener
-                                            title={'Key copied to clipboard'}
-                                            placement={'top'}
-                                          >
-                                            <Button onClick={() => copyIdWithFeedback(values.key)} className={classes.inputCopyKeyButton}>
-                                              <CopyIcon viewBox={'0 0 16 16'} className={classes.iconCopy}/>
-                                            </Button>
-                                          </LightTooltip>
-                                        </div>
-                                      </ClickAwayListener>
-                                    </InputAdornment>
-                                  )
-                                }}
-                              />
-                            </div>
-                            <div className={classes.inputFieldWrapper}>
-                              <TextField
-                                name={'comment'}
-                                autoComplete={'none'}
-                                variant={'filled'}
-                                label={'Write a comment for this agent'}
-                                fullWidth
-                                values={values.comment}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                helperText={errors && touched && errors.message}
-                              />
-                            </div>
-                            <div className={classes.dialogButtonWrapper}>
-                              <Button type={'submit'} disabled={isSubmitting} className={classes.dialogButton}>
-                                <Typography variant={'caption'} className={classes.dialogButtonLabel}>
-                                  Confirm in MetaMask
-                                </Typography>
-                              </Button>
-                            </div>
-                          </form>
-                        )}
-                      </Formik>
-                    )
-                  }
-                  {
-                    isFetched && success && (
-                      <div className={classes.dialogButtonWrapper}>
-                        <Button onClick={() => console.log('manage agents')} className={classes.dialogButton}>
-                          <Typography variant={'caption'} className={classes.dialogButtonLabel}>
-                            Manage your agents
-                          </Typography>
-                        </Button>
-                      </div>
-                    )
-                  }
+              !!pendingTransaction ? (
+                <div className={classes.progressWrapper}>
+                  <CircularProgress/>
                 </div>
+              ) : !successTransaction ? (
+                dialogStepsContent(activeStep)
               ) : (
-                <CircularProgress/>
+                <>
+                  <Typography variant={'caption'} className={classes.dialogTitle}>Agent successfully created</Typography>
+                  <div className={classes.dialogSubtitleWrapper}>
+                    <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>You new agent now has the rights to act on behalf of your organization. You can add more agents or delete agent keys.</Typography>
+                  </div>
+                  <div className={classes.dialogButtonWrapper}>
+                    <Button onClick={handleCloseModal} className={classes.dialogButton}>
+                      <Typography variant={'caption'} className={classes.dialogButtonLabel}>
+                        Manage your agents
+                      </Typography>
+                    </Button>
+                  </div>
+                </>
               )
             }
           </div>
@@ -395,4 +412,15 @@ Agents.defaultProps = {
   isFetching: false
 };
 
-export default Agents;
+const mapStateToProps = state => {
+  return {
+    pendingTransaction: selectPendingState(state),
+    successTransaction: selectSuccessState(state),
+  }
+};
+
+const mapDispatchToProps = {
+  extendOrgidJson
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Agents);

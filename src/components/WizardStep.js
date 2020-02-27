@@ -97,7 +97,7 @@ const WizardStep = (props) => {
         handleClose={handleCloseModal}
         isOpen={isModalOpen}
         children={(
-          <div>
+          <div className={classes.dialogContent}>
             <Typography className={classes.modalTitle}>Learn how to obtain Ether</Typography>
             <Typography className={classes.paragraph}>Ether is Ethereum’s native cryptocurrency, the second most established
               and popular cryptocurrency after Bitcoin.</Typography>

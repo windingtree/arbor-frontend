@@ -29,10 +29,9 @@ import {
   selectWizardOrgidUri, saveOrgidUri, saveOrgidJsonToArbor
 } from "../ducks/wizard";
 
-import { Section, WizardStepMetaMask } from "../components";
+import { Section, WizardStepMetaMask, WizardStepHosting } from "../components";
 import ArrowLeftIcon from "../assets/SvgComponents/ArrowLeftIcon";
 import DialogComponent from '../components/Dialog';
-import WizardStepHosting from '../components/WizardStepHosting';
 import { selectSignInAddress } from '../ducks/signIn';
 import PendingTransactionIllustration from '../assets/SvgComponents/org-creation-illustration.svg';
 import SuccessTransactionIllustration from '../assets/SvgComponents/detailsIllustration.svg';

@@ -50,6 +50,51 @@ const styles = makeStyles({
   dropzoneImageWrapper: {
     margin: '8px 0'
   },
+  previewContainer: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  thumbsContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 16
+  },
+  thumb: {
+    display: 'inline-flex',
+    borderRadius: '8px',
+    border: `1px solid ${colors.greyScale.lightest}`,
+    marginBottom: '8px',
+    marginRight: '8px',
+    width: '100px',
+    height: '100px',
+    padding: '4px',
+    boxSizing: 'border-box',
+    overflow: 'hidden'
+  },
+  thumbInner: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    minWidth: '0',
+  },
+  img: {
+    display: 'block',
+    width: 'auto',
+    height: '110%',
+  },
+  previewButtonWrapper: {
+    marginLeft: '10px'
+  },
+  previewButton: {
+    textTransform: 'none'
+  },
+  previewButtonLabel: {
+    fontSize: '14px',
+    fontWeight: 500,
+    color: colors.secondary.cyan
+  },
   selectFilesButton: {
     textTransform: 'none'
   },
@@ -65,50 +110,19 @@ const styles = makeStyles({
   },
   inputWrapper: {
     marginTop: '20px'
-  }
+  },
 });
-
-const thumbsContainer = {
-  display: 'flex',
-  flexDirection: 'row',
-  flexWrap: 'wrap',
-  marginTop: 16
-};
-
-const thumb = {
-  display: 'inline-flex',
-  borderRadius: 2,
-  border: '1px solid #eaeaea',
-  marginBottom: 8,
-  marginRight: 8,
-  width: 100,
-  height: 100,
-  padding: 4,
-  boxSizing: 'border-box'
-};
-
-const thumbInner = {
-  display: 'flex',
-  minWidth: 0,
-  overflow: 'hidden'
-};
-
-const img = {
-  display: 'block',
-  width: 'auto',
-  height: '100%'
-};
 
 function Previews(props) {
   const classes = styles();
-  const {saveMediaToArbor, setFiles, files, helperText, description, address, orgidJson: {id}} = props;
+  const {setFiles, files, helperText, description, address, orgidJson: {id}} = props;
   const {getRootProps, getInputProps} = useDropzone({
     accept: 'image/*',
     maxSize: 500 * 1024,
     multiple: false,
     onDrop: (acceptedFiles) => {
       window['file_0'] = acceptedFiles[0];
-      saveMediaToArbor({address, id, file: acceptedFiles[0]});
+      props.saveMediaToArbor({address, id, file: acceptedFiles[0]});
 
       setFiles(acceptedFiles.map(file => Object.assign(file, {
         preview: URL.createObjectURL(file)
@@ -116,14 +130,26 @@ function Previews(props) {
     }
   });
 
+  const handleDeletePreview = () => {
+    props.saveMediaToArbor({address, id, file: ''});
+    setFiles([]);
+  };
+
   const thumbs = files.map(file => (
-    <div style={thumb} key={file.name}>
-      <div style={thumbInner}>
-        <img
-          alt={'Preview'}
-          src={file.preview}
-          style={img}
-        />
+    <div className={classes.previewContainer}>
+      <div className={classes.thumb} key={file.name}>
+        <div className={classes.thumbInner}>
+          <img
+            alt={'Preview'}
+            src={file.preview}
+            className={classes.img}
+          />
+        </div>
+      </div>
+      <div className={classes.previewButtonWrapper}>
+        <Button onClick={handleDeletePreview} className={classes.previewButton}>
+          <Typography variant={'caption'} className={classes.previewButtonLabel} noWrap>Remove photo</Typography>
+        </Button>
       </div>
     </div>
   ));
@@ -148,7 +174,7 @@ function Previews(props) {
           </Button>
         </div>
         <Typography variant={'caption'} className={classes.helperText}>{helperText}</Typography>
-        <aside style={thumbsContainer}>
+        <aside className={classes.thumbsContainer}>
           {thumbs}
         </aside>
       </section>

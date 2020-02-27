@@ -45,15 +45,6 @@ const GET_TRANSACTION_STATUS_REQUEST = `${prefix}/GET_TRANSACTION_STATUS_REQUEST
 const GET_TRANSACTION_STATUS_SUCCESS = `${prefix}/GET_TRANSACTION_STATUS_SUCCESS`;
 const GET_TRANSACTION_STATUS_FAILURE = `${prefix}/GET_TRANSACTION_STATUS_FAILURE`;
 
-const SET_PENDING_STATE_TO_TRANSACTION_REQUEST = `${prefix}/SET_PENDING_STATE_TO_TRANSACTION_REQUEST`;
-const SET_PENDING_STATE_TO_TRANSACTION_SUCCESS = `${prefix}/SET_PENDING_STATE_TO_TRANSACTION_SUCCESS`;
-const SET_PENDING_STATE_TO_TRANSACTION_FAILURE = `${prefix}/SET_PENDING_STATE_TO_TRANSACTION_FAILURE`;
-
-//maybe rewrite pendingTransaction and this state ? move to another duck
-const FETCH_TRANSACTION_STATE_REQUEST = `${prefix}/FETCH_TRANSACTION_STATE_REQUEST`;
-const FETCH_TRANSACTION_STATE_SUCCESS = `${prefix}/FETCH_TRANSACTION_STATE_SUCCESS`;
-const FETCH_TRANSACTION_STATE_FAILURE = `${prefix}/FETCH_TRANSACTION_STATE_FAILURE`;
-
 const initialState = {
   isFetching: false,
   isFetched: false,
@@ -89,8 +80,6 @@ export default function reducer( state = initialState, action) {
     case SEND_CREATE_LEGAL_ENTITY_REQUEST:
     case SEND_CREATE_ORGANIZATIONAL_UNIT_REQUEST:
     case SEND_CHANGE_ORGID_URI_AND_HASH_REQUEST:
-    case SET_PENDING_STATE_TO_TRANSACTION_REQUEST:
-    case FETCH_TRANSACTION_STATE_REQUEST:
       return _.merge({}, state, {
         isFetching: true,
         isFetched: false,
@@ -149,17 +138,7 @@ export default function reducer( state = initialState, action) {
         error: null
       });
     case SEND_CREATE_LEGAL_ENTITY_SUCCESS:
-      return  _.merge({}, state, {
-        isFetching: false,
-        isFetched: true,
-        error: null
-      });
     case SEND_CREATE_ORGANIZATIONAL_UNIT_SUCCESS:
-      return  _.merge({}, state, {
-        isFetching: false,
-        isFetched: true,
-        error: null
-      });
     case SEND_CHANGE_ORGID_URI_AND_HASH_SUCCESS:
       return  _.merge({}, state, {
         isFetching: false,
@@ -174,22 +153,6 @@ export default function reducer( state = initialState, action) {
         successTransaction: true,
         error: null
       });
-    case SET_PENDING_STATE_TO_TRANSACTION_SUCCESS:
-      return _.merge({}, state, {
-        isFetching: false,
-        isFetched: true,
-        pendingTransaction: payload,
-        successTransaction: null,
-        error: null
-      });
-    case FETCH_TRANSACTION_STATE_SUCCESS:
-      return _.merge({}, state, {
-        isFetching: false,
-        isFetched: true,
-        pendingTransaction: null,
-        successTransaction: payload,
-        error: null
-      });
     /////////////
     // FAILURE //
     /////////////
@@ -201,8 +164,6 @@ export default function reducer( state = initialState, action) {
     case SEND_CREATE_LEGAL_ENTITY_FAILURE:
     case SEND_CREATE_ORGANIZATIONAL_UNIT_FAILURE:
     case SEND_CHANGE_ORGID_URI_AND_HASH_FAILURE:
-    case FETCH_TRANSACTION_STATE_FAILURE:
-    case SET_PENDING_STATE_TO_TRANSACTION_FAILURE:
       return _.merge({}, state, {
         isFetching: false,
         isFetched: false,
@@ -417,21 +378,21 @@ function sendCreateOrganizationalUnitFailure(error) {
 //TODO: user for Edit (src/routes/Edit.js)
 export function sendChangeOrgidUriAndHashRequest(payload) {
   return {
-    type: SEND_CREATE_ORGANIZATIONAL_UNIT_REQUEST,
+    type: SEND_CHANGE_ORGID_URI_AND_HASH_REQUEST,
     payload
   }
 }
 
 function sendChangeOrgidUriAndHashSuccess(payload) {
   return {
-    type: SEND_CREATE_ORGANIZATIONAL_UNIT_SUCCESS,
+    type: SEND_CHANGE_ORGID_URI_AND_HASH_SUCCESS,
     payload
   }
 }
 
 function sendChangeOrgidUriAndHashFailure(error) {
   return {
-    type: SEND_CREATE_ORGANIZATIONAL_UNIT_FAILURE,
+    type: SEND_CHANGE_ORGID_URI_AND_HASH_FAILURE,
     error
   }
 }
@@ -455,52 +416,6 @@ function getTransactionStatusSuccess(payload) {
 function getTransactionStatusFailure(error) {
   return {
     type: GET_TRANSACTION_STATUS_FAILURE,
-    error
-  }
-}
-//endregion
-
-//region == [ACTIONS: setPendingStateToTransaction] ====================================================================================
-export function setPendingStateToTransaction(payload) {
-  return {
-    type: SET_PENDING_STATE_TO_TRANSACTION_REQUEST,
-    payload
-  }
-}
-
-function setPendingStateToTransactionSuccess(payload) {
-  return {
-    type: SET_PENDING_STATE_TO_TRANSACTION_SUCCESS,
-    payload
-  }
-}
-
-function setPendingStateToTransactionFailure(error) {
-  return {
-    type: SET_PENDING_STATE_TO_TRANSACTION_FAILURE,
-    error
-  }
-}
-//endregion
-
-//region == [ACTIONS: fetchTransactionState] ====================================================================================
-export function fetchTransactionState(payload) {
-  return {
-    type: FETCH_TRANSACTION_STATE_REQUEST,
-    payload
-  }
-}
-
-function fetchTransactionStateSuccess(payload) {
-  return {
-    type: FETCH_TRANSACTION_STATE_SUCCESS,
-    payload
-  }
-}
-
-function fetchTransactionStateFailure(error) {
-  return {
-    type: FETCH_TRANSACTION_STATE_FAILURE,
     error
   }
 }
@@ -603,26 +518,6 @@ function* getTransactionStatusSaga({payload}) {
   }
 }
 
-function* setPendingStateToTransactionSaga({payload}) {
-  try {
-    const result = yield call((data) => data, payload);
-
-    yield put(setPendingStateToTransactionSuccess(result));
-  } catch(error) {
-    yield put(setPendingStateToTransactionFailure(error));
-  }
-}
-
-function* fetchTransactionStateSaga({payload}) {
-  try {
-    const result = yield call((data) => data, payload);
-
-    yield put(fetchTransactionStateSuccess(result));
-  } catch(error) {
-    yield put(fetchTransactionStateFailure(error));
-  }
-}
-
 export const saga = function* () {
   return yield all([
     takeEvery(REWRITE_ORGID_JSON_REQUEST, rewriteOrgidJsonSaga),
@@ -634,8 +529,6 @@ export const saga = function* () {
     takeEvery(SEND_CREATE_ORGANIZATIONAL_UNIT_REQUEST, sendCreateOrganizationalUnitSaga),
     takeEvery(SEND_CREATE_ORGANIZATIONAL_UNIT_REQUEST, sendChangeOrgidUriAndHashSaga),
     takeEvery(GET_TRANSACTION_STATUS_REQUEST, getTransactionStatusSaga),
-    takeEvery(SET_PENDING_STATE_TO_TRANSACTION_REQUEST, setPendingStateToTransactionSaga),
-    takeEvery(FETCH_TRANSACTION_STATE_REQUEST, fetchTransactionStateSaga),
   ])
 };
 //endregion
@@ -644,7 +537,7 @@ export const saga = function* () {
 function getWeb3() {
   if (typeof window.web3 === 'undefined') {
     alert('MetaMask not found. If you just install MetaMask please refresh page to continue');
-    throw `MetaMask not found`
+    throw new Error(`MetaMask not found`);
   }
   return window.web3
 }

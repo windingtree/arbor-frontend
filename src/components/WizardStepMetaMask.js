@@ -2,7 +2,14 @@ import React from 'react';
 import { connect } from "react-redux";
 import { Button, Typography } from '@material-ui/core';
 
-import { selectWizardOrgidJson, selectWizardOrgidHash, selectWizardOrgidUri, sendCreateLegalEntityRequest, sendCreateOrganizationalUnitRequest } from '../ducks/wizard';
+import {
+  selectWizardOrgidJson,
+  selectWizardOrgidHash,
+  selectWizardOrgidUri,
+  sendChangeOrgidUriAndHashRequest,
+  sendCreateLegalEntityRequest,
+  sendCreateOrganizationalUnitRequest
+} from '../ducks/wizard';
 import { selectSignInAddress } from '../ducks/signIn';
 import { styles } from './WizardStep';
 
@@ -55,6 +62,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
+  sendChangeOrgidUriAndHashRequest,
   sendCreateLegalEntityRequest,
   sendCreateOrganizationalUnitRequest,
 };

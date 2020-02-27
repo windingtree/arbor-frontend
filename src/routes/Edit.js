@@ -34,6 +34,8 @@ import ArrowLeftIcon from "../assets/SvgComponents/ArrowLeftIcon";
 import DialogComponent from '../components/Dialog';
 import WizardStepHosting from '../components/WizardStepHosting';
 import { selectSignInAddress } from '../ducks/signIn';
+import PendingTransactionIllustration from '../assets/SvgComponents/org-creation-illustration.svg';
+import SuccessTransactionIllustration from '../assets/SvgComponents/detailsIllustration.svg';
 
 const styles = makeStyles({
   mainContainer: {
@@ -133,9 +135,6 @@ const styles = makeStyles({
       marginTop: '0'
     }
   },
-  pendingContentWrapper: {
-    padding: '46px 80px 80px'
-  },
   pendingIllustration: {
     width: '100%'
   },
@@ -184,8 +183,8 @@ const styles = makeStyles({
   successButtonLabel: {
     color: colors.primary.white
   },
-  dialogContent: {
-    maxWidth: '440px',
+  editDialogContent: {
+    width: '440px',
   },
 });
 
@@ -208,6 +207,7 @@ const TabPanel = (props) => {
 const Edit = (props) => {
   const orgid = history.location.pathname.split('/')[2];
   const classes = styles();
+  const { pendingTransaction, successTransaction } = props;
   const [isModalOpen, toggleModalOpenState] = useState(false);
   const [value, setValue] = useState(0);
   const [activeStep, setActiveStep] = useState(1);
@@ -215,7 +215,6 @@ const Edit = (props) => {
   const jsonContent = _.get(history, 'location.state.jsonContent', {});
   const types = { legalEntity, organizationalUnit };
   const editConfig = types[wizardType];
-  console.log(editConfig, types[wizardType]);
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -264,8 +263,43 @@ const Edit = (props) => {
         handleClose={handleCloseModal}
         isOpen={isModalOpen}
         children={(
-          <div className={classes.dialogContent}>
-            {dialogStepsContent(activeStep)}
+          <div className={classes.editDialogContent}>
+            {
+              !!pendingTransaction ? (
+                <div className={classes.pendingContentWrapper}>
+                  <img src={PendingTransactionIllustration} alt={'illustration'} className={classes.pendingIllustration}/>
+                  <div className={classes.pendingTextContainer}>
+                    <Typography variant={'h3'} className={classes.pendingTitle}>Almost there!</Typography>
+                    <Typography variant={'subtitle2'} className={classes.pendingSubtitle}>Creating your organization profile might take some time. You can wait here or add another organization in the meantime. We will let you know once everything is ready. </Typography>
+                  </div>
+                  <div className={classes.pendingButtonWrapper}>
+                    <Button className={classes.pendingButton} onClick={() => history.push('/my-organizations')}>
+                      <Typography variant={'caption'} className={classes.pendingButtonLabel}>Go to my organizations <ArrowLeftIcon viewBox={'0 0 12 12'} className={classes.pendingButtonIcon}/></Typography>
+                    </Button>
+                  </div>
+                </div>
+              ) : !!successTransaction ? (
+                <div className={classes.pendingContentWrapper}>
+                  <img src={SuccessTransactionIllustration} alt={'illustration'} className={classes.pendingIllustration}/>
+                  <div className={classes.pendingTextContainer}>
+                    <Typography variant={'h3'} className={classes.pendingTitle}>Your organization profile is live!</Typography>
+                    <Typography variant={'subtitle2'} className={classes.pendingSubtitle}>Your organization is already in our registry and can be discovered by other community members. Now you can create another organization profile or go ahead and  improve your trust level.</Typography>
+                  </div>
+                  <Grid container justify={'space-between'} alignItems={'center'} wrap={'nowrap'}>
+                    <Grid item lg={6}>
+                      <Button className={[classes.pendingButton, classes.successButton].join(' ')} onClick={() => history.push('/trust/general')}>
+                        <Typography variant={'caption'} className={[classes.pendingButtonLabel, classes.successButtonLabel].join(' ')}>Improve trust level</Typography>
+                      </Button>
+                    </Grid>
+                    <Grid item lg={7}>
+                      <Button className={classes.pendingButton} onClick={() => history.push('/my-organizations')}>
+                        <Typography variant={'caption'} className={classes.pendingButtonLabel} noWrap>Go to my organizations <ArrowLeftIcon viewBox={'0 0 12 12'} className={classes.pendingButtonIcon}/></Typography>
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </div>
+              ) : dialogStepsContent(activeStep)
+            }
           </div>
         )}
       />

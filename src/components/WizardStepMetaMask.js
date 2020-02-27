@@ -12,6 +12,9 @@ const WizardStep = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (action === 'edit') {
+      props.sendChangeOrgidUriAndHashRequest({orgidUri, orgidHash, address, orgidJson});
+    }
     if(typeof orgidJson.legalEntity === 'object') {
       props.sendCreateLegalEntityRequest({orgidJson, orgidHash, orgidUri, address});
     } else if (typeof orgidJson.organizationalUnit === 'object' && parent.orgid) {

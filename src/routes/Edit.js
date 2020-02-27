@@ -9,8 +9,7 @@ import {
   Typography,
   Tabs,
   Tab,
-  Button,
-  Stepper, Step, StepLabel
+  Button
 } from "@material-ui/core";
 import { Formik } from "formik";
 
@@ -259,8 +258,6 @@ const Edit = (props) => {
     setActiveStep(prevActiveStep => prevActiveStep + 1);
   };
 
-  const steps = wizardConfig.map(step => step.name);
-
   const setDialog = () => {
     return (
       <DialogComponent
@@ -268,13 +265,6 @@ const Edit = (props) => {
         isOpen={isModalOpen}
         children={(
           <div className={classes.dialogContent}>
-            <div style={{ display: 'none' }}>
-              <Stepper activeStep={activeStep}>
-                {steps.map((label, index) => (
-                  <Step key={index}/>
-                ))}
-              </Stepper>
-            </div>
             {dialogStepsContent(activeStep)}
           </div>
         )}

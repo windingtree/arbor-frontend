@@ -61,32 +61,32 @@ export const config = [
               name: 'Country',
               options: countries,
               required: true,
-              orgidJsonPath: 'organizationalUnit.registeredAddress.country'
+              orgidJsonPath: 'organizationalUnit.address.country'
             },
             {
               type: 'input',
               name: 'State or region',
-              orgidJsonPath: 'organizationalUnit.registeredAddress.subdivision'
+              orgidJsonPath: 'organizationalUnit.address.subdivision'
             },
             {
               type: 'input',
               name: 'City',
-              orgidJsonPath: 'organizationalUnit.registeredAddress.locality'
+              orgidJsonPath: 'organizationalUnit.address.locality'
             },
             {
               type: 'input',
               name: 'Street, building',
-              orgidJsonPath: 'organizationalUnit.registeredAddress.street_address'
+              orgidJsonPath: 'organizationalUnit.address.street_address'
             },
             {
               type: 'input',
               name: 'Apartment or office',
-              orgidJsonPath: 'organizationalUnit.registeredAddress.premise'
+              orgidJsonPath: 'organizationalUnit.address.premise'
             },
             {
               type: 'input',
               name: 'Postal code',
-              orgidJsonPath: 'organizationalUnit.registeredAddress.postal_code'
+              orgidJsonPath: 'organizationalUnit.address.postal_code'
             }
           ]
         }

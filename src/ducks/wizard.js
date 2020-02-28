@@ -4,6 +4,7 @@ import { all, takeEvery, call, put, select } from 'redux-saga/effects';
 import {createSelector} from "reselect";
 import { keccak256 } from 'js-sha3';
 import { callApi } from "../redux/api";
+import { idGenerator } from "../utils/helpers";
 
 //region == [Constants] ================================================================================================
 export const moduleName = 'wizard';
@@ -50,7 +51,7 @@ const initialState = {
   isFetched: false,
   orgidJson: {
     "@context": "https://windingtree.com/ns/did/v1",
-    "id": `did:orgid:0x${keccak256(`${Date.now()}${Math.random()}`)}`,
+    "id": idGenerator(),
     "created": new Date().toJSON(),
     "publicKey": [],
     "service": [],
@@ -490,7 +491,7 @@ function* sendCreateOrganizationalUnitSaga({payload}) {
   try {
     const result = yield call(ApiSendCreateOrganizationalUnit, payload);
 
-    yield call(getTransactionStatus, result);
+    yield put(getTransactionStatus(result));
     yield put(sendCreateOrganizationalUnitSuccess(result));
   } catch(error) {
     yield put(sendCreateOrganizationalUnitFailure(error));
@@ -501,7 +502,7 @@ function* sendChangeOrgidUriAndHashSaga({payload}) {
   try {
     const result = yield call(ApiSendChangeOrgidUriAndHash, payload);
 
-    yield call(getTransactionStatus, result);
+    yield put(getTransactionStatus(result));
     yield put(sendChangeOrgidUriAndHashSuccess(result));
   } catch(error) {
     yield put(sendChangeOrgidUriAndHashFailure(error));
@@ -527,7 +528,7 @@ export const saga = function* () {
     takeEvery(SAVE_ORGID_JSON_URI_REQUEST, saveOrgidUriSaga),
     takeEvery(SEND_CREATE_LEGAL_ENTITY_REQUEST, sendCreateLegalEntitySaga),
     takeEvery(SEND_CREATE_ORGANIZATIONAL_UNIT_REQUEST, sendCreateOrganizationalUnitSaga),
-    takeEvery(SEND_CREATE_ORGANIZATIONAL_UNIT_REQUEST, sendChangeOrgidUriAndHashSaga),
+    takeEvery(SEND_CHANGE_ORGID_URI_AND_HASH_REQUEST, sendChangeOrgidUriAndHashSaga),
     takeEvery(GET_TRANSACTION_STATUS_REQUEST, getTransactionStatusSaga),
   ])
 };

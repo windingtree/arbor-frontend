@@ -21,8 +21,7 @@ const WizardStep = (props) => {
     e.preventDefault();
     if (action === 'edit') {
       props.sendChangeOrgidUriAndHashRequest({orgidUri, orgidHash, address, orgidJson});
-    }
-    if(typeof orgidJson.legalEntity === 'object') {
+    } else if(typeof orgidJson.legalEntity === 'object') {
       props.sendCreateLegalEntityRequest({orgidJson, orgidHash, orgidUri, address});
     } else if (typeof orgidJson.organizationalUnit === 'object' && parent.orgid) {
       props.sendCreateOrganizationalUnitRequest({orgidJson, orgidHash, orgidUri, address, parent});
@@ -37,14 +36,14 @@ const WizardStep = (props) => {
       <div  key={index}>
         <Typography variant={'h3'} className={inheritClasses.stepTitle}>
           {stepTitle && `Step ${index+1}:`}
-          {action === 'edit' ? 'Submit transaction fee' : {longName}}
+          {action === 'edit' ? 'Submit transaction fee' : longName}
         </Typography>
         <div className={inheritClasses.subtitleWrapper}>
           <Typography variant={'subtitle1'} className={inheritClasses.subtitle}>{description}</Typography>
         </div>
         <div className={inheritClasses.buttonWrapper}>
           <Button type="submit" className={inheritClasses.button}>
-            <Typography variant={'caption'} className={inheritClasses.buttonLabel}>{action === 'edit' ? 'Confirm' : {cta}}</Typography>
+            <Typography variant={'caption'} className={inheritClasses.buttonLabel}>{action === 'edit' ? 'Confirm' : cta}</Typography>
           </Button>
         </div>
       </div>

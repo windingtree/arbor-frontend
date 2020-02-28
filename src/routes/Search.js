@@ -157,29 +157,9 @@ function Search(props) {
 
   const CardsList = () => {
     let OrgCards = items.map((item, index) => {
-      let parentName;
-      let parentTrustLevel;
-      if (item.parent !== null) {
-        parentName = item.parent.name;
-        parentTrustLevel = item.parent.proofsQty
-      } else {
-        parentName = null;
-        parentTrustLevel = null;
-      }
       return (
         <Grid lg={3} sm={4} xs={12} item key={index.toString()}>
-          <OrgsGridItem
-            orgid={item.orgid}
-            img={item.avatar}
-            isSub={!!item.parent}
-            orgidType={item.orgidType}
-            proofsQty={item.proofsQty}
-            name={item.name}
-            parent={item.parent}
-            subs={item.subsidiaries}
-            entityName={parentName}
-            entityTrustLevel={parentTrustLevel}
-          />
+          <OrgsGridItem organization={item}/>
         </Grid>
       )
     });
@@ -193,7 +173,7 @@ function Search(props) {
   const handlePageClick = async (data) => {
     let selected = data.selected;
     const searchData = {
-      orgidType: directoryFilterValue,
+      directory: directoryFilterValue,
       country: countryFilterValue,
       name: searchValue,
       page: selected + 1
@@ -230,7 +210,7 @@ function Search(props) {
 
   const fetchSearchResults = async () => {
     const data = {
-      orgidType: directoryFilterValue,
+      directory: directoryFilterValue,
       country: countryFilterValue,
       name: searchValue,
       page: 1,
@@ -239,7 +219,7 @@ function Search(props) {
 
     if (searchValue === "" && !request) {
       await props.fetchAllOrganizations({page: page, per_page: per_page});
-      if (data.orgidType !== '' || data.country !== '') {
+      if (data.directory !== '' || data.country !== '') {
         await props.fetchSearchOrganizations(data);
         setForcePage(0);
       }
@@ -282,7 +262,7 @@ function Search(props) {
 
   const handleDirectoryFilterValueChange = async e => {
     const data = {
-      orgidType: e.target.value,
+      directory: e.target.value,
       country: countryFilterValue,
       name: searchValue,
       page: 1,
@@ -291,12 +271,12 @@ function Search(props) {
     await props.fetchSearchOrganizations(data);
     setForcePage(0);
 
-    setDirectoryFilterValue(data.orgidType);
+    setDirectoryFilterValue(data.directory);
   };
 
   const handleCountryFilterValueChange = async e => {
     const data = {
-      orgidType: directoryFilterValue,
+      directory: directoryFilterValue,
       country: e.target.value,
       name: searchValue,
       page: 1,

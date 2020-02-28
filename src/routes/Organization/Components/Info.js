@@ -4,7 +4,6 @@ import CopyIdComponent from "../../../components/CopyIdComponent";
 import {setRandomDefaultImage} from "../../../utils/helpers";
 
 import colors from "../../../styles/colors";
-import Ellipsis from "react-dotdotdot";
 import {
   TwitterIcon,
   FacebookIcon,
@@ -134,8 +133,7 @@ const styles = makeStyles({
     fontWeight: 500,
     textDecoration: 'none',
     whiteSpace: 'nowrap',
-    color: colors.secondary.cyan,
-    marginLeft: '4px'
+    color: colors.secondary.cyan
   },
   orgInfoFieldsContainer: {
     display: 'flex',
@@ -390,6 +388,11 @@ const styles = makeStyles({
   }
 });
 
+const getAddressString = (addressObj) => {
+  const { country, subdivision, locality, street_address, premise, postal_code } = addressObj;
+  return _.isEmpty(addressObj) ? false : _.compact([street_address, premise, postal_code,  locality, subdivision,country]).join(', ')
+};
+
 function Info(props) {
   const classes = styles();
   const [isOpen, toggleOpen] = useState(false);
@@ -398,7 +401,8 @@ function Info(props) {
   const isSub = !!parent;
   const type = isSub ? 'organizationalUnit' : 'legalEntity';
   const orgidType = organization.orgidType;
-  const address = _.get(organization, `jsonContent.${type}.locations[0].address`, {});
+  const address = _.get(organization, `jsonContent.${type}.${type === 'legalEntity' ? 'registeredAddress' : 'address'}`, {});
+  const addressString = _.isEmpty(address) ? false : getAddressString(address);
   const contacts = _.get(organization, `jsonContent.${type}.contacts[0]`, {});
   const description = _.get(organization, `jsonContent.organizationalUnit.description`, null);
   const longDescription = _.get(organization, `jsonContent.organizationalUnit.longDescription`, null);
@@ -484,19 +488,17 @@ function Info(props) {
               <Typography variant={'h6'} className={classes.orgName} noWrap>{name}</Typography>
             </div>
             <div className={classes.orgAddressWrapper}>
-              {
-                address ? (
-                  <div>
-                    <Ellipsis clamp={1} tagName={'span'}
-                              className={classes.orgAddress}>{address.street_address}</Ellipsis>
-                    <p className={classes.orgAddress}>
-                      {`${address.locality}, ${address.subdivision}`}
-                      <a href={'https://www.google.com.ua/maps/'} className={classes.mapLink}>show on the map</a>
-                    </p>
-                  </div>
-                ) : (
-                  <Typography variant={'caption'} className={classes.orgAddress}>No address specified</Typography>
-                )
+              {addressString &&
+              <div>
+                <p className={classes.orgAddress}>
+                  {addressString}<br />
+                  <a href={`https://www.google.com.ua/maps/search/${addressString}`}
+                     className={classes.mapLink}>show on the map</a>
+                </p>
+              </div>
+              }
+              {!addressString &&
+              <Typography variant={'caption'} className={classes.orgAddress}>No address specified</Typography>
               }
             </div>
             <div className={classes.orgInfoFieldsContainer}>

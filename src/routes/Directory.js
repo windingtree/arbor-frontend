@@ -103,7 +103,7 @@ function Directory(props) {
   const currentDirectory = props.match.params.directory;
 
   const data = {
-    orgidType: currentDirectory,
+    directory: currentDirectory,
     page: 1,
     per_page: per_page
   };
@@ -114,28 +114,9 @@ function Directory(props) {
 
   const CardsList = () => {
     let OrgCards = items.map((item, index) => {
-      let parentName;
-      let parentTrustLevel;
-      if (item.parent !== null) {
-        parentName = item.parent.name;
-        parentTrustLevel = item.parent.proofsQty
-      } else {
-        parentName = null;
-        parentTrustLevel = null;
-      }
       return (
         <Grid lg={3} sm={4} xs={12} item key={index.toString()}>
-          <OrgsGridItem
-            orgid={item.orgid}
-            img={item.avatar}
-            isSub={!!item.parent}
-            orgidType={item.orgidType}
-            proofsQty={item.proofsQty}
-            name={item.name}
-            subs={item.subsidiaries}
-            entityName={parentName}
-            entityTrustLevel={parentTrustLevel}
-          />
+          <OrgsGridItem organization={item}/>
         </Grid>
       )
     });
@@ -148,7 +129,7 @@ function Directory(props) {
   const handlePageClick = data => {
     let selected = data.selected;
     const searchData = {
-      orgidType: currentDirectory,
+      directory: currentDirectory,
       page: selected + 1,
       per_page: 12
     };
@@ -163,7 +144,7 @@ function Directory(props) {
 
   const handleCountryFilterValueChange = async e => {
     const data = {
-      orgidType: currentDirectory,
+      directory: currentDirectory,
       country: e.target.value,
       page: 1,
       per_page: per_page

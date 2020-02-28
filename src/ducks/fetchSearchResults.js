@@ -230,5 +230,5 @@ function ApiFetchSearchOrganizations(data) {
 function ApiFetchSearchByType(data) {
   const page = _.get(data, 'page', 1);
   const per_page = _.get(data, 'per_page', 12);
-  return callApi(`orgids/?orgidType=${data.type}&page[number]=${page}&page[size]=${per_page}`)
+  return callApi(`orgids/?directory=${data.type}&page[number]=${page}&page[size]=${per_page}`)
 }

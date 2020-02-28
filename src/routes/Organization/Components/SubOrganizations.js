@@ -49,15 +49,7 @@ function SubOrganizations(props) {
             subs.map((subOrg, index) => {
               return (
                 <Grid lg={3} sm={4} xs={12} item key={index.toString()}>
-                  <OrgsGridItem
-                    orgid={subOrg.orgid}
-                    isSub={!!subOrg.parent}
-                    orgidType={subOrg.orgidType}
-                    entityName={subOrg.parent.name}
-                    entityTrustLevel={subOrg.parent.proofsQty}
-                    name={subOrg.name}
-                    canManage={canManage}
-                  />
+                  <OrgsGridItem canManage={canManage} organization={subOrg}/>
                 </Grid>
               )
             })

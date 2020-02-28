@@ -1,13 +1,23 @@
 import React, {useState} from "react";
+import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import history from '../../redux/history';
-import copy from 'copy-to-clipboard';
+import {copyStrToClipboard} from '../../utils/helpers';
+import { Formik } from 'formik';
 
-import {Container, Typography, Grid, Card, Box, Button} from '@material-ui/core';
+import {
+  Container,
+  Typography,
+  Grid,
+  Card,
+  Box,
+  Button,
+  Tooltip,
+  TextField,
+  CircularProgress
+} from '@material-ui/core';
 import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
-
-
-import {makeStyles} from '@material-ui/core/styles';
+import {makeStyles, withStyles} from '@material-ui/core/styles';
 
 import verifySocialMediaSvg from '../../assets/SvgComponents/verify-social-media.svg';
 import facebookIconSvg from '../../assets/SvgComponents/facebook-icon.svg';
@@ -17,9 +27,13 @@ import listPlaceholderSvg from '../../assets/SvgComponents/list-placeholder.svg'
 import twitterBig from '../../assets/SvgComponents/twitter-big.svg';
 import facebookBig from '../../assets/SvgComponents/facebook-big.svg';
 import instagramBig from '../../assets/SvgComponents/instagram-big.svg';
-import copyIcon from '../../assets/SvgComponents/copy-icon.svg';
 
 import colors from '../../styles/colors';
+import CopyIcon from '../../assets/SvgComponents/CopyIcon';
+import DialogComponent from '../../components/Dialog';
+import { selectSuccessState, selectPendingState, extendOrgidJson } from '../../ducks/wizard';
+import { wizardConfig } from '../../utils/legalEntity';
+import { WizardStepHosting, WizardStepMetaMask } from '../../components';
 
 const styles = makeStyles({
   topDiv: {
@@ -63,6 +77,24 @@ const styles = makeStyles({
     color: colors.greyScale.darkest,
     margin: '46px 0 15px 0'
   },
+  card: {
+    boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
+    borderRadius: '6px',
+    backgroundColor: colors.primary.white
+  },
+  cardContent: {
+    padding: '36px',
+    boxSizing: 'border-box'
+  },
+  cardSubtitle: {
+    fontSize: '16px',
+    fontWeight: 500,
+    lineHeight: 1.45,
+    color: colors.greyScale.dark
+  },
+  cardSubtitleWrapper: {
+    paddingTop: '16px'
+  },
   socialAddressCard: {
     padding: '20px',
     fontWeight: 500,
@@ -72,9 +104,24 @@ const styles = makeStyles({
     alignItems: 'center',
     textAlign: 'center',
     margin: '0 10px 10px 0',
+    boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
   },
   socialCardIcon: {
     marginRight: "15px"
+  },
+  copyButton: {
+    padding: '4px',
+    minWidth: 'auto',
+    backgroundColor: 'transparent',
+    marginLeft: '6px'
+  },
+  iconCopy: {
+    width: '20px',
+    height: '20px',
+    color: colors.secondary.green,
+  },
+  dialogContent: {
+    width: '440px'
   },
   link: {
     color: colors.secondary.peach,
@@ -183,6 +230,9 @@ const styles = makeStyles({
     transition: 'width .3s ease'
   },
   verifyingCode: {
+    fontSize: '16px',
+    fontWeight: 500,
+    lineHeight: 1.45,
     color: colors.primary.accent,
   },
   buttonVerify: {
@@ -203,11 +253,28 @@ const styles = makeStyles({
   }
 });
 
+const LightTooltip = withStyles({
+  tooltip: {
+    maxWidth: '240px',
+    backgroundColor: colors.primary.white,
+    boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
+    color: colors.secondary.cyan,
+    fontSize: '12px',
+    fontWeight: 400,
+    padding: '10px',
+    boxSizing: 'border-box',
+    whiteSpace: 'nowrap'
+  }
+})(Tooltip);
 
 function TrustSocial(props) {
-
   const classes = styles();
   const [activeSocial, setActiveSocial] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [activeStep, setActiveStep] = useState(1);
+  const [verification, setVerification] = useState(false);
+  const [isModalOpen, toggleModalOpenState] = useState(false);
+  const { successTransaction, pendingTransaction } = props;
   const contacts = (!!history.location.state && !!history.location.state.contacts) ? history.location.state.contacts : false;
   if (!contacts) history.push('/my-organizations/');
   const {twitter, facebook, instagram} = contacts;
@@ -217,6 +284,18 @@ function TrustSocial(props) {
     'Instagram',
   ];
 
+  const handleTooltipClose = () => {
+    setOpen(false);
+  };
+
+  const handleTooltipOpen = () => {
+    setOpen(true);
+  };
+
+  function copyIdWithFeedback(str) {
+    handleTooltipOpen();
+    return copyStrToClipboard(str)
+  }
 
   const renderSocialsControllers = () => {
     const controllers = socialsControllers.map((item, index) => {
@@ -240,15 +319,30 @@ function TrustSocial(props) {
     )
   };
 
-  const copyToClipboardText = (verifyingCode) => {
-    return <span onClick={copyToClipboard(verifyingCode)}>
-            <text className={classes.verifyingCode}>{verifyingCode}</text>
-            <img src={copyIcon} style={{marginLeft: '10px'}} alt={"copy"}/>
+  const copyToClipboard = (code) => {
+    return (
+      <span>
+        <Typography variant={'caption'} className={classes.verifyingCode}>{code}</Typography>
+        <span>
+          <LightTooltip
+            PopperProps={{
+              disablePortal: true,
+            }}
+            onClose={handleTooltipClose}
+            open={open}
+            disableFocusListener
+            disableHoverListener
+            disableTouchListener
+            title={'Copied to clipboard'}
+            placement={'top-start'}
+          >
+            <Button onClick={() => copyIdWithFeedback(code)} className={classes.copyButton}>
+              <CopyIcon viewBox={'0 0 16 16'} className={classes.iconCopy}/>
+            </Button>
+          </LightTooltip>
         </span>
-  };
-
-  const copyToClipboard = (verifyingCode) => () => {
-    copy(verifyingCode);
+      </span>
+    )
   };
 
   const renderStepsList = (steps, verifyingCode) => {
@@ -258,12 +352,13 @@ function TrustSocial(props) {
         if (verifyingCodePlaceholder !== -1) {
           transformedText = transformedText.slice(0, verifyingCodePlaceholder);
         }
-        return <li key={index.toString()} className={classes.howTextListItem}>
-          <span className={classes.howListDot}/>
-          <Typography
-            className={classes.howListTexts}>{transformedText}
-            {verifyingCodePlaceholder > 0 ? copyToClipboardText(verifyingCode) : null}</Typography>
-        </li>
+        return (
+          <li key={index.toString()} className={classes.howTextListItem}>
+            <span className={classes.howListDot}/>
+            <Typography variant={'caption'} className={classes.howListTexts}>{transformedText}</Typography>
+            {verifyingCodePlaceholder > 0 ? copyToClipboard(verifyingCode) : null}
+          </li>
+        )
       }
     )];
 
@@ -290,6 +385,67 @@ function TrustSocial(props) {
   };
 
   const verifyingCodes = [null, 'Ox000000_FACEBOOK', '0x0000000_INSTAGRAM'];
+
+  const handleOpenModal = () => {
+    toggleModalOpenState(true);
+  };
+
+  const handleCloseModal = () => {
+    toggleModalOpenState(false)
+  };
+
+  const dialogStepsContent = (stepIndex) => {
+    const content = wizardConfig[stepIndex];
+    const { type } = content;
+
+    switch (type) {
+      case 'step_hosting': return <WizardStepHosting data={content} action={'edit'} handleNext={handleNext} key={stepIndex} index={stepIndex} stepTitle={false}/>;
+      case 'step_metamask': return <WizardStepMetaMask data={content} action={'edit'} handleNext={handleNext} key={stepIndex} index={stepIndex} stepTitle={false}/>;
+      default: return (
+        <div key={stepIndex}>Step <pre>${content.name}</pre> has unknown type: <pre>{content.type}</pre></div>
+      );
+    }
+  };
+
+  const handleNext = () => {
+    setActiveStep(prevActiveStep => prevActiveStep + 1);
+  };
+
+  const setDialog = () => {
+    return (
+      <DialogComponent
+        handleClose={handleCloseModal}
+        isOpen={isModalOpen}
+        children={(
+          <div className={classes.dialogContent}>
+            {
+              !!pendingTransaction ? (
+                <div className={classes.progressWrapper}>
+                  <CircularProgress/>
+                </div>
+              ) : !successTransaction ? (
+                dialogStepsContent(activeStep)
+              ) : (
+                <>
+                  <Typography variant={'caption'} className={classes.dialogTitle}>Agent successfully created</Typography>
+                  <div className={classes.dialogSubtitleWrapper}>
+                    <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>You new agent now has the rights to act on behalf of your organization. You can add more agents or delete agent keys.</Typography>
+                  </div>
+                  <div className={classes.dialogButtonWrapper}>
+                    <Button onClick={handleCloseModal} className={classes.dialogButton}>
+                      <Typography variant={'caption'} className={classes.dialogButtonLabel}>
+                        Confirm
+                      </Typography>
+                    </Button>
+                  </div>
+                </>
+              )
+            }
+          </div>
+        )}
+      />
+    )
+  };
 
   return (
     <div>
@@ -344,29 +500,83 @@ function TrustSocial(props) {
             How it works
           </Typography>
           <Grid container justify={'space-between'}>
-            <Grid className={classes.stepsCardsWrapper}>
+            <Grid item className={classes.stepsCardsWrapper}>
               <Typography className={classes.paragraph}>Copy specific messages for Twitter, Instagram and
                 Facebook and post them on behalf of your corporate profiles. Follow specific
                 instructions for each network.
               </Typography>
               {renderSocialsControllers()}
             </Grid>
-            <Grid style={{width: '45%'}}>
-              <div style={{display: 'flex'}}>
-                <Typography className={classes.verifyCardTitle}>
-                  {props.socials[activeSocial].title}
-                </Typography> <img src={props.socials[activeSocial].logo} alt={"logo"}/>
-              </div>
-              <ul style={{marginTop: '30px'}}>
-                {renderStepsList(props.socials[activeSocial].steps, verifyingCodes[activeSocial])}
-              </ul>
-              <Button className={classes.buttonVerify}
-                 onClick={() => {window.open('https://twitter.com/intent/tweet?text=Our%20ORG.ID%20is%20did:orgid:0x00000000000000000000000000000000000tree','popup','width=600,height=255'); return false;}}
-              >
-                <Typography variant={'subtitle2'} noWrap className={classes.buttonVerifyTitle}>
-                  {props.socials[activeSocial].button}
-                </Typography>
-              </Button>
+            <Grid item style={{width: '45%'}}>
+              <Card className={classes.card}>
+                <div className={classes.cardContent}>
+                  <div style={{display: 'flex'}}>
+                    <Typography className={classes.verifyCardTitle}>
+                      {props.socials[activeSocial].title}
+                    </Typography> <img src={props.socials[activeSocial].logo} alt={"logo"}/>
+                  </div>
+                  {
+                    verification ? (
+                      <>
+                        <div className={classes.cardSubtitleWrapper}>
+                          <Typography variant={'subtitle1'} className={classes.cardSubtitle}>
+                            Paste a direct link to your verification post below
+                          </Typography>
+                          <Formik
+                            initialValues={{ link: ''}}
+                            onSubmit={(values, {setSubmitting}) => {
+                              setSubmitting(false);
+                              props.extendOrgidJson(values);
+                              handleOpenModal();
+                            }}
+                          >
+                            {({
+                                values,
+                                errors,
+                                touched,
+                                handleChange,
+                                handleBlur,
+                                handleSubmit,
+                                isSubmitting,
+                                /* and other goodies */
+                              }) => (
+                                <form onSubmit={handleSubmit}>
+                                  <TextField
+                                    name={'link'}
+                                    autoComplete={'none'}
+                                    variant={'filled'}
+                                    label={`Link to your ${props.socials[activeSocial].type}`}
+                                    fullWidth
+                                    values={values.link}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    helperText={errors && touched && errors.message}
+                                  />
+                                  <Button type="submit" disabled={isSubmitting} className={classes.buttonVerify}>
+                                    <Typography variant={'caption'} className={classes.buttonVerifyTitle}>{`Verify ${props.socials[activeSocial].type}`}</Typography>
+                                  </Button>
+                                </form>
+                            )}
+                          </Formik>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <ul style={{marginTop: '30px'}}>
+                          {renderStepsList(props.socials[activeSocial].steps, verifyingCodes[activeSocial])}
+                        </ul>
+                        <Button className={classes.buttonVerify}
+                                onClick={() => setVerification(!verification)}
+                        >
+                          <Typography variant={'subtitle2'} noWrap className={classes.buttonVerifyTitle}>
+                            {props.socials[activeSocial].button}
+                          </Typography>
+                        </Button></>
+                    )
+                  }
+                  {setDialog()}
+                </div>
+              </Card>
             </Grid>
           </Grid>
         </div>
@@ -378,6 +588,7 @@ function TrustSocial(props) {
 TrustSocial.defaultProps = {
   socials: [
     {
+      type: 'Twitter',
       logo: twitterBig,
       title: "Verify your Twitter account",
       steps: [
@@ -386,9 +597,10 @@ TrustSocial.defaultProps = {
         "Post this message to your feed",
         "Congratulations, your account is verified!"
       ],
-      button: "Verify Twitter"
+      button: "Open Twitter"
     },
     {
+      type: 'Facebook',
       logo: facebookBig,
       title: "Verify your Facebook account",
       steps: [
@@ -397,9 +609,10 @@ TrustSocial.defaultProps = {
         "Post that as a comment under one of your posts on behalf of your corporate profile",
         "Congratulations, your account is verified!"
       ],
-      button: "Verify Facebook"
+      button: "Open Facebook"
     },
     {
+      type: 'Instagram',
       logo: instagramBig,
       title: "Verify your Instagram account",
       steps: [
@@ -408,9 +621,20 @@ TrustSocial.defaultProps = {
         "Post that as a comment under one of your posts on behalf of your corporate profile",
         "Congratulations, your account is verified!"
       ],
-      button: "Verify Instagram"
+      button: "Open Instagram"
     }
   ]
 };
 
-export default TrustSocial;
+const mapStateToProps = state => {
+  return {
+    pendingTransaction: selectPendingState(state),
+    successTransaction: selectSuccessState(state),
+  }
+};
+
+const mapDispatchToProps = {
+  extendOrgidJson
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(TrustSocial);

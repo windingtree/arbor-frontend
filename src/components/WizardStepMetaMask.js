@@ -35,7 +35,7 @@ const WizardStep = (props) => {
     <form onSubmit={handleSubmit}>
       <div  key={index}>
         <Typography variant={'h3'} className={inheritClasses.stepTitle}>
-          {stepTitle && `Step ${index+1}:`}
+          {stepTitle && `Step ${index+1}. `}
           {action === 'edit' ? 'Submit transaction fee' : `${longName}`}
         </Typography>
         <div className={inheritClasses.subtitleWrapper}>

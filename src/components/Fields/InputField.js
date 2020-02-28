@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 
 import {TextField, InputAdornment} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import FacebookIcon from '../../assets/SvgComponents/facebook-icon.svg';
 import TwitterIcon from '../../assets/SvgComponents/twitter-icon.svg';
 import InstagramSocialIcon from '../../assets/SvgComponents/InstagramSocialIcon';
@@ -15,7 +15,7 @@ const styles = makeStyles({
     },
   },
   icon: {
-    width:'16px',
+    width: '16px',
     height: '16px',
     marginLeft: '8px'
   },
@@ -23,15 +23,19 @@ const styles = makeStyles({
 
 const InputField = (props) => {
   const classes = styles();
-  const { type, name, orgidJsonPath, index, helperText, icon, required, values, errors, touched, handleChange, handleBlur } = props;
+  const {type, name, orgidJsonPath, index, helperText, icon, required, values, errors, touched, handleChange, handleBlur} = props;
   const isError = _.get(errors, orgidJsonPath) && _.get(touched, orgidJsonPath);
 
   const socialIcon = () => {
-    switch(icon) {
-      case 'facebook': return <img src={FacebookIcon} alt={'icon'} className={classes.icon}/>;
-      case 'twitter': return <img src={TwitterIcon} alt={'icon'} className={classes.icon}/>;
-      case 'instagram': return <InstagramSocialIcon className={classes.icon}/>;
-      default: return null;
+    switch (icon) {
+      case 'facebook':
+        return <img src={FacebookIcon} alt={'icon'} className={classes.icon}/>;
+      case 'twitter':
+        return <img src={TwitterIcon} alt={'icon'} className={classes.icon}/>;
+      case 'instagram':
+        return <InstagramSocialIcon className={classes.icon}/>;
+      default:
+        return null;
     }
   };
 
@@ -47,14 +51,15 @@ const InputField = (props) => {
         required={required}
         InputProps={
           icon ? (
-          {
-            startAdornment: (
-              <InputAdornment position={'start'} className={classes.socialIconWrapper}>
-                {socialIcon()}
-              </InputAdornment>
-            )
-          }
-        ) : null}
+            {
+              startAdornment: (
+                <InputAdornment position={'start'} className={classes.socialIconWrapper}>
+                  {socialIcon()}
+                </InputAdornment>
+              )
+            }
+          ) : null}
+        placeholder={icon && name.toLowerCase()+`.com/`}
         fullWidth
         error={isError}
         onChange={handleChange}

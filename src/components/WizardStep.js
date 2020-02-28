@@ -129,7 +129,7 @@ const WizardStep = (props) => {
 
   return (
     <div key={index}>
-      <Typography variant={'h3'} className={classes.stepTitle}>Step {index + 1}: {longName}</Typography>
+      <Typography variant={'h3'} className={classes.stepTitle}>Step {index + 1}. {longName}</Typography>
       <div className={classes.subtitleWrapper}>
         <Typography variant={'subtitle1'} className={classes.subtitle}>{description}</Typography>
       </div>

@@ -101,8 +101,11 @@ const styles = makeStyles({
       },
       '& > svg': {
         color: colors.secondary.peach
-      }
-    }
+      },
+    },
+    ['@media (max-width:375px)']: { // eslint-disable-line no-useless-computed-key
+      padding: '0',
+    },
   },
   activeNavLink: {
     padding: '0 12px',

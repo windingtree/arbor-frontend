@@ -86,8 +86,8 @@ const styles = makeStyles({
     alignItems: 'center',
     height: '130px',
     backgroundColor: colors.primary.white,
-    borderRadius: '6px',
-    boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)'
+    borderRadius: 0,
+    boxShadow: 'none'
   },
   verificationContent: {
     display: 'flex'
@@ -608,7 +608,7 @@ function TrustGeneral() {
           </Grid>
         </Container>
       </Grid>
-      <Grid style={{backgroundColor: colors.secondary.yellowLight}}>
+      <Grid style={{backgroundColor: colors.secondary.yellowLight, display:'none'}}>
         <Container className={classes.registerSection}>
           <Grid container spacing={5} direction="row">
             <Grid xs={12} md={7} item>

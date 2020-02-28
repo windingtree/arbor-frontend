@@ -38,6 +38,7 @@ const SelectField = (props) => {
           onChange={handleChange}
           onBlur={handleBlur}
         >
+          <MenuItem value={undefined} key={''}>{''}</MenuItem>
           {
             Object.keys(optionsObj).map((value) => (
               <MenuItem value={value} key={value}>{optionsObj[value]}</MenuItem>

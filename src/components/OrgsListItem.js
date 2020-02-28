@@ -285,16 +285,7 @@ export default function OrgsListItem(props) {
                     {
                       subs.map((item, index) => (
                         <Grid item key={index.toString()} style={{ width: '264px' }}>
-                          <OrgsGridItem
-                            orgid={item.orgid}
-                            isSub={true}
-                            entityName={item.parent.name}
-                            name={item.name}
-                            proofsQty={item.parent.proofsQty}
-                            entityTrustLevel={item.parent.proofsQty}
-                            orgidType={item.orgidType}
-                            canManage={canManage}
-                          />
+                          <OrgsGridItem organization={item} canManage={canManage}/>
                         </Grid>
                       ))
                     }

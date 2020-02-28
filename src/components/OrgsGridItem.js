@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import {Box, Card, CardContent, CardMedia, Button, Grid, Typography} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Ellipsis from 'react-dotdotdot';
+import _ from 'lodash';
+
 import {setRandomDefaultImage} from "../utils/helpers";
 
 import CopyIdComponent from './CopyIdComponent';
@@ -208,28 +210,19 @@ const styles = makeStyles({
   },
 });
 
+const bgColorsForTypes = {
+  'hotel': colors.secondary.green,
+  'airline': colors.secondary.yellow,
+  'ota': colors.secondary.pink,
+  'insurance': colors.secondary.intenseGreen,
+};
+
 export default function OrgsGridItem(props) {
   const classes = styles();
-  const {
-    orgid,
-    img,
-    isSub,
-    orgidType,
-    proofsQty,
-    name,
-    subs,
-    canManage,
-    entityName,
-    entityTrustLevel,
-    error
-  } = props;
-
-  const bgColorsForTypes = {
-    'hotel': colors.secondary.green,
-    'airline': colors.secondary.yellow,
-    'ota': colors.secondary.pink,
-    'insurance': colors.secondary.intenseGreen,
-  };
+  const { organization, canManage, error } = props;
+  const { orgid, parent, img, proofsQty, name, subs, subsidiaries, directory } = organization;
+  const subOrganizations = _.isEmpty(subs) ? subsidiaries : subs;
+  const isSub = !_.isEmpty(parent);
 
   return (
     <Card className={isSub ? [classes.item, classes.itemSubOrg].join(' ') : classes.item} style={{ backgroundColor: error ? colors.secondary.error : colors.primary.white }}>
@@ -247,22 +240,18 @@ export default function OrgsGridItem(props) {
                 <ImageErrorIcon viewbow={'0 0 22 22'} className={classes.itemImgErrorIcon}/>
               </div>
             ) : (
-              <CardMedia label={'Organization picture'} image={setRandomDefaultImage(orgid, orgidType)} className={classes.itemImg}/>
+              <CardMedia label={'Organization picture'} image={setRandomDefaultImage(orgid, directory)} className={classes.itemImg}/>
             )
           }
         </Link>
-        {
-          !error ? isSub ? (
-            <div className={classes.itemMarksWrapper}>
-              {
-                orgidType && (
-                  <Typography variant={'subtitle2'} className={classes.itemMark} style={{ backgroundColor: bgColorsForTypes[orgidType] }}>
-                    {orgidType === 'ota' ? 'Travel' : orgidType}
-                  </Typography>
-                )
-              }
-            </div>
-          ) : null : null
+        {!error && isSub &&
+        <div className={classes.itemMarksWrapper}>
+          {directory &&
+          <Typography variant={'subtitle2'} className={classes.itemMark} style={{ backgroundColor: bgColorsForTypes[directory] }}>
+            {directory === 'ota' ? 'Travel' : directory}
+          </Typography>
+          }
+        </div>
         }
         {
           !error ? (
@@ -288,14 +277,12 @@ export default function OrgsGridItem(props) {
             </Ellipsis>
           </div>
         </Link>
-        {
-          error ? (
-            <div className={classes.errorMessageWrapper}>
-              <Ellipsis clamp={3}>
-                {error.message}
-              </Ellipsis>
-            </div>
-          ) : null
+        {error &&
+        <div className={classes.errorMessageWrapper}>
+          <Ellipsis clamp={3}>
+            {error.message}
+          </Ellipsis>
+        </div>
         }
       </CardContent>
       {
@@ -303,24 +290,24 @@ export default function OrgsGridItem(props) {
           <Box className={classes.legalEntityInfo}>
             <div className={classes.entityTitleWrapper}>
               <Typography variant={'subtitle2'} className={classes.entityTitle} noWrap>
-                Managed by: <Typography variant={'caption'}>{entityName}</Typography>
+                Managed by: <Typography variant={'caption'}>{parent.name}</Typography>
               </Typography>
             </div>
             <div className={classes.entityInfoItem}>
               <EntityTrustLevelIcon viewBox={'0 0 12 12'} className={classes.entityIcon}/>
               <Typography variant={'subtitle2'} className={classes.entityTrustLevel}>
-                {entityTrustLevel}
+                {parent.proofsQty}
               </Typography>
             </div>
           </Box>
         ) : (
-          subs && subs.length !== 0
+          subOrganizations && subOrganizations.length !== 0
         ) ? (
           <div className={classes.entitySubOrgsWrapper}>
-            <Typography variant={'subtitle2'} className={classes.entityTitle}>Includes {subs.length} sub-organization{subs.length === 1 ? '' : 's'}:</Typography>
+            <Typography variant={'subtitle2'} className={classes.entityTitle}>Includes {subOrganizations.length} sub-organization{subOrganizations.length === 1 ? '' : 's'}:</Typography>
             <Grid container spacing={1} justify="flex-start" alignItems="center" className={classes.entitySubOrgsList}>
               {
-                subs.map((item, index) => {
+                subOrganizations.map((item, index) => {
                   let arrayOfColors = [ colors.primary.black, colors.primary.accent, colors.secondary.yellow ];
                   const bgColor = (index) => {
                     if(+index === 0) {
@@ -349,37 +336,27 @@ export default function OrgsGridItem(props) {
           </CardContent>
         ) : null
       }
-      {
-        error ? (
-          <div className={classes.errorInfoWrapper}>
-            <div>
-              <Typography variant={'subtitle2'} className={classes.errorExpiresAt}>
-                Will be deleted in
-                <div>{error.expiresAt}</div>
-              </Typography>
-            </div>
-            <Button className={classes.errorButton}>
-              <Typography variant={'caption'} className={classes.errorButtonLabel}>Try again</Typography>
-            </Button>
-          </div>
-        ) : null
+      {error &&
+      <div className={classes.errorInfoWrapper}>
+        <div>
+          <Typography variant={'subtitle2'} className={classes.errorExpiresAt}>
+            Will be deleted in
+            <div>{error.expiresAt}</div>
+          </Typography>
+        </div>
+        <Button className={classes.errorButton}>
+          <Typography variant={'caption'} className={classes.errorButtonLabel}>Try again</Typography>
+        </Button>
+      </div>
       }
     </Card>
   )
 }
 
 OrgsGridItem.propTypes = {
-  orgid: PropTypes.string.isRequired,
-  img: PropTypes.string,
-  isSub: PropTypes.bool,
-  orgidType: PropTypes.string,
-  address: PropTypes.string,
-  proofsQty: PropTypes.any,
-  name: PropTypes.string,
-  subs: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.string), PropTypes.arrayOf(PropTypes.object)]),
-  parent: PropTypes.object,
-  entityName: PropTypes.string,
-  entityTrustLevel: PropTypes.any,
+  organization: PropTypes.object.isRequired,
+  canManage: PropTypes.bool,
+  error: PropTypes.oneOfType([PropTypes.bool, PropTypes.object])
 };
 
 /*

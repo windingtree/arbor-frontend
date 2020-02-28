@@ -1,3 +1,4 @@
+import { keccak256 } from "js-sha3";
 import DefaultHotelImage1 from '../assets/images/default-image-hotel-1.svg';
 import DefaultHotelImage2 from '../assets/images/default-image-hotel-2.svg';
 import DefaultHotelImage3 from '../assets/images/default-image-hotel-3.svg';
@@ -14,14 +15,15 @@ import DefaultAirlineImage4 from '../assets/images/default-image-airline-4.svg';
 import DefaultAirlineImage5 from '../assets/images/default-image-airline-5.svg';
 import DefaultAirlineImage6 from '../assets/images/default-image-airline-6.svg';
 
+
 export const copyStrToClipboard = str => navigator.clipboard.writeText(str).then(resolve => resolve);
 export const strCenterEllipsis = str => str ? `${str.substr(0, 4)}...${str.substr(-4, 4)}` : '0xUNDEFINED';
 
-export const setRandomDefaultImage = (orgid, orgidType) => {
+export const setRandomDefaultImage = (orgid, directory) => {
   let arrayOfDefaultImages = [];
   let index = 0;
-  if (orgidType === 'hotel' || orgidType === 'legalEntity' || orgidType === 'ota' || orgidType === 'insurance') arrayOfDefaultImages.push(DefaultHotelImage1, DefaultHotelImage2, DefaultHotelImage3, DefaultHotelImage4, DefaultHotelImage5, DefaultHotelImage6, DefaultHotelImage7, DefaultHotelImage8, DefaultHotelImage9);
-  if (orgidType === 'airline') arrayOfDefaultImages.push(DefaultAirlineImage1, DefaultAirlineImage2, DefaultAirlineImage3, DefaultAirlineImage4, DefaultAirlineImage5, DefaultAirlineImage6);
+  if (directory === 'hotel' || directory === 'legalEntity' || directory === 'ota' || directory === 'insurance') arrayOfDefaultImages.push(DefaultHotelImage1, DefaultHotelImage2, DefaultHotelImage3, DefaultHotelImage4, DefaultHotelImage5, DefaultHotelImage6, DefaultHotelImage7, DefaultHotelImage8, DefaultHotelImage9);
+  if (directory === 'airline') arrayOfDefaultImages.push(DefaultAirlineImage1, DefaultAirlineImage2, DefaultAirlineImage3, DefaultAirlineImage4, DefaultAirlineImage5, DefaultAirlineImage6);
   try {
     let lastCharFromOrgid = orgid.toString().slice(-1);
     index = parseInt(`0x${lastCharFromOrgid}`);
@@ -41,4 +43,8 @@ export const throttle = (fn, wait) => {
       time = Date.now();
     }
   }
+};
+
+export const idGenerator = () => {
+  return `did:orgid:0x${keccak256(`${Date.now()}${Math.random()}`)}`
 };

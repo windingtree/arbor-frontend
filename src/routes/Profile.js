@@ -90,39 +90,40 @@ function Profile(props) {
           )
         }
       </div>
-      {
-        organizations.length === 0 ? (
-          <div className={classes.emptyListContainer}>
-            <div className={classes.emptyListContent}>
-              <img src={EmptyListIllustration} alt={'illustration'}/>
-              <div className={classes.emptyListTitleWrapper}>
-                <Typography variant={'subtitle2'} className={classes.emptyListTitle}>You don’t have any organizations yet. Let’s create one!</Typography>
-              </div>
-              <Button onClick={() => history.push('/my-organizations/wizard', { type: 'legalEntity' })} className={classes.button}>
-                <Typography variant={'subtitle2'} className={classes.buttonLabel}>+ Create organization profile</Typography>
-              </Button>
-            </div>
+      {organizations.length === 0 &&
+      <div className={classes.emptyListContainer}>
+        <div className={classes.emptyListContent}>
+          <img src={EmptyListIllustration} alt={'illustration'}/>
+          <div className={classes.emptyListTitleWrapper}>
+            <Typography variant={'subtitle2'} className={classes.emptyListTitle}>You don’t have any organizations yet.
+              Let’s create one!</Typography>
           </div>
-        ) : (
-          <List>
-            {
-              organizations.map((item, index) => {
-                return (
-                  <OrgsListItem
-                    key={index.toString()}
-                    id={item.orgid}
-                    img={item.avatar}
-                    name={item.name}
-                    proofsQty={item.proofsQty}
-                    subs={item.subs}
-                    canManage={true}
-                    orgidType={item.orgidType}
-                  />
-                )
-              })
-            }
-          </List>
-        )
+          <Button onClick={() => history.push('/my-organizations/wizard', {type: 'legalEntity'})}
+                  className={classes.button}>
+            <Typography variant={'subtitle2'} className={classes.buttonLabel}>+ Create organization profile</Typography>
+          </Button>
+        </div>
+      </div>
+      }
+      {organizations.length !== 0 &&
+      <List>
+        {
+          organizations.map((item, index) => {
+            return (
+              <OrgsListItem
+                key={index.toString()}
+                id={item.orgid}
+                img={item.avatar}
+                name={item.name}
+                proofsQty={item.proofsQty}
+                subs={item.subs}
+                canManage={true}
+                orgidType={item.orgidType}
+              />
+            )
+          })
+        }
+      </List>
       }
     </Container>
   )

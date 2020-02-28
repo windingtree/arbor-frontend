@@ -1,8 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import history from '../redux/history';
+import { connect } from "react-redux";
 import _ from 'lodash';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { Container, Button, Typography, Stepper, StepConnector, Step, StepLabel, Grid } from "@material-ui/core";
+
+import history from '../redux/history';
+import { rewriteOrgidJson, selectPendingState, selectSuccessState } from "../ducks/wizard";
+
+import { WizardStep, WizardStepHosting, WizardStepMetaMask } from "../components";
+import { wizardConfig as legalEntity } from '../utils/legalEntity'
+import { wizardConfig as organizationalUnit} from '../utils/organizationalUnit'
+
+import { idGenerator } from "../utils/helpers";
 
 import BgPattern from '../assets/SvgComponents/wizard-pattern.svg';
 import ArrowLeftIcon from '../assets/SvgComponents/ArrowLeftIcon';
@@ -10,11 +19,6 @@ import PendingTransactionIllustration from '../assets/SvgComponents/org-creation
 import SuccessTransactionIllustration from '../assets/SvgComponents/detailsIllustration.svg';
 import colors from '../styles/colors';
 
-import { WizardStep, WizardStepHosting, WizardStepMetaMask } from "../components";
-import { wizardConfig as legalEntity } from '../utils/legalEntity'
-import { wizardConfig as organizationalUnit} from '../utils/organizationalUnit'
-import { connect } from "react-redux";
-import { rewriteOrgidJson, selectPendingState, selectSuccessState, selectWizardOrgidJson } from "../ducks/wizard";
 
 const styles = makeStyles({
   mainContainer: {
@@ -159,7 +163,7 @@ const useStepStyles = makeStyles({
 });
 
 const WizardGeneral = (props) => {
-  const { pendingTransaction, successTransaction, orgidJson } = props;
+  const { pendingTransaction, successTransaction } = props;
   const classes = styles();
   const [activeStep, setActiveStep] = useState(0);
   const wizardType = _.get(history, 'location.state.type', 'legalEntity');
@@ -180,7 +184,7 @@ const WizardGeneral = (props) => {
   useEffect(() => {
     props.rewriteOrgidJson({
       "@context": "https://windingtree.com/ns/did/v1",
-      "id": orgidJson.id,
+      "id": idGenerator(),
       "created": new Date().toJSON(),
       [wizardType]: {}
     })
@@ -316,8 +320,7 @@ const WizardGeneral = (props) => {
 const mapStateToProps = state => {
   return {
     pendingTransaction: selectPendingState(state),
-    successTransaction: selectSuccessState(state),
-    orgidJson: selectWizardOrgidJson(state),
+    successTransaction: selectSuccessState(state)
   }
 };
 

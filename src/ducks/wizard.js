@@ -45,6 +45,8 @@ const GET_TRANSACTION_STATUS_REQUEST = `${prefix}/GET_TRANSACTION_STATUS_REQUEST
 const GET_TRANSACTION_STATUS_SUCCESS = `${prefix}/GET_TRANSACTION_STATUS_SUCCESS`;
 const GET_TRANSACTION_STATUS_FAILURE = `${prefix}/GET_TRANSACTION_STATUS_FAILURE`;
 
+const RESET_TRANSACTION_STATUS = `${prefix}/RESET_TRANSACTION_STATUS`;
+
 const initialState = {
   isFetching: false,
   isFetched: false,
@@ -92,6 +94,11 @@ export default function reducer( state = initialState, action) {
         pendingTransaction: true,
         successTransaction: false,
         error: null
+      });
+    case RESET_TRANSACTION_STATUS:
+      return _.merge({}, state, {
+        pendingTransaction: false,
+        successTransaction: false,
       });
     /////////////
     // SUCCESS //
@@ -417,6 +424,14 @@ function getTransactionStatusFailure(error) {
   return {
     type: GET_TRANSACTION_STATUS_FAILURE,
     error
+  }
+}
+//endregion
+
+//region == [ACTIONS: getTransactionStatus] ====================================================================================
+export function resetTransactionStatus() {
+  return {
+    type: RESET_TRANSACTION_STATUS,
   }
 }
 //endregion

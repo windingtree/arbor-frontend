@@ -1,6 +1,6 @@
-import React, {useState} from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from 'react-redux';
-import { extendOrgidJson, selectPendingState, selectSuccessState } from '../../../ducks/wizard';
+import { extendOrgidJson, resetTransactionStatus, selectPendingState, selectSuccessState } from '../../../ducks/wizard';
 import {Formik} from 'formik';
 import _ from "lodash";
 import {
@@ -145,6 +145,7 @@ const styles = makeStyles({
     color: colors.secondary.green,
   },
   progressWrapper: {
+    display: 'table',
     margin: '0 auto'
   }
 });
@@ -170,6 +171,11 @@ function Agents(props) {
   const { organization , pendingTransaction, successTransaction } = props;
   const { owner } = organization;
   const agents = _.get(organization, `jsonContent.publicKey`, []);
+
+  useEffect(() => {
+    props.resetTransactionStatus();
+    setActiveStep(0);
+  }, [isModalOpen]);
 
   const handleTooltipClose = () => {
     setTooltipOpen(false);
@@ -420,7 +426,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-  extendOrgidJson
+  extendOrgidJson,
+  resetTransactionStatus
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Agents);

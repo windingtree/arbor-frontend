@@ -242,7 +242,7 @@ const WizardStepHosting = (props) => {
 
             <div className={inheritClasses.buttonWrapper}>
               <Button type="submit" disabled={isSubmitting} className={inheritClasses.button}>
-                <Typography variant={'caption'} className={inheritClasses.buttonLabel}>{action === 'edit' ? 'Next' : cta}</Typography>
+                <Typography variant={'caption'} className={inheritClasses.buttonLabel}>{action === 'edit' ? 'Next' : `${cta}`}</Typography>
               </Button>
             </div>
           </form>

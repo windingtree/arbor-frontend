@@ -30,7 +30,7 @@ const styles = makeStyles({
     backgroundColor: colors.primary.white,
     zIndex: 100,
     borderBottom: `1px solid ${colors.greyScale.lightest}`,
-    ['@media (max-width:767px)']: {
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
       position: 'fixed',
       width: '100%'
     }

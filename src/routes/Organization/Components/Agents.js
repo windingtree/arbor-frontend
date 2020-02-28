@@ -175,7 +175,7 @@ function Agents(props) {
   useEffect(() => {
     props.resetTransactionStatus();
     setActiveStep(0);
-  }, [isModalOpen]);
+  }, [isModalOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleTooltipClose = () => {
     setTooltipOpen(false);

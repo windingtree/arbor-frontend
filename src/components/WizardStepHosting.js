@@ -125,7 +125,7 @@ const WizardStepHosting = (props) => {
   return (
     <div key={index}>
       <Typography variant={'h3'} className={inheritClasses.stepTitle}>
-        {stepTitle && `Step ${index+1}:`}
+        {stepTitle && `Step ${index+1}. `}
         {longName}
       </Typography>
       <div className={inheritClasses.subtitleWrapper}>

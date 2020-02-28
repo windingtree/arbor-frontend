@@ -290,7 +290,7 @@ export default function OrgsGridItem(props) {
           <Box className={classes.legalEntityInfo}>
             <div className={classes.entityTitleWrapper}>
               <Typography variant={'subtitle2'} className={classes.entityTitle} noWrap>
-                Managed by: <Typography variant={'caption'}>{parent.name}</Typography>
+                Operated by: <Typography variant={'caption'}>{parent.name}</Typography>
               </Typography>
             </div>
             <div className={classes.entityInfoItem}>

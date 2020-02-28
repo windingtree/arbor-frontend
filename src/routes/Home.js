@@ -713,7 +713,7 @@ function Home(props) {
           <div className={classes.directoriesContent}>
             <div className={classes.directoriesHeading}>
               <Typography variant={'h3'} className={classes.blockTitle}>
-                Directories we work with
+                Directories
               </Typography>
               <Box className={classes.directoriesLinkWrapper}>
                 <Link to={'/directories'} className={classes.navLinkToDirectories} >

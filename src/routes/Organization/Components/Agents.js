@@ -212,9 +212,10 @@ function Agents(props) {
             <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>To add an agent, enter its key and  write a comment, then confirm the transaction in MetaMask. </Typography>
           </div>
           <Formik
-            initialValues={{ key: '', comment: '' }}
+            initialValues={{ key: '', note: '' }}
             onSubmit={(values) => {
-              props.extendOrgidJson(values); //TODO add and replace action to push values to publicKey ?
+              props.extendOrgidJson({ publicKey: [{ key: values.key, note: values.note }] });
+              handleNext();
             }}
           >
             {({
@@ -270,19 +271,19 @@ function Agents(props) {
                 </div>
                 <div className={classes.inputFieldWrapper}>
                   <TextField
-                    name={'comment'}
+                    name={'note'}
                     autoComplete={'none'}
                     variant={'filled'}
                     label={'Write a comment for this agent'}
                     fullWidth
-                    values={values.comment}
+                    values={values.note}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     helperText={errors && touched && errors.message}
                   />
                 </div>
                 <div className={classes.dialogButtonWrapper}>
-                  <Button type={'submit'} onClick={handleNext} disabled={isSubmitting} className={classes.dialogButton}>
+                  <Button type={'submit'} disabled={isSubmitting} className={classes.dialogButton}>
                     <Typography variant={'caption'} className={classes.dialogButtonLabel}>
                       Confirm in MetaMask
                     </Typography>

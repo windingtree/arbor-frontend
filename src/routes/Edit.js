@@ -26,7 +26,10 @@ import {
   selectWizardOrgidJson,
   extendOrgidJson,
   sendChangeOrgidUriAndHashRequest,
-  selectWizardOrgidUri, saveOrgidUri, saveOrgidJsonToArbor
+  selectWizardOrgidUri,
+  saveOrgidUri,
+  saveOrgidJsonToArbor,
+  resetTransactionStatus
 } from "../ducks/wizard";
 
 import { Section, WizardStepMetaMask, WizardStepHosting } from "../components";
@@ -225,6 +228,10 @@ const Edit = (props) => {
     }
   }, [orgid]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    props.resetTransactionStatus();
+  }, [isModalOpen]);
+
   const handleChangeTab = (event, newValue) => {
     setValue(newValue);
   };
@@ -325,9 +332,10 @@ const Edit = (props) => {
             if (!_.isEmpty(errors)) console.log('ERRORS', errors);
             return errors;
           }}
-          onSubmit={(values) => {
-            console.log('onSubmit', values);
+          onSubmit={(values, {setSubmitting}) => {
+            setSubmitting(false);
             props.extendOrgidJson(values);
+            handleOpenModal();
           }}
         >
           {({
@@ -368,7 +376,7 @@ const Edit = (props) => {
                     </div>
                   </Grid>
                   <Grid item sm={3} className={classes.editButtonContainer}>
-                    <Button type="submit" disabled={isSubmitting} onClick={handleOpenModal} className={classes.editButton}>
+                    <Button type="submit" disabled={isSubmitting} className={classes.editButton}>
                       <Typography variant={'caption'} className={classes.editButtonLabel}>{'Save and Update'}</Typography>
                     </Button>
                   </Grid>
@@ -454,6 +462,7 @@ const mapDispatchToProps = {
   extendOrgidJson,
   saveOrgidUri,
   saveOrgidJsonToArbor,
+  resetTransactionStatus,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Edit);

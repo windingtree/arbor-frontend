@@ -209,7 +209,7 @@ function TopNavigation(props) {
                      onClick={() => history.push(todos[0].link, {id, ...todos[0].state})}>
                   <StageIcon viewBox={'0 0 20 20'} className={classes.stageIcon}/>
                   <Typography variant={'caption'}
-                              className={[classes.itemTrustInfoTitle, classes.itemStageTitle].join(' ')}>{todos[0].step}</Typography>
+                              className={[classes.itemTrustInfoTitle, classes.itemStageTitle].join(' ')} noWrap>{todos[0].step}</Typography>
                 </div>
               )
             }

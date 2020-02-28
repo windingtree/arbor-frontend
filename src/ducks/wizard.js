@@ -429,7 +429,7 @@ function getTransactionStatusFailure(error) {
 }
 //endregion
 
-//region == [ACTIONS: getTransactionStatus] ====================================================================================
+//region == [ACTIONS: resetTransactionStatus] ====================================================================================
 export function resetTransactionStatus() {
   return {
     type: RESET_TRANSACTION_STATUS,

@@ -95,12 +95,16 @@ const styles = makeStyles({
   stepCountText: {
     margin: '0 14px 0 92px',
     fontSize: '14px',
-    lineHeight: '16px',
+    fontWeight: 500,
+    color: colors.greyScale.dark,
+    lineHeight: 1.2,
     minWidth: '52px'
   },
   stepTex: {
     fontSize: '14px',
-    lineHeight: '16px',
+    fontWeight: 500,
+    color: colors.greyScale.dark,
+    lineHeight: 1.2,
   },
   paragraph: {
     marginTop: '23px',
@@ -121,13 +125,34 @@ const styles = makeStyles({
     width: '40%',
     minHeight: '360px'
   },
+  buttonsContainer: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    marginTop: '40px',
+  },
+  buttonWrapper: {
+    marginRight: '20px',
+    '&:last-child': {
+      marginRight: '0'
+    }
+  },
   buttonPurchaseWithdraw: {
     display: 'block',
-    marginTop: '70px',
+    height: '44px',
     backgroundImage: colors.gradients.orange,
     boxShadow: '0 2px 12px rgba(12, 64, 78, 0.1)',
     border: `1px solid ${colors.primary.accent}`,
     borderRadius: '8px'
+  },
+  buttonDisabled: {
+    backgroundImage: 'none',
+    backgroundColor: colors.greyScale.lightest,
+    borderColor: colors.greyScale.lightest,
+    boxShadow: 'none',
+    '& span': {
+      color: colors.greyScale.common
+    }
   },
   buttonTitle: {
     fontWeight: 600,
@@ -136,12 +161,12 @@ const styles = makeStyles({
     color: colors.primary.white,
     textTransform: 'none',
     padding: '4px 14px'
-  }
+  },
 });
 
-const TrustLifStake = () => {
-
+const TrustLifStake = (props) => {
   const classes = styles();
+  const { disabled } = props;
 
   return (
     <div>
@@ -212,11 +237,22 @@ const TrustLifStake = () => {
                 Make sure that you have at least 1000 Líf in your MetaMask account. Líf deposit will automatically
                 generate Lög tokens required for voting.
               </Typography>
-              <Button className={classes.buttonPurchaseWithdraw}>
-                <Typography variant={'subtitle2'} noWrap className={classes.buttonTitle}>
-                  Purchase Lif
-                </Typography>
-              </Button>
+              <div className={classes.buttonsContainer}>
+                <div className={classes.buttonWrapper}>
+                  <Button disabled={disabled} className={ disabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
+                    <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
+                      Allow deposit
+                    </Typography>
+                  </Button>
+                </div>
+                <div className={classes.buttonWrapper}>
+                  <Button disabled={disabled} className={ disabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
+                    <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
+                      Make deposit
+                    </Typography>
+                  </Button>
+                </div>
+              </div>
             </Grid>
           </Grid>
         </div>
@@ -238,11 +274,13 @@ const TrustLifStake = () => {
                 Your organization’s trust level will be decreased respectively.
               </Typography>
               <Box>
-                <Button className={classes.buttonPurchaseWithdraw}>
-                  <Typography variant={'subtitle2'} noWrap className={classes.buttonTitle}>
-                    Withdraw your deposit
-                  </Typography>
-                </Button>
+                <div className={classes.buttonsContainer}>
+                  <Button disabled={disabled} className={ disabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
+                    <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
+                      Withdraw your deposit
+                    </Typography>
+                  </Button>
+                </div>
               </Box>
             </Grid>
             <Grid item className={classes.lifWithdrawIllustrationWrapper}>
@@ -256,5 +294,8 @@ const TrustLifStake = () => {
   )
 };
 
+TrustLifStake.defaultProps = {
+  disabled: true
+};
 
 export default TrustLifStake;

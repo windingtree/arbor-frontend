@@ -230,7 +230,7 @@ const Edit = (props) => {
 
   useEffect(() => {
     props.resetTransactionStatus();
-  }, [isModalOpen]);
+  }, [isModalOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleChangeTab = (event, newValue) => {
     setValue(newValue);

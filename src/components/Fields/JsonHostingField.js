@@ -9,7 +9,7 @@ const JsonHostingField = (props) => {
 
   return (
     <Container key={index}>
-      <a href={data} download="ORG.ID.json">Download ORG JSON</a>
+      <a href={data} download="ORG.ID.json">Download ORG.JSON</a>
     </Container>
   )
 };

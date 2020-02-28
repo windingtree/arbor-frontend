@@ -249,7 +249,7 @@ export default function OrgsListItem(props) {
                     onClick={() => history.push('/my-organizations/wizard', { type: 'organizationalUnit', parent: { orgid: id, name } })}
                     className={classes.addSubOrgButton}
                   >
-                    <Typography variant={'caption'} className={classes.buttonTitle} noWrap>+ Add organizational unit</Typography>
+                    <Typography variant={'caption'} className={classes.buttonTitle} noWrap>+ Add sub-organization</Typography>
                   </Button>
                 </div>
               </Grid>

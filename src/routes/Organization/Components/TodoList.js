@@ -13,7 +13,7 @@ import sslIcon from '../../../assets/SvgComponents/trust-step-ssl-icon.svg';
 
 const allTodo = {
   social: {
-    step: 'Step 1. Confirm social network',
+    step: 'Step 1. Verify social network',
     link: '/trust/social',
     state: {},
     icon: socialIcon,
@@ -21,7 +21,7 @@ const allTodo = {
     description: 'Post a specific message or comment on behalf of your corporate profiles on Twitter, Facebook and Instagram to prove your ownership.'
   },
   website: {
-    step: 'Step 2. Confirm Website',
+    step: 'Step 2. Verify website',
     link: '/trust/website',
     state: {},
     icon: websiteIcon,
@@ -29,7 +29,7 @@ const allTodo = {
     description: 'It’s easy to prove that a website is linked to your organization profile via a DNS record or a text file in the root directory. '
   },
   ssl: {
-    step: 'Step 3. Submit LIF stake',
+    step: 'Step 3. Submit LIF deposit',
     link: '/trust/lif-stake',
     state: {},
     icon: lifIcon,

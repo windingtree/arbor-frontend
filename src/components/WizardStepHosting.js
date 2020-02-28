@@ -216,7 +216,7 @@ const WizardStepHosting = (props) => {
                   <div className={classes.selfHostingLinkWrapper}>
                     <a href={data} download="ORG.ID.json" className={classes.selfHostingLink}>
                       <img src={DownloadIcon} alt={'download'} className={classes.selfHostingLinkIcon}/>
-                      Download ORG JSON
+                      Download ORG.JSON
                     </a>
                   </div>
                   <br />

@@ -65,7 +65,7 @@ export default function AddSubOrgCard(props) {
               className={classes.button}
               onClick={() => history.push('/my-organizations/wizard', { type: 'organizationalUnit', parent })}
             >
-              <Typography variant={'inherit'} noWrap>+ Add Sub-Organization</Typography>
+              <Typography variant={'inherit'} noWrap>+ Add sub-organization</Typography>
             </Button>
           </div>
         </div>

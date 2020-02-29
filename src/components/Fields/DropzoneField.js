@@ -5,7 +5,7 @@ import _ from 'lodash';
 import {saveMediaToArbor, selectWizardOrgidJson} from '../../ducks/wizard'
 import {selectSignInAddress} from '../../ducks/signIn'
 
-import {Tab, Tabs, TextField, Typography, Button} from '@material-ui/core';
+import {Tab, Tabs, TextField, Typography, Button, Link} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 import DragAndDropImage from '../../assets/SvgComponents/dragNDrop-image.svg';
 
@@ -111,6 +111,20 @@ const styles = makeStyles({
   inputWrapper: {
     marginTop: '20px'
   },
+  uploadedImage: {
+    maxWidth: '100%',
+    border: '1px dashed #D9D9D9',
+    borderRadius: '8px'
+  },
+  removePhotoLink: {
+    color: colors.secondary.peach,
+    fontFamily: 'Inter',
+    fontStyle: 'normal',
+    fontWeight: '500',
+    fontSize: '14px',
+    lineHeight: '16px',
+    cursor: 'pointer'
+  }
 });
 
 function Previews(props) {
@@ -131,7 +145,7 @@ function Previews(props) {
   });
 
   const handleDeletePreview = () => {
-    props.saveMediaToArbor({address, id, file: ''});
+    props.saveMediaToArbor({address, id, file: null});
     setFiles([]);
   };
 
@@ -182,87 +196,105 @@ function Previews(props) {
   );
 }
 
+const TabPanel = (props) => {
+  const {children, value, index, ...other} = props;
+
+  return (
+    <Typography
+      component="div"
+      role="tabpanel"
+      hidden={value !== index}
+      id={`tabpanel-${index}`}
+      {...other}
+    >
+      {value === index && <div>{children}</div>}
+    </Typography>
+  )
+};
 
 const DropzoneField = (props) => {
   const classes = styles();
-  const [value, setValue] = useState(0);
-  const [files, setFiles] = useState([]);
-
-  useEffect(() =>    () => {
-      // Make sure to revoke the data uris to avoid memory leaks
-      files.forEach(file => URL.revokeObjectURL(file.preview));
-
-    }, [files]);
-
   const {saveMediaToArbor, address, orgidJson, type, name, description, orgidJsonPath, index, helperText, required, values, errors, touched, handleChange, handleBlur} = props;
   const isError = _.get(errors, orgidJsonPath) && _.get(touched, orgidJsonPath);
+  const [tabValue, setTabValue] = useState(0);
+  const [showPreviewOnly, setShowPreviewOnly] = useState(!!_.get(values, orgidJsonPath, false));
+  const [files, setFiles] = useState([]);
+
+  useEffect(() => () => {
+    // Make sure to revoke the data uris to avoid memory leaks
+    files.forEach(file => URL.revokeObjectURL(file.preview));
+  }, [files]);
 
   const handleChangeTab = (event, newValue) => {
-    setValue(newValue);
+    setTabValue(newValue);
   };
 
-  const TabPanel = (props) => {
-    const {children, value, index, ...other} = props;
-
-    return (
-      <Typography
-        component="div"
-        role="tabpanel"
-        hidden={value !== index}
-        id={`tabpanel-${index}`}
-        {...other}
-      >
-        {value === index && <div>{children}</div>}
-      </Typography>
-    )
+  const removePhotoHandler = () => {
+    setShowPreviewOnly(false);
+    props.saveMediaToArbor({address, id: orgidJson.id, file: null});
   };
+
+  const value = _.get(values, orgidJsonPath);
 
   return (
     <div key={index} className={classes.tabsContainer}>
+      {showPreviewOnly &&
       <div>
-        <Tabs
-          value={value}
-          onChange={handleChangeTab}
-          indicatorColor='primary'
-          textColor="primary"
-        >
-          <Tab label={'Upload an image'}/>
-          <Tab label={'Add link to image'}/>
-        </Tabs>
+        <div>
+          <img className={classes.uploadedImage} src={value} alt={`File cannot be shown as image. URI: ${value}`}/>
+        </div>
+        <Link className={classes.removePhotoLink} onClick={removePhotoHandler}>Remove photo</Link>
       </div>
-      <TabPanel value={value} index={0}>
-        <Previews
-          files={files}
-          setFiles={setFiles}
-          address={address}
-          orgidJson={orgidJson}
-          saveMediaToArbor={saveMediaToArbor}
-          name={orgidJsonPath}
-          description={description}
-          value={_.get(values, orgidJsonPath)}
-          helperText={isError ? _.get(errors, orgidJsonPath) : helperText}
-          required={required}
-          onChange={handleChange}
-          onBlur={handleBlur}
-        />
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        <div className={classes.inputWrapper}>
-          <TextField
-            type={type}
-            variant={'filled'}
-            label={name}
+      }
+
+      {!showPreviewOnly &&
+      <div>
+        <div>
+          <Tabs
+            value={tabValue}
+            onChange={handleChangeTab}
+            indicatorColor='primary'
+            textColor="primary"
+          >
+            <Tab label={'Upload an image'}/>
+            <Tab label={'Add link to image'}/>
+          </Tabs>
+        </div>
+        <TabPanel value={tabValue} index={0}>
+          <Previews
+            files={files}
+            setFiles={setFiles}
+            address={address}
+            orgidJson={orgidJson}
+            saveMediaToArbor={saveMediaToArbor}
             name={orgidJsonPath}
-            value={_.get(values, orgidJsonPath)}
+            description={description}
+            value={value}
             helperText={isError ? _.get(errors, orgidJsonPath) : helperText}
             required={required}
-            fullWidth
-            error={isError}
             onChange={handleChange}
             onBlur={handleBlur}
           />
-        </div>
-      </TabPanel>
+        </TabPanel>
+        <TabPanel value={tabValue} index={1}>
+          <div className={classes.inputWrapper}>
+            <TextField
+              type={type}
+              variant={'filled'}
+              label={name}
+              name={orgidJsonPath}
+              value={value}
+              helperText={isError ? _.get(errors, orgidJsonPath) : helperText}
+              required={required}
+              fullWidth
+              error={isError}
+              onChange={handleChange}
+              onBlur={handleBlur}
+            />
+          </div>
+        </TabPanel>
+      </div>
+      }
     </div>
   )
 };

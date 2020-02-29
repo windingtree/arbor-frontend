@@ -109,13 +109,7 @@ const WizardStepHosting = (props) => {
   const classes = useStyles();
   const inheritClasses = styles();
 
-  const [valueHostingType, setValueHostingType] = React.useState('default-hosting');
-
-  const handleChangeHostingType = event => {
-    setValueHostingType(event.target.value);
-  };
-
-  const { index, saveOrgidUri, saveOrgidJsonToArbor, orgidUri, orgidJson, address, data: { longName, description, cta }, handleNext, action, stepTitle = true } = props;
+  const { index, orgidUri, orgidJson, address, data: { longName, description, cta }, handleNext, action, stepTitle = true } = props;
   // next line collect from "sections" all fields with non empty "schema" to object { [fieldName]:schema }
 
   const data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(orgidJson, null, 2));
@@ -141,18 +135,13 @@ const WizardStepHosting = (props) => {
           if(!_.isEmpty(errors)) console.log('ERRORS', errors);
           return errors;
         }}
-        onSubmit={(values, { setSubmitting }) => {
+        onSubmit={(values) => {
           if (values['hostingType'] === 'default-hosting') {
-            saveOrgidJsonToArbor(address)
+            props.saveOrgidJsonToArbor(address)
           } else {
-            saveOrgidUri(values['orgidUri']);
+            props.saveOrgidUri(values['orgidUri']);
           }
           handleNext();
-
-          setTimeout(() => {
-            console.info(JSON.stringify(values, null, 2));
-            setSubmitting(false);
-          }, 400);
         }}
       >
         {({
@@ -169,7 +158,7 @@ const WizardStepHosting = (props) => {
 
             <FormControl component="fieldset" className={classes.formControlGroup}>
               <Typography variant={'subtitle2'} className={classes.formControlTitle}>Choose your preferred type of JSON hosting</Typography>
-              <RadioGroup aria-label="hostingType" name="hostingType" value={valueHostingType} onChange={handleChangeHostingType}>
+              <RadioGroup aria-label="hostingType" name="hostingType" value={values['hostingType']} onChange={handleChange}>
                 <div className={classes.formControlItem}>
                   <FormControlLabel value="default-hosting" control={<Radio color='primary' />} label="Hosting with Arbor" className={classes.radioItem}/>
                   <div>
@@ -200,7 +189,7 @@ const WizardStepHosting = (props) => {
             </FormControl>
 
             {
-              valueHostingType === 'self-hosting' ?
+              values['hostingType'] === 'self-hosting' ?
                 <div>
                   <div className={classes.selfHostingSubtitleWrapper}>
                     <Typography variant={'subtitle2'} className={classes.selfHostingSubtitle}>
@@ -228,7 +217,7 @@ const WizardStepHosting = (props) => {
                       variant={'filled'}
                       value={values['orgidUri']}
                       helperText={errors['orgidUri'] && touched['orgidUri'] ? errors['orgidUri'] : undefined}
-                      required={valueHostingType === 'self-hosting'}
+                      required={true}
                       fullWidth
                       error={errors['orgidUri'] && touched['orgidUri']}
                       onChange={handleChange}

@@ -124,12 +124,12 @@ export default function reducer( state = initialState, action) {
         error: null
       });
     case SAVE_MEDIA_TO_ARBOR_SUCCESS:
-      const orgidJsonUpdates = _.merge({}, state.orgidJson, {
+      const orgidJsonUpdates = _.omitBy(_.merge({}, state.orgidJson, {
         updated: new Date().toJSON(),
         media: {
           logo: payload
         }
-      });
+      }), _.isNil);
       return {
         isFetching: false,
         isFetched: true,
@@ -461,9 +461,12 @@ function* extendOrgidJsonSaga({payload}) {
 
 function* saveMediaToArborSaga({payload}) {
   try {
-    const { data: { uri }} = yield call(ApiPostMedia, payload);
-
-    yield put(saveMediaToArborSuccess(uri));
+    if(payload.file === null) {
+      yield put(saveMediaToArborSuccess(null));
+    } else {
+      const { data: { uri }} = yield call(ApiPostMedia, payload);
+      yield put(saveMediaToArborSuccess(uri));
+    }
   } catch(error) {
     yield put(saveMediaToArborFailure(error));
   }

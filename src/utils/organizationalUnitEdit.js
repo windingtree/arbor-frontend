@@ -99,7 +99,7 @@ export const config = [
             {
               name: 'Profile image',
               type: 'dropzone',
-              orgidJsonPath: 'media[0].uri',
+              orgidJsonPath: 'media.logo',
               description: 'Add a logo or any image that represents your organization. It will help you stand out in search results.',
               helperText: 'Recommended dimensions: 908х400 (minimal: 454x200)\nFormat: JPG, PNG'
             }

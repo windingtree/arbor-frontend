@@ -461,9 +461,9 @@ function Info(props) {
             <div className={classes.orgImageWrapper}>
               {
                 logo ? (
-                  <img className={classes.orgImage} src={logo} alt={'Organization'}/>
+                  <img className={classes.orgImage} src={logo} alt={`Organization Logo cannot be loaded. URI: ${logo}`}/>
                 ) : (
-                  <img className={classes.orgImage} src={setRandomDefaultImage(id, directory)} alt={'Organization'}/>
+                  <img className={classes.orgImage} src={setRandomDefaultImage(id, directory || 'hotel')} alt={`Organization from directory: ${directory}`}/>
                 )
               }
             </div>

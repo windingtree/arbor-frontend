@@ -22,7 +22,7 @@ const styles = makeStyles({
 
 const SelectField = (props) => {
   const classes = styles();
-  const {name, orgidJsonPath, index, options, values, errors, touched, handleChange, handleBlur} = props;
+  const {name, orgidJsonPath, index, helperText, options, required, values, errors, touched, handleChange, handleBlur} = props;
   const optionsObj = Array.isArray(options) ? options.reduce((o, key) => Object.assign(o, {[key]: key}), {}) : options;
   const isError = _.get(errors, orgidJsonPath) && _.get(touched, orgidJsonPath);
 
@@ -31,9 +31,11 @@ const SelectField = (props) => {
       <FormControl className={classes.formControl}>
         <InputLabel>{name}</InputLabel>
         <Select
-          name={orgidJsonPath}
           variant={'filled'}
+          name={orgidJsonPath}
           value={_.get(values, orgidJsonPath)}
+          helperText={isError ? `${_.get(errors, orgidJsonPath)}`.replace('ValidationError: "value" ', '') : helperText}
+          required={required}
           error={isError}
           onChange={handleChange}
           onBlur={handleBlur}

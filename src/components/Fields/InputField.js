@@ -59,7 +59,7 @@ const InputField = (props) => {
               )
             }
           ) : null}
-        placeholder={icon && name.toLowerCase()+`.com/`}
+        placeholder={icon && name.toLowerCase()+`.com/`/*TODO: fix this. Make placeholder via *.json files*/}
         fullWidth
         error={isError}
         onChange={handleChange}

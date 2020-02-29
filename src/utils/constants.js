@@ -1,8 +1,8 @@
 export const appName = `Arbor`;
-export const API_URI = `https://api.arbor.dev.bachoodesign.com/api/v1`;
-//export const API_URI = `https://192.168.88.71:3000/api/v1`;
+// export const API_URI = `https://api.arbor.dev.bachoodesign.com/api/v1`;
+// export const API_URI = `https://192.168.88.71:3000/api/v1`;
 // export const API_URI = `https://127.0.0.1:3000/api/v1`;
-// export const API_URI = `https://loc.orangerea.com.ua:3000/api/v1`;
+export const API_URI = `https://loc.orangerea.com.ua:3333/api/v1`;
 export const ORGID_PROXY_ADDRESS = '0x27B9dFa2607AaF3730Dad5c0E9fa8f6Dc0F2B49f';
 export const DIRECTORY_PROXY_ADDRESS = '0x68d9cB089a3e17be6F9De7a318BBCC55F4c899Bc';
 export const LIF_PROXY_ADDRESS = '0xfCfD5E296E4eD50B5F261b11818c50B73ED6c89E';

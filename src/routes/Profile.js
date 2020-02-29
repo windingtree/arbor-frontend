@@ -107,22 +107,9 @@ function Profile(props) {
       }
       {organizations.length !== 0 &&
       <List>
-        {
-          organizations.map((item, index) => {
-            return (
-              <OrgsListItem
-                key={index.toString()}
-                id={item.orgid}
-                img={item.avatar}
-                name={item.name}
-                proofsQty={item.proofsQty}
-                subs={item.subs}
-                canManage={true}
-                orgidType={item.orgidType}
-              />
-            )
-          })
-        }
+        {organizations.map((item, index) =>
+          <OrgsListItem key={index.toString()} canManage={true} organization={item}/>
+        )}
       </List>
       }
     </Container>

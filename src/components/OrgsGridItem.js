@@ -220,7 +220,7 @@ const bgColorsForTypes = {
 export default function OrgsGridItem(props) {
   const classes = styles();
   const { organization, canManage, error } = props;
-  const { orgid, parent, img, proofsQty, name, subs, subsidiaries, directory } = organization;
+  const { orgid, parent, logo, proofsQty, name, subs, subsidiaries, directory } = organization;
   const subOrganizations = _.isEmpty(subs) ? subsidiaries : subs;
   const isSub = !_.isEmpty(parent);
 
@@ -233,8 +233,8 @@ export default function OrgsGridItem(props) {
         }} className={classes.linkToProfileView}
         >
           {
-            img ? (
-              <CardMedia image={img.src} className={classes.itemImg}/>
+            logo ? (
+              <CardMedia image={logo} className={classes.itemImg}/>
             ) : error ? (
               <div className={classes.itemErrorImage}>
                 <ImageErrorIcon viewbow={'0 0 22 22'} className={classes.itemImgErrorIcon}/>

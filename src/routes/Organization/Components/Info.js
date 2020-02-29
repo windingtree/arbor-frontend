@@ -397,10 +397,10 @@ function Info(props) {
   const classes = styles();
   const [isOpen, toggleOpen] = useState(false);
   const {organization, canManage} = props;
-  const {orgid: id, proofsQty, avatar, name, parent, isWebsiteProved} = organization;
+  const { orgid: id, proofsQty, logo, name, parent, isWebsiteProved, directory } = organization;
+
   const isSub = !!parent;
   const type = isSub ? 'organizationalUnit' : 'legalEntity';
-  const orgidType = organization.orgidType;
   const address = _.get(organization, `jsonContent.${type}.${type === 'legalEntity' ? 'registeredAddress' : 'address'}`, {});
   const addressString = _.isEmpty(address) ? false : getAddressString(address);
   const contacts = _.get(organization, `jsonContent.${type}.contacts[0]`, {});
@@ -460,10 +460,10 @@ function Info(props) {
           <Grid item className={classes.orgImageContainer}>
             <div className={classes.orgImageWrapper}>
               {
-                avatar ? (
-                  <img className={classes.orgImage} src={avatar} alt={'Organization'}/>
+                logo ? (
+                  <img className={classes.orgImage} src={logo} alt={'Organization'}/>
                 ) : (
-                  <img className={classes.orgImage} src={setRandomDefaultImage(id, orgidType)} alt={'Organization'}/>
+                  <img className={classes.orgImage} src={setRandomDefaultImage(id, directory)} alt={'Organization'}/>
                 )
               }
             </div>

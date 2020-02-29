@@ -43,6 +43,10 @@ const styles = makeStyles({
     left: '50%',
     transform: 'translate(-50%, -50%) scale(0.5)',
   },
+  itemRealImg: {
+    maxWidth: '100%',
+    maxHeight: '100%'
+  },
   itemImgError: {
     background: colors.primary.accent,
   },
@@ -159,16 +163,9 @@ const styles = makeStyles({
 export default function OrgsListItem(props) {
   const classes = styles();
   const [isSubsOpen, toggleSubsOpen] = useState(false);
-  const {
-    canManage,
-    id,
-    img,
-    name,
-    proofsQty,
-    subs,
-    orgidType,
-    error
-  } = props;
+  const {canManage, organization, error} = props;
+  const {orgid: id, logo, name, proofsQty, subs, orgidType } = organization;
+
 
   return (
     <Card className={classes.item}
@@ -184,9 +181,9 @@ export default function OrgsListItem(props) {
               }
             }} className={classes.linkToProfileView}>
               {
-                img ? (
+                logo ? (
                   <div className={classes.itemImgWrapper}>
-                    <img alt={'avatar'} src={img.src} className={classes.itemImg}/>
+                    <img alt={'logo'} src={logo} className={classes.itemRealImg}/>
                   </div>
                 ) : error ? (
                   <div className={[classes.itemImgWrapper, classes.itemImgError].join(' ')}>
@@ -194,7 +191,7 @@ export default function OrgsListItem(props) {
                   </div>
                 ) : (
                   <div className={classes.itemImgWrapper}>
-                    <img src={setRandomDefaultImage(id, orgidType)} alt={'avatar'} className={classes.itemImg}/>
+                    <img src={setRandomDefaultImage(id, orgidType)} alt={'logo'} className={classes.itemImg}/>
                   </div>
                 )
               }

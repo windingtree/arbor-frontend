@@ -29,7 +29,7 @@ const allTodo = {
     description: 'It’s easy to prove that a website is linked to your organization profile via a DNS record or a text file in the root directory. '
   },
   ssl: {
-    step: 'Step 3. Submit LIF deposit',
+    step: 'Step 3. Submit Líf deposit',
     link: '/trust/lif-stake',
     state: {},
     icon: lifIcon,

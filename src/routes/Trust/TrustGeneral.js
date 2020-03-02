@@ -3,8 +3,6 @@ import {Container, Typography, Grid, Card, Button} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 import { fadeIn } from 'react-animations';
 import Radium, { StyleRoot } from 'radium';
-import VizSensor from 'react-visibility-sensor';
-import { throttle } from '../../utils/helpers';
 
 import trustTopIllustration from '../../assets/SvgComponents/trust-g-top.svg';
 import cardWebsiteIllustration from '../../assets/SvgComponents/trust-g-website.svg';
@@ -86,8 +84,8 @@ const styles = makeStyles({
     alignItems: 'center',
     height: '130px',
     backgroundColor: colors.primary.white,
-    borderRadius: 0,
-    boxShadow: 'none'
+    borderRadius: '6px',
+    boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)'
   },
   verificationContent: {
     display: 'flex'
@@ -97,7 +95,7 @@ const styles = makeStyles({
     fontWeight: '500'
   },
   verificationIcon: {
-    margin: '0 15px 0 15px',
+    margin: '7px 15px 0',
     alignSelf: 'flex-start'
   },
   paragraph: {
@@ -268,7 +266,6 @@ const animation = {
 
 function TrustGeneral() {
   const [activeStep, setActiveStep] = useState(0);
-  const [sensor, setSensorState] = useState(true);
   const classes = styles();
 
   const stepCards = [
@@ -414,39 +411,6 @@ function TrustGeneral() {
     setActiveStep(itemIndex);
   };
 
-  const cardContentWheelEvent = (isVisible) => {
-    const listener = throttle((event => handleWheelEvent(event)), 1200);
-    const handleWheelEvent = (event) => {
-      let scrollValue = event.deltaY;
-
-      if (scrollValue > 1) {
-        setActiveStep(prevState => {
-          if(prevState === 6) {
-            setSensorState(false);
-            document.body.style.overflow = 'auto';
-            document.removeEventListener('wheel', listener);
-            return prevState;
-          } else {
-            return prevState + 1;
-          }
-        });
-      } else {
-        setActiveStep(prevState => {
-          if(prevState === 0) {
-            return prevState;
-          } else {
-            return prevState - 1;
-          }
-        });
-      }
-    };
-
-    if (isVisible) {
-      document.body.style.overflow = 'hidden';
-      document.addEventListener('wheel', listener);
-    }
-  };
-
   function CardAnimatedContent(props) {
     const cardContent = <div style={animation.fadeIn}>{props.cardContent}</div>;
     const step = <span style={animation.fadeIn}>{props.step + 1}</span>;
@@ -558,30 +522,28 @@ function TrustGeneral() {
         </div>
       </Container>
       <Grid className={classes.stepsSectionWrapper}>
-        <VizSensor onChange={cardContentWheelEvent} minTopValue={300} active={sensor}>
-          <Container className={classes.stepsSection}>
-            <Grid style={{width: '50%'}}>
-              <Typography variant={'h3'} className={classes.blockTitle}>
-                How to achieve the ultimate trust level?
-              </Typography>
-              <Typography className={classes.paragraph}>
-                Arbor allows organizations all over the world to opt-in and verify themselves without involving a
-                third-party
-                intermediary.
-              </Typography>
-            </Grid>
-            <Grid className={classes.stepCardsWrapper} container justify={'space-between'}>
-              <CardAnimatedContent
-                step={activeStep}
-                cardContent={stepCards[activeStep].content}
-                icon={stepCards[activeStep].icon}
-                cardTitle={stepCards[activeStep].title}
-                trustPoints={stepCards[activeStep].trustPoints}
-              />
-              {renderStepControllers()}
-            </Grid>
-          </Container>
-        </VizSensor>
+        <Container className={classes.stepsSection}>
+          <Grid style={{width: '50%'}}>
+            <Typography variant={'h3'} className={classes.blockTitle}>
+              How to achieve the ultimate trust level?
+            </Typography>
+            <Typography className={classes.paragraph}>
+              Arbor allows organizations all over the world to opt-in and verify themselves without involving a
+              third-party
+              intermediary.
+            </Typography>
+          </Grid>
+          <Grid className={classes.stepCardsWrapper} container justify={'space-between'}>
+            <CardAnimatedContent
+              step={activeStep}
+              cardContent={stepCards[activeStep].content}
+              icon={stepCards[activeStep].icon}
+              cardTitle={stepCards[activeStep].title}
+              trustPoints={stepCards[activeStep].trustPoints}
+            />
+            {renderStepControllers()}
+          </Grid>
+        </Container>
       </Grid>
       <Grid className={classes.moreVerifiedSection}>
         <Container>

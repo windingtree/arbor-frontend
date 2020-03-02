@@ -15,7 +15,6 @@ import DefaultAirlineImage4 from '../assets/images/default-image-airline-4.svg';
 import DefaultAirlineImage5 from '../assets/images/default-image-airline-5.svg';
 import DefaultAirlineImage6 from '../assets/images/default-image-airline-6.svg';
 
-
 export const copyStrToClipboard = str => navigator.clipboard.writeText(str).then(resolve => resolve);
 export const strCenterEllipsis = str => str ? `${str.substr(0, 4)}...${str.substr(-4, 4)}` : '0xUNDEFINED';
 
@@ -33,16 +32,6 @@ export const setRandomDefaultImage = (orgid, directory) => {
     index = 0;
   }
   return arrayOfDefaultImages[index];
-};
-
-export const throttle = (fn, wait) => {
-  let time = Date.now();
-  return function(...args) {
-    if((time + wait - Date.now()) < 0) {
-      fn(...args);
-      time = Date.now();
-    }
-  }
 };
 
 export const idGenerator = () => {

@@ -8,8 +8,6 @@ import {Link} from 'react-router-dom';
 import {Container, Typography, Grid, Card, CardContent, Box, Hidden} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 import Ellipsis from 'react-dotdotdot';
-import VizSensor from 'react-visibility-sensor';
-import { throttle } from '../utils/helpers';
 //components
 import SearchComponent from '../components/SearchComponent';
 //icons && illustrations
@@ -399,7 +397,6 @@ function Home(props) {
   const trustClasses = trustStyles();
   const [searchValue, setSearchValue] = useState('');
   const [activeUseCase, setActiveUseCase] = useState(0);
-  const [sensor, setSensorState] = useState(true);
   const [activeSlide, setActiveSlide] = useState(0);
   const {directories} = props;
   const dirType = history.location.state && history.location.state.dirType;
@@ -461,40 +458,6 @@ function Home(props) {
       </StyleRoot>
     )
   }
-
-  const carouselWheelEvent = (isVisible) => {
-    const listener = throttle((event => handleWheelEvent(event)), 1200);
-    const handleWheelEvent = (event) => {
-      let scrollValue = event.deltaY;
-      console.log(scrollValue);
-
-      if (scrollValue > 1) {
-        setActiveSlide(prevState => {
-          if(prevState === 2) {
-            setSensorState(false);
-            document.body.style.overflow = 'auto';
-            document.removeEventListener('wheel', listener);
-            return prevState;
-          } else {
-            return prevState + 1;
-          }
-        });
-      } else {
-        setActiveSlide(prevState => {
-          if(prevState === 0) {
-            return prevState;
-          } else {
-            return prevState - 1;
-          }
-        });
-      }
-    };
-
-    if (isVisible) {
-      document.body.style.overflow = 'hidden';
-      document.addEventListener('wheel', listener);
-    }
-  };
 
   const sliderControllers = [
     'sign up',
@@ -585,103 +548,80 @@ function Home(props) {
         </Grid>
       </Container>
       {/* ================================================ BLOCK 03: Slider  =================================================*/}
-      <VizSensor onChange={carouselWheelEvent} minTopValue={300} active={sensor}>
-        <div className={classes.joinContainer} id='slider'>
-          <Container>
-            <div className={classes.contentWrapper}>
-              <Grid container spacing={5} direction="row-reverse" justify={'space-between'} alignItems={'center'}>
-                <Grid item xm={12} md={6} container justify={'space-between'} alignItems={'center'} className={classes.joinSliderContainer}>
-                  <Grid item xm={12} md={6}>
-                    <div className={classes.joinSliderBase}>
-                      <div className={classes.joinSliderBaseHeader}>
-                        <Logo viewBox={'0 0 90 32'} className={classes.joinSliderBaseLogo}/>
-                        <HomeIcon width={'16px'} height={'16px'} viewBox={'0 0 16 16'} className={classes.joinSliderBaseHomeIcon}/>
-                      </div>
-                      <div className={classes.joinSliderBaseLine}/>
-                      <div className={classes.carouselWrapper}>
-                        <Hidden mdDown>
-                          <SliderAnimatedImage image={sliderImages[activeSlide]}/>
-                        </Hidden>
-                        <Hidden lgUp>
-                          <img src={CarouselDirectoryIllustration} alt={'illustration'} className={classes.carouselImage}/>
-                        </Hidden>
-                      </div>
+      <div className={classes.joinContainer} id='slider'>
+        <Container>
+          <div className={classes.contentWrapper}>
+            <Grid container spacing={5} direction="row-reverse" justify={'space-between'} alignItems={'center'}>
+              <Grid item xm={12} md={6} container justify={'space-between'} alignItems={'center'} className={classes.joinSliderContainer}>
+                <Grid item xm={12} md={6}>
+                  <div className={classes.joinSliderBase}>
+                    <div className={classes.joinSliderBaseHeader}>
+                      <Logo viewBox={'0 0 90 32'} className={classes.joinSliderBaseLogo}/>
+                      <HomeIcon width={'16px'} height={'16px'} viewBox={'0 0 16 16'} className={classes.joinSliderBaseHomeIcon}/>
                     </div>
-                  </Grid>
-                  <Grid item className={classes.joinSliderControllersContainer}>
-                    {
-                      renderSliderControllers()
-                    }
-                  </Grid>
-                </Grid>
-                <Grid item xm={12} md={6} className={classes.joinTextContainer}>
-                  <div className={classes.blockTitleWrapper}>
-                    <Typography variant={'h3'} className={classes.blockTitle}>
-                      Join the registry of
-                      trusted organizations
-                    </Typography>
-                    <Typography variant={'subtitle1'} className={classes.blockSubtitle}>
-                      Find new partners for your business and get discovered by potential clients.
-                    </Typography>
-                    <ul style={{marginTop: '42px'}}>
-                      <li className={trustClasses.howTextListItem}>
-                        <span className={trustClasses.howListDot}/>
-                        <Typography className={trustClasses.howListTexts}>
-                          Register your organization and get a unique identifier
-                        </Typography>
-                      </li>
-                      <li><img className={trustClasses.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
-                      <li className={trustClasses.howTextListItem}><span
-                        className={trustClasses.howListDot}/>
-                        <Typography className={trustClasses.howListTexts}>
-                          Add information on your business activities
-                        </Typography>
-                      </li>
-                      <li><img className={trustClasses.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
-                      <li className={trustClasses.howTextListItem}>
-                        <span className={trustClasses.howListDot}/>
-                        <Typography
-                          className={trustClasses.howListTexts}>
-                          Verify your data to gain
-                          <Link className={classes.trustLink} to={'/trust/general'}> trust points</Link>
-                        </Typography>
-                      </li>
-                      <li><img className={trustClasses.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
-                      <li className={trustClasses.howTextListItem}>
-                        <span className={trustClasses.howListDot}/>
-                        <Typography className={trustClasses.howListTexts}>
-                          Join one of the directories to be easily found
-                        </Typography>
-                      </li>
-                    </ul>
+                    <div className={classes.joinSliderBaseLine}/>
+                    <div className={classes.carouselWrapper}>
+                      <Hidden mdDown>
+                        <SliderAnimatedImage image={sliderImages[activeSlide]}/>
+                      </Hidden>
+                      <Hidden lgUp>
+                        <img src={CarouselDirectoryIllustration} alt={'illustration'} className={classes.carouselImage}/>
+                      </Hidden>
+                    </div>
                   </div>
                 </Grid>
+                <Grid item className={classes.joinSliderControllersContainer}>
+                  {
+                    renderSliderControllers()
+                  }
+                </Grid>
               </Grid>
-            </div>
-          </Container>
-        </div>
-      </VizSensor>
-      {/* ================================================   GRID   =================================================*/}
-      {/*<Container>
-        <Grid container spacing={5}>
-          <Grid item xs={1}><div className={classes.bgRed}>1</div></Grid>
-          <Grid item xs={1}><div className={classes.bgRed}>2</div></Grid>
-          <Grid item xs={1}><div className={classes.bgRed}>3</div></Grid>
-          <Grid item xs={1}><div className={classes.bgRed}>4</div></Grid>
-          <Grid item xs={1}><div className={classes.bgRed}>5</div></Grid>
-          <Grid item xs={1}><div className={classes.bgRed}>6</div></Grid>
-          <Grid item xs={1}><div className={classes.bgRed}>7</div></Grid>
-          <Grid item xs={1}><div className={classes.bgRed}>8</div></Grid>
-          <Grid item xs={1}><div className={classes.bgRed}>9</div></Grid>
-          <Grid item xs={1}><div className={classes.bgRed}>10</div></Grid>
-          <Grid item xs={1}><div className={classes.bgRed}>11</div></Grid>
-          <Grid item xs={1}><div className={classes.bgRed}>12</div></Grid>
-        </Grid>
-        <Grid container spacing={5}>
-          <Grid item xs={12} md={6}><div className={classes.bgRed}>1</div></Grid>
-          <Grid item xs={12} md={6}><div className={classes.bgRed}>2</div></Grid>
-        </Grid>
-      </Container>*/}
+              <Grid item xm={12} md={6} className={classes.joinTextContainer}>
+                <div className={classes.blockTitleWrapper}>
+                  <Typography variant={'h3'} className={classes.blockTitle}>
+                    Join the registry of
+                    trusted organizations
+                  </Typography>
+                  <Typography variant={'subtitle1'} className={classes.blockSubtitle}>
+                    Find new partners for your business and get discovered by potential clients.
+                  </Typography>
+                  <ul style={{marginTop: '42px'}}>
+                    <li className={trustClasses.howTextListItem}>
+                      <span className={trustClasses.howListDot}/>
+                      <Typography className={trustClasses.howListTexts}>
+                        Register your organization and get a unique identifier
+                      </Typography>
+                    </li>
+                    <li><img className={trustClasses.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
+                    <li className={trustClasses.howTextListItem}><span
+                      className={trustClasses.howListDot}/>
+                      <Typography className={trustClasses.howListTexts}>
+                        Add information on your business activities
+                      </Typography>
+                    </li>
+                    <li><img className={trustClasses.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
+                    <li className={trustClasses.howTextListItem}>
+                      <span className={trustClasses.howListDot}/>
+                      <Typography
+                        className={trustClasses.howListTexts}>
+                        Verify your data to gain
+                        <Link className={classes.trustLink} to={'/trust/general'}> trust points</Link>
+                      </Typography>
+                    </li>
+                    <li><img className={trustClasses.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></li>
+                    <li className={trustClasses.howTextListItem}>
+                      <span className={trustClasses.howListDot}/>
+                      <Typography className={trustClasses.howListTexts}>
+                        Join one of the directories to be easily found
+                      </Typography>
+                    </li>
+                  </ul>
+                </div>
+              </Grid>
+            </Grid>
+          </div>
+        </Container>
+      </div>
       {/* ================================================ BLOCK 04: We works =================================================*/}
       <Container>
         <div className={classes.contentWrapper}>

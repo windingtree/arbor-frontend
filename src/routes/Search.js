@@ -254,7 +254,7 @@ function Search(props) {
     directories: {
       'hotel': 'Hotels',
       'airline': 'Airlines',
-      'insurance': 'Insurance',
+      'insurance': 'Insurance companies',
       'ota': 'Travel agencies'
     },
     countries

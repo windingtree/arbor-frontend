@@ -52,7 +52,6 @@ const styles = makeStyles({
     fontSize: '32px',
     fontWeight: 500,
     color: colors.greyScale.darkest,
-    textTransform: 'capitalize',
   },
   gridListWrapper: {
     paddingTop: '30px'
@@ -155,6 +154,16 @@ function Directory(props) {
     setCountryFilterValue(data.country);
   };
 
+  const directoryTitle = () => {
+    if(currentDirectory === 'ota') {
+      return 'Travel agencies'
+    } else if(currentDirectory === 'insurance') {
+      return 'Insurance companies'
+    } else {
+      return `${currentDirectory.charAt(0).toUpperCase() + currentDirectory.slice(1)}s`;
+    }
+  };
+
   return (
     <div>
       <Container>
@@ -171,7 +180,7 @@ function Directory(props) {
         <div className={classes.headingWrapper}>
           <div className={classes.titleWrapper}>
             <Typography variant={'h2'} className={classes.directoryTitle}>
-              {currentDirectory === 'ota' ? 'Travel agencies' : currentDirectory === 'insurance' ? 'Insurance companies' : currentDirectory + 's'}
+              {directoryTitle()}
             </Typography>
           </div>
           <div className={classes.filterWrapper}>

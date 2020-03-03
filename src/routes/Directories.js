@@ -180,12 +180,12 @@ Directories.defaultProps = {
       searchReq: 'airline'
     },
     {
-      name: 'insurance',
+      name: 'insurance companies',
       image: InsuranceIllustration,
       searchReq: 'insurance'
     },
     {
-      name: 'travel-agencies',
+      name: 'travel agencies',
       image: TravelIllustration,
       searchReq: 'ota'
     },

@@ -773,22 +773,22 @@ function Home(props) {
 Home.defaultProps = {
   directories: [
     {
-      name: 'hotels',
+      name: 'Hotels',
       image: HotelIllustration,
       searchReq: 'hotel'
     },
     {
-      name: 'airlines',
+      name: 'Airlines',
       image: AirlineIllustration,
       searchReq: 'airline'
     },
     {
-      name: 'insurance',
+      name: 'Insurance companies',
       image: InsuranceIllustration,
       searchReq: 'insurance'
     },
     {
-      name: 'travel-agencies',
+      name: 'Travel agencies',
       image: TravelIllustration,
       searchReq: 'ota'
     },

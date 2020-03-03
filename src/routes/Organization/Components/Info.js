@@ -424,6 +424,11 @@ function Info(props) {
     })
   });
 
+  //check if website valid
+  const website = () => {
+    let reg = /^((https?|ftp|smtp):\/\/)?(www.)?[a-z0-9]+\.[a-z]+(\/[a-zA-Z0-9#]+\/?)*$/;
+    return reg.test(contacts.website) ? contacts.website : `https://${contacts.website}`
+  };
 
   const icon = (socialNetwork) => {
     switch (socialNetwork) {
@@ -522,7 +527,7 @@ function Info(props) {
               <div className={classes.orgInfoFieldWrapper} style={{width: '100%'}}>
                 <Typography variant={'caption'} className={classes.orgInfoFieldTitle} noWrap>
                   {'Website: '}
-                  <a href={contacts.website} target={'_blank'} className={classes.orgInfoField}>{contacts.website}</a>
+                  <a href={website()} target={'_blank'} className={classes.orgInfoField}>{contacts.website}</a>
                   {isWebsiteProved &&
                   <TrustLevelIcon className={classes.iconTrustLevel} style={{verticalAlign: 'text-bottom'}}/>}
                 </Typography>

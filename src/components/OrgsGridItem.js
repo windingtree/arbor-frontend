@@ -21,13 +21,13 @@ const styles = makeStyles({
     width: '100%',
     height: '287px',
     borderRadius: '8px',
-    border: `1px solid ${colors.greyScale.lightest}`,
+    border: `1px solid ${colors.greyScale.lighter}`,
     boxSizing: 'border-box',
-    boxShadow: '0 0 20px rgba(188, 194, 211, 0.25), 0px 0px 2px rgba(188, 194, 211, 0.25)',
-  },
-  itemSubOrg: {
-    borderColor: colors.greyScale.lighter,
-    boxShadow: '0px 4px 12px rgba(10, 23, 51, 0.04), 0 4px 12px rgba(10, 23, 51, 0.04)',
+    boxShadow: 'none',
+    transition: 'box-shadow .3s ease',
+    '&:hover': {
+      boxShadow: '0px 4px 12px rgba(10, 23, 51, 0.04), 0 4px 12px rgba(10, 23, 51, 0.04)',
+    }
   },
   linkToProfileView: {
     textTransform: 'none',
@@ -225,7 +225,7 @@ export default function OrgsGridItem(props) {
   const isSub = !_.isEmpty(parent);
 
   return (
-    <Card className={isSub ? [classes.item, classes.itemSubOrg].join(' ') : classes.item} style={{ backgroundColor: error ? colors.secondary.error : colors.primary.white }}>
+    <Card className={classes.item}>
       <CardContent style={{ padding: '12px' }}>
         <Link to={{
           pathname: `/${canManage ? 'my-organizations' : 'organization'}/${orgid}`,

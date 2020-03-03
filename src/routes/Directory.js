@@ -171,7 +171,7 @@ function Directory(props) {
         <div className={classes.headingWrapper}>
           <div className={classes.titleWrapper}>
             <Typography variant={'h2'} className={classes.directoryTitle}>
-              {currentDirectory === 'ota' ? 'Travel agencies' : currentDirectory + 's'}
+              {currentDirectory === 'ota' ? 'Travel agencies' : currentDirectory === 'insurance' ? 'Insurance companies' : currentDirectory + 's'}
             </Typography>
           </div>
           <div className={classes.filterWrapper}>

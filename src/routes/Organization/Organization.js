@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import { fetchOrganizationInfo, fetchOrganizationSubsInfo, selectItem, selectSubs } from '../../ducks/fetchOrganizationInfo';
+import { rewriteOrgidJson } from '../../ducks/wizard';
 import history from '../../redux/history';
 import TopNavigation from "./Components/TopNavigation";
 import Agents from "./Components/Agents";
@@ -12,15 +13,18 @@ import SubOrganizations from "./Components/SubOrganizations";
 function Organization(props) {
   const id = history.location.state ? history.location.state.id : history.location.pathname.split('/')[2];
   const canManage = history.location.pathname !== `/organization/${id}`;
+  const { organization, subs } = props;
+  const subsidiaries = _.get(organization, 'subsidiaries', []);
+  const jsonContent = organization.jsonContent;
+  const todos = getTodo(organization);
 
   useEffect(() => {
     props.fetchOrganizationInfo({ id });
   }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { organization, subs } = props;
-  organization.orgid = id;
-  const todos = getTodo(organization);
-  let subsidiaries = _.get(organization, 'subsidiaries', []);
+  useEffect(() => {
+    jsonContent !== undefined && props.rewriteOrgidJson(_.merge({}, jsonContent));
+  }, [jsonContent]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     subsidiaries && subsidiaries.length && props.fetchOrganizationSubsInfo({ id });
@@ -37,13 +41,6 @@ function Organization(props) {
   )
 }
 
-Organization.defaultProps = {
-  organization: {
-    subsidiaries: []
-  },
-  subs: []
-};
-
 const mapStateToProps = state => {
   return {
     organization: selectItem(state),
@@ -53,7 +50,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
   fetchOrganizationInfo,
-  fetchOrganizationSubsInfo
+  fetchOrganizationSubsInfo,
+  rewriteOrgidJson
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Organization);

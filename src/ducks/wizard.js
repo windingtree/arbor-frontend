@@ -18,6 +18,14 @@ const EXTEND_ORGID_JSON_REQUEST = `${prefix}/EXTEND_ORGID_JSON_REQUEST`;
 const EXTEND_ORGID_JSON_SUCCESS = `${prefix}/EXTEND_ORGID_JSON_SUCCESS`;
 const EXTEND_ORGID_JSON_FAILURE = `${prefix}/EXTEND_ORGID_JSON_FAILURE`;
 
+const ADD_AGENT_KEY_REQUEST = `${prefix}/ADD_AGENT_KEY_REQUEST`;
+const ADD_AGENT_KEY_SUCCESS = `${prefix}/ADD_AGENT_KEY_SUCCESS`;
+const ADD_AGENT_KEY_FAILURE = `${prefix}/ADD_AGENT_KEY_FAILURE`;
+
+const REMOVE_AGENT_KEY_REQUEST = `${prefix}/REMOVE_AGENT_KEY_REQUEST`;
+const REMOVE_AGENT_KEY_SUCCESS = `${prefix}/REMOVE_AGENT_KEY_SUCCESS`;
+const REMOVE_AGENT_KEY_FAILURE = `${prefix}/REMOVE_AGENT_KEY_FAILURE`;
+
 const SAVE_MEDIA_TO_ARBOR_REQUEST = `${prefix}/SAVE_MEDIA_TO_ARBOR_REQUEST`;
 const SAVE_MEDIA_TO_ARBOR_SUCCESS = `${prefix}/SAVE_MEDIA_TO_ARBOR_SUCCESS`;
 const SAVE_MEDIA_TO_ARBOR_FAILURE = `${prefix}/SAVE_MEDIA_TO_ARBOR_FAILURE`;
@@ -71,12 +79,17 @@ const initialState = {
 export default function reducer( state = initialState, action) {
   const { type, payload, error } = action;
 
+  const statePublicKey = _.get(state.orgidJson, 'publicKey', []);
+  const publicKey = statePublicKey.slice();
+
   switch(type) {
     /////////////
     // REQUEST //
     /////////////
     case REWRITE_ORGID_JSON_REQUEST:
     case EXTEND_ORGID_JSON_REQUEST:
+    case ADD_AGENT_KEY_REQUEST:
+    case REMOVE_AGENT_KEY_REQUEST:
     case SAVE_MEDIA_TO_ARBOR_REQUEST:
     case SAVE_ORGID_JSON_TO_ARBOR_REQUEST:
     case SAVE_ORGID_JSON_URI_REQUEST:
@@ -123,6 +136,34 @@ export default function reducer( state = initialState, action) {
         orgidHash: `0x${keccak256(JSON.stringify(payload, null, 2))}`,
         error: null
       });
+    case ADD_AGENT_KEY_SUCCESS:
+      publicKey.push(payload);
+      const updatedJsonWithAgentKey = _.merge({}, state.orgidJson, {
+        ...state.orgidJson,
+        publicKey
+      });
+
+      return Object.assign({}, state, {
+        isFetching: false,
+        isFetched: true,
+        orgidJson: updatedJsonWithAgentKey,
+        orgidHash: `0x${keccak256(JSON.stringify(updatedJsonWithAgentKey, null, 2))}`,
+        error: null
+      });
+    case REMOVE_AGENT_KEY_SUCCESS:
+      publicKey.splice(payload, 1);
+      const updatedJsonWithoutAgentKey = Object.assign({}, state.orgidJson, {
+        ...state.orgidJson,
+        publicKey
+      });
+
+      return Object.assign({}, state, {
+        isFetching: false,
+        isFetched: true,
+        orgidJson: updatedJsonWithoutAgentKey,
+        orgidHash: `0x${keccak256(JSON.stringify(updatedJsonWithoutAgentKey, null, 2))}`,
+        error: null
+      });
     case SAVE_MEDIA_TO_ARBOR_SUCCESS:
       const orgidJsonUpdates = _.omitBy(_.merge({}, state.orgidJson, {
         updated: new Date().toJSON(),
@@ -166,6 +207,7 @@ export default function reducer( state = initialState, action) {
     /////////////
     case REWRITE_ORGID_JSON_FAILURE:
     case EXTEND_ORGID_JSON_FAILURE:
+    case ADD_AGENT_KEY_FAILURE:
     case SAVE_MEDIA_TO_ARBOR_FAILURE:
     case SAVE_ORGID_JSON_URI_FAILURE:
     case SAVE_ORGID_JSON_TO_ARBOR_FAILURE:
@@ -262,6 +304,52 @@ function extendOrgidJsonSuccess(payload) {
 function extendOrgidJsonFailure(error) {
   return {
     type: EXTEND_ORGID_JSON_FAILURE,
+    error
+  }
+}
+//endregion
+
+//region == [ACTIONS: addAgentKey] =================================================================================
+export function addAgentKey(payload) {
+  return {
+    type: ADD_AGENT_KEY_REQUEST,
+    payload
+  }
+}
+
+function addAgentKeySuccess(payload) {
+  return {
+    type: ADD_AGENT_KEY_SUCCESS,
+    payload
+  }
+}
+
+function addAgentKeyFailure(error) {
+  return {
+    type: ADD_AGENT_KEY_FAILURE,
+    error
+  }
+}
+//endregion
+
+//region == [ACTIONS: removeAgentKey] =================================================================================
+export function removeAgentKey(payload) {
+  return {
+    type: REMOVE_AGENT_KEY_REQUEST,
+    payload
+  }
+}
+
+function removeAgentKeySuccess(payload) {
+  return {
+    type: REMOVE_AGENT_KEY_SUCCESS,
+    payload
+  }
+}
+
+function removeAgentKeyFailure(error) {
+  return {
+    type: REMOVE_AGENT_KEY_FAILURE,
     error
   }
 }
@@ -459,6 +547,26 @@ function* extendOrgidJsonSaga({payload}) {
   }
 }
 
+function* addAgentKeyToOrgidJsonSaga({payload}) {
+  try {
+    const result = yield call((data) => data, payload);
+
+    yield put(addAgentKeySuccess(result));
+  } catch(error) {
+    yield put(addAgentKeyFailure(error));
+  }
+}
+
+function* removeAgentKeyFromOrgidJsonSaga({payload}) {
+  try {
+    const result = yield call((data) => data, payload);
+
+    yield put(removeAgentKeySuccess(result));
+  } catch(error) {
+    yield put(removeAgentKeyFailure(error));
+  }
+}
+
 function* saveMediaToArborSaga({payload}) {
   try {
     if(payload.file === null) {
@@ -541,6 +649,8 @@ export const saga = function* () {
   return yield all([
     takeEvery(REWRITE_ORGID_JSON_REQUEST, rewriteOrgidJsonSaga),
     takeEvery(EXTEND_ORGID_JSON_REQUEST, extendOrgidJsonSaga),
+    takeEvery(ADD_AGENT_KEY_REQUEST, addAgentKeyToOrgidJsonSaga),
+    takeEvery(REMOVE_AGENT_KEY_REQUEST, removeAgentKeyFromOrgidJsonSaga),
     takeEvery(SAVE_MEDIA_TO_ARBOR_REQUEST, saveMediaToArborSaga),
     takeEvery(SAVE_ORGID_JSON_TO_ARBOR_REQUEST, saveOrgidJsonToArborSaga),
     takeEvery(SAVE_ORGID_JSON_URI_REQUEST, saveOrgidUriSaga),
@@ -611,7 +721,7 @@ function ApiSendCreateOrganizationalUnit(data) {
     orgidContract.createSubsidiary(
       orgidParent, orgidId, address /*subsidiaryDirector*/, orgidUri, orgidHash,
       { from: address, gas: 500000, gasPrice: getGasPrice() },
-      (err, data) => { if(err) return reject(err);resolve(data); }
+      (err, data) => { if(err) return reject(err); resolve(data); }
     );
   });
 }

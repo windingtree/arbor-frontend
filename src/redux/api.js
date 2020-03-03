@@ -5,11 +5,6 @@ export function* callApi(directory, method = 'GET', options) {
     let responsePromise = yield fetch(`${API_URI}/${directory}`, {
       method,
       ...options
-      // body: JSON.stringify({
-      //   data
-      // }),
-      // headers: { 'Content-Type': 'application/json', ...headers },
-      // method: `${method}`,
     });
 
     responsePromise = yield responsePromise.json();

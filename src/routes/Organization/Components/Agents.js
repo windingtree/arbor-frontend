@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { connect } from 'react-redux';
-import { extendOrgidJson, resetTransactionStatus, selectPendingState, selectSuccessState } from '../../../ducks/wizard';
+import { extendOrgidJson, addAgentKey, removeAgentKey, resetTransactionStatus, selectPendingState, selectSuccessState } from '../../../ducks/wizard';
 import {Formik} from 'formik';
 import _ from "lodash";
 import {
@@ -168,6 +168,7 @@ function Agents(props) {
   const [isModalOpen, toggleModalOpenState] = useState(false);
   const [isTooltipOpen, setTooltipOpen] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
+  const [agentIndexToRemove, setAgentIndexToRemove] = useState(null);
   const { organization , pendingTransaction, successTransaction } = props;
   const { owner } = organization;
   const agents = _.get(organization, `jsonContent.publicKey`, []);
@@ -202,96 +203,113 @@ function Agents(props) {
     const content = wizardConfig[stepIndex];
     const { type } = content;
 
+    const deleteAgent = () => {
+      props.removeAgentKey(agentIndexToRemove);
+      handleNext();
+    };
+
     switch (type) {
       case 'step_hosting': return <WizardStepHosting data={content} action={'edit'} handleNext={handleNext} key={stepIndex} index={stepIndex} stepTitle={false}/>;
       case 'step_metamask': return <WizardStepMetaMask data={content} action={'edit'} handleNext={handleNext} key={stepIndex} index={stepIndex} stepTitle={false}/>;
       default: return (
         <>
-          <Typography variant={'caption'} className={classes.dialogTitle}>Add agent key</Typography>
+          <Typography variant={'caption'} className={classes.dialogTitle}>{ agentIndexToRemove !== null ? 'Remove' : 'Add' } agent key</Typography>
           <div className={classes.dialogSubtitleWrapper}>
-            <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>To add an agent, enter its key and  write a comment, then confirm the transaction in MetaMask. </Typography>
+            <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>{ agentIndexToRemove !== null ? 'To remove an agent' : 'To add an agent, enter its key and  write a comment, then' } confirm the transaction in MetaMask. </Typography>
           </div>
-          <Formik
-            initialValues={{ key: '', note: '' }}
-            onSubmit={(values) => {
-              props.extendOrgidJson({ publicKey: [{ key: values.key, note: values.note }] });
-              handleNext();
-            }}
-          >
-            {({
-                values,
-                errors,
-                touched,
-                handleChange,
-                handleBlur,
-                handleSubmit,
-                isSubmitting
-              }) => (
-              <form onSubmit={handleSubmit}>
-                <div className={classes.inputFieldWrapper}>
-                  <TextField
-                    name={'key'}
-                    autoComplete={'none'}
-                    variant={'filled'}
-                    label={'Enter Agent Key'}
-                    fullWidth
-                    values={values.key}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    helperText={errors && touched && errors.message}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position={'end'}>
-                          <ClickAwayListener
-                            onClickAway={handleTooltipClose}
-                          >
-                            <div>
-                              <LightTooltip
-                                PopperProps={{
-                                  disablePortal: true,
-                                }}
-                                onClose={handleTooltipClose}
-                                open={isTooltipOpen}
-                                disableFocusListener
-                                disableHoverListener
-                                disableTouchListener
-                                title={'Key copied to clipboard'}
-                                placement={'top'}
+          {
+            agentIndexToRemove !== null ? (
+              <div className={classes.dialogButtonWrapper}>
+                <Button className={classes.dialogButton} onClick={deleteAgent}>
+                  <Typography variant={'caption'} className={classes.dialogButtonLabel}>
+                    Confirm in MetaMask
+                  </Typography>
+                </Button>
+              </div>
+            ) : (
+              <Formik
+                initialValues={{ key: '', note: '' }}
+                onSubmit={(values) => {
+                  props.addAgentKey(values);
+                  handleNext();
+                }}
+              >
+                {({
+                    values,
+                    errors,
+                    touched,
+                    handleChange,
+                    handleBlur,
+                    handleSubmit,
+                    isSubmitting
+                  }) => (
+                  <form onSubmit={handleSubmit}>
+                    <div className={classes.inputFieldWrapper}>
+                      <TextField
+                        name={'key'}
+                        autoComplete={'none'}
+                        variant={'filled'}
+                        label={'Enter Agent Key'}
+                        fullWidth
+                        values={values.key}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        helperText={errors && touched && errors.message}
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position={'end'}>
+                              <ClickAwayListener
+                                onClickAway={handleTooltipClose}
                               >
-                                <Button onClick={() => copyIdWithFeedback(values.key)} className={classes.inputCopyKeyButton}>
-                                  <CopyIcon viewBox={'0 0 16 16'} className={classes.iconCopy}/>
-                                </Button>
-                              </LightTooltip>
-                            </div>
-                          </ClickAwayListener>
-                        </InputAdornment>
-                      )
-                    }}
-                  />
-                </div>
-                <div className={classes.inputFieldWrapper}>
-                  <TextField
-                    name={'note'}
-                    autoComplete={'none'}
-                    variant={'filled'}
-                    label={'Write a comment for this agent'}
-                    fullWidth
-                    values={values.note}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    helperText={errors && touched && errors.message}
-                  />
-                </div>
-                <div className={classes.dialogButtonWrapper}>
-                  <Button type={'submit'} disabled={isSubmitting} className={classes.dialogButton}>
-                    <Typography variant={'caption'} className={classes.dialogButtonLabel}>
-                      Confirm in MetaMask
-                    </Typography>
-                  </Button>
-                </div>
-              </form>
-            )}
-          </Formik>
+                                <div>
+                                  <LightTooltip
+                                    PopperProps={{
+                                      disablePortal: true,
+                                    }}
+                                    onClose={handleTooltipClose}
+                                    open={isTooltipOpen}
+                                    disableFocusListener
+                                    disableHoverListener
+                                    disableTouchListener
+                                    title={'Key copied to clipboard'}
+                                    placement={'top'}
+                                  >
+                                    <Button onClick={() => copyIdWithFeedback(values.key)} className={classes.inputCopyKeyButton}>
+                                      <CopyIcon viewBox={'0 0 16 16'} className={classes.iconCopy}/>
+                                    </Button>
+                                  </LightTooltip>
+                                </div>
+                              </ClickAwayListener>
+                            </InputAdornment>
+                          )
+                        }}
+                      />
+                    </div>
+                    <div className={classes.inputFieldWrapper}>
+                      <TextField
+                        name={'note'}
+                        autoComplete={'none'}
+                        variant={'filled'}
+                        label={'Write a comment for this agent'}
+                        fullWidth
+                        values={values.note}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        helperText={errors && touched && errors.message}
+                      />
+                    </div>
+                    <div className={classes.dialogButtonWrapper}>
+                      <Button type={'submit'} disabled={isSubmitting} className={classes.dialogButton}>
+                        <Typography variant={'caption'} className={classes.dialogButtonLabel}>
+                          Confirm in MetaMask
+                        </Typography>
+                      </Button>
+                    </div>
+                  </form>
+                )}
+              </Formik>
+            )
+          }
         </>
       );
     }
@@ -299,6 +317,11 @@ function Agents(props) {
 
   const handleNext = () => {
     setActiveStep(prevActiveStep => prevActiveStep + 1);
+  };
+
+  const handleDeleteAgent = async (agentIndex) => {
+    await setAgentIndexToRemove(agentIndex);
+    handleOpenModal();
   };
 
   const addAgentKeyDialog = () => {
@@ -317,9 +340,9 @@ function Agents(props) {
                 dialogStepsContent(activeStep)
               ) : (
                 <>
-                  <Typography variant={'caption'} className={classes.dialogTitle}>Agent successfully created</Typography>
+                  <Typography variant={'caption'} className={classes.dialogTitle}>Agent successfully { agentIndexToRemove !== null ? 'removed' : 'created' }</Typography>
                   <div className={classes.dialogSubtitleWrapper}>
-                    <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>You new agent now has the rights to act on behalf of your organization. You can add more agents or delete agent keys.</Typography>
+                    <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>{ agentIndexToRemove !== null ? 'Now that agent has no' : 'Your new agent now has the' } rights to act on behalf of your organization. You can add more agents or delete agent keys.</Typography>
                   </div>
                   <div className={classes.dialogButtonWrapper}>
                     <Button onClick={handleCloseModal} className={classes.dialogButton}>
@@ -380,17 +403,17 @@ function Agents(props) {
                           <Grid container justify={'space-between'} alignItems={'center'}>
                             <Grid item xs={2}>
                               <CopyIdComponent
-                                id={agent.id}
+                                id={agent.key}
                                 leftElement={(<VpnKeyIcon className={classes.keyIcon}/>)}
                                 fontSize={'14px'}
                                 color={colors.greyScale.dark}
                               />
                             </Grid>
                             <Grid item xs={8}>
-                              <Typography>{agent.comment}</Typography>
+                              <Typography>{agent.note}</Typography>
                             </Grid>
                             <Grid item xs={2}>
-                              <Button onClick={() => console.log('delete agent')} className={classes.deleteAgentButton}>
+                              <Button onClick={() => handleDeleteAgent(index)} className={classes.deleteAgentButton}>
                                 <Typography variant={'inherit'}>Delete agent key</Typography>
                               </Button>
                             </Grid>
@@ -413,12 +436,6 @@ function Agents(props) {
   )
 }
 
-Agents.defaultProps = {
-  success: false,
-  isFetched: false,
-  isFetching: false
-};
-
 const mapStateToProps = state => {
   return {
     pendingTransaction: selectPendingState(state),
@@ -428,6 +445,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
   extendOrgidJson,
+  addAgentKey,
+  removeAgentKey,
   resetTransactionStatus
 };
 

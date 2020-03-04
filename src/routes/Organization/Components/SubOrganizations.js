@@ -1,10 +1,13 @@
-import { makeStyles } from "@material-ui/core/styles";
-import colors from "../../../styles/colors";
+import React from "react";
+
+import { makeStyles,  } from "@material-ui/core/styles";
 import { Container, Grid, Typography } from "@material-ui/core";
+
 import CardsGridList from "../../../components/CardsGridList";
 import OrgsGridItem from "../../../components/OrgsGridItem";
 import AddSubOrgCard from "../../../components/AddSubOrgCard";
-import React from "react";
+
+import colors from "../../../styles/colors";
 
 const styles = makeStyles({
   subsWrapper: {
@@ -36,7 +39,7 @@ const styles = makeStyles({
 
 function SubOrganizations(props) {
   const classes = styles();
-  const { organization: { orgid, name }, subs, canManage } = props;
+  const {organization: {orgid, name}, subs, canManage} = props;
 
   return (
     <div className={classes.subsWrapper}>
@@ -56,7 +59,7 @@ function SubOrganizations(props) {
           }
           {
             canManage && (
-              <Grid item style={{ width: '264px' }}>
+              <Grid item style={{width: '264px'}}>
                 <AddSubOrgCard parent={{orgid, name}}/>
               </Grid>
             )

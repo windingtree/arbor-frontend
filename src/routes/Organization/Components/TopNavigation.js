@@ -4,7 +4,9 @@ import _ from 'lodash';
 import {makeStyles, withStyles} from '@material-ui/core/styles';
 import {Box, Button, Container, Hidden, Tooltip, Typography} from "@material-ui/core";
 import history from "../../../redux/history";
-import {ArrowLeftIcon, EyeIcon, EditIcon, InfoIcon, TrustLevelIcon, StageIcon} from '../../../assets/SvgComponents';
+import {ArrowLeftIcon, EyeIcon, EditIcon, InfoIcon, TrustLevelIcon, TwitterIcon, LifIcon} from '../../../assets/SvgComponents';
+import SSLIcon from '../../../assets/SvgComponents/trust-ssl-icon.svg';
+import DomainIcon from '../../../assets/SvgComponents/trust-domain-icon.svg';
 import colors from '../../../styles/colors';
 
 const LightTooltip = withStyles({
@@ -45,13 +47,12 @@ const styles = makeStyles({
     padding: '0 22px'
   },
   itemStage: {
-    backgroundColor: colors.secondary.green,
-    borderColor: colors.secondary.green,
     color: colors.primary.white,
-    width: '270px',
+    width: '266px',
     boxSizing: 'border-box',
     marginLeft: '11px',
-    padding: '0 26px'
+    padding: '0 26px',
+    cursor: 'pointer'
   },
   tooltipRef: {
     backgroundColor: 'transparent',
@@ -145,6 +146,20 @@ function TopNavigation(props) {
   const orgidType = _.get(organization, 'orgidType', '') === 'legalEntity' ? 'legalEntity' : 'organizationalUnit';
   const editState = {action: 'edit', type: orgidType, id, jsonContent};
 
+  const trustIcon = () => {
+    if(todos[0].step.includes('1')) return <img src={DomainIcon} alt={'website'} className={classes.stageIcon}/>;
+    if(todos[0].step.includes('2')) return <TwitterIcon className={classes.stageIcon}/>;
+    if(todos[0].step.includes('3')) return <img src={SSLIcon} alt={'ssl'} className={classes.stageIcon}/>;
+    if(todos[0].step.includes('4')) return <LifIcon viewBox={'0 0 20 20'} className={classes.stageIcon}/>;
+  };
+
+  const stepBaseBg = () => {
+    if(todos[0].step.includes('1')) return colors.secondary.yellow;
+    if(todos[0].step.includes('2')) return colors.secondary.cyan;
+    if(todos[0].step.includes('3')) return colors.secondary.peach;
+    if(todos[0].step.includes('4')) return colors.secondary.green;
+  };
+
   return (
     <Container>
       <Box className={classes.screenHeader}>
@@ -161,7 +176,7 @@ function TopNavigation(props) {
             <Typography variant={'caption'} className={classes.itemTrustInfoTitle}
                         style={{color: colors.greyScale.common}}>Trust level: </Typography>
             <TrustLevelIcon className={classes.iconTrustLevel}/>
-            <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{proofsQty}</Typography>
+            <Typography variant={'caption'} className={classes.trustLevelValue}>{!!proofsQty ? proofsQty : '0'}</Typography>
           </div>
         </Hidden>
         {
@@ -201,13 +216,15 @@ function TopNavigation(props) {
               </LightTooltip>
               <Typography variant={'caption'} className={classes.itemTrustInfoTitle}>Trust level: </Typography>
               <TrustLevelIcon className={classes.iconTrustLevel}/>
-              <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{proofsQty}</Typography>
+              <Typography variant={'caption'} className={classes.trustLevelValue}>{!!proofsQty ? proofsQty : '0'}</Typography>
             </div>
             {
-              todos.length && (
+              todos.length > 0 && (
                 <div className={[classes.itemTrustInfoBase, classes.itemStage].join(' ')}
-                     onClick={() => history.push(todos[0].link, {id, ...todos[0].state})}>
-                  <StageIcon viewBox={'0 0 20 20'} className={classes.stageIcon}/>
+                     onClick={() => history.push(todos[0].link, {id, ...todos[0].state})}
+                     style={{ backgroundColor: stepBaseBg(), borderColor: stepBaseBg() }}
+                >
+                  {trustIcon()}
                   <Typography variant={'caption'}
                               className={[classes.itemTrustInfoTitle, classes.itemStageTitle].join(' ')} noWrap>{todos[0].step}</Typography>
                 </div>

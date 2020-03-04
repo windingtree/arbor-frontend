@@ -1,7 +1,7 @@
 import React from 'react';
 import { SvgIcon } from '@material-ui/core';
 
-export default function StageIcon(props) {
+export default function LifIcon(props) {
   return (
     <SvgIcon {...props}>
       <rect width="20" height="20" fill="url(#pattern0)"/>

@@ -65,6 +65,8 @@ export const styles = makeStyles({
     textAlign: 'center',
     marginBottom: '35px',
     width: 'min-content',
+    boxShadow: ' 0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
+    borderRadius: '6px'
   },
   websiteAddressGlobe: {
     marginRight: "15px"

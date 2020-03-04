@@ -60,7 +60,7 @@ export const getTodo = (organization) => {
   let website = contacts.website;
 
   if (website && !organization.isWebsiteProved) {
-    if (typeof website === 'string' && website.indexOf('://') === -1) website = `https://${website}`;
+    if (typeof website === 'string' && website.indexOf('://') === -1) website = `http://${website}`;
     todo.push(Object.assign({}, allTodo.website, {state: {website}}));
   }
   if ((contacts.twitter && !organization.isSocialTWProved) || (contacts.facebook && !organization.isSocialFBProved) || (contacts.instagram && !organization.isSocialIGProved)) {

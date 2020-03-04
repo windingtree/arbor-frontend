@@ -427,7 +427,7 @@ function Info(props) {
   //check if website valid
   const website = () => {
     let reg = /^((https?|ftp|smtp):\/\/)?(www.)?[a-z0-9]+\.[a-z]+(\/[a-zA-Z0-9#]+\/?)*$/;
-    return reg.test(contacts.website) ? contacts.website : `https://${contacts.website}`
+    return reg.test(contacts.website) ? contacts.website : `http://${contacts.website}`
   };
 
   const icon = (socialNetwork) => {

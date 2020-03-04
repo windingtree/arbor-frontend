@@ -177,7 +177,7 @@ function TrustWebsite() {
     if(website === 'example.com' || isVerified) {
       history.goBack();
     }
-  }, [website]);
+  });
 
   return (
     <div>

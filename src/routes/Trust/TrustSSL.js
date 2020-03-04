@@ -153,7 +153,7 @@ const TrustSSL = () => {
     if(name === 'default name' && isVerified) {
       history.goBack();
     }
-  }, [name]);
+  });
 
   return (
     <div>

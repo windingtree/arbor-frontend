@@ -321,17 +321,18 @@ function TrustSocial(props) {
   const [isModalOpen, toggleModalOpenState] = useState(false);
   const { successTransaction, pendingTransaction } = props;
   const contacts = (!!history.location.state && !!history.location.state.contacts) ? history.location.state.contacts : false;
+  const orgid = (!!history.location.state && !!history.location.state.orgid) ? history.location.state.orgid : null;
   const {twitter, facebook, instagram} = contacts;
 
   useEffect(() => {
     if(!contacts) {
       history.goBack()
     }
-  }, [contacts]);
+  }, [contacts]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     props.resetTransactionStatus();
-  }, [isModalOpen]);
+  }, [isModalOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const socialsControllers = [
     'Twitter',
@@ -466,7 +467,7 @@ function TrustSocial(props) {
 
   const handleMoveToOrganization = () => {
     handleCloseModal();
-    history.goBack();
+    history.replace('/trust/social', `/my-organizations/${orgid}`);
   };
 
   const setDialog = () => {

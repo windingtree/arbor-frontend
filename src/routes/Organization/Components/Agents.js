@@ -106,7 +106,6 @@ const styles = makeStyles({
     fontWeight: 400,
     color: colors.greyScale.common
   },
-
   inputFieldWrapper: {
     position: 'relative',
     marginBottom: '28px',
@@ -254,7 +253,7 @@ function Agents(props) {
                         values={values.key}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        helperText={errors && touched && errors.message}
+                        helperText={errors.key && touched.key ? errors.key : null}
                         InputProps={{
                           endAdornment: (
                             <InputAdornment position={'end'}>
@@ -295,7 +294,7 @@ function Agents(props) {
                         values={values.note}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        helperText={errors && touched && errors.message}
+                        helperText={errors.note && touched.note ? errors.note : null}
                       />
                     </div>
                     <div className={classes.dialogButtonWrapper}>

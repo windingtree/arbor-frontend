@@ -276,7 +276,7 @@ const Edit = (props) => {
                   <img src={PendingTransactionIllustration} alt={'illustration'} className={classes.pendingIllustration}/>
                   <div className={classes.pendingTextContainer}>
                     <Typography variant={'h3'} className={classes.pendingTitle}>Almost there!</Typography>
-                    <Typography variant={'subtitle2'} className={classes.pendingSubtitle}>Creating your organization profile might take some time. You can wait here or add another organization in the meantime. We will let you know once everything is ready. </Typography>
+                    <Typography variant={'subtitle2'} className={classes.pendingSubtitle}>Editing your organization profile might take some time. You can wait here, edit or add another organization in the meantime. We will let you know once everything is ready. </Typography>
                   </div>
                   <div className={classes.pendingButtonWrapper}>
                     <Button className={classes.pendingButton} onClick={() => history.push('/my-organizations')}>
@@ -288,15 +288,10 @@ const Edit = (props) => {
                 <div className={classes.pendingContentWrapper}>
                   <img src={SuccessTransactionIllustration} alt={'illustration'} className={classes.pendingIllustration}/>
                   <div className={classes.pendingTextContainer}>
-                    <Typography variant={'h3'} className={classes.pendingTitle}>Your organization profile is live!</Typography>
-                    <Typography variant={'subtitle2'} className={classes.pendingSubtitle}>Your organization is already in our registry and can be discovered by other community members. Now you can create another organization profile or go ahead and  improve your trust level.</Typography>
+                    <Typography variant={'h3'} className={classes.pendingTitle}>Your organization profile successfully updated!</Typography>
+                    <Typography variant={'subtitle2'} className={classes.pendingSubtitle}>Your organization is already updated and can be discovered by other community members.</Typography>
                   </div>
-                  <Grid container justify={'space-between'} alignItems={'center'} wrap={'nowrap'}>
-                    <Grid item lg={6}>
-                      <Button className={[classes.pendingButton, classes.successButton].join(' ')} onClick={() => history.push('/trust/general')}>
-                        <Typography variant={'caption'} className={[classes.pendingButtonLabel, classes.successButtonLabel].join(' ')}>Improve trust level</Typography>
-                      </Button>
-                    </Grid>
+                  <Grid container justify={'center'} alignItems={'center'}>
                     <Grid item lg={7}>
                       <Button className={classes.pendingButton} onClick={() => history.push('/my-organizations')}>
                         <Typography variant={'caption'} className={classes.pendingButtonLabel} noWrap>Go to my organizations <ArrowLeftIcon viewBox={'0 0 12 12'} className={classes.pendingButtonIcon}/></Typography>

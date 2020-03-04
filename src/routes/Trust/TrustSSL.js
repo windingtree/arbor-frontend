@@ -1,21 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
+import _ from 'lodash';
 import history from '../../redux/history';
-
 import {Container, Typography, Grid, Card, Box, Button} from '@material-ui/core';
-import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
-
-
 import {makeStyles} from '@material-ui/core/styles';
+
+import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
 import trustTopIllustation from '../../assets/SvgComponents/what-if-illustration.svg';
 import trustEVIllustation from '../../assets/SvgComponents/trust-ev-illustration.svg';
-
 import rapidSSlLogo from '../../assets/SvgComponents/partner-rapid-ssl.svg';
 import symantecLogo from '../../assets/SvgComponents/partner-symantec.svg';
 import thawteLogo from '../../assets/SvgComponents/partner-thawte.svg';
 import geoTrustLogo from '../../assets/SvgComponents/partner-geotrust.svg';
 import comodoLogo from '../../assets/SvgComponents/partner-comodo.svg';
-import colors from '../../styles/colors';
 
+import colors from '../../styles/colors';
 
 const styles = makeStyles({
   topDiv: {
@@ -56,12 +54,15 @@ const styles = makeStyles({
   },
   entityNameCard: {
     padding: '20px 15px',
+    marginBottom: '35px',
+    borderRadius: '6px',
+    boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)'
+  },
+  entityName: {
     fontWeight: 500,
     fontSize: '16px',
     lineHeight: '20px',
-    textAlign: 'center',
     color: colors.secondary.intenseGreen,
-    marginBottom: '35px'
   },
   evcText: {
     color: colors.greyScale.dark,
@@ -144,8 +145,15 @@ const styles = makeStyles({
 });
 
 const TrustSSL = () => {
-
   const classes = styles();
+  const name = _.get(history, 'location.state.name', 'default name');
+  const isVerified = _.get(history, 'location.state.isWebsiteVerified', false);
+
+  useEffect(() => {
+    if(name === 'default name' && isVerified) {
+      history.goBack();
+    }
+  }, [name]);
 
   return (
     <div>
@@ -163,10 +171,11 @@ const TrustSSL = () => {
             </div>
           </Box>
           <Grid container>
-            <Grid item xs={12} lg={6}><Typography className={classes.mainTitle} variant={'h1'}>Verify your legal
-              entity </Typography>
-              <Card className={classes.entityNameCard}><Typography>Legal entity name example could be very
-                long or short</Typography></Card>
+            <Grid item xs={12} lg={6}>
+              <Typography className={classes.mainTitle} variant={'h1'}>Verify your legal entity</Typography>
+              <Card className={classes.entityNameCard}>
+                <Typography variant={'subtitle1'} className={classes.entityName} align={'center'}>{name}</Typography>
+              </Card>
               <Typography className={classes.evcText}>Extended Validation Certificate offers the highest
                 available levels of trust and
                 authentication to your website.</Typography>
@@ -228,23 +237,19 @@ const TrustSSL = () => {
               <ul style={{marginTop: '42px'}}>
                 <li className={classes.partnersTextListItem}>
                   <span className={classes.partnersTextListDot}/>
-                  <Typography className={classes.partnersTextListTexts}> Legal status and country of
-                    jurisdiction</Typography>
+                  <Typography className={classes.partnersTextListTexts}> Legal status and country of jurisdiction</Typography>
                 </li>
                 <li className={classes.partnersTextListItem}><span
                   className={classes.partnersTextListDot}/>
-                  <Typography className={classes.partnersTextListTexts}>Operational
-                    status </Typography>
+                  <Typography className={classes.partnersTextListTexts}>Operational status</Typography>
                 </li>
                 <li className={classes.partnersTextListItem}><span
                   className={classes.partnersTextListDot}/>
-                  <Typography className={classes.partnersTextListTexts}>Identity of the business
-                    owner </Typography>
+                  <Typography className={classes.partnersTextListTexts}>Identity of the business owner</Typography>
                 </li>
                 <li className={classes.partnersTextListItem}>
                   <span className={classes.partnersTextListDot}/>
-                  <Typography className={classes.partnersTextListTexts}>Exclusive domain
-                    ownership </Typography>
+                  <Typography className={classes.partnersTextListTexts}>Exclusive domain ownership</Typography>
                 </li>
               </ul>
             </Grid>

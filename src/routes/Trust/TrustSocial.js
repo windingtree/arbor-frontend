@@ -1,6 +1,6 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { resetTransactionStatus } from '../../ducks/wizard';
 import history from '../../redux/history';
 import {copyStrToClipboard} from '../../utils/helpers';
 import { Formik } from 'formik';
@@ -250,6 +250,51 @@ const styles = makeStyles({
     color: colors.primary.white,
     textTransform: 'none',
     padding: '4px 14px'
+  },
+  cardTitleWrapper: {
+    display: 'flex',
+  },
+  form: {
+    paddingTop: '30px'
+  },
+  dialogTitle: {
+    fontSize: '32px',
+    fontWeight: 500,
+    textAlign: 'start',
+    color: colors.greyScale.darkest
+  },
+  dialogSubtitleWrapper: {
+    padding: '20px 0 32px 0'
+  },
+  dialogSubtitle: {
+    fontSize: '16px',
+    lineHeight: 1.45,
+    fontWeight: 400,
+    color: colors.greyScale.common
+  },
+  dialogButtonWrapper: {
+    display: 'table',
+    paddingTop: '10px',
+    margin: '0 auto'
+  },
+  dialogButton: {
+    height: '44px',
+    border: `1px solid ${colors.primary.accent}`,
+    borderRadius: '8px',
+    backgroundImage: colors.gradients.orange,
+    boxShadow: '0px 2px 12px rgba(12, 64, 78, 0.1)',
+    textTransform: 'none',
+    padding: '6px 20px'
+  },
+  dialogButtonLabel: {
+    fontSize: '16px',
+    fontWeight: 600,
+    lineHeight: 1.24,
+    color: colors.primary.white
+  },
+  progressWrapper: {
+    display: 'table',
+    margin: '0 auto'
   }
 });
 
@@ -276,8 +321,18 @@ function TrustSocial(props) {
   const [isModalOpen, toggleModalOpenState] = useState(false);
   const { successTransaction, pendingTransaction } = props;
   const contacts = (!!history.location.state && !!history.location.state.contacts) ? history.location.state.contacts : false;
-  if (!contacts) history.push('/my-organizations/');
   const {twitter, facebook, instagram} = contacts;
+
+  useEffect(() => {
+    if(!contacts) {
+      history.goBack()
+    }
+  }, [contacts]);
+
+  useEffect(() => {
+    props.resetTransactionStatus();
+  }, [isModalOpen]);
+
   const socialsControllers = [
     'Twitter',
     'Facebook',
@@ -300,7 +355,6 @@ function TrustSocial(props) {
   const renderSocialsControllers = () => {
     const controllers = socialsControllers.map((item, index) => {
       return (
-
         <li className={index === activeSocial ? classes.activeController : classes.controllerItem}
             key={index.toString()} style={{margin: '8px 0'}}>
           <span className={classes.controllerLine}/>
@@ -367,9 +421,7 @@ function TrustSocial(props) {
     for (let i = 0; i < listItems.length; i++) {
       listItemsWithPlaceholders.push(listItems[i]);
       if (i !== listItems.length - 1) {
-        listItemsWithPlaceholders.push(<div><img className={classes.howListPlaceholder}
-                                                 src={listPlaceholderSvg} alt={"|"}/>
-        </div>)
+        listItemsWithPlaceholders.push(<div key={(i + listItems.length).toString()}><img className={classes.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></div>)
       }
     }
 
@@ -382,6 +434,7 @@ function TrustSocial(props) {
 
     if (activeSocial === itemIndex) return;
     setActiveSocial(itemIndex);
+    setVerification(false);
   };
 
   const verifyingCodes = [null, 'Ox000000_FACEBOOK', '0x0000000_INSTAGRAM'];
@@ -411,6 +464,11 @@ function TrustSocial(props) {
     setActiveStep(prevActiveStep => prevActiveStep + 1);
   };
 
+  const handleMoveToOrganization = () => {
+    handleCloseModal();
+    history.goBack();
+  };
+
   const setDialog = () => {
     return (
       <DialogComponent
@@ -427,14 +485,14 @@ function TrustSocial(props) {
                 dialogStepsContent(activeStep)
               ) : (
                 <>
-                  <Typography variant={'caption'} className={classes.dialogTitle}>Agent successfully created</Typography>
+                  <Typography variant={'caption'} className={classes.dialogTitle}>{`Your ${socialsControllers[activeSocial]} successfully verified!`}</Typography>
                   <div className={classes.dialogSubtitleWrapper}>
-                    <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>You new agent now has the rights to act on behalf of your organization. You can add more agents or delete agent keys.</Typography>
+                    <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>Well done! You could continue verify other trust steps</Typography>
                   </div>
                   <div className={classes.dialogButtonWrapper}>
-                    <Button onClick={handleCloseModal} className={classes.dialogButton}>
+                    <Button onClick={handleMoveToOrganization} className={classes.dialogButton}>
                       <Typography variant={'caption'} className={classes.dialogButtonLabel}>
-                        Confirm
+                        Back to organization
                       </Typography>
                     </Button>
                   </div>
@@ -449,7 +507,6 @@ function TrustSocial(props) {
 
   return (
     <div>
-      {!contacts ? <Redirect exact path={'/trust/social'} to={'/my-organizations'}/> :
       <div className={classes.topDiv}>
         <Container className={classes.topSectionWrapper}
                    style={{backgroundColor: colors.greyScale.moreLighter}}>
@@ -493,7 +550,7 @@ function TrustSocial(props) {
             </div>
           </Grid>
         </Container>
-      </div>}
+      </div>
       <Container className={classes.howSection}>
         <div>
           <Typography className={classes.howTitle}>
@@ -510,7 +567,7 @@ function TrustSocial(props) {
             <Grid item style={{width: '45%'}}>
               <Card className={classes.card}>
                 <div className={classes.cardContent}>
-                  <div style={{display: 'flex'}}>
+                  <div className={classes.cardTitleWrapper}>
                     <Typography className={classes.verifyCardTitle}>
                       {props.socials[activeSocial].title}
                     </Typography> <img src={props.socials[activeSocial].logo} alt={"logo"}/>
@@ -540,7 +597,7 @@ function TrustSocial(props) {
                                 isSubmitting,
                                 /* and other goodies */
                               }) => (
-                                <form onSubmit={handleSubmit}>
+                                <form onSubmit={handleSubmit} className={classes.form}>
                                   <TextField
                                     name={'link'}
                                     autoComplete={'none'}
@@ -550,7 +607,7 @@ function TrustSocial(props) {
                                     values={values.link}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
-                                    helperText={errors && touched && errors.message}
+                                    helperText={errors.link && touched.link ? errors.link : 'Open your post in a new window and copy the link from the address bar'}
                                   />
                                   <Button type="submit" disabled={isSubmitting} className={classes.buttonVerify}>
                                     <Typography variant={'caption'} className={classes.buttonVerifyTitle}>{`Verify ${props.socials[activeSocial].type}`}</Typography>
@@ -634,7 +691,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-  extendOrgidJson
+  extendOrgidJson,
+  resetTransactionStatus
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrustSocial);

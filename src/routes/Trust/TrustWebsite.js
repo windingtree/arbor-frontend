@@ -169,14 +169,15 @@ export const styles = makeStyles({
 function TrustWebsite() {
   const id = (!!history.location.state && !!history.location.state.id) ? history.location.state.id : false;
   const website = _.get(history, 'location.state.website', 'example.com');
+  const isVerified = _.get(history, 'location.state.isWebsiteVerified', false);
   const txtFileData = `data:text/json;charset=utf-8,orgid=${id}`;
   const classes = styles();
 
   useEffect(() => {
-    if(!id) {
+    if(website === 'example.com' || isVerified) {
       history.goBack();
     }
-  }, [id]);
+  }, [website]);
 
   return (
     <div>
@@ -194,8 +195,7 @@ function TrustWebsite() {
             </div>
           </Box>
           <Container className={classes.topContent}>
-            <div style={{width: '50%'}}><Typography className={classes.mainTitle} variant={'h1'}>Verify your
-              website </Typography>
+            <div style={{width: '50%'}}><Typography className={classes.mainTitle} variant={'h1'}>Verify your website</Typography>
               <Card className={classes.websiteAddressCard}>
                 <img className={classes.websiteAddressGlobe} src={globeIconSvg} alt={"icon"}/>
                 <Typography className={classes.link} noWrap={true}>{website}</Typography></Card>

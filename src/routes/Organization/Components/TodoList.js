@@ -62,13 +62,12 @@ export const getTodo = (organization) => {
   if (website && !organization.isWebsiteProved) {
     if (typeof website === 'string' && website.indexOf('://') === -1) website = `https://${website}`;
     todo.push(Object.assign({}, allTodo.website, {state: {website}}));
-  } else if ((contacts.twitter && !organization.isSocialTWProved) || (contacts.facebook && !organization.isSocialFBProved) || (contacts.instagram && !organization.isSocialIGProved)) {
-    todo.push(Object.assign({}, allTodo.social, {state: {contacts, id }}));
-  } else if (website && organization.isWebsiteProved && !organization.isSslProved) {
-    todo.push(allTodo.ssl)
-  } else if (!organization.isLifProved) {
-    todo.push(allTodo.lif)
   }
+  if ((contacts.twitter && !organization.isSocialTWProved) || (contacts.facebook && !organization.isSocialFBProved) || (contacts.instagram && !organization.isSocialIGProved)) {
+    todo.push(Object.assign({}, allTodo.social, {state: {contacts, id }}));
+  }
+  if (website && organization.isWebsiteProved && !organization.isSslProved) todo.push(allTodo.ssl);
+  if (!organization.isLifProved) todo.push(allTodo.lif);
   return todo;
 };
 

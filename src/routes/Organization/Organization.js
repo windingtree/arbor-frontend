@@ -9,6 +9,7 @@ import Agents from "./Components/Agents";
 import TodoList, { getTodo } from "./Components/TodoList";
 import Info from "./Components/Info";
 import SubOrganizations from "./Components/SubOrganizations";
+import { idGenerator } from '../../utils/helpers';
 
 function Organization(props) {
   const id = history.location.state ? history.location.state.id : history.location.pathname.split('/')[2];
@@ -24,6 +25,11 @@ function Organization(props) {
 
   useEffect(() => {
     jsonContent !== undefined && props.rewriteOrgidJson(_.merge({}, jsonContent));
+    return () => props.rewriteOrgidJson({
+      "@context": "https://windingtree.com/ns/did/v1",
+      "id": idGenerator(),
+      "created": new Date().toJSON(),
+    })
   }, [jsonContent]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {

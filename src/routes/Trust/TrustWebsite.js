@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
 import _ from 'lodash';
-import { Redirect } from 'react-router-dom';
 import {Container, Typography, Card, Box, Button} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 
@@ -149,7 +148,6 @@ export const styles = makeStyles({
   downloadButton: {
     display: 'block',
     margin: '50px auto 0 auto',
-
     backgroundImage: colors.gradients.orange,
     boxShadow: '0 2px 12px rgba(12, 64, 78, 0.1)',
     border: `1px solid ${colors.primary.accent}`,
@@ -174,9 +172,15 @@ function TrustWebsite() {
   const txtFileData = `data:text/json;charset=utf-8,orgid=${id}`;
   const classes = styles();
 
+  useEffect(() => {
+    if(!id) {
+      history.goBack();
+    }
+  }, [id]);
+
   return (
     <div>
-      {!website ? <Redirect exact path={'/trust/website'} to={'/my-organizations'}/> : <div className={classes.topDiv}>
+      <div className={classes.topDiv}>
         <Container className={classes.topSectionWrapper}
                    style={{backgroundColor: colors.greyScale.moreLighter}}>
           <Box className={classes.screenHeader}>
@@ -206,7 +210,7 @@ function TrustWebsite() {
             </div>
           </Container>
         </Container>
-      </div>}
+      </div>
       <Container className={classes.howSection}>
         <Container>
           <Typography className={classes.howSectionTitle}>
@@ -313,6 +317,5 @@ function TrustWebsite() {
     </div>
   )
 }
-
 
 export default TrustWebsite;

@@ -4,7 +4,7 @@ import fetchSearchOrganizations, { moduleName as searchModule } from '../ducks/f
 import fetchOrganizationInfo, { moduleName as orgInfoModule } from '../ducks/fetchOrganizationInfo';
 import fetchSignIn, { moduleName as signInModule } from '../ducks/signIn';
 import extendWizard, { moduleName as wizardModule } from '../ducks/wizard';
-
+import fetchLifDeposit, { moduleName as depositModule } from '../ducks/lifDeposit';
 
 //Add all reducers here
 export default combineReducers({
@@ -13,4 +13,5 @@ export default combineReducers({
   [orgInfoModule]: fetchOrganizationInfo,
   [signInModule]: fetchSignIn,
   [wizardModule]: extendWizard,
+  [depositModule]: fetchLifDeposit,
 });

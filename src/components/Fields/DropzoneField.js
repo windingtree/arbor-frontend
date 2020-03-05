@@ -224,7 +224,7 @@ const DropzoneField = (props) => {
     // Make sure to revoke the data uris to avoid memory leaks
     files.forEach(file => URL.revokeObjectURL(file.preview));
     props.extendOrgidJson(values);
-  }, [files]);
+  }, [files]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleChangeTab = (event, newValue) => {
     setTabValue(newValue);

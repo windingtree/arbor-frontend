@@ -1,17 +1,26 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { connect } from 'react-redux';
 import history from '../../redux/history';
 
+import { selectSignInAddress } from '../../ducks/signIn';
+import {
+  getLifToken,
+  getBalance,
+  selectAllowance,
+  selectDeposit,
+  selectBalance,
+  selectWithdrawStatus
+} from '../../ducks/lifDeposit';
+
 import {Container, Typography, Grid, Card, Box, Button} from '@material-ui/core';
-import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
-
-
 import {makeStyles} from '@material-ui/core/styles';
+
+import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
 import trustTopIllustation from '../../assets/SvgComponents/lif-deposit-illustration.svg';
 import lifWithdrawIllustration from '../../assets/SvgComponents/lif-deposit-withdraw.svg';
-
 import {LifIcon1, LifIcon2, LifIcon3} from '../../assets/SvgComponents';
-import colors from '../../styles/colors';
 
+import colors from '../../styles/colors';
 
 const styles = makeStyles({
   topDiv: {
@@ -166,7 +175,12 @@ const styles = makeStyles({
 
 const TrustLifStake = (props) => {
   const classes = styles();
-  const { disabled } = props;
+  const { disabled, address, allowance, balance, deposit, withdraw: { available, availableAt } } = props;
+
+  useEffect(() => {
+    props.getLifToken();
+    props.getBalance(address);
+  }, [address]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div>
@@ -239,14 +253,14 @@ const TrustLifStake = (props) => {
               </Typography>
               <div className={classes.buttonsContainer}>
                 <div className={classes.buttonWrapper}>
-                  <Button disabled={disabled} className={ disabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
+                  <Button disabled={!allowance} className={ !allowance ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
                     <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
                       Allow deposit
                     </Typography>
                   </Button>
                 </div>
                 <div className={classes.buttonWrapper}>
-                  <Button disabled={disabled} className={ disabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
+                  <Button disabled={!balance} className={ !balance ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
                     <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
                       Make deposit
                     </Typography>
@@ -277,7 +291,7 @@ const TrustLifStake = (props) => {
                 <div className={classes.buttonsContainer}>
                   <Button disabled={disabled} className={ disabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
                     <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
-                      Withdraw your deposit
+                      Request withdrawal
                     </Typography>
                   </Button>
                 </div>
@@ -298,4 +312,19 @@ TrustLifStake.defaultProps = {
   disabled: true
 };
 
-export default TrustLifStake;
+const mapStateToProps = state => {
+  return {
+    address: selectSignInAddress(state),
+    allowance: selectAllowance(state),
+    deposit: selectDeposit(state),
+    balance: selectBalance(state),
+    withdraw: selectWithdrawStatus(state),
+  }
+};
+
+const mapDispatchToProps = {
+  getLifToken,
+  getBalance
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(TrustLifStake);

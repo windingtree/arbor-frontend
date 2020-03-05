@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {connect} from "react-redux";
 import {useDropzone} from 'react-dropzone';
 import _ from 'lodash';
-import {saveMediaToArbor, selectWizardOrgidJson} from '../../ducks/wizard'
+import {saveMediaToArbor, extendOrgidJson, selectWizardOrgidJson} from '../../ducks/wizard'
 import {selectSignInAddress} from '../../ducks/signIn'
 
 import {Tab, Tabs, TextField, Typography, Button, Link} from '@material-ui/core';
@@ -134,7 +134,7 @@ function Previews(props) {
     accept: 'image/*',
     maxSize: 500 * 1024,
     multiple: false,
-    onDrop: (acceptedFiles) => {
+    onDrop: (acceptedFiles, ) => {
       window['file_0'] = acceptedFiles[0];
       props.saveMediaToArbor({address, id, file: acceptedFiles[0]});
 
@@ -223,6 +223,7 @@ const DropzoneField = (props) => {
   useEffect(() => () => {
     // Make sure to revoke the data uris to avoid memory leaks
     files.forEach(file => URL.revokeObjectURL(file.preview));
+    props.extendOrgidJson(values);
   }, [files]);
 
   const handleChangeTab = (event, newValue) => {
@@ -308,7 +309,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-  saveMediaToArbor
+  saveMediaToArbor,
+  extendOrgidJson
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DropzoneField);

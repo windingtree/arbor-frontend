@@ -165,19 +165,19 @@ export default function reducer( state = initialState, action) {
         error: null
       });
     case SAVE_MEDIA_TO_ARBOR_SUCCESS:
-      const orgidJsonUpdates = _.omitBy(_.merge({}, state.orgidJson, {
+      const orgidJsonUpdates = Object.assign({}, state.orgidJson, {
+        ...state.orgidJson,
         updated: new Date().toJSON(),
-        media: {
-          logo: payload
-        }
-      }), _.isNil);
-      return {
+        media: { logo: payload }
+      });
+
+      return Object.assign({}, state, {
         isFetching: false,
         isFetched: true,
         orgidJson: orgidJsonUpdates,
         orgidHash: `0x${keccak256(JSON.stringify(orgidJsonUpdates, null, 2))}`,
         error: null
-      };
+      });
     case SAVE_ORGID_JSON_TO_ARBOR_SUCCESS:
     case SAVE_ORGID_JSON_URI_SUCCESS:
       return _.merge({}, state, {
@@ -214,13 +214,13 @@ export default function reducer( state = initialState, action) {
     case SEND_CREATE_LEGAL_ENTITY_FAILURE:
     case SEND_CREATE_ORGANIZATIONAL_UNIT_FAILURE:
     case SEND_CHANGE_ORGID_URI_AND_HASH_FAILURE:
-      return _.merge({}, state, {
+      return Object.assign({}, state, {
         isFetching: false,
         isFetched: false,
         error: error
       });
     case GET_TRANSACTION_STATUS_FAILURE:
-      return _.merge({}, state, {
+      return Object.assign({}, state, {
         isFetching: false,
         isFetched: false,
         pendingTransaction: false,

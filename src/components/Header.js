@@ -144,7 +144,15 @@ const styles = makeStyles({
 
 export default function Header(props) {
   const classes = styles();
-  const {isAuthenticated} = props;
+  const { isAuthenticated } = props;
+
+  const handleSignInRedirect = () => {
+    if(window.web3 === undefined) {
+      history.push('/authorization/register')
+    } else {
+      history.push('/authorization/signin');
+    }
+  };
 
   return (
     <div id="app-header" className={classes.header}>
@@ -217,25 +225,12 @@ export default function Header(props) {
                 ) : (
                   <div className={`${classes.xsHidden} ${classes.unauthenticatedBlock} `}>
                     <Button
-                      onClick={() => history.push('/authorization/register')}
-                      className={classes.authButton}
-                      style={{
-                        backgroundImage: 'unset',
-                        borderColor: 'transparent'
-                      }}
-                    >
-                      <Typography variant={'subtitle2'} noWrap className={classes.buttonTitle}
-                                  style={{color: colors.primary.black}}>
-                        Sign Up
-                      </Typography>
-                    </Button>
-                    <Button
-                      onClick={() => history.push('/authorization/signin')}
+                      onClick={handleSignInRedirect}
                       className={classes.authButton}
                       style={{marginLeft: '20px'}}
                     >
                       <Typography variant={'subtitle2'} noWrap className={classes.buttonTitle}>
-                        Sign In
+                        Sign up/ Sign in
                       </Typography>
                     </Button>
                   </div>

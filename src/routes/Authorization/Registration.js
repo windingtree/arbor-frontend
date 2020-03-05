@@ -49,10 +49,15 @@ const styles = makeStyles({
     marginTop: '70px'
   },
   button: {
+    height: '56px',
     backgroundImage: colors.gradients.green,
     boxShadow: '0 2px 12px rgba(12, 64, 78, 0.1)',
     border: `1px solid ${colors.secondary.cyan}`,
     borderRadius: '6px'
+  },
+  redirectLink: {
+    textDecoration: 'none',
+    color: colors.primary.white,
   },
   buttonLabel: {
     fontSize: '16px',
@@ -104,9 +109,10 @@ const Registration = () => {
             <div className={classes.buttonWrapper}>
               <Button onClick={(event) => {
                 event.preventDefault();
-                window.open('https://metamask.io/');
               }} className={classes.button}>
-                <Typography variant={'caption'} className={classes.buttonLabel}>Install MetaMask</Typography>
+                <a href={'https://metamask.io/download.html'} target={'_blank'} className={classes.redirectLink}>
+                  <Typography variant={'caption'} className={classes.buttonLabel}>Install MetaMask</Typography>
+                </a>
               </Button>
             </div>
             <div className={classes.linkWrapper}>

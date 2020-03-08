@@ -28,7 +28,7 @@ export const setRandomDefaultImage = (orgid, directory) => {
     index = parseInt(`0x${lastCharFromOrgid}`);
     index = index < arrayOfDefaultImages.length ? index : index % arrayOfDefaultImages.length;
   } catch (e) {
-    console.error(e);
+    console.error('Error in setRandomDefaultImage:', e.toString());
     index = 0;
   }
   return arrayOfDefaultImages[index];

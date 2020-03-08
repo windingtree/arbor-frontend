@@ -81,6 +81,7 @@ export default function reducer( state = initialState, action) {
 
   const statePublicKey = _.get(state.orgidJson, 'publicKey', []);
   const publicKey = statePublicKey.slice();
+  let orgidJsonUpdates;
 
   switch(type) {
     /////////////
@@ -126,14 +127,15 @@ export default function reducer( state = initialState, action) {
         error: null
       };
     case EXTEND_ORGID_JSON_SUCCESS:
-      if (payload) {
-        payload.updated = new Date().toJSON();
-      }
+      orgidJsonUpdates = Object.assign({}, state.orgidJson, {
+        ...payload,
+        updated: new Date().toJSON()
+      });
       return _.merge({}, state, {
         isFetching: false,
         isFetched: true,
-        orgidJson: payload,
-        orgidHash: `0x${keccak256(JSON.stringify(payload, null, 2))}`,
+        orgidJson: orgidJsonUpdates,
+        orgidHash: `0x${keccak256(JSON.stringify(orgidJsonUpdates, null, 2))}`,
         error: null
       });
     case ADD_AGENT_KEY_SUCCESS:
@@ -165,7 +167,7 @@ export default function reducer( state = initialState, action) {
         error: null
       });
     case SAVE_MEDIA_TO_ARBOR_SUCCESS:
-      const orgidJsonUpdates = Object.assign({}, state.orgidJson, {
+      orgidJsonUpdates = Object.assign({}, state.orgidJson, {
         ...state.orgidJson,
         updated: new Date().toJSON(),
         media: { logo: payload }

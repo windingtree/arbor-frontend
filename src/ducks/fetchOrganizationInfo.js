@@ -1,7 +1,9 @@
 import { appName } from '../utils/constants';
 import { createSelector } from 'reselect';
 import { all, takeEvery, call, put } from 'redux-saga/effects';
+import _ from 'lodash';
 import { callApi } from '../redux/api';
+import { rewriteOrgidJson } from './wizard'
 /**
  * Constants
  * */
@@ -131,6 +133,8 @@ function* fetchOrganizationInfoSaga({payload}) {
     const result = yield call(ApiFetchOrganizationInfo, payload);
 
     yield put(fetchOrganizationInfoSuccess(result));
+    console.log('%cyield put(rewriteOrgidJson(result))', 'background-color:orange; color: black', result.data);
+    yield put(rewriteOrgidJson(_.get(result, 'data.jsonContent', {})));
   } catch(error) {
     yield put(fetchOrganizationInfoFailure(error));
   }

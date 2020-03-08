@@ -9,30 +9,26 @@ import Agents from "./Components/Agents";
 import TodoList, { getTodo } from "./Components/TodoList";
 import Info from "./Components/Info";
 import SubOrganizations from "./Components/SubOrganizations";
-import { idGenerator } from '../../utils/helpers';
 
 function Organization(props) {
   const id = history.location.state ? history.location.state.id : history.location.pathname.split('/')[2];
+  console.log('%cOrganization(props)', 'background-color:yellow; color: black', id);
   const canManage = history.location.pathname !== `/organization/${id}`;
   const { organization, subs } = props;
   const subsidiaries = _.get(organization, 'subsidiaries', []);
-  const jsonContent = organization.jsonContent;
   const todos = getTodo(organization);
 
   useEffect(() => {
+    console.log('%cuseEffect, [id]', 'background-color:yellow; color: black', id);
+    console.log(`%cprops.fetchOrganizationInfo({ id });`, 'background-color:darkorange; color: black', id);
     props.fetchOrganizationInfo({ id });
   }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    jsonContent !== undefined && props.rewriteOrgidJson(_.merge({}, jsonContent));
-    return () => props.rewriteOrgidJson({
-      "@context": "https://windingtree.com/ns/did/v1",
-      "id": idGenerator(),
-      "created": new Date().toJSON(),
-    })
-  }, [jsonContent]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
+    console.log('%cuseEffect, [id, subsidiaries]', 'background-color:yellow; color: black', `[${id}, subsidiaries<length: ${subsidiaries.length}>]`);
+    if (subsidiaries && subsidiaries.length) {
+      console.log(`%cprops.fetchOrganizationSubsInfo({ id })`, 'background-color:darkorange; color: black', id);
+    }
     subsidiaries && subsidiaries.length && props.fetchOrganizationSubsInfo({ id });
   }, [id, subsidiaries]); // eslint-disable-line react-hooks/exhaustive-deps
 

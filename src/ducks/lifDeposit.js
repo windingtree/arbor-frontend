@@ -132,6 +132,12 @@ export default function reducer(state = initialState, action) {
         deposit: null,
         error: error
       });
+    case FETCH_WITHDRAWAL_STATE_FAILURE:
+      return Object.assign({}, state, {
+        isFetching: false,
+        isFetched: false,
+        error: error
+      });
     default:
       return initialState;
   }
@@ -263,6 +269,7 @@ function ApiGetLifToken() {
   return orgidContract.owner();
 }
 
+/*
 function ApiIncreaseAllowance(data) {
   const orgidContract = getOrgidContract();
   const { orgid, value } = data;
@@ -295,4 +302,5 @@ function ApiMakeDeposit(data) {
 function ApiGetWithdrawalRequest(data) {
 
 }
+*/
 // endregion

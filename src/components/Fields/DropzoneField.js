@@ -242,7 +242,7 @@ const DropzoneField = (props) => {
       {showPreviewOnly &&
       <div>
         <div>
-          <img className={classes.uploadedImage} src={value} alt={`File cannot be shown as image. URI: ${value}`}/>
+          <img className={classes.uploadedImage} src={value} alt={`File cannot be shown as image. URI: ${value}`}/> {/* eslint-disable-line jsx-a11y/img-redundant-alt */}
         </div>
         <Link className={classes.removePhotoLink} onClick={removePhotoHandler}>Remove photo</Link>
       </div>

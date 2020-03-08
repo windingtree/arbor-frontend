@@ -490,10 +490,12 @@ function TrustSocial(props) {
   };
 
   const handleFirstStepClick = () => {
-    switch (props.socials[activeSocial].type) {
+    const type = props.socials[activeSocial].type;
+    switch (type) {
       case "Twitter": window.open(`https://twitter.com/`, '_blank'); break;
       case "Facebook": window.open(`https://facebook.com/`, '_blank'); break;
       case "Instagram": window.open(`https://instagram.com/`, '_blank'); break;
+      default: console.warn('Unexpected activeSocial type', type);
     }
     setVerification(!verification);
   };

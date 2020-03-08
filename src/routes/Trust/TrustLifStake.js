@@ -175,7 +175,7 @@ const styles = makeStyles({
 
 const TrustLifStake = (props) => {
   const classes = styles();
-  const { disabled, address, allowance, balance, deposit, withdraw: { available, availableAt } } = props;
+  const { disabled, address, allowance, balance, /*deposit,*/ /*withdraw: { available, availableAt }*/ } = props;
 
   useEffect(() => {
     props.getLifToken();

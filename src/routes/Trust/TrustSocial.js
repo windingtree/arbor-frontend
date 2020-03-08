@@ -1,39 +1,19 @@
 import React, {useState, useEffect} from "react";
-import { connect } from 'react-redux';
-import { resetTransactionStatus } from '../../ducks/wizard';
+import {Container, Typography, Grid, Card, Box, Button, Tooltip, TextField, CircularProgress} from '@material-ui/core';
+import {connect} from 'react-redux';
+import {Formik} from 'formik';
+import {makeStyles, withStyles} from '@material-ui/core/styles';
+import _ from 'lodash';
+
 import history from '../../redux/history';
 import {copyStrToClipboard} from '../../utils/helpers';
-import { Formik } from 'formik';
+import {wizardConfig} from '../../utils/legalEntity';
+import {WizardStepHosting, WizardStepMetaMask, Dialog} from '../../components';
 
-import {
-  Container,
-  Typography,
-  Grid,
-  Card,
-  Box,
-  Button,
-  Tooltip,
-  TextField,
-  CircularProgress
-} from '@material-ui/core';
-import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
-import {makeStyles, withStyles} from '@material-ui/core/styles';
-
-import verifySocialMediaSvg from '../../assets/SvgComponents/verify-social-media.svg';
-import facebookIconSvg from '../../assets/SvgComponents/facebook-icon.svg';
-import instagramIconSvg from '../../assets/SvgComponents/instagram-icon.svg';
-import twitterIconSvg from '../../assets/SvgComponents/twitter-icon.svg';
-import listPlaceholderSvg from '../../assets/SvgComponents/list-placeholder.svg';
-import twitterBig from '../../assets/SvgComponents/twitter-big.svg';
-import facebookBig from '../../assets/SvgComponents/facebook-big.svg';
-import instagramBig from '../../assets/SvgComponents/instagram-big.svg';
+import {selectSuccessState, selectPendingState, selectWizardOrgidJson, extendOrgidJson, resetTransactionStatus} from '../../ducks/wizard';
 
 import colors from '../../styles/colors';
-import CopyIcon from '../../assets/SvgComponents/CopyIcon';
-import DialogComponent from '../../components/Dialog';
-import { selectSuccessState, selectPendingState, extendOrgidJson } from '../../ducks/wizard';
-import { wizardConfig } from '../../utils/legalEntity';
-import { WizardStepHosting, WizardStepMetaMask } from '../../components';
+import {ArrowLeftIcon, CopyIcon, verifySocialMediaSvg, facebookIconSvg, instagramIconSvg, twitterIconSvg, listPlaceholderSvg, twitterBig, facebookBig, instagramBig} from '../../assets/SvgComponents';
 
 const styles = makeStyles({
   topDiv: {
@@ -168,7 +148,7 @@ const styles = makeStyles({
   },
   howListDot: {
     position: 'absolute',
-    top: '50%',
+    top: '14px',
     transform: 'translateY(-50%)',
     content: '""',
     backgroundColor: colors.secondary.peach,
@@ -319,7 +299,7 @@ function TrustSocial(props) {
   const [activeStep, setActiveStep] = useState(1);
   const [verification, setVerification] = useState(false);
   const [isModalOpen, toggleModalOpenState] = useState(false);
-  const { successTransaction, pendingTransaction } = props;
+  const {successTransaction, pendingTransaction} = props;
   const contacts = (!!history.location.state && !!history.location.state.contacts) ? history.location.state.contacts : false;
   const orgid = (!!history.location.state && !!history.location.state.orgid) ? history.location.state.orgid : null;
   const {twitter, facebook, instagram} = contacts;
@@ -377,7 +357,7 @@ function TrustSocial(props) {
   const copyToClipboard = (code) => {
     return (
       <span>
-        <Typography variant={'caption'} className={classes.verifyingCode}>{code}</Typography>
+        <Typography variant={'caption'} className={classes.verifyingCode}>{code.length < 16 ? code : `My ORG.ID is ${code.substr(0,6)}...${code.substr(-4)}`}</Typography>
         <span>
           <LightTooltip
             PopperProps={{
@@ -438,7 +418,7 @@ function TrustSocial(props) {
     setVerification(false);
   };
 
-  const verifyingCodes = [null, 'Ox000000_FACEBOOK', '0x0000000_INSTAGRAM'];
+  const verifyingCodes = [orgid, orgid, orgid];
 
   const handleOpenModal = () => {
     toggleModalOpenState(true);
@@ -471,34 +451,37 @@ function TrustSocial(props) {
   };
 
   const setDialog = () => {
+    const isPendingState = !!pendingTransaction;
+    const isSuccessState = successTransaction;
+    const isDialogState = !isPendingState && !isSuccessState;
     return (
-      <DialogComponent
+      <Dialog
         handleClose={handleCloseModal}
         isOpen={isModalOpen}
         children={(
           <div className={classes.dialogContent}>
-            {
-              !!pendingTransaction ? (
-                <div className={classes.progressWrapper}>
-                  <CircularProgress/>
-                </div>
-              ) : !successTransaction ? (
-                dialogStepsContent(activeStep)
-              ) : (
-                <>
-                  <Typography variant={'caption'} className={classes.dialogTitle}>{`Your ${socialsControllers[activeSocial]} successfully verified!`}</Typography>
-                  <div className={classes.dialogSubtitleWrapper}>
-                    <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>Well done! You could continue verify other trust steps</Typography>
-                  </div>
-                  <div className={classes.dialogButtonWrapper}>
-                    <Button onClick={handleMoveToOrganization} className={classes.dialogButton}>
-                      <Typography variant={'caption'} className={classes.dialogButtonLabel}>
-                        Back to organization
-                      </Typography>
-                    </Button>
-                  </div>
-                </>
-              )
+            {isDialogState &&
+            dialogStepsContent(activeStep)
+            }
+            {isPendingState &&
+            <div className={classes.progressWrapper}>
+              <CircularProgress/>
+            </div>
+            }
+            {isSuccessState &&
+            <>
+              <Typography variant={'caption'} className={classes.dialogTitle}>{`Your ${socialsControllers[activeSocial]} successfully verified!`}</Typography>
+              <div className={classes.dialogSubtitleWrapper}>
+                <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>Well done! You could continue verify other trust steps</Typography>
+              </div>
+              <div className={classes.dialogButtonWrapper}>
+                <Button onClick={handleMoveToOrganization} className={classes.dialogButton}>
+                  <Typography variant={'caption'} className={classes.dialogButtonLabel}>
+                    Back to organization
+                  </Typography>
+                </Button>
+              </div>
+            </>
             }
           </div>
         )}
@@ -506,11 +489,19 @@ function TrustSocial(props) {
     )
   };
 
+  const handleFirstStepClick = () => {
+    switch (props.socials[activeSocial].type) {
+      case "Twitter": window.open(`https://twitter.com/`, '_blank'); break;
+      case "Facebook": window.open(`https://facebook.com/`, '_blank'); break;
+      case "Instagram": window.open(`https://instagram.com/`, '_blank'); break;
+    }
+    setVerification(!verification);
+  };
+
   return (
     <div>
       <div className={classes.topDiv}>
-        <Container className={classes.topSectionWrapper}
-                   style={{backgroundColor: colors.greyScale.moreLighter}}>
+        <Container className={classes.topSectionWrapper} style={{backgroundColor: colors.greyScale.moreLighter}}>
           <Box className={classes.screenHeader}>
             <div className={classes.backButtonWrapper}>
               <Button onClick={history.goBack}>
@@ -523,23 +514,26 @@ function TrustSocial(props) {
           </Box>
           <Grid item style={{display: 'flex'}}>
             <div className={classes.topWithCards}>
-              <Typography className={classes.mainTitle} variant={'h1'}>Verify your social
-                media</Typography>
+              <Typography className={classes.mainTitle} variant={'h1'}>Verify your social media</Typography>
               <Box>
-                {facebook && <Card className={classes.socialAddressCard}>
+                {facebook &&
+                <Card className={classes.socialAddressCard}>
                   <img className={classes.socialCardIcon} src={facebookIconSvg} alt={"fb"}/>
-                  <Typography>
-                    {facebook}</Typography></Card>}
+                  <Typography>{facebook}</Typography>
+                </Card>
+                }
                 {twitter &&
                 <Card className={classes.socialAddressCard}>
                   <img className={classes.socialCardIcon} src={twitterIconSvg} alt={"tw"}/>
                   <Typography>{twitter}</Typography>
                 </Card>
                 }
-                {instagram && <Card className={classes.socialAddressCard}>
+                {instagram &&
+                <Card className={classes.socialAddressCard}>
                   <img className={classes.socialCardIcon} src={instagramIconSvg} alt={"ig"}/>
-                  <Typography>
-                    {instagram}</Typography></Card>}
+                  <Typography>{instagram}</Typography>
+                </Card>
+                }
               </Box>
               <Typography className={classes.topSectionText}>Your social media accounts are the main
                 source of corporate news and announcements. Increase your trust level with every
@@ -584,7 +578,14 @@ function TrustSocial(props) {
                             initialValues={{ link: ''}}
                             onSubmit={(values, {setSubmitting}) => {
                               setSubmitting(false);
-                              props.extendOrgidJson(values);
+                              const type = props.socials[activeSocial].type.toLowerCase();
+                              let trust = _.get(props.orgidJson, 'trust', []);
+                              _.remove(trust, o => o.type === type);
+                              trust.push({
+                                type,
+                                proof: values.link
+                              });
+                              props.extendOrgidJson({ trust });
                               handleOpenModal();
                             }}
                           >
@@ -623,9 +624,7 @@ function TrustSocial(props) {
                         <ul style={{marginTop: '30px'}}>
                           {renderStepsList(props.socials[activeSocial].steps, verifyingCodes[activeSocial])}
                         </ul>
-                        <Button className={classes.buttonVerify}
-                                onClick={() => setVerification(!verification)}
-                        >
+                        <Button className={classes.buttonVerify} onClick={handleFirstStepClick}>
                           <Typography variant={'subtitle2'} noWrap className={classes.buttonVerifyTitle}>
                             {props.socials[activeSocial].button}
                           </Typography>
@@ -650,9 +649,9 @@ TrustSocial.defaultProps = {
       logo: twitterBig,
       title: "Verify your Twitter account",
       steps: [
-        "Click on Verify Twitter button",
-        "Your Twitter account will pop up with a draft message",
-        "Post this message to your feed",
+        "Copy this text: %verifying code%",
+        "Click on Open Facebook button",
+        "Post this message to your feed and copy post link",
         "Congratulations, your account is verified!"
       ],
       button: "Open Twitter"
@@ -663,7 +662,7 @@ TrustSocial.defaultProps = {
       title: "Verify your Facebook account",
       steps: [
         "Copy this text: %verifying code%",
-        "Click on Verify Facebook button",
+        "Click on Open Facebook button",
         "Post that as a comment under one of your posts on behalf of your corporate profile",
         "Congratulations, your account is verified!"
       ],
@@ -686,6 +685,7 @@ TrustSocial.defaultProps = {
 
 const mapStateToProps = state => {
   return {
+    orgidJson: selectWizardOrgidJson(state),
     pendingTransaction: selectPendingState(state),
     successTransaction: selectSuccessState(state),
   }

@@ -21,9 +21,9 @@ const MAKE_DEPOSIT_REQUEST = `${prefix}/MAKE_DEPOSIT_REQUEST`;
 const MAKE_DEPOSIT_SUCCESS = `${prefix}/MAKE_DEPOSIT_SUCCESS`;
 const MAKE_DEPOSIT_FAILURE = `${prefix}/MAKE_DEPOSIT_FAILURE`;
 
-const FETCH_WITHDRAWAL_STATE_REQUEST = `${prefix}/FETCH_WITHDRAWAL_STATE_REQUEST`;
-const FETCH_WITHDRAWAL_STATE_SUCCESS = `${prefix}/FETCH_WITHDRAWAL_STATE_SUCCESS`;
-const FETCH_WITHDRAWAL_STATE_FAILURE = `${prefix}/FETCH_WITHDRAWAL_STATE_FAILURE`;
+const REQUEST_WITHDRAWAL_REQUEST = `${prefix}/REQUEST_WITHDRAWAL_REQUEST`;
+const REQUEST_WITHDRAWAL_SUCCESS = `${prefix}/REQUEST_WITHDRAWAL_SUCCESS`;
+const REQUEST_WITHDRAWAL_FAILURE = `${prefix}/REQUEST_WITHDRAWAL_FAILURE`;
 
 const initialState = {
   isFetching: false,
@@ -38,14 +38,6 @@ const initialState = {
   orgIdLifWithdrawalTime: null,
   currentBlockNumber: null,
 
-  lifToken: null,
-  balance: null,
-  deposit: null,
-  allowance: false,
-  withdrawStatus: {
-    available: false,
-    availableAt: {},
-  },
   error: null,
 };
 // endregion
@@ -58,14 +50,8 @@ export default function reducer(state = initialState, action) {
     // REQUEST //
     case ENRICH_LIF_DATA_REQUEST:
     case ALLOW_DEPOSIT_REQUEST:
-      return Object.assign({}, state, {
-        isFetching: true,
-        isFetched: false,
-        allowance: false,
-        error: null,
-      });
     case MAKE_DEPOSIT_REQUEST:
-    case FETCH_WITHDRAWAL_STATE_REQUEST:
+    case REQUEST_WITHDRAWAL_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
         isFetched: false,
@@ -80,33 +66,18 @@ export default function reducer(state = initialState, action) {
       ...payload
     });
     case ALLOW_DEPOSIT_SUCCESS:
-      return Object.assign({}, state, {
-        isFetching: false,
-        isFetched: true,
-        allowance: true,
-        error: null
-      });
     case MAKE_DEPOSIT_SUCCESS:
+    case REQUEST_WITHDRAWAL_SUCCESS:
       return Object.assign({}, state, {
         isFetching: false,
         isFetched: true,
-        deposit: payload,
-        error: null
-      });
-    case FETCH_WITHDRAWAL_STATE_SUCCESS:
-      const withdrawStatus = _.merge({}, state.withdrawStatus, payload);
-
-      return Object.assign({}, state, {
-        isFetching: false,
-        isFetched: true,
-        withdrawStatus,
         error: null
       });
     // FAILURE //
     case ENRICH_LIF_DATA_FAILURE:
     case ALLOW_DEPOSIT_FAILURE:
     case MAKE_DEPOSIT_FAILURE:
-    case FETCH_WITHDRAWAL_STATE_FAILURE:
+    case REQUEST_WITHDRAWAL_FAILURE:
       return Object.assign({}, state, {
         isFetching: false,
         isFetched: false,
@@ -223,6 +194,27 @@ function makeDepositFailure(error) {
   }
 }
 
+export function requestWithdrawal(payload) {
+  return {
+    type: REQUEST_WITHDRAWAL_REQUEST,
+    payload
+  }
+}
+
+function requestWithdrawalSuccess(payload) {
+  return {
+    type: REQUEST_WITHDRAWAL_SUCCESS,
+    payload
+  }
+}
+
+function requestWithdrawalFailure(error) {
+  return {
+    type: REQUEST_WITHDRAWAL_FAILURE,
+    error
+  }
+}
+
 
 // endregion
 
@@ -297,11 +289,26 @@ function* makeDepositSaga({payload}) {
   }
 }
 
+function* requestWithdrawalSaga({payload}) {
+  console.log('requestWithdrawalSaga', payload);
+  try {
+    const userAddress = yield select(selectSignInAddress);
+    const { orgid } = payload;
+
+    yield call(ApiPostWithdrawalRequest, userAddress, orgid);
+    yield put(requestWithdrawalSuccess({}));
+    yield put(enrichLifData(payload));
+  } catch(error) {
+    yield put(requestWithdrawalFailure(error))
+  }
+}
+
 export const saga = function*() {
   yield all([
     takeEvery(ENRICH_LIF_DATA_REQUEST, enrichLifDataSaga),
     takeEvery(ALLOW_DEPOSIT_REQUEST, allowDepositSaga),
     takeEvery(MAKE_DEPOSIT_REQUEST, makeDepositSaga),
+    takeEvery(REQUEST_WITHDRAWAL_REQUEST, requestWithdrawalSaga),
   ])
 };
 // endregion
@@ -427,10 +434,21 @@ function ApiAddDeposit(userAddress, orgid) {
   });
 }
 
-
-/*
-function ApiGetWithdrawalRequest(data) {
-
+function ApiPostWithdrawalRequest(userAddress, orgid) {
+  const orgidContract = getOrgidContract();
+  const lifContract = getLifTokenContract();
+  return new Promise((resolve, reject) => {
+    lifContract.DECIMALS((error, decimals) => {
+      if (error) return reject(error);
+      orgidContract.submitWithdrawalRequest(
+        orgid, `${LIF_DEPOSIT_AMOUNT}${(10**decimals).toString().substr(1)}`,
+        { from: userAddress, gas: 500000, gasPrice: getGasPrice() },
+        (error, data) => {
+          if(error) reject(error);
+          resolve(data);
+        }
+      )
+    });
+  });
 }
-*/
 // endregion

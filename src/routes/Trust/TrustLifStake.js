@@ -10,6 +10,7 @@ import {
   enrichLifData,
   allowDeposit,
   makeDeposit,
+  requestWithdrawal,
 
   selectLifTokenBalance,
   selectLifTokenAllowanceAmountForOrgId,
@@ -324,16 +325,28 @@ const TrustLifStake = (props) => {
               </Typography>
               <Box>
                 <div className={classes.buttonsContainer}>
-                  <Button disabled={!requestWithdrawalButtonEnabled} className={ !requestWithdrawalButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
+                  {!(makeWithdrawalButtonWait || makeWithdrawalButtonEnabled)&&
+                  <Button
+                    disabled={!requestWithdrawalButtonEnabled}
+                    onClick={() => props.requestWithdrawal({orgid})}
+                    className={ !requestWithdrawalButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}
+                  >
                     <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
-                      {!(makeWithdrawalButtonWait || makeWithdrawalButtonEnabled)&&
                       <span>Request withdrawal</span>
-                      }
-                      {(makeWithdrawalButtonWait || makeWithdrawalButtonEnabled)&&
-                      <span>Make withdraw</span>
-                      }
                     </Typography>
                   </Button>
+                  }
+                  {(makeWithdrawalButtonWait || makeWithdrawalButtonEnabled)&&
+                  <Button
+                    disabled={!makeWithdrawalButtonEnabled}
+                    onClick={() => props.requestWithdrawal({orgid})}
+                    className={ !requestWithdrawalButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}
+                  >
+                    <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
+                      <span>Make withdraw</span>
+                    </Typography>
+                  </Button>
+                  }
                 </div>
               </Box>
             </Grid>
@@ -368,7 +381,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = {
   enrichLifData,
   allowDeposit,
-  makeDeposit
+  makeDeposit,
+  requestWithdrawal
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrustLifStake);

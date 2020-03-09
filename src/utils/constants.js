@@ -594,6 +594,48 @@ export const ORGID_ABI = [
     "type": "function"
   },
   {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "orgId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "name": "addDeposit",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x6e700a7f"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "orgId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "name": "submitWithdrawalRequest",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xfa094c70"
+  },
+  {
     "constant": true,
     "inputs": [
       {
@@ -632,19 +674,14 @@ export const ORGID_ABI = [
         "internalType": "bytes32",
         "name": "orgId",
         "type": "bytes32"
-      },
-      {
-        "internalType": "uint256",
-        "name": "value",
-        "type": "uint256"
       }
     ],
-    "name": "addDeposit",
+    "name": "withdrawDeposit",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0x6e700a7f"
+    "signature": "0xa8e06bc3"
   },
 ];
 export const LIF_TOKEN_PROXY_ADDRESS = '0xB6e225194a1C892770c43D4B529841C99b3DA1d7';

@@ -61,15 +61,20 @@ export const getTodo = (organization) => {
 
   let website = contacts.website;
 
+  // WEBSITE
   if (website && !organization.isWebsiteProved) {
     if (typeof website === 'string' && website.indexOf('://') === -1) website = `http://${website}`;
     todo.push(Object.assign({}, allTodo.website, {state: {website, isWebsiteVerified: organization.isWebsiteProved}}));
   }
+  // SOCIAL
   if ((contacts.twitter && !organization.isSocialTWProved) || (contacts.facebook && !organization.isSocialFBProved) || (contacts.instagram && !organization.isSocialIGProved)) {
     todo.push(Object.assign({}, allTodo.social, {state: {contacts, id, orgid }}));
   }
+  // SSL
   if (website && organization.isWebsiteProved && !organization.isSslProved) todo.push(Object.assign({}, allTodo.ssl, { state: {name, isWebsiteVerified: organization.isWebsiteProved} }));
-  if (!organization.isLifProved) todo.push(allTodo.lif);
+  // LIF
+  if (!organization.isLifProved)
+    todo.push(Object.assign({}, allTodo.lif, {state: { orgid }}));
   return todo;
 };
 

@@ -1,10 +1,10 @@
 import _ from 'lodash';
-import { appName, ORGID_ABI, ORGID_PROXY_ADDRESS } from "../utils/constants";
-import { all, takeEvery, call, put, select } from 'redux-saga/effects';
+import {all, takeEvery, call, put, select} from 'redux-saga/effects';
 import {createSelector} from "reselect";
-import { keccak256 } from 'js-sha3';
-import { callApi } from "../redux/api";
-import { idGenerator } from "../utils/helpers";
+import {keccak256} from 'js-sha3';
+import {appName} from "../utils/constants";
+import {callApi} from "../redux/api";
+import {idGenerator, getWeb3, getGasPrice, getOrgidContract} from "../utils/helpers";
 
 //region == [Constants] ================================================================================================
 export const moduleName = 'wizard';
@@ -663,27 +663,6 @@ export const saga = function* () {
   ])
 };
 //endregion
-
-//region == [utils] ====================================================================================================
-function getWeb3() {
-  if (typeof window.web3 === 'undefined') {
-    alert('MetaMask not found. If you just install MetaMask please refresh page to continue');
-    throw new Error(`MetaMask not found`);
-  }
-  return window.web3
-}
-
-function getOrgidContract() {
-  const web3 = getWeb3();
-  const orgidAbi = web3.eth.contract(ORGID_ABI); // todo: load ABI on this step only from backend to optimize react size
-  return  orgidAbi.at(ORGID_PROXY_ADDRESS); // todo: can be loaded from back-end as well
-}
-
-function getGasPrice() {
-  const web3 = getWeb3();
-  return web3.toWei("10", "gwei"); // todo: calculate gwei
-}
-//region
 
 //region == [API] ======================================================================================================
 function ApiPostMedia(data) {

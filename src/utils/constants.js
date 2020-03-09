@@ -1,11 +1,11 @@
 export const appName = `Arbor`;
+export const LIF_DEPOSIT_AMOUNT = 1000;
 export const API_URI = `https://api.arbor.dev.bachoodesign.com/api/v1`;
 // export const API_URI = `https://192.168.88.71:3000/api/v1`;
 // export const API_URI = `https://127.0.0.1:3000/api/v1`;
+// export const API_URI = `https://loc.orangerea.com.ua:3333/api/v1`;
 // export const API_URI = `https://loc.orangerea.com.ua:3000/api/v1`;
-export const ORGID_PROXY_ADDRESS = '0x27B9dFa2607AaF3730Dad5c0E9fa8f6Dc0F2B49f';
-export const DIRECTORY_PROXY_ADDRESS = '0x68d9cB089a3e17be6F9De7a318BBCC55F4c899Bc';
-export const LIF_PROXY_ADDRESS = '0xfCfD5E296E4eD50B5F261b11818c50B73ED6c89E';
+export const ORGID_PROXY_ADDRESS = '0xc8fD300bE7e4613bCa573ad820a6F1f0b915CfcA';
 export const ORGID_ABI = [
   {
     "anonymous": false,
@@ -254,27 +254,6 @@ export const ORGID_ABI = [
     "type": "function"
   },
   {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "bytes4",
-        "name": "interfaceId",
-        "type": "bytes4"
-      }
-    ],
-    "name": "supportsInterface",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "constant": false,
     "inputs": [
       {
@@ -284,21 +263,6 @@ export const ORGID_ABI = [
       }
     ],
     "name": "transferOwnership",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "address payable",
-        "name": "__owner",
-        "type": "address"
-      }
-    ],
-    "name": "initialize",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -328,6 +292,21 @@ export const ORGID_ABI = [
       {
         "internalType": "bytes32",
         "name": "id",
+        "type": "bytes32"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "getLifTokenAddress",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "lifToken",
         "type": "bytes32"
       }
     ],
@@ -519,6 +498,11 @@ export const ORGID_ABI = [
     "name": "getOrganization",
     "outputs": [
       {
+        "internalType": "bool",
+        "name": "exist",
+        "type": "bool"
+      },
+      {
         "internalType": "bytes32",
         "name": "orgId",
         "type": "bytes32"
@@ -557,11 +541,17 @@ export const ORGID_ABI = [
         "internalType": "bool",
         "name": "directorConfirmed",
         "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "deposit",
+        "type": "uint256"
       }
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "signature": "0x22b3cd4e"
   },
   {
     "constant": false,
@@ -604,90 +594,96 @@ export const ORGID_ABI = [
     "type": "function"
   },
   {
-    "constant": false,
-    "inputs": [],
-    "name": "setInterfaces",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "totalSupply",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "constant": true,
     "inputs": [
       {
-        "name": "_owner",
-        "type": "address"
+        "internalType": "bytes32",
+        "name": "orgId",
+        "type": "bytes32"
       }
     ],
-    "name": "balanceOf",
+    "name": "getWithdrawalRequest",
     "outputs": [
       {
-        "name": "balance",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_to",
-        "type": "address"
+        "internalType": "bool",
+        "name": "exist",
+        "type": "bool"
       },
       {
-        "name": "_value",
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "withdrawTime",
         "type": "uint256"
       }
     ],
-    "name": "transfer",
-    "outputs": [
-      {
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0x3e7d48ab"
+  },
+];
+export const LIF_TOKEN_PROXY_ADDRESS = '0xB6e225194a1C892770c43D4B529841C99b3DA1d7';
+export const LIF_TOKEN_ABI = [
+  {
+    "constant": false,
+    "inputs": [{"name": "_spender", "type": "address"}, {"name": "_value", "type": "uint256"}],
+    "name": "approve",
+    "outputs": [{"name": "", "type": "bool"}],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
+    "type": "function",
+    "signature": "0x095ea7b3"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "DECIMALS",
+    "outputs": [{"name": "", "type": "uint256"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0x2e0f2625"
+  },
+  {
+    "constant": true,
+    "inputs": [{"name": "_owner", "type": "address"}],
+    "name": "balanceOf",
+    "outputs": [{"name": "balance", "type": "uint256"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0x70a08231"
+  },
+  {
+    "constant": true,
+    "inputs": [{"name": "_owner", "type": "address"}, {"name": "_spender", "type": "address"}],
+    "name": "allowance",
+    "outputs": [{"name": "", "type": "uint256"}],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0xdd62ed3e"
   },
   {
     "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "name": "value",
-        "type": "uint256"
-      }
-    ],
-    "name": "Transfer",
-    "type": "event"
+    "inputs": [{"indexed": true, "name": "owner", "type": "address"}, {
+      "indexed": true,
+      "name": "spender",
+      "type": "address"
+    }, {"indexed": false, "name": "value", "type": "uint256"}],
+    "name": "Approval",
+    "type": "event",
+    "signature": "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925"
   }
 ];
+export const DIRECTORY_PROXY_ADDRESS = '0x68d9cB089a3e17be6F9De7a318BBCC55F4c899Bc';
+
+// For in-browser debug purposes.
+window.ORGID_PROXY_ADDRESS = ORGID_PROXY_ADDRESS;
+window.ORGID_ABI = ORGID_ABI;
+window.LIF_TOKEN_PROXY_ADDRESS = LIF_TOKEN_PROXY_ADDRESS;
+window.LIF_TOKEN_ABI = LIF_TOKEN_ABI;

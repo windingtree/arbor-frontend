@@ -1,26 +1,31 @@
 import React, { useEffect } from "react";
 import { connect } from 'react-redux';
-import history from '../../redux/history';
-
-import { selectSignInAddress } from '../../ducks/signIn';
-import {
-  getLifToken,
-  getBalance,
-  selectAllowance,
-  selectDeposit,
-  selectBalance,
-  selectWithdrawStatus
-} from '../../ducks/lifDeposit';
-
 import {Container, Typography, Grid, Card, Box, Button} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 
+import { LIF_DEPOSIT_AMOUNT } from "../../utils/constants";
+import history from '../../redux/history';
+import { selectSignInAddress } from '../../ducks/signIn';
+import {
+  getLifToken,
+  enrichLifData,
+
+  selectLifTokenBalance,
+  selectLifTokenAllowanceAmountForOrgId,
+  selectOrgIdLifDepositConfirmed,
+  selectOrgIdLifDepositAmount,
+  selectOrgIdLifWithdrawalExist,
+  selectOrgIdLifWithdrawalValue,
+  selectOrgIdLifWithdrawalTime,
+  selectCurrentBlockNumber
+} from '../../ducks/lifDeposit';
+
 import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
-import trustTopIllustation from '../../assets/SvgComponents/lif-deposit-illustration.svg';
+import trustTopIllustration from '../../assets/SvgComponents/lif-deposit-illustration.svg';
 import lifWithdrawIllustration from '../../assets/SvgComponents/lif-deposit-withdraw.svg';
 import {LifIcon1, LifIcon2, LifIcon3} from '../../assets/SvgComponents';
-
 import colors from '../../styles/colors';
+
 
 const styles = makeStyles({
   topDiv: {
@@ -174,12 +179,34 @@ const styles = makeStyles({
 });
 
 const TrustLifStake = (props) => {
+  const orgid = (!!history.location.state && !!history.location.state.orgid) ? history.location.state.orgid : null;
+  console.log('%cTrustLifStake(props)', 'background-color:yellow; color: black', 'orgid', orgid);
   const classes = styles();
-  const { disabled, address, allowance, balance, /*deposit,*/ /*withdraw: { available, availableAt }*/ } = props;
+  const {
+    address,
+    lifTokenBalance,
+    lifTokenAllowanceAmountForOrgId,
+    orgIdLifDepositConfirmed,
+    orgIdLifDepositAmount,
+    orgIdLifWithdrawalExist,
+    orgIdLifWithdrawalValue,
+    orgIdLifWithdrawalTime,
+    currentBlockNumber,
+  } = props;
+
+  const makeDepositButtonEnabled = lifTokenAllowanceAmountForOrgId >= LIF_DEPOSIT_AMOUNT && lifTokenBalance >= LIF_DEPOSIT_AMOUNT;
+  const allowDepositButtonEnabled = !makeDepositButtonEnabled && lifTokenBalance >= LIF_DEPOSIT_AMOUNT;
+  const makeWithdrawalButtonEnabled = orgIdLifWithdrawalExist && currentBlockNumber >= orgIdLifWithdrawalTime && orgIdLifWithdrawalValue > 0;
+  const makeWithdrawalButtonWait = orgIdLifWithdrawalExist && currentBlockNumber < orgIdLifWithdrawalTime;
+  const requestWithdrawalButtonEnabled = !orgIdLifWithdrawalExist && orgIdLifDepositConfirmed && orgIdLifDepositAmount >= LIF_DEPOSIT_AMOUNT;
+
 
   useEffect(() => {
-    props.getLifToken();
-    props.getBalance(address);
+    console.log('%cuseEffect, [address]', 'background-color:yellow; color: black', address);
+    props.enrichLifData({orgid});
+    if (1+1 === 3) {
+      props.getLifToken();
+    }
   }, [address]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -207,7 +234,7 @@ const TrustLifStake = (props) => {
               <div className={classes.line}/>
             </Grid>
             <Grid item xs={12} lg={6}>
-              <img src={trustTopIllustation} alt={'illustration'}/>
+              <img src={trustTopIllustration} alt={'illustration'}/>
             </Grid>
           </Grid>
         </Container>
@@ -251,22 +278,32 @@ const TrustLifStake = (props) => {
                 Make sure that you have at least 1000 Líf in your MetaMask account. Líf deposit will automatically
                 generate Lög tokens required for voting.
               </Typography>
+
+              {/* LIF DEPOSIT */}
+
               <div className={classes.buttonsContainer}>
                 <div className={classes.buttonWrapper}>
-                  <Button disabled={!allowance} className={ !allowance ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
+                  {/* LIF DEPOSIT: Allow deposit */}
+                  <Button disabled={!allowDepositButtonEnabled}
+                          className={ !allowDepositButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
                     <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
                       Allow deposit
                     </Typography>
                   </Button>
                 </div>
                 <div className={classes.buttonWrapper}>
-                  <Button disabled={!balance} className={ !balance ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
+                  {/* LIF DEPOSIT: Make deposit */}
+                  <Button disabled={!makeDepositButtonEnabled}
+                          className={ !makeDepositButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
                     <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
                       Make deposit
                     </Typography>
                   </Button>
                 </div>
               </div>
+
+              {/* END LIF DEPOSIT */}
+
             </Grid>
           </Grid>
         </div>
@@ -289,9 +326,14 @@ const TrustLifStake = (props) => {
               </Typography>
               <Box>
                 <div className={classes.buttonsContainer}>
-                  <Button disabled={disabled} className={ disabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
+                  <Button disabled={!requestWithdrawalButtonEnabled} className={ !requestWithdrawalButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
                     <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
-                      Request withdrawal
+                      {!(makeWithdrawalButtonWait || makeWithdrawalButtonEnabled)&&
+                      <span>Request withdrawal</span>
+                      }
+                      {(makeWithdrawalButtonWait || makeWithdrawalButtonEnabled)&&
+                      <span>Make withdraw</span>
+                      }
                     </Typography>
                   </Button>
                 </div>
@@ -315,16 +357,20 @@ TrustLifStake.defaultProps = {
 const mapStateToProps = state => {
   return {
     address: selectSignInAddress(state),
-    allowance: selectAllowance(state),
-    deposit: selectDeposit(state),
-    balance: selectBalance(state),
-    withdraw: selectWithdrawStatus(state),
+    lifTokenBalance: selectLifTokenBalance(state),
+    lifTokenAllowanceAmountForOrgId: selectLifTokenAllowanceAmountForOrgId(state),
+    orgIdLifDepositConfirmed: selectOrgIdLifDepositConfirmed(state),
+    orgIdLifDepositAmount: selectOrgIdLifDepositAmount(state),
+    orgIdLifWithdrawalExist: selectOrgIdLifWithdrawalExist(state),
+    orgIdLifWithdrawalValue: selectOrgIdLifWithdrawalValue(state),
+    orgIdLifWithdrawalTime: selectOrgIdLifWithdrawalTime(state),
+    currentBlockNumber: selectCurrentBlockNumber(state),
   }
 };
 
 const mapDispatchToProps = {
   getLifToken,
-  getBalance
+  enrichLifData
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrustLifStake);

@@ -625,6 +625,27 @@ export const ORGID_ABI = [
     "type": "function",
     "signature": "0x3e7d48ab"
   },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "orgId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "name": "addDeposit",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x6e700a7f"
+  },
 ];
 export const LIF_TOKEN_PROXY_ADDRESS = '0xB6e225194a1C892770c43D4B529841C99b3DA1d7';
 export const LIF_TOKEN_ABI = [
@@ -678,7 +699,17 @@ export const LIF_TOKEN_ABI = [
     "name": "Approval",
     "type": "event",
     "signature": "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925"
-  }
+  },
+  {
+    "constant": false,
+    "inputs": [{"name": "_spender", "type": "address"}, {"name": "_addedValue", "type": "uint256"}],
+    "name": "increaseApproval",
+    "outputs": [{"name": "success", "type": "bool"}],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xd73dd623"
+  },
 ];
 export const DIRECTORY_PROXY_ADDRESS = '0x68d9cB089a3e17be6F9De7a318BBCC55F4c899Bc';
 

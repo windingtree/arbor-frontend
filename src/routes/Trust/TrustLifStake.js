@@ -9,10 +9,10 @@ import { selectSignInAddress } from '../../ducks/signIn';
 import {
   enrichLifData,
   allowDeposit,
+  makeDeposit,
 
   selectLifTokenBalance,
   selectLifTokenAllowanceAmountForOrgId,
-  selectOrgIdLifDepositConfirmed,
   selectOrgIdLifDepositAmount,
   selectOrgIdLifWithdrawalExist,
   selectOrgIdLifWithdrawalValue,
@@ -186,7 +186,6 @@ const TrustLifStake = (props) => {
     address,
     lifTokenBalance,
     lifTokenAllowanceAmountForOrgId,
-    orgIdLifDepositConfirmed,
     orgIdLifDepositAmount,
     orgIdLifWithdrawalExist,
     orgIdLifWithdrawalValue,
@@ -195,10 +194,10 @@ const TrustLifStake = (props) => {
   } = props;
 
   const makeDepositButtonEnabled = lifTokenAllowanceAmountForOrgId >= LIF_DEPOSIT_AMOUNT && lifTokenBalance >= LIF_DEPOSIT_AMOUNT;
-  const allowDepositButtonEnabled = !makeDepositButtonEnabled && lifTokenBalance >= LIF_DEPOSIT_AMOUNT;
+  const requestWithdrawalButtonEnabled = !orgIdLifWithdrawalExist && orgIdLifDepositAmount >= LIF_DEPOSIT_AMOUNT;
+  const allowDepositButtonEnabled = !requestWithdrawalButtonEnabled && !makeDepositButtonEnabled && lifTokenBalance >= LIF_DEPOSIT_AMOUNT;
   const makeWithdrawalButtonEnabled = orgIdLifWithdrawalExist && currentBlockNumber >= orgIdLifWithdrawalTime && orgIdLifWithdrawalValue > 0;
   const makeWithdrawalButtonWait = orgIdLifWithdrawalExist && currentBlockNumber < orgIdLifWithdrawalTime;
-  const requestWithdrawalButtonEnabled = !orgIdLifWithdrawalExist && orgIdLifDepositConfirmed && orgIdLifDepositAmount >= LIF_DEPOSIT_AMOUNT;
 
 
   useEffect(() => {
@@ -292,6 +291,7 @@ const TrustLifStake = (props) => {
                 <div className={classes.buttonWrapper}>
                   {/* LIF DEPOSIT: Make deposit */}
                   <Button disabled={!makeDepositButtonEnabled}
+                          onClick={() => props.makeDeposit({ orgid })}
                           className={ !makeDepositButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
                     <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
                       Make deposit
@@ -357,7 +357,6 @@ const mapStateToProps = state => {
     address: selectSignInAddress(state),
     lifTokenBalance: selectLifTokenBalance(state),
     lifTokenAllowanceAmountForOrgId: selectLifTokenAllowanceAmountForOrgId(state),
-    orgIdLifDepositConfirmed: selectOrgIdLifDepositConfirmed(state),
     orgIdLifDepositAmount: selectOrgIdLifDepositAmount(state),
     orgIdLifWithdrawalExist: selectOrgIdLifWithdrawalExist(state),
     orgIdLifWithdrawalValue: selectOrgIdLifWithdrawalValue(state),
@@ -368,7 +367,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
   enrichLifData,
-  allowDeposit
+  allowDeposit,
+  makeDeposit
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrustLifStake);

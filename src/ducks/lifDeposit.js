@@ -32,7 +32,6 @@ const initialState = {
 
   lifTokenBalance: false,
   lifTokenAllowanceAmountForOrgId: 0,
-  orgIdLifDepositConfirmed: false,
   orgIdLifDepositAmount: 0,
   orgIdLifWithdrawalExist: false,
   orgIdLifWithdrawalValue: null,
@@ -132,11 +131,6 @@ export const selectLifTokenAllowanceAmountForOrgId = createSelector(
   deposit => deposit.lifTokenAllowanceAmountForOrgId
 );
 
-export const selectOrgIdLifDepositConfirmed = createSelector(
-  stateSelector,
-  deposit => deposit.orgIdLifDepositConfirmed
-);
-
 export const selectOrgIdLifDepositAmount = createSelector(
   stateSelector,
   deposit => deposit.orgIdLifDepositAmount
@@ -208,6 +202,27 @@ function allowDepositFailure(error) {
   }
 }
 
+export function makeDeposit(payload) {
+  return {
+    type: MAKE_DEPOSIT_REQUEST,
+    payload
+  }
+}
+
+function makeDepositSuccess(payload) {
+  return {
+    type: MAKE_DEPOSIT_SUCCESS,
+    payload
+  }
+}
+
+function makeDepositFailure(error) {
+  return {
+    type: MAKE_DEPOSIT_FAILURE,
+    error
+  }
+}
+
 
 // endregion
 
@@ -227,7 +242,6 @@ function* enrichLifDataSaga({payload}) {
     const lifTokenAllowanceAmountForOrgId = yield call(ApiGetLifTokenAllowanceAmountForOrgId, userAddress);
     // OrgIdLifTokenDepositedAmount
     const {
-      directorConfirmed: orgIdLifDepositConfirmed,
       deposit: orgIdLifDepositAmount
     } = yield call(ApiGetOrgIdLifTokenDepositedAmount, orgid);
     // lifTokenWithdrawDelay
@@ -244,7 +258,6 @@ function* enrichLifDataSaga({payload}) {
     yield put(enrichLifDataSuccess({
       lifTokenBalance,
       lifTokenAllowanceAmountForOrgId,
-      orgIdLifDepositConfirmed,
       orgIdLifDepositAmount,
       orgIdLifWithdrawalExist,
       orgIdLifWithdrawalValue,
@@ -256,8 +269,8 @@ function* enrichLifDataSaga({payload}) {
   }
 }
 
-function* allowDepositSaga({payload}) {
-  console.log('allowDepositSaga', payload);
+function* allowDepositSaga({payload})  {
+  console.log('makeDepositSaga', payload);
   try {
     const userAddress = yield select(selectSignInAddress);
 
@@ -270,10 +283,25 @@ function* allowDepositSaga({payload}) {
   }
 }
 
+function* makeDepositSaga({payload}) {
+  console.log('makeDepositSaga', payload);
+  try {
+    const userAddress = yield select(selectSignInAddress);
+    const { orgid } = payload;
+
+    yield call(ApiAddDeposit, userAddress, orgid);
+    yield put(makeDepositSuccess({}));
+    yield put(enrichLifData(payload));
+  } catch(error) {
+    yield put(makeDepositFailure(error))
+  }
+}
+
 export const saga = function*() {
   yield all([
     takeEvery(ENRICH_LIF_DATA_REQUEST, enrichLifDataSaga),
     takeEvery(ALLOW_DEPOSIT_REQUEST, allowDepositSaga),
+    takeEvery(MAKE_DEPOSIT_REQUEST, makeDepositSaga),
   ])
 };
 // endregion
@@ -329,7 +357,6 @@ function ApiGetOrgIdLifTokenDepositedAmount(orgId) {
         if (error) return reject(error);
         // Get decimals
         resolve({
-          directorConfirmed,
           deposit: deposit.toNumber()
         });
       });
@@ -382,18 +409,22 @@ function ApiIncreaseAllowance(userAddress) {
   })
 }
 
-function ApiMakeDeposit(userAddress, orgid) {
+function ApiAddDeposit(userAddress, orgid) {
   const orgidContract = getOrgidContract();
+  const lifContract = getLifTokenContract();
   return new Promise((resolve, reject) => {
-    orgidContract.transfer(
-      orgid, LIF_DEPOSIT_AMOUNT,
-      { from: userAddress, gas: 500000, gasPrice: getGasPrice() },
-      (error, success) => {
-        if(error) reject(error);
-        resolve(success);
-      }
-    )
-  })
+    lifContract.DECIMALS((error, decimals) => {
+      if (error) return reject(error);
+      orgidContract.addDeposit(
+        orgid, `${LIF_DEPOSIT_AMOUNT}${(10**decimals).toString().substr(1)}`,
+        { from: userAddress, gas: 500000, gasPrice: getGasPrice() },
+        (error, data) => {
+          if(error) reject(error);
+          resolve(data);
+        }
+      )
+    });
+  });
 }
 
 

@@ -7,8 +7,8 @@ import { LIF_DEPOSIT_AMOUNT } from "../../utils/constants";
 import history from '../../redux/history';
 import { selectSignInAddress } from '../../ducks/signIn';
 import {
-  getLifToken,
   enrichLifData,
+  allowDeposit,
 
   selectLifTokenBalance,
   selectLifTokenAllowanceAmountForOrgId,
@@ -204,9 +204,6 @@ const TrustLifStake = (props) => {
   useEffect(() => {
     console.log('%cuseEffect, [address]', 'background-color:yellow; color: black', address);
     props.enrichLifData({orgid});
-    if (1+1 === 3) {
-      props.getLifToken();
-    }
   }, [address]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -285,6 +282,7 @@ const TrustLifStake = (props) => {
                 <div className={classes.buttonWrapper}>
                   {/* LIF DEPOSIT: Allow deposit */}
                   <Button disabled={!allowDepositButtonEnabled}
+                          onClick={() => props.allowDeposit({ orgid })}
                           className={ !allowDepositButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
                     <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
                       Allow deposit
@@ -369,8 +367,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-  getLifToken,
-  enrichLifData
+  enrichLifData,
+  allowDeposit
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrustLifStake);

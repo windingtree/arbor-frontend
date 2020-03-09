@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { createSelector } from 'reselect';
 import { all, call, put, takeEvery, select } from 'redux-saga/effects';
 import { appName, LIF_DEPOSIT_AMOUNT, ORGID_PROXY_ADDRESS } from '../utils/constants';
-import { getOrgidContract, getLifTokenContract, getCurrentBlockNumber } from '../utils/helpers'
+import { getOrgidContract, getLifTokenContract, getCurrentBlockNumber, getGasPrice } from '../utils/helpers'
 import { selectSignInAddress } from "./signIn";
 
 // region == [CONSTANTS] ===============================================
@@ -12,10 +12,6 @@ const prefix = `${appName}/${moduleName}`;
 const ENRICH_LIF_DATA_REQUEST = `${prefix}/ENRICH_LIF_DATA_REQUEST`;
 const ENRICH_LIF_DATA_SUCCESS = `${prefix}/ENRICH_LIF_DATA_SUCCESS`;
 const ENRICH_LIF_DATA_FAILURE = `${prefix}/ENRICH_LIF_DATA_FAILURE`;
-
-const GET_LIF_TOKEN_REQUEST = `${prefix}/GET_LIF_TOKEN_REQUEST`;
-const GET_LIF_TOKEN_SUCCESS = `${prefix}/GET_LIF_TOKEN_SUCCESS`;
-const GET_LIF_TOKEN_FAILURE = `${prefix}/GET_LIF_TOKEN_FAILURE`;
 
 const ALLOW_DEPOSIT_REQUEST = `${prefix}/ALLOW_DEPOSIT_REQUEST`;
 const ALLOW_DEPOSIT_SUCCESS = `${prefix}/ALLOW_DEPOSIT_SUCCESS`;
@@ -62,7 +58,6 @@ export default function reducer(state = initialState, action) {
   switch(type) {
     // REQUEST //
     case ENRICH_LIF_DATA_REQUEST:
-    case GET_LIF_TOKEN_REQUEST:
     case ALLOW_DEPOSIT_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
@@ -85,14 +80,6 @@ export default function reducer(state = initialState, action) {
       error: null,
       ...payload
     });
-    case GET_LIF_TOKEN_SUCCESS:
-      return Object.assign({}, state, {
-        isFetching: false,
-        isFetched: true,
-        lifToken: payload,
-        allowance: false,
-        error: null
-      });
     case ALLOW_DEPOSIT_SUCCESS:
       return Object.assign({}, state, {
         isFetching: false,
@@ -118,7 +105,6 @@ export default function reducer(state = initialState, action) {
       });
     // FAILURE //
     case ENRICH_LIF_DATA_FAILURE:
-    case GET_LIF_TOKEN_FAILURE:
     case ALLOW_DEPOSIT_FAILURE:
     case MAKE_DEPOSIT_FAILURE:
     case FETCH_WITHDRAWAL_STATE_FAILURE:
@@ -201,25 +187,28 @@ function enrichLifDataFailure(error) {
   }
 }
 
-export function getLifToken() {
+export function allowDeposit(payload) {
   return {
-    type: GET_LIF_TOKEN_REQUEST,
-  }
-}
-
-function getLifTokenSuccess(payload) {
-  return {
-    type: GET_LIF_TOKEN_SUCCESS,
+    type: ALLOW_DEPOSIT_REQUEST,
     payload
   }
 }
 
-function getLifTokenFailure(error) {
+function allowDepositSuccess(payload) {
   return {
-    type: GET_LIF_TOKEN_FAILURE,
+    type: ALLOW_DEPOSIT_SUCCESS,
+    payload
+  }
+}
+
+function allowDepositFailure(error) {
+  return {
+    type: ALLOW_DEPOSIT_FAILURE,
     error
   }
 }
+
+
 // endregion
 
 // region == [SAGAS] ===================================================
@@ -267,20 +256,24 @@ function* enrichLifDataSaga({payload}) {
   }
 }
 
-function* getLifTokenSaga() {
+function* allowDepositSaga({payload}) {
+  console.log('allowDepositSaga', payload);
   try {
-    const result = yield call(ApiGetLifToken);
+    const userAddress = yield select(selectSignInAddress);
 
-    yield put(getLifTokenSuccess(result));
+    const isSuccess = yield call(ApiIncreaseAllowance, userAddress);
+    if(!isSuccess) throw 'Unable allow deposit';
+    yield put(allowDepositSuccess({}));
+    yield put(enrichLifData(payload));
   } catch(error) {
-    yield put(getLifTokenFailure(error))
+    yield put(allowDepositFailure(error))
   }
 }
 
 export const saga = function*() {
   yield all([
     takeEvery(ENRICH_LIF_DATA_REQUEST, enrichLifDataSaga),
-    takeEvery(GET_LIF_TOKEN_REQUEST, getLifTokenSaga),
+    takeEvery(ALLOW_DEPOSIT_REQUEST, allowDepositSaga),
   ])
 };
 // endregion
@@ -372,41 +365,39 @@ function ApiGetCurrentBlockNumber() {
   return getCurrentBlockNumber()
 }
 
-function ApiGetLifToken() {
-  const orgidContract = getOrgidContract();
-  return orgidContract.owner();
-}
-
-/*
-function ApiIncreaseAllowance(data) {
-  const orgidContract = getOrgidContract();
-  const { orgid, value } = data;
-
+function ApiIncreaseAllowance(userAddress) {
+  const lifContract = getLifTokenContract();
   return new Promise((resolve, reject) => {
-    orgidContract.increaseApproval(
-      orgid, value,
-      (data, error) => {
-        if(error) reject(error);
-        resolve(data);
-      }
-    )
+    lifContract.DECIMALS((error, decimals) => {
+      if (error) return reject(error);
+      lifContract.increaseApproval(
+        ORGID_PROXY_ADDRESS, `${LIF_DEPOSIT_AMOUNT}${(10**decimals).toString().substr(1)}`,
+        { from: userAddress, gas: 500000, gasPrice: getGasPrice() },
+        (error, success) => {
+          if(error) reject(error);
+          resolve(success);
+        }
+      )
+    });
   })
 }
 
-function ApiMakeDeposit(data) {
+function ApiMakeDeposit(userAddress, orgid) {
   const orgidContract = getOrgidContract();
-  const { orgid, value } = data;
   return new Promise((resolve, reject) => {
     orgidContract.transfer(
-      orgid, value,
-      (data, error) => {
+      orgid, LIF_DEPOSIT_AMOUNT,
+      { from: userAddress, gas: 500000, gasPrice: getGasPrice() },
+      (error, success) => {
         if(error) reject(error);
-        resolve(data);
+        resolve(success);
       }
     )
   })
 }
 
+
+/*
 function ApiGetWithdrawalRequest(data) {
 
 }

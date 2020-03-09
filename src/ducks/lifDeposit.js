@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { createSelector } from 'reselect';
 import { all, call, put, takeEvery, select } from 'redux-saga/effects';
 import { appName, LIF_DEPOSIT_AMOUNT, ORGID_PROXY_ADDRESS } from '../utils/constants';
@@ -267,7 +266,7 @@ function* allowDepositSaga({payload})  {
     const userAddress = yield select(selectSignInAddress);
 
     const isSuccess = yield call(ApiIncreaseAllowance, userAddress);
-    if(!isSuccess) throw 'Unable allow deposit';
+    if(!isSuccess) throw 'Unable allow deposit'; // eslint-disable-line  no-throw-literal
     yield put(allowDepositSuccess({}));
     yield put(enrichLifData(payload));
   } catch(error) {

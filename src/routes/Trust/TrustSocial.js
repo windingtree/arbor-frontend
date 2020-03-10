@@ -148,21 +148,18 @@ const styles = makeStyles({
   },
   howListDot: {
     position: 'absolute',
-    top: '14px',
-    transform: 'translateY(-50%)',
-    content: '""',
-    backgroundColor: colors.secondary.peach,
-    fontWeight: 'bold',
-    display: 'inline-block',
+    top: '50%',
     width: '8px',
     height: '8px',
-    borderRadius: '12px',
-    border: '12px',
+    borderRadius: '50%',
+    transform: 'translateY(-50%)',
+    backgroundColor: colors.secondary.peach,
   },
   howTextListItem: {
     position: 'relative',
   },
   howListTexts: {
+    display: 'inline-block',
     marginLeft: '23px',
     fontWeight: 500,
     fontSize: '16px',
@@ -170,7 +167,6 @@ const styles = makeStyles({
     color: colors.greyScale.dark,
   },
   howListPlaceholder: {
-    height: '15px',
     marginLeft: '3px'
   },
   socialsControllers: {
@@ -301,14 +297,14 @@ function TrustSocial(props) {
   const [isModalOpen, toggleModalOpenState] = useState(false);
   const {successTransaction, pendingTransaction} = props;
   const contacts = (!!history.location.state && !!history.location.state.contacts) ? history.location.state.contacts : false;
-  const orgid = (!!history.location.state && !!history.location.state.orgid) ? history.location.state.orgid : null;
+  const orgid = (!!history.location.state && !!history.location.state.orgid) ? history.location.state.orgid : 'undefined';
   const {twitter, facebook, instagram} = contacts;
 
   useEffect(() => {
     if(!contacts) {
       history.goBack()
     }
-  }, [contacts]); // eslint-disable-line react-hooks/exhaustive-deps
+  }); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     props.resetTransactionStatus();
@@ -357,7 +353,7 @@ function TrustSocial(props) {
   const copyToClipboard = (code) => {
     return (
       <span>
-        <Typography variant={'caption'} className={classes.verifyingCode}>{code.length < 16 ? code : `My ORG.ID is ${code.substr(0,6)}...${code.substr(-4)}`}</Typography>
+        <Typography variant={'caption'} className={classes.verifyingCode}>{code.length < 16 ? code : ` My ORG.ID is ${code.substr(0,6)}...${code.substr(-4)}`}</Typography>
         <span>
           <LightTooltip
             PopperProps={{
@@ -402,7 +398,7 @@ function TrustSocial(props) {
     for (let i = 0; i < listItems.length; i++) {
       listItemsWithPlaceholders.push(listItems[i]);
       if (i !== listItems.length - 1) {
-        listItemsWithPlaceholders.push(<div key={(i + listItems.length).toString()}><img className={classes.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/></div>)
+        listItemsWithPlaceholders.push(<img key={(i + listItems.length).toString()} className={classes.howListPlaceholder} src={listPlaceholderSvg} alt={"|"}/>)
       }
     }
 
@@ -509,7 +505,7 @@ function TrustSocial(props) {
               <Button onClick={history.goBack}>
                 <Typography className={classes.backButtonLabel}>
                   <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
-                  Back to all organizations
+                  Back to organization profile
                 </Typography>
               </Button>
             </div>
@@ -652,8 +648,8 @@ TrustSocial.defaultProps = {
       title: "Verify your Twitter account",
       steps: [
         "Copy this text: %verifying code%",
-        "Click on Open Facebook button",
-        "Post this message to your feed and copy post link",
+        "Click on Open Twitter button",
+        "Post this message to your feed and share the link with us",
         "Congratulations, your account is verified!"
       ],
       button: "Open Twitter"
@@ -664,7 +660,7 @@ TrustSocial.defaultProps = {
       title: "Verify your Facebook account",
       steps: [
         "Copy this text: %verifying code%",
-        "Click on Open Facebook button",
+        "Click on Open Facebook button to open your account",
         "Post that as a comment under one of your posts on behalf of your corporate profile",
         "Congratulations, your account is verified!"
       ],
@@ -676,7 +672,7 @@ TrustSocial.defaultProps = {
       title: "Verify your Instagram account",
       steps: [
         "Copy this text: %verifying code%",
-        "Click on Verify Instagram button",
+        "Click on Open Instagram button to open your account",
         "Post that as a comment under one of your posts on behalf of your corporate profile",
         "Congratulations, your account is verified!"
       ],

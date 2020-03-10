@@ -146,11 +146,11 @@ const styles = makeStyles({
 
 const TrustSSL = () => {
   const classes = styles();
-  const name = _.get(history, 'location.state.name', 'default name');
+  const name = _.get(history, 'location.state.name', 'default');
   const isVerified = _.get(history, 'location.state.isWebsiteVerified', false);
 
   useEffect(() => {
-    if(name === 'default name' && isVerified) {
+    if(name === 'default' && !isVerified) {
       history.goBack();
     }
   });
@@ -165,7 +165,7 @@ const TrustSSL = () => {
               <Button onClick={history.goBack}>
                 <Typography className={classes.buttonLabel}>
                   <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
-                  Back to all organizations
+                  Back to organization profile
                 </Typography>
               </Button>
             </div>

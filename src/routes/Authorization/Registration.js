@@ -107,9 +107,7 @@ const Registration = () => {
                 organization profile on Arbor. </Typography>
             </div>
             <div className={classes.buttonWrapper}>
-              <Button onClick={(event) => {
-                event.preventDefault();
-              }} className={classes.button}>
+              <Button className={classes.button}>
                 <a href={'https://metamask.io/download.html'} target={'_blank'} className={classes.redirectLink}>
                   <Typography variant={'caption'} className={classes.buttonLabel}>Install MetaMask</Typography>
                 </a>

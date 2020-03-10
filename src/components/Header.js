@@ -163,7 +163,7 @@ export default function Header(props) {
               <Logo viewBox={'0 0 90 32'} className={classes.logo}/>
             </button>
           </Grid>
-          <Grid item lg={isAuthenticated ? 6 : 5} sm={4} xs={6} container justify={'space-between'}
+          <Grid item lg={isAuthenticated ? 6 : 4} sm={4} xs={6} container justify={'space-between'}
                 className={classes.navigationContainer}>
             <div className={classes.navLinksContainer}>
               <div className={classes.navLinksDirectoriesSearch}>
@@ -230,7 +230,7 @@ export default function Header(props) {
                       style={{marginLeft: '20px'}}
                     >
                       <Typography variant={'subtitle2'} noWrap className={classes.buttonTitle}>
-                        Sign up/ Sign in
+                        Sign up / Sign in
                       </Typography>
                     </Button>
                   </div>

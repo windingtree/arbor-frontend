@@ -25,7 +25,7 @@ function Organization(props) {
   }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    console.log('%cuseEffect, [id, subsidiaries]', 'background-color:yellow; color: black', `[${id}, subsidiaries<length: ${subsidiaries.length}>]`);
+    console.log('%cuseEffect, [id, subsidiaries]', 'background-color:yellow; color: black', `[${id}, subsidiaries<length: ${subsidiaries ? subsidiaries.length : 0}>]`);
     if (subsidiaries && subsidiaries.length) {
       console.log(`%cprops.fetchOrganizationSubsInfo({ id })`, 'background-color:darkorange; color: black', id);
     }

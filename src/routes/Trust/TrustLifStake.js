@@ -24,9 +24,8 @@ import {
 import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
 import trustTopIllustration from '../../assets/SvgComponents/lif-deposit-illustration.svg';
 import lifWithdrawIllustration from '../../assets/SvgComponents/lif-deposit-withdraw.svg';
-import {LifIcon1, LifIcon2, LifIcon3} from '../../assets/SvgComponents';
+import { checkIcon, LifIcon1, LifIcon2, LifIcon3 } from '../../assets/SvgComponents';
 import colors from '../../styles/colors';
-
 
 const styles = makeStyles({
   topDiv: {
@@ -169,6 +168,9 @@ const styles = makeStyles({
       color: colors.greyScale.common
     }
   },
+  checkIcon: {
+    marginRight: '10px'
+  },
   buttonTitle: {
     fontWeight: 600,
     fontSize: '16px',
@@ -285,6 +287,9 @@ const TrustLifStake = (props) => {
                           onClick={() => props.allowDeposit({ orgid })}
                           className={ !allowDepositButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
                     <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
+                      {
+                        lifTokenAllowanceAmountForOrgId > 0 && <img src={checkIcon} alt={'allow'} className={classes.checkIcon}/>
+                      }
                       Allow deposit
                     </Typography>
                   </Button>

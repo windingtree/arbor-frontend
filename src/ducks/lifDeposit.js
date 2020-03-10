@@ -363,7 +363,7 @@ function ApiGetOrgIdLifTokenDepositedAmount(orgId) {
         if (error) return reject(error);
         // Get decimals
         resolve({
-          deposit: deposit.toNumber()
+          deposit: deposit
         });
       });
     } catch (e) {

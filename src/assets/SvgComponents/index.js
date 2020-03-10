@@ -37,3 +37,4 @@ export { default as listPlaceholderSvg } from './list-placeholder.svg';
 export { default as twitterBig } from './twitter-big.svg';
 export { default as facebookBig } from './facebook-big.svg';
 export { default as instagramBig } from './instagram-big.svg';
+export { default as checkIcon } from './check-icon.svg';

@@ -1,4 +1,5 @@
 import React from 'react';
+import history from '../../redux/history';
 import {Container, Grid, Typography, Box, Button} from '@material-ui/core';
 import {ArrowForward} from '@material-ui/icons';
 import {makeStyles} from '@material-ui/styles';
@@ -107,11 +108,11 @@ const Registration = () => {
                 organization profile on Arbor. </Typography>
             </div>
             <div className={classes.buttonWrapper}>
-              <Button className={classes.button}>
-                <a href={'https://metamask.io/download.html'} target={'_blank'} className={classes.redirectLink}>
+              <a href={'https://metamask.io/download.html'} target={'_blank'} className={classes.redirectLink}>
+                <Button className={classes.button} onClick={() => history.push({pathname: '/authorization/signin', state: { installed: true }})}>
                   <Typography variant={'caption'} className={classes.buttonLabel}>Install MetaMask</Typography>
-                </a>
-              </Button>
+                </Button>
+              </a>
             </div>
             <div className={classes.linkWrapper}>
               <a

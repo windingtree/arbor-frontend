@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import _ from 'lodash';
+import history from '../../redux/history';
 import {connect} from 'react-redux';
-import { fetchSignInRequest, selectSignInError } from '../../ducks/signIn';
+import { fetchSignInRequest } from '../../ducks/signIn';
 import {Container, Grid, Typography, Box, Button} from '@material-ui/core';
 import {makeStyles} from '@material-ui/styles';
 
@@ -66,11 +68,17 @@ const styles = makeStyles({
 
 const SignIn = (props) => {
   const classes = styles();
-  const { error } = props;
+  const [isUploaded, setUploaded] = useState(false);
+  const isInstalled = _.get(history, 'location.state.installed', false);
 
-  if(!!error) {
-    alert('Please, install MetaMask plugin at your browser extensions store and return to us');
-  }
+  useEffect(() => {
+    if(isInstalled) {
+      setTimeout(() => setUploaded(true), 2000);
+      if(isUploaded) {
+        alert('If you have already installed MetaMask - please,  reload this page')
+      }
+    }
+  });
 
   return (
     <Container className={classes.container}>
@@ -101,14 +109,8 @@ const SignIn = (props) => {
 )
 };
 
-const mapStateToProps = state => {
-  return {
-    error: selectSignInError(state)
-  }
-};
-
 const mapDispatchToProps = {
   fetchSignInRequest
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(SignIn);
+export default connect(null, mapDispatchToProps)(SignIn);

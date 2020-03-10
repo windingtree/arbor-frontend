@@ -241,7 +241,7 @@ function* enrichLifDataSaga({payload}) {
       exist: orgIdLifWithdrawalExist,
       value: orgIdLifWithdrawalValue,
       withdrawTime: orgIdLifWithdrawalTime,
-  } = yield call(ApiGetOrgIdLifTokenWithdrawalRequest, userAddress);
+    } = yield call(ApiGetOrgIdLifTokenWithdrawalRequest, userAddress);
     console.log('balance', lifTokenBalance);
 
     const currentBlockNumber = yield call(ApiGetCurrentBlockNumber);
@@ -261,7 +261,7 @@ function* enrichLifDataSaga({payload}) {
 }
 
 function* allowDepositSaga({payload})  {
-  console.log('makeDepositSaga', payload);
+  console.log('allowDepositSaga', payload);
   try {
     const userAddress = yield select(selectSignInAddress);
 
@@ -358,7 +358,7 @@ function ApiGetOrgIdLifTokenDepositedAmount(orgId) {
   const orgidContract = getOrgidContract();
   return new Promise((resolve, reject) => {
     try {
-      orgidContract.getOrganization(orgId, (error, [exist, orgId, orgJsonUri, orgJsonHash, parentEntity, owner, director, state, directorConfirmed, deposit]) => {
+      orgidContract.getOrganization(orgId, (error, exist, orgId, orgJsonUri, orgJsonHash, parentEntity, owner, director, state, directorConfirmed, deposit) => {
         console.log('<<< orgidContract.getOrganization', 'args', exist, orgId, orgJsonUri, orgJsonHash, parentEntity, owner, director, state, directorConfirmed, deposit);
         if (error) return reject(error);
         // Get decimals

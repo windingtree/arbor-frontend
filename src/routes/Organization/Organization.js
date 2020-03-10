@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { Component } from "react";
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import { fetchOrganizationInfo, fetchOrganizationSubsInfo, selectItem, selectSubs } from '../../ducks/fetchOrganizationInfo';
@@ -10,37 +10,42 @@ import TodoList, { getTodo } from "./Components/TodoList";
 import Info from "./Components/Info";
 import SubOrganizations from "./Components/SubOrganizations";
 
-function Organization(props) {
-  const id = history.location.state ? history.location.state.id : history.location.pathname.split('/')[2];
-  console.log('%cOrganization(props)', 'background-color:yellow; color: black', id);
-  const canManage = history.location.pathname !== `/organization/${id}`;
-  const { organization, subs } = props;
-  const subsidiaries = _.get(organization, 'subsidiaries', []);
-  const todos = getTodo(organization);
-
-  useEffect(() => {
-    console.log('%cuseEffect, [id]', 'background-color:yellow; color: black', id);
-    console.log(`%cprops.fetchOrganizationInfo({ id });`, 'background-color:darkorange; color: black', id);
-    props.fetchOrganizationInfo({ id });
-  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    console.log('%cuseEffect, [id, subsidiaries]', 'background-color:yellow; color: black', `[${id}, subsidiaries<length: ${subsidiaries ? subsidiaries.length : 0}>]`);
-    if (subsidiaries && subsidiaries.length) {
-      console.log(`%cprops.fetchOrganizationSubsInfo({ id })`, 'background-color:darkorange; color: black', id);
+class Organization extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isTransactionSuccess: false,
     }
-    subsidiaries && subsidiaries.length && props.fetchOrganizationSubsInfo({ id });
-  }, [id, subsidiaries]); // eslint-disable-line react-hooks/exhaustive-deps
+  }
 
-  return (
-    <div>
-      <TopNavigation organization={organization} canManage={canManage} todos={todos}/>
-      <Info organization={organization} canManage={canManage}/>
-      {subs && subs.length > 0 && <SubOrganizations organization={organization} subs={subs} canManage={canManage} />}
-      {canManage && <Agents organization={organization}/>}
-      {canManage && <TodoList organization={organization}/>}
-    </div>
-  )
+  componentDidMount() {
+    const id = history.location.state ? history.location.state.id : history.location.pathname.split('/')[2];
+    this.props.fetchOrganizationInfo({id});
+
+    if(this.props.organization.subsidiaries && this.props.organization.subsidiaries.length) {
+      this.props.fetchOrganizationSubsInfo({id});
+    }
+  }
+
+  render() {
+    const id = history.location.state ? history.location.state.id : history.location.pathname.split('/')[2];
+    const canManage = history.location.pathname !== `/organization/${id}`;
+    const { organization, subs } = this.props;
+    const subsidiaries = _.get(organization, 'subsidiaries', []);
+    const agents = _.get(organization, 'jsonContent.publicKey', []);
+    const { owner } = organization;
+    const todos = getTodo(organization);
+
+    return (
+      <div>
+        <TopNavigation organization={organization} canManage={canManage} todos={todos}/>
+        <Info organization={organization} canManage={canManage}/>
+        {subsidiaries && subs && subs.length > 0 && <SubOrganizations organization={organization} subs={subs} canManage={canManage} />}
+        {canManage && <Agents owner={owner} agents={agents}/>}
+        {canManage && <TodoList organization={organization}/>}
+      </div>
+    )
+  }
 }
 
 const mapStateToProps = state => {

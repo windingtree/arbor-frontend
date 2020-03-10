@@ -361,10 +361,6 @@ const TrustLifStake = (props) => {
   )
 };
 
-TrustLifStake.defaultProps = {
-  disabled: true
-};
-
 const mapStateToProps = state => {
   return {
     address: selectSignInAddress(state),

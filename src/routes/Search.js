@@ -28,7 +28,7 @@ import {countries} from '../utils/countries';
 const styles = makeStyles({
   searchHeaderWrapper: {
     backgroundColor: colors.greyScale.moreLighter,
-    width: '100%'
+    width: '100%',
   },
   searchHeaderWrapperNoResults: {
     height: '80vh',
@@ -44,7 +44,8 @@ const styles = makeStyles({
     position: 'relative',
     paddingTop: '60px',
     paddingBottom: '60px',
-    ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
+      paddingTop: '88px',
       paddingBottom: '0'
     },
   },

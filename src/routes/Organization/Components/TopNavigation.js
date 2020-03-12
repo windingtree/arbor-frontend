@@ -102,7 +102,10 @@ const styles = makeStyles({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: '19px'
+    paddingTop: '19px',
+    ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
+      paddingTop: '88px'
+    }
   },
   buttonWrapper: {
     marginLeft: '-8px'

@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { connect } from 'react-redux';
 import {Container, Typography, Grid, Card, Box, Button} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
+import moment from 'moment';
 
 import { LIF_DEPOSIT_AMOUNT } from "../../utils/constants";
 import history from '../../redux/history';
@@ -179,6 +180,14 @@ const styles = makeStyles({
     textTransform: 'none',
     padding: '4px 14px'
   },
+  timeToWithdrawalWrapper: {
+    marginBottom: '16px'
+  },
+  timeToWithdrawal: {
+    fontSize: '12px',
+    fontWeight: 400,
+    color: colors.secondary.peach
+  },
 });
 
 const TrustLifStake = (props) => {
@@ -202,11 +211,12 @@ const TrustLifStake = (props) => {
   const makeWithdrawalButtonEnabled = orgIdLifWithdrawalExist && currentBlockNumber >= orgIdLifWithdrawalTime && orgIdLifWithdrawalValue > 0;
   const makeWithdrawalButtonWait = orgIdLifWithdrawalExist && currentBlockNumber < orgIdLifWithdrawalTime;
 
-
   useEffect(() => {
     console.log('%cuseEffect, [address]', 'background-color:yellow; color: black', address);
     props.enrichLifData({orgid});
   }, [address]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  let timeWithdrawalInUnixTimestamp = moment(orgIdLifWithdrawalTime, 'MMM DD');
 
   return (
     <div>
@@ -330,28 +340,37 @@ const TrustLifStake = (props) => {
               </Typography>
               <Box>
                 <div className={classes.buttonsContainer}>
-                  {!(makeWithdrawalButtonWait || makeWithdrawalButtonEnabled)&&
-                  <Button
-                    disabled={!requestWithdrawalButtonEnabled}
-                    onClick={() => props.requestWithdrawal({orgid})}
-                    className={ !requestWithdrawalButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}
-                  >
-                    <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
-                      <span>Request withdrawal</span>
-                    </Typography>
-                  </Button>
-                  }
-                  {(makeWithdrawalButtonWait || makeWithdrawalButtonEnabled)&&
-                  <Button
-                    disabled={!makeWithdrawalButtonEnabled}
-                    onClick={() => props.requestWithdrawal({orgid})}
-                    className={ !requestWithdrawalButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}
-                  >
-                    <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
-                      <span>Make withdraw</span>
-                    </Typography>
-                  </Button>
-                  }
+                  {!(makeWithdrawalButtonWait || makeWithdrawalButtonEnabled) && (
+                    <Button
+                      disabled={!requestWithdrawalButtonEnabled}
+                      onClick={() => props.requestWithdrawal({ orgid })}
+                      className={ !requestWithdrawalButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}
+                    >
+                      <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
+                        <span>Request withdrawal</span>
+                      </Typography>
+                    </Button>
+                  )}
+                  {(makeWithdrawalButtonWait || makeWithdrawalButtonEnabled) && (
+                    <>
+                      {
+                        orgIdLifWithdrawalTime > 0 && (
+                          <div className={classes.timeToWithdrawalWrapper}>
+                            <Typography variant={'caption'} className={classes.timeToWithdrawal}>You will be able to withdraw your deposit around {timeWithdrawalInUnixTimestamp}</Typography>
+                          </div>
+                        )
+                      }
+                      <Button
+                        disabled={!makeWithdrawalButtonEnabled}
+                        onClick={() => props.requestWithdrawal({ orgid })}
+                        className={ !requestWithdrawalButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}
+                      >
+                        <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
+                          <span>Withdraw</span>
+                        </Typography>
+                      </Button>
+                    </>
+                  )}
                 </div>
               </Box>
             </Grid>

@@ -1,7 +1,9 @@
 export const appName = `Arbor`;
-export const LIF_DEPOSIT_AMOUNT = 1000;
-export const API_URI = `https://api.arbor.fm/api/v1`;
-export const ORGID_PROXY_ADDRESS = '0xc8fD300bE7e4613bCa573ad820a6F1f0b915CfcA';
+export const LIF_DEPOSIT_AMOUNT = Number(process.env.LIF_DEPOSIT_AMOUNT);
+export const API_URI = process.env.API_URI;
+export const ORGID_PROXY_ADDRESS = process.env.ORGID_PROXY_ADDRESS;
+export const DIRECTORY_PROXY_ADDRESS = process.env.DIRECTORY_PROXY_ADDRESS;
+
 export const ORGID_ABI = [
   {
     "anonymous": false,
@@ -744,7 +746,6 @@ export const LIF_TOKEN_ABI = [
     "signature": "0xd73dd623"
   },
 ];
-export const DIRECTORY_PROXY_ADDRESS = '0x68d9cB089a3e17be6F9De7a318BBCC55F4c899Bc';
 
 // For in-browser debug purposes.
 window.ORGID_PROXY_ADDRESS = ORGID_PROXY_ADDRESS;

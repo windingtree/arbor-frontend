@@ -1,8 +1,8 @@
 export const appName = `Arbor`;
-export const LIF_DEPOSIT_AMOUNT = Number(process.env.LIF_DEPOSIT_AMOUNT);
-export const API_URI = process.env.API_URI;
-export const ORGID_PROXY_ADDRESS = process.env.ORGID_PROXY_ADDRESS;
-export const DIRECTORY_PROXY_ADDRESS = process.env.DIRECTORY_PROXY_ADDRESS;
+export const LIF_DEPOSIT_AMOUNT = Number(process.env.REACT_APP_LIF_DEPOSIT_AMOUNT);
+export const API_URI = process.env.REACT_APP_API_URI;
+export const ORGID_PROXY_ADDRESS = process.env.REACT_APP_ORGID_PROXY_ADDRESS;
+export const DIRECTORY_PROXY_ADDRESS = process.env.REACT_APP_DIRECTORY_PROXY_ADDRESS;
 
 export const ORGID_ABI = [
   {

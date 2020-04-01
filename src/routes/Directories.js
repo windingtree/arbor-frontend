@@ -22,8 +22,8 @@ import colors from '../styles/colors';
 const styles = makeStyles({
   content: {
     padding: '64px 0',
-    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
-      padding: '28px 0'
+    ['@media (max-width:960px)']: { // eslint-disable-line no-useless-computed-key
+      paddingTop: '88px'
     },
   },
   title: {

@@ -22,6 +22,9 @@ import _ from 'lodash';
 const styles = makeStyles({
   screenHeader: {
     padding: '60px 0 20px 0',
+    ['@media (max-width:960px)']: { // eslint-disable-line no-useless-computed-key
+      paddingTop: '88px',
+    },
   },
   buttonWrapper: {
     marginLeft: '-7px'

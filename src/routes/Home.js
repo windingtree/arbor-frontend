@@ -39,7 +39,10 @@ import { styles as trustStyles } from '../routes/Trust/TrustWebsite';
 const styles = makeStyles({
   searchContainer: {
     backgroundColor: colors.secondary.yellowLight,
-    width: '100%'
+    width: '100%',
+    ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
+      paddingTop: '70px'
+    }
   },
   searchContent: {
     position: 'relative',
@@ -47,7 +50,7 @@ const styles = makeStyles({
     paddingBottom: '117px',
     ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
       paddingBottom: '40px',
-      paddingTop: '40px',
+      paddingTop: '20px',
     },
   },
   searchTitle: {

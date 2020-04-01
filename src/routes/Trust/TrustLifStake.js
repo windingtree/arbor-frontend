@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { connect } from 'react-redux';
 import {Container, Typography, Grid, Card, Box, Button} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
+import moment from 'moment';
 
 import { LIF_DEPOSIT_AMOUNT } from "../../utils/constants";
 import history from '../../redux/history';
@@ -24,9 +25,8 @@ import {
 import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
 import trustTopIllustration from '../../assets/SvgComponents/lif-deposit-illustration.svg';
 import lifWithdrawIllustration from '../../assets/SvgComponents/lif-deposit-withdraw.svg';
-import {LifIcon1, LifIcon2, LifIcon3} from '../../assets/SvgComponents';
+import { checkIcon, LifIcon1, LifIcon2, LifIcon3 } from '../../assets/SvgComponents';
 import colors from '../../styles/colors';
-
 
 const styles = makeStyles({
   topDiv: {
@@ -169,6 +169,9 @@ const styles = makeStyles({
       color: colors.greyScale.common
     }
   },
+  checkIcon: {
+    marginRight: '10px'
+  },
   buttonTitle: {
     fontWeight: 600,
     fontSize: '16px',
@@ -176,6 +179,14 @@ const styles = makeStyles({
     color: colors.primary.white,
     textTransform: 'none',
     padding: '4px 14px'
+  },
+  timeToWithdrawalWrapper: {
+    marginBottom: '16px'
+  },
+  timeToWithdrawal: {
+    fontSize: '12px',
+    fontWeight: 400,
+    color: colors.secondary.peach
   },
 });
 
@@ -200,11 +211,12 @@ const TrustLifStake = (props) => {
   const makeWithdrawalButtonEnabled = orgIdLifWithdrawalExist && currentBlockNumber >= orgIdLifWithdrawalTime && orgIdLifWithdrawalValue > 0;
   const makeWithdrawalButtonWait = orgIdLifWithdrawalExist && currentBlockNumber < orgIdLifWithdrawalTime;
 
-
   useEffect(() => {
     console.log('%cuseEffect, [address]', 'background-color:yellow; color: black', address);
     props.enrichLifData({orgid});
   }, [address]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  let timeWithdrawalInUnixTimestamp = moment(orgIdLifWithdrawalTime, 'MMM DD');
 
   return (
     <div>
@@ -216,7 +228,7 @@ const TrustLifStake = (props) => {
               <Button onClick={history.goBack}>
                 <Typography className={classes.backButtonLabel}>
                   <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
-                  Back to all organizations
+                  Back to organization profile
                 </Typography>
               </Button>
             </div>
@@ -285,6 +297,9 @@ const TrustLifStake = (props) => {
                           onClick={() => props.allowDeposit({ orgid })}
                           className={ !allowDepositButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
                     <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
+                      {
+                        lifTokenAllowanceAmountForOrgId > 0 && <img src={checkIcon} alt={'allow'} className={classes.checkIcon}/>
+                      }
                       Allow deposit
                     </Typography>
                   </Button>
@@ -325,28 +340,37 @@ const TrustLifStake = (props) => {
               </Typography>
               <Box>
                 <div className={classes.buttonsContainer}>
-                  {!(makeWithdrawalButtonWait || makeWithdrawalButtonEnabled)&&
-                  <Button
-                    disabled={!requestWithdrawalButtonEnabled}
-                    onClick={() => props.requestWithdrawal({orgid})}
-                    className={ !requestWithdrawalButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}
-                  >
-                    <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
-                      <span>Request withdrawal</span>
-                    </Typography>
-                  </Button>
-                  }
-                  {(makeWithdrawalButtonWait || makeWithdrawalButtonEnabled)&&
-                  <Button
-                    disabled={!makeWithdrawalButtonEnabled}
-                    onClick={() => props.requestWithdrawal({orgid})}
-                    className={ !requestWithdrawalButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}
-                  >
-                    <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
-                      <span>Make withdraw</span>
-                    </Typography>
-                  </Button>
-                  }
+                  {!(makeWithdrawalButtonWait || makeWithdrawalButtonEnabled) && (
+                    <Button
+                      disabled={!requestWithdrawalButtonEnabled}
+                      onClick={() => props.requestWithdrawal({ orgid })}
+                      className={ !requestWithdrawalButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}
+                    >
+                      <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
+                        <span>Request withdrawal</span>
+                      </Typography>
+                    </Button>
+                  )}
+                  {(makeWithdrawalButtonWait || makeWithdrawalButtonEnabled) && (
+                    <>
+                      {
+                        orgIdLifWithdrawalTime > 0 && (
+                          <div className={classes.timeToWithdrawalWrapper}>
+                            <Typography variant={'caption'} className={classes.timeToWithdrawal}>You will be able to withdraw your deposit around {timeWithdrawalInUnixTimestamp}</Typography>
+                          </div>
+                        )
+                      }
+                      <Button
+                        disabled={!makeWithdrawalButtonEnabled}
+                        onClick={() => props.requestWithdrawal({ orgid })}
+                        className={ !requestWithdrawalButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}
+                      >
+                        <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
+                          <span>Withdraw</span>
+                        </Typography>
+                      </Button>
+                    </>
+                  )}
                 </div>
               </Box>
             </Grid>
@@ -359,10 +383,6 @@ const TrustLifStake = (props) => {
       </div>
     </div>
   )
-};
-
-TrustLifStake.defaultProps = {
-  disabled: true
 };
 
 const mapStateToProps = state => {

@@ -241,7 +241,7 @@ function* enrichLifDataSaga({payload}) {
       exist: orgIdLifWithdrawalExist,
       value: orgIdLifWithdrawalValue,
       withdrawTime: orgIdLifWithdrawalTime,
-  } = yield call(ApiGetOrgIdLifTokenWithdrawalRequest, userAddress);
+    } = yield call(ApiGetOrgIdLifTokenWithdrawalRequest, userAddress);
     console.log('balance', lifTokenBalance);
 
     const currentBlockNumber = yield call(ApiGetCurrentBlockNumber);
@@ -261,7 +261,7 @@ function* enrichLifDataSaga({payload}) {
 }
 
 function* allowDepositSaga({payload})  {
-  console.log('makeDepositSaga', payload);
+  console.log('allowDepositSaga', payload);
   try {
     const userAddress = yield select(selectSignInAddress);
 
@@ -356,16 +356,20 @@ function ApiGetLifTokenAllowanceAmountForOrgId(_owner, _spender = ORGID_PROXY_AD
 function ApiGetOrgIdLifTokenDepositedAmount(orgId) {
   console.log('[.]', 'ApiGetOrgIdLifTokenDepositedAmount', orgId);
   const orgidContract = getOrgidContract();
+  const lifContract = getLifTokenContract();
   return new Promise((resolve, reject) => {
     try {
-      orgidContract.getOrganization(orgId, (error, [exist, orgId, orgJsonUri, orgJsonHash, parentEntity, owner, director, state, directorConfirmed, deposit]) => {
-        console.log('<<< orgidContract.getOrganization', 'args', exist, orgId, orgJsonUri, orgJsonHash, parentEntity, owner, director, state, directorConfirmed, deposit);
-        if (error) return reject(error);
-        // Get decimals
-        resolve({
-          deposit: deposit.toNumber()
+      lifContract.DECIMALS((error, decimals) => {
+        if(error) return reject(error);
+        orgidContract.getOrganization(orgId, (error, [exist, orgId, orgJsonUri, orgJsonHash, parentEntity, owner, director, state, directorConfirmed, deposit]) => {
+          console.log('<<< orgidContract.getOrganization', 'args', exist, orgId, orgJsonUri, orgJsonHash, parentEntity, owner, director, state, directorConfirmed, deposit.toNumber());
+          if (error) return reject(error);
+          // Get decimals
+          resolve({
+            deposit: deposit.div(10**decimals).toNumber()
+          });
         });
-      });
+      })
     } catch (e) {
       reject(`Error in ApiGetOrgIdLifTokenDepositedAmount: ${e.toString()}`);
     }
@@ -375,18 +379,22 @@ function ApiGetOrgIdLifTokenDepositedAmount(orgId) {
 function ApiGetOrgIdLifTokenWithdrawalRequest(userAddress) {
   console.log('[.]', 'ApiGetOrgIdLifTokenWithdrawalRequest');
   const orgidContract = getOrgidContract();
+  const lifContract = getLifTokenContract();
   return new Promise((resolve, reject) => {
     try {
-      orgidContract.getWithdrawalRequest(userAddress, (error, [exist, value, withdrawTime]) => {
-        console.log('<<< orgidContract.getWithdrawalRequest', 'args', exist, value.toNumber(), withdrawTime.toNumber());
-        if (error) return reject(error);
-        // Get decimals
-        resolve({
-          exist,
-          value: value.toNumber(),
-          withdrawTime: withdrawTime.toNumber()
+      lifContract.DECIMALS((error, decimals) => {
+        if(error) return reject(error);
+        orgidContract.getWithdrawalRequest(userAddress, (error, [exist, value, withdrawTime]) => {
+          console.log('<<< orgidContract.getWithdrawalRequest', 'args', exist, value.toNumber(), withdrawTime.toNumber());
+          if (error) return reject(error);
+          // Get decimals
+          resolve({
+            exist,
+            value: value.div(10**decimals).toNumber(),
+            withdrawTime: withdrawTime.div(10**decimals).toNumber(),
+          });
         });
-      });
+      })
     } catch (e) {
       reject(`Error in ApiGetOrgIdLifTokenWithdrawalRequest: ${e.toString()}`);
     }
@@ -394,7 +402,6 @@ function ApiGetOrgIdLifTokenWithdrawalRequest(userAddress) {
 }
 
 function ApiGetCurrentBlockNumber() {
-  console.log('[.]', 'ApiGetCurrentBlockNumber');
   return getCurrentBlockNumber()
 }
 
@@ -436,6 +443,7 @@ function ApiAddDeposit(userAddress, orgid) {
 function ApiPostWithdrawalRequest(userAddress, orgid) {
   const orgidContract = getOrgidContract();
   const lifContract = getLifTokenContract();
+  console.log('[..]', 'Post Withdrawal request');
   return new Promise((resolve, reject) => {
     lifContract.DECIMALS((error, decimals) => {
       if (error) return reject(error);
@@ -443,7 +451,7 @@ function ApiPostWithdrawalRequest(userAddress, orgid) {
         orgid, `${LIF_DEPOSIT_AMOUNT}${(10**decimals).toString().substr(1)}`,
         { from: userAddress, gas: 500000, gasPrice: getGasPrice() },
         (error, data) => {
-          if(error) reject(error);
+          if(error) return reject(error);
           resolve(data);
         }
       )

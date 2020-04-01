@@ -65,7 +65,7 @@ export default function TOS(props) {
   const classes = styles();
   return (
     <Container className={classes.mainWrapper}>
-      <Grid conatiner className={classes.mainContainer}>
+      <Grid container className={classes.mainContainer}>
         <Grid item xs={12} md={9}>
           <Typography className={classes.mainTitle}>Arbor Terms of Use</Typography>
           <Typography className={classes.paragraph}>By accessing the website at https://arbor.fm, you are agreeing to be
@@ -81,7 +81,7 @@ export default function TOS(props) {
             (information or software) on Arbor’s website for personal, non-commercial transitory viewing only. This is
             the
             grant of a license, not a transfer of title, and under this license you may not:</Typography>
-          <Grid>
+          <Grid item>
             <ul className={classes.list}>
               <li className={classes.listItem}>
                 <span className={classes.listDot}/>

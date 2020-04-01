@@ -5,12 +5,9 @@ import Footer from './Footer';
 import { makeStyles } from "@material-ui/core/styles";
 
 const styles = makeStyles({
-  afterHeader: {
+  container: {
     minHeight: '70vh',
     width: '100%',
-    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
-      paddingTop: '61px'
-    }
   }
 });
 
@@ -22,7 +19,7 @@ function DefaultRoute ({ component: Component, isAuthenticated, ...rest }) {
       render={props => (
         <div style={{ height: '100%', width: '100%', overflow: 'hidden' }}>
           <Header isAuthenticated={isAuthenticated}/>
-          <div className={classes.afterHeader}>
+          <div className={classes.container}>
             <Component {...props}/>
           </div>
           <Footer/>

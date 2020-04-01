@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import _ from 'lodash';
+import history from '../../redux/history';
 import {connect} from 'react-redux';
-import {fetchSignInRequest} from '../../ducks/signIn';
+import { fetchSignInRequest } from '../../ducks/signIn';
 import {Container, Grid, Typography, Box, Button} from '@material-ui/core';
 import {makeStyles} from '@material-ui/styles';
 
@@ -66,6 +68,17 @@ const styles = makeStyles({
 
 const SignIn = (props) => {
   const classes = styles();
+  const [isUploaded, setUploaded] = useState(false);
+  const isInstalled = _.get(history, 'location.state.installed', false);
+
+  useEffect(() => {
+    if(isInstalled) {
+      setTimeout(() => setUploaded(true), 2000);
+      if(isUploaded) {
+        alert('If you have already installed MetaMask - please,  reload this page')
+      }
+    }
+  });
 
   return (
     <Container className={classes.container}>

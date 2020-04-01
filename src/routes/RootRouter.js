@@ -60,7 +60,7 @@ class RootRouter extends Component {
             path='/authorization'
             component={Authorization}
           />
-          <DefaultRoute
+          <PrivateRoute
             isAuthenticated={isAuthenticated}
             path='/trust'
             component={Trust}

@@ -22,7 +22,7 @@ const styles = makeStyles({
 
 const SelectField = (props) => {
   const classes = styles();
-  const {name, orgidJsonPath, index, helperText, options, required, values, errors, touched, handleChange, handleBlur} = props;
+  const {name, orgidJsonPath, index, options, required, values, errors, touched, handleChange, handleBlur} = props;
   const optionsObj = Array.isArray(options) ? options.reduce((o, key) => Object.assign(o, {[key]: key}), {}) : options;
   const isError = _.get(errors, orgidJsonPath) && _.get(touched, orgidJsonPath);
 
@@ -34,13 +34,12 @@ const SelectField = (props) => {
           variant={'filled'}
           name={orgidJsonPath}
           value={_.get(values, orgidJsonPath)}
-          helperText={isError ? `${_.get(errors, orgidJsonPath)}`.replace('ValidationError: "value" ', '') : helperText}
           required={required}
           error={isError}
           onChange={handleChange}
           onBlur={handleBlur}
         >
-          <MenuItem value={undefined} key={''}>{''}</MenuItem>
+          <MenuItem value={undefined} key={''}/>
           {
             Object.keys(optionsObj).map((value) => (
               <MenuItem value={value} key={value}>{optionsObj[value]}</MenuItem>

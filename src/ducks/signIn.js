@@ -111,6 +111,8 @@ function* fetchSignInSaga() {
     yield call(history.push, { pathname: '/my-organizations' });
   } catch (error) {
     yield put(fetchSignInFailure(error));
+    yield call(alert, 'Please, install MetaMask plugin at your browser extensions store and return to us');
+    yield call(history.push, { pathname: '/authorization/register' });
   }
 }
 

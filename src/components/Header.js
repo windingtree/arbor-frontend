@@ -1,12 +1,20 @@
-import React from 'react';
-import {NavLink} from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, NavLink } from 'react-router-dom';
 import history from '../redux/history';
-import {Container, Grid, Typography, Button} from '@material-ui/core';
+import {Container, Grid, Typography, Button, Hidden, Collapse} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
+import { fadeIn } from 'react-animations';
+import Radium, { StyleRoot } from 'radium';
 
 import Logo from '../assets/SvgComponents/Logo';
 import SearchIcon from '../assets/SvgComponents/SearchIcon';
 import HomeIcon from '../assets/SvgComponents/HomeIcon';
+import MobileMenuIcon from '../assets/SvgComponents/mobile-menu-icon.svg';
+import MobileMenuIconClose from '../assets/SvgComponents/mobile-menu-icon-close.svg';
+import PlaneIcon from '../assets/SvgComponents/plane-icon.svg';
+import HotelIcon from '../assets/SvgComponents/hotel-icon.svg';
+import PaperIcon from '../assets/SvgComponents/paper-icon.svg';
+import TravelIcon from '../assets/SvgComponents/travel-icon.svg';
 
 import colors from '../styles/colors';
 
@@ -26,11 +34,14 @@ const styles = makeStyles({
     justifyContent: 'flex-end',
     alignItems: 'center'
   },
+  headerContainer: {
+    position: 'relative'
+  },
   header: {
     backgroundColor: colors.primary.white,
     zIndex: 100,
     borderBottom: `1px solid ${colors.greyScale.lightest}`,
-    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+    ['@media (max-width:960px)']: { // eslint-disable-line no-useless-computed-key
       position: 'fixed',
       width: '100%'
     }
@@ -139,11 +150,85 @@ const styles = makeStyles({
     color: colors.primary.white,
     textTransform: 'none',
     padding: '6px 12px'
+  },
+  headerContent: {
+    ['@media (max-width:960px)']: { // eslint-disable-line no-useless-computed-key
+      padding: '16px 0',
+    },
+  },
+  mobileMenuButtonContainer: {
+    ['@media (min-width:961px)']: { // eslint-disable-line no-useless-computed-key
+      display: 'none',
+    },
+  },
+  mobileMenuButton: {
+    borderRadius: '50%',
+    minWidth: 'auto',
+    fontSize: '0'
+  },
+  mobileMenu: {
+    position: 'fixed',
+    width: '100%',
+    top: '67px',
+    left: '0',
+    backgroundColor: colors.greyScale.moreLighter,
+    zIndex: 2
+  },
+  mobileMenuContent: {
+    paddingTop: '32px',
+    paddingBottom: '40px',
+    borderBottom: `1px solid ${colors.greyScale.common}`
+  },
+  mobileNavLinkWrapper: {
+    marginBottom: '10px',
+    '&:last-child': {
+      marginBottom: '0',
+      marginTop: '30px'
+    }
+  },
+  mobileNavLink: {
+    textDecoration: 'none'
+  },
+  mobileNavLinkIcon: {
+    verticalAlign: 'middle',
+    paddingRight: '12px'
+  },
+  mobileNavLinkLabel: {
+    fontSize: '17px',
+    fontWeight: 500,
+    lineHeight: 1.36,
+    color: colors.primary.black
+  },
+  mobileNavLinkSubItem: {
+    padding: '12px 0'
+  },
+  mobileNavLinkSubLabel: {
+    fontSize: '16px',
+    fontWeight: 500,
+    lineHeight: 1.45,
+    color: colors.greyScale.dark
+  },
+  mobileMenuFootnoteWrapper: {
+    padding: '20px 0'
+  },
+  mobileMenuFootnote: {
+    fontSize: '14px',
+    fontWeight: 400,
+    lineHeight: 1.42,
+    color: colors.greyScale.darkest
   }
 });
 
+const animation = {
+  fadeIn: {
+    animation: 'x 1s',
+    animationName: Radium.keyframes(fadeIn, 'fadeIn'),
+  }
+};
+
 export default function Header(props) {
   const classes = styles();
+  const [isOpen, toggleOpen] = useState(false);
   const { isAuthenticated } = props;
 
   const handleSignInRedirect = () => {
@@ -154,92 +239,176 @@ export default function Header(props) {
     }
   };
 
+  let directoriesContent = [
+    {
+      logo: PlaneIcon,
+      title: 'Airlines',
+      path: '/directories/airline'
+    },
+    {
+      logo: HotelIcon,
+      title: 'Hotels',
+      path: '/directories/hotel'
+    },
+    {
+      logo: PaperIcon,
+      title: 'Insurance',
+      path: '/directories/insurance'
+    },
+    {
+      logo: TravelIcon,
+      title: 'Travel agencies',
+      path: '/directories/ota'
+    },
+  ];
+
+  const handleMobileMenuOpenState = () => {
+    toggleOpen(!isOpen);
+  };
+
+  const MenuIcon = (props) => {
+    const mobileIcon = <img src={props.icon} style={animation.fadeIn} alt={'mobile-menu'}/>;
+
+    return (
+      <StyleRoot>
+        {mobileIcon}
+      </StyleRoot>
+    )
+  };
+
+  const mobileMenuContent = () => {
+    const directoriesNavLinks = directoriesContent.map((item, index) => {
+      return (
+        <li key={index.toString()} onClick={handleMobileMenuOpenState} className={classes.mobileNavLinkSubItem}>
+          <Link to={item.path} className={classes.mobileNavLink}>
+            <img src={item.logo} alt={''} className={classes.mobileNavLinkIcon}/>
+            <Typography variant={'caption'} className={classes.mobileNavLinkSubLabel}>{item.title}</Typography>
+          </Link>
+        </li>
+      )
+    });
+
+    return (
+      <div className={classes.mobileMenuContent}>
+        <div className={classes.mobileNavLinkWrapper}>
+          <Link to={'/directories'} className={classes.mobileNavLink} onClick={handleMobileMenuOpenState}>
+            <Typography variant={'caption'} className={classes.mobileNavLinkLabel}>Directories</Typography>
+          </Link>
+        </div>
+        <ul>{directoriesNavLinks}</ul>
+        <div className={classes.mobileNavLinkWrapper}>
+          <Link to={'/search'} className={classes.mobileNavLink} onClick={handleMobileMenuOpenState}>
+            <Typography variant={'caption'} className={classes.mobileNavLinkLabel}>Search</Typography>
+          </Link>
+        </div>
+      </div>
+    )
+  };
+
   return (
-    <div id="app-header" className={classes.header}>
-      <Container>
-        <Grid container justify={'space-between'} alignItems={'center'}>
-          <Grid item lg={2} sm={4} xs={2}>
-            <button onClick={() => history.push('/')} className={classes.logoButton}>
-              <Logo viewBox={'0 0 90 32'} className={classes.logo}/>
-            </button>
-          </Grid>
-          <Grid item lg={isAuthenticated ? 6 : 5} sm={4} xs={6} container justify={'space-between'}
-                className={classes.navigationContainer}>
-            <div className={classes.navLinksContainer}>
-              <div className={classes.navLinksDirectoriesSearch}>
-                <NavLink
-                  to="/directories"
-                  className={classes.navLink}
-                  activeClassName={classes.activeNavLink}
-                >
-                  <Typography variant={'caption'} className={classes.linkTitle}>Directories</Typography>
-                </NavLink>
-                <NavLink
-                  to="/search"
-                  className={classes.navLink}
-                  activeClassName={classes.activeNavLink}
-                  style={{display: 'flex', alignItems: 'center'}}
-                >
-                  <Typography variant={'caption'} className={classes.linkTitle}>Search</Typography>
-                  <SearchIcon
-                    width={'14px'}
-                    height={'14px'}
-                    viewBox={'0 0 14 14'}
-                    className={classes.searchIcon}
-                  />
-                </NavLink>
-              </div>
-              {
-                isAuthenticated ? (
-                  <div className={`${classes.xsHidden} ${classes.authenticatedBlock} `}>
+    <div id="app-header" className={classes.headerContainer}>
+      <div className={classes.header}>
+        <Container>
+          <Grid container justify={'space-between'} alignItems={'center'} className={classes.headerContent}>
+            <Grid item lg={2} sm={4} xs={2}>
+              <button onClick={() => history.push('/')} className={classes.logoButton}>
+                <Logo viewBox={'0 0 90 32'} className={classes.logo}/>
+              </button>
+            </Grid>
+            <Hidden smDown>
+              <Grid item lg={isAuthenticated ? 6 : 4} sm={4} xs={6} container justify={'space-between'} className={classes.navigationContainer}>
+                <div className={classes.navLinksContainer}>
+                  <div className={classes.navLinksDirectoriesSearch}>
                     <NavLink
-                      to={'/trust'}
+                      to="/directories"
                       className={classes.navLink}
                       activeClassName={classes.activeNavLink}
                     >
-                      <Typography variant={'caption'} className={classes.linkTitle} noWrap>
-                        Verification methods
-                      </Typography>
+                      <Typography variant={'caption'} className={classes.linkTitle}>Directories</Typography>
                     </NavLink>
                     <NavLink
-                      to={'/my-organizations'}
-                      className={classes.navLinkMyOrgs}
+                      to="/search"
+                      className={classes.navLink}
                       activeClassName={classes.activeNavLink}
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center'
-                      }}
+                      style={{display: 'flex', alignItems: 'center'}}
                     >
-                      <HomeIcon
-                        width={'18px'}
-                        height={'15px'}
-                        viewBox={'0 0 15 18'}
-                        className={classes.navIcon}
+                      <Typography variant={'caption'} className={classes.linkTitle}>Search</Typography>
+                      <SearchIcon
+                        width={'14px'}
+                        height={'14px'}
+                        viewBox={'0 0 14 14'}
+                        className={classes.searchIcon}
                       />
-                      <Typography variant={'caption'} className={classes.linkTitle} noWrap>
-                        My organizations
-                      </Typography>
                     </NavLink>
                   </div>
-                ) : (
-                  <div className={`${classes.xsHidden} ${classes.unauthenticatedBlock} `}>
-                    <Button
-                      onClick={handleSignInRedirect}
-                      className={classes.authButton}
-                      style={{marginLeft: '20px'}}
-                    >
-                      <Typography variant={'subtitle2'} noWrap className={classes.buttonTitle}>
-                        Sign up/ Sign in
-                      </Typography>
-                    </Button>
-                  </div>
-                )
-              }
+                  {
+                    isAuthenticated ? (
+                      <div className={`${classes.xsHidden} ${classes.authenticatedBlock} `}>
+                        <NavLink
+                          to={'/trust'}
+                          className={classes.navLink}
+                          activeClassName={classes.activeNavLink}
+                        >
+                          <Typography variant={'caption'} className={classes.linkTitle} noWrap>
+                            Verification methods
+                          </Typography>
+                        </NavLink>
+                        <NavLink
+                          to={'/my-organizations'}
+                          className={classes.navLinkMyOrgs}
+                          activeClassName={classes.activeNavLink}
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                          }}
+                        >
+                          <HomeIcon
+                            width={'18px'}
+                            height={'15px'}
+                            viewBox={'0 0 15 18'}
+                            className={classes.navIcon}
+                          />
+                          <Typography variant={'caption'} className={classes.linkTitle} noWrap>
+                            My organizations
+                          </Typography>
+                        </NavLink>
+                      </div>
+                    ) : (
+                      <div className={`${classes.xsHidden} ${classes.unauthenticatedBlock} `}>
+                        <Button
+                          onClick={handleSignInRedirect}
+                          className={classes.authButton}
+                          style={{marginLeft: '20px'}}
+                        >
+                          <Typography variant={'subtitle2'} noWrap className={classes.buttonTitle}>
+                            Sign up / Sign in
+                          </Typography>
+                        </Button>
+                      </div>
+                    )
+                  }
+                </div>
+              </Grid>
+            </Hidden>
+            <div className={classes.mobileMenuButtonContainer}>
+              <Button onClick={handleMobileMenuOpenState} className={classes.mobileMenuButton}>
+                <MenuIcon icon={isOpen ? MobileMenuIconClose : MobileMenuIcon}/>
+              </Button>
             </div>
           </Grid>
-        </Grid>
-      </Container>
+        </Container>
+      </div>
+      <Collapse in={isOpen} className={classes.mobileMenu}>
+        <Container>
+          {mobileMenuContent()}
+          <div className={classes.mobileMenuFootnoteWrapper}>
+            <Typography variant={'caption'} className={classes.mobileMenuFootnote}>
+              For full access use devices larger than 1024 px
+            </Typography>
+          </div>
+        </Container>
+      </Collapse>
     </div>
   )
 };

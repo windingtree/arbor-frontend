@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { connect } from 'react-redux';
 import { extendOrgidJson, addAgentKey, removeAgentKey, resetTransactionStatus, selectPendingState, selectSuccessState } from '../../../ducks/wizard';
 import {Formik} from 'formik';
-import _ from "lodash";
 import {
   Button,
   Container,
@@ -168,9 +167,7 @@ function Agents(props) {
   const [isTooltipOpen, setTooltipOpen] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [agentIndexToRemove, setAgentIndexToRemove] = useState(null);
-  const { organization , pendingTransaction, successTransaction } = props;
-  const { owner } = organization;
-  const agents = _.get(organization, `jsonContent.publicKey`, []);
+  const { owner, agents, pendingTransaction, successTransaction } = props;
 
   useEffect(() => {
     props.resetTransactionStatus();

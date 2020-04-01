@@ -67,7 +67,7 @@ export const getTodo = (organization) => {
     todo.push(Object.assign({}, allTodo.website, {state: {website, isWebsiteVerified: organization.isWebsiteProved}}));
   }
   // SOCIAL
-  if ((contacts.twitter && !organization.isSocialTWProved) || (contacts.facebook && !organization.isSocialFBProved) || (contacts.instagram && !organization.isSocialIGProved)) {
+  if ((contacts.twitter && !organization.isSocialTWProved) || (contacts.facebook && !organization.isSocialFBProved) || (contacts.instagram && !organization.isSocialIGProved) || (contacts.linkedin && !organization.isSocialLNProved)) {
     todo.push(Object.assign({}, allTodo.social, {state: {contacts, id, orgid }}));
   }
   // SSL

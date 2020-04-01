@@ -189,7 +189,7 @@ function TrustWebsite() {
               <Button onClick={history.goBack}>
                 <Typography className={classes.buttonLabel}>
                   <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
-                  Back to all organizations
+                  Back to organization profile
                 </Typography>
               </Button>
             </div>

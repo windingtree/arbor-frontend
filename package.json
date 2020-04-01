@@ -50,9 +50,9 @@
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 9009 -c .storybook watch-css -s ./src",
     "build-storybook": "build-storybook -s public",
-    "build:staging": "env-cmd -f .env.staging react-scripts build",
-    "build:ropsten": "env-cmd -f .env.ropsten react-scripts build",
-    "build:production": "env-cmd -f .env.production react-scripts build"
+    "build:staging": "env-cmd -f zeit.staging.env react-scripts build",
+    "build:ropsten": "env-cmd -f zeit.ropsten.env react-scripts build",
+    "build:production": "env-cmd -f zeit.production.env react-scripts build"
   },
   "eslintConfig": {
     "extends": "react-app"

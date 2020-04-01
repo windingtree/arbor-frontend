@@ -248,6 +248,7 @@ function TrustWebsite() {
                   <Typography className={classes.howListTexts}>Make this TXT file accessible via a URL: <br/><a
                     className={classes.link}
                     target={'_blank'}
+                    rel="noopener noreferrer"
                     href={website+'/org.id'}>{website+'/org.id'}</a></Typography>
                 </li>
 
@@ -289,6 +290,7 @@ function TrustWebsite() {
                   <Typography className={classes.howListTexts}>Make this TXT file accessible via a URL: <br/><a
                     className={classes.link}
                     target={'_blank'}
+                    rel="noopener noreferrer"
                     href={website}>{website}</a></Typography>
                 </li>
 

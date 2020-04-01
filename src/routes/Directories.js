@@ -143,7 +143,7 @@ function Directories(props){
               </Hidden>
             </div>
             <div className={classes.addDirectoryButtonWrapper}>
-              <Button onClick={() => window.location = "mailto:propose@windingtree.com"} className={classes.addDirectoryButton}>
+              <Button onClick={() => window.location = "https://forms.gle/GsVZYqPXJMbdkerF8"} className={classes.addDirectoryButton}>
                 <Typography variant={'inherit'} className={classes.addDirectoryButtonTitle} noWrap={true}>Propose a new directory</Typography>
               </Button>
             </div>

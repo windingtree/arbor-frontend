@@ -75,6 +75,6 @@
     "@storybook/addons": "^5.3.6",
     "@storybook/preset-create-react-app": "^1.5.2",
     "@storybook/react": "^5.3.6",
-    "env.cmd": "^10.1.0"
+    "env-cmd": "^10.1.0"
   }
 }

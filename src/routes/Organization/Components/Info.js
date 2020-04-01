@@ -527,7 +527,7 @@ function Info(props) {
               <div className={classes.orgInfoFieldWrapper} style={{width: '100%'}}>
                 <Typography variant={'caption'} className={classes.orgInfoFieldTitle} noWrap>
                   {'Website: '}
-                  <a href={website()} target={'_blank'} className={classes.orgInfoField}>{contacts.website}</a>
+                  <a href={website()} target={'_blank'} className={classes.orgInfoField} rel="noopener noreferrer">{contacts.website}</a>
                   {isWebsiteProved &&
                   <TrustLevelIcon className={classes.iconTrustLevel} style={{verticalAlign: 'text-bottom'}}/>}
                 </Typography>
@@ -559,7 +559,7 @@ function Info(props) {
           {
             socials.map((social, index) => {
               return (
-                <a key={index.toString()} href={social.link} target={'_blank'} className={classes.socialLink}>
+                <a key={index.toString()} href={social.link} target={'_blank'} className={classes.socialLink} rel="noopener noreferrer">
                   <Hidden xsDown>
                     {icon(social.network)}
                   </Hidden>

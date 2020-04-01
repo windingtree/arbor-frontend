@@ -1,8 +1,11 @@
+// Export main variables
 export const appName = `Arbor`;
 export const LIF_DEPOSIT_AMOUNT = Number(process.env.REACT_APP_LIF_DEPOSIT_AMOUNT);
 export const API_URI = process.env.REACT_APP_API_URI;
 export const ORGID_PROXY_ADDRESS = process.env.REACT_APP_ORGID_PROXY_ADDRESS;
 export const DIRECTORY_PROXY_ADDRESS = process.env.REACT_APP_DIRECTORY_PROXY_ADDRESS;
+export const LIF_TOKEN_PROXY_ADDRESS = process.env.REACT_APP_LIF_TOKEN_PROXY_ADDRESS;
+
 
 export const ORGID_ABI = [
   {
@@ -682,7 +685,6 @@ export const ORGID_ABI = [
     "signature": "0xa8e06bc3"
   },
 ];
-export const LIF_TOKEN_PROXY_ADDRESS = '0xB6e225194a1C892770c43D4B529841C99b3DA1d7';
 export const LIF_TOKEN_ABI = [
   {
     "constant": false,

@@ -49,7 +49,10 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 9009 -c .storybook watch-css -s ./src",
-    "build-storybook": "build-storybook -s public"
+    "build-storybook": "build-storybook -s public",
+    "build:staging": "env-cmd -f zeit.staging.env react-scripts build",
+    "build:ropsten": "env-cmd -f zeit.ropsten.env react-scripts build",
+    "build:production": "env-cmd -f zeit.production.env react-scripts build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -71,6 +74,7 @@
     "@storybook/addon-links": "^5.3.6",
     "@storybook/addons": "^5.3.6",
     "@storybook/preset-create-react-app": "^1.5.2",
-    "@storybook/react": "^5.3.6"
+    "@storybook/react": "^5.3.6",
+    "env-cmd": "^10.1.0"
   }
 }

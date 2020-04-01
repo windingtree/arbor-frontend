@@ -110,7 +110,7 @@ const Registration = () => {
               <Button onClick={(event) => {
                 event.preventDefault();
               }} className={classes.button}>
-                <a href={'https://metamask.io/download.html'} target={'_blank'} className={classes.redirectLink}>
+                <a href={'https://metamask.io/download.html'} target={'_blank'} className={classes.redirectLink} rel="noopener noreferrer">
                   <Typography variant={'caption'} className={classes.buttonLabel}>Install MetaMask</Typography>
                 </a>
               </Button>

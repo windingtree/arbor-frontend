@@ -82,7 +82,7 @@ const SignInActionBox = (classes, props) => {
           <Typography variant={'subtitle2'} className={classes.subtitle}>{MAINTENANCE.text}</Typography>
         </div>
         <div className={classes.buttonWrapper}>
-          <Button onClick={() => window.location = MAINTENANCE.link} className={classes.button}>
+          <Button onClick={() => window.open(MAINTENANCE.link, '_blank').focus()} className={classes.button}>
             <Typography variant={'caption'} className={classes.buttonLabel}>{MAINTENANCE.button}</Typography>
           </Button>
         </div>

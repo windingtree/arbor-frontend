@@ -103,9 +103,11 @@ const Registration = () => {
               <div className={classes.line}/>
             </div>
             <div className={classes.subtitleWrapper}>
-              <Typography variant={'subtitle2'} className={classes.subtitle}>To start off, you need to install MetaMask
+              <Typography variant={'subtitle2'} className={classes.subtitle}>
+                To start off, you need to install MetaMask
                 — a browser extension that allows you to hold Ether and tokens as well as create and manage your
-                organization profile on Arbor. </Typography>
+                organization profile on Arbor. 
+              </Typography>
             </div>
             <div className={classes.buttonWrapper}>
 

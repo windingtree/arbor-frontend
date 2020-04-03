@@ -5,6 +5,7 @@ export const API_URI = process.env.REACT_APP_API_URI;
 export const ORGID_PROXY_ADDRESS = process.env.REACT_APP_ORGID_PROXY_ADDRESS;
 export const DIRECTORY_PROXY_ADDRESS = process.env.REACT_APP_DIRECTORY_PROXY_ADDRESS;
 export const LIF_TOKEN_PROXY_ADDRESS = process.env.REACT_APP_LIF_TOKEN_PROXY_ADDRESS;
+export const MAINTENANCE = process.env.REACT_APP_MAINTENANCE ? JSON.parse(process.env.REACT_APP_MAINTENANCE): undefined;
 
 export const ORGID_ABI = [
   {

@@ -118,19 +118,51 @@ export default function reducer( state = initialState, action) {
     /////////////
     // SUCCESS //
     /////////////
+    // The initial organization is successful
     case REWRITE_ORGID_JSON_SUCCESS:
+      orgidJsonUpdates = payload;
+
+      // Checking for merge of different orgids
+      console.log(`[IN REWRITE_ORGID_JSON_SUCCESS] ${JSON.stringify(state.orgidJson)} | ${JSON.stringify(payload)} => ${JSON.stringify(orgidJsonUpdates)}`);
+      if(state.orgidJson.id && payload.id && payload.id !== state.orgidJson.id) {
+        console.error(`[IN REWRITE_ORGID_JSON_SUCCESS] Attempting to merge different orgids, canceled.`);
+        orgidJsonUpdates = state.orgidJson;
+      } else {
+        
+      }
+
+      // Return the merged state
       return {
         isFetching: false,
         isFetched: true,
-        orgidJson: payload,
-        orgidHash: `0x${keccak256(JSON.stringify(payload, null, 2))}`,
+        orgidJson: orgidJsonUpdates,
+        orgidHash: `0x${keccak256(JSON.stringify(orgidJsonUpdates, null, 2))}`,
         error: null
       };
+    
+    // The Organization JSON extension is successful
     case EXTEND_ORGID_JSON_SUCCESS:
+      // Update the content by merging the payload with the current JSON
       orgidJsonUpdates = Object.assign({}, state.orgidJson, {
         ...payload,
         updated: new Date().toJSON()
       });
+
+      console.log(`[IN EXTEND_ORGID_JSON_SUCCESS] ${JSON.stringify(state.orgidJson)} | ${JSON.stringify(payload)} => ${JSON.stringify(orgidJsonUpdates)}`);
+      
+      // Checking for merge of different orgids
+      if(state.orgidJson.id && payload.id && payload.id !== state.orgidJson.id) {
+        console.error(`[IN EXTEND_ORGID_JSON_SUCCESS] Attempting to merge different orgids, extension canceled.`);
+        orgidJsonUpdates = state.orgidJson;
+      }
+
+      // Checking for mixed organnization types
+      if(orgidJsonUpdates.organizationalUnit && orgidJsonUpdates.legalEntity) {
+        console.error(`[IN EXTEND_ORGID_JSON_SUCCESS] Organization created with mixed types, extension canceled.`);
+        orgidJsonUpdates = state.orgidJson;
+      }
+
+      // Merge the state
       return _.merge({}, state, {
         isFetching: false,
         isFetched: true,
@@ -138,6 +170,7 @@ export default function reducer( state = initialState, action) {
         orgidHash: `0x${keccak256(JSON.stringify(orgidJsonUpdates, null, 2))}`,
         error: null
       });
+
     case ADD_AGENT_KEY_SUCCESS:
       publicKey.push(payload);
       const updatedJsonWithAgentKey = _.merge({}, state.orgidJson, {
@@ -699,8 +732,13 @@ function ApiSendCreateOrganizationalUnit(data) {
   const orgidId = orgidJson.id.replace('did:orgid:', '');
 
   return new Promise((resolve, reject) => {
+    console.log(`createSubsidiary ${orgidId} from parent ${orgidParent}`);
     orgidContract.createSubsidiary(
-      orgidParent, orgidId, address /*subsidiaryDirector*/, orgidUri, orgidHash,
+      orgidParent,
+      orgidId,
+      address /*subsidiaryDirector*/,
+      orgidUri,
+      orgidHash,
       { from: address, gas: 500000, gasPrice: getGasPrice() },
       (err, data) => { if(err) return reject(err); resolve(data); }
     );

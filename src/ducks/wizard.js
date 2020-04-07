@@ -125,11 +125,10 @@ export default function reducer( state = initialState, action) {
       // Checking for merge of different orgids
       console.log(`[IN REWRITE_ORGID_JSON_SUCCESS] ${JSON.stringify(state.orgidJson)} | ${JSON.stringify(payload)} => ${JSON.stringify(orgidJsonUpdates)}`);
       if(state.orgidJson.id && payload.id && payload.id !== state.orgidJson.id) {
-        console.error(`[IN REWRITE_ORGID_JSON_SUCCESS] Attempting to merge different orgids, canceled.`);
-        orgidJsonUpdates = state.orgidJson;
-      } else {
-        
+        console.info(`[IN REWRITE_ORGID_JSON_SUCCESS] Now working on different org.id.`);
+        orgidJsonUpdates = payload;
       }
+      state.orgidJson = payload;
 
       // Return the merged state
       return {

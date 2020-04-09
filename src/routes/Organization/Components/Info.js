@@ -468,7 +468,7 @@ function Info(props) {
                 logo ? (
                   <img className={classes.orgImage} src={logo} alt={`Organization Logo cannot be loaded. URI: ${logo}`}/>
                 ) : (
-                  <img className={classes.orgImage} src={setRandomDefaultImage(id, directory || 'hotel')} alt={`Organization from directory: ${directory}`}/>
+                  <img className={classes.orgImage} src={setRandomDefaultImage(id || '0xLOADING', directory || 'hotel')} alt={`Organization from directory: ${directory}`}/>
                 )
               }
             </div>

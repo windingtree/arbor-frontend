@@ -13,10 +13,14 @@ import {
 import { selectSignInAddress } from '../ducks/signIn';
 import { styles } from './WizardStep';
 
+// Component for a Wizard Step
 const WizardStep = (props) => {
+  // Gather context
   const inheritClasses = styles();
   const { index, orgidJson, orgidHash, orgidUri, address, parent, data: { longName, description, cta }, action, stepTitle = true } = props;
+  console.log(`props: ${JSON.stringify(props)}`);
 
+  // Define the submit function
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (action === 'edit') {
@@ -31,6 +35,7 @@ const WizardStep = (props) => {
     }
   };
 
+  // The Wizard Step React component
   return (
     <form onSubmit={handleSubmit}>
       <div  key={index}>

@@ -202,8 +202,18 @@ function Search(props) {
     else if(isFetched) {
       // Define the organization category
       let orgDirectory = directoryFilterValue ? options.directories[directoryFilterValue] : 'Organizations';
+      
+      // Write directory in singular to be gramatically correct
       if(total === 1) {
-        orgDirectory = orgDirectory.substring(0, orgDirectory.length -1);
+        // `ies` -> `y`
+        if(orgDirectory.substring(orgDirectory.length-3, orgDirectory.length) === 'ies') {
+          orgDirectory = orgDirectory.substring(0, orgDirectory.length-3) + 'y';
+        }
+        
+        // Remove final `s`
+        else {
+          orgDirectory = orgDirectory.substring(0, orgDirectory.length -1);
+        }        
       }
       let orgCountry = countryFilterValue ? ` in ${options.countries[countryFilterValue]}` : '';
 

@@ -1,6 +1,6 @@
 import { appName } from '../utils/constants';
 import history from '../redux/history';
-import GetWeb3 from '../redux/web3';
+import {getWeb3, connect} from '../web3/w3';
 import { createSelector } from 'reselect';
 import { all, call, put, takeLatest } from 'redux-saga/effects';
 /**
@@ -103,8 +103,13 @@ function fetchSignInFailure(error) {
  * */
 function* fetchSignInSaga() {
   try {
-    yield call(GetWeb3);
-    const accounts = yield call(window.ethereum.enable);
+    //yield call(getWeb3);
+    //const accounts = yield call(window.ethereum.enable);
+    let w3 = getWeb3();
+    if(w3 === undefined) {
+      throw(new Error('No web3 detected'));
+    }
+    const accounts = yield connect();
     const account = accounts[0];
 
     yield put(fetchSignInSuccess(account));

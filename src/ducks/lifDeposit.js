@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 import { all, call, put, takeEvery, select } from 'redux-saga/effects';
 import { appName, LIF_DEPOSIT_AMOUNT, ORGID_PROXY_ADDRESS } from '../utils/constants';
-import { getOrgidContract, getLifTokenContract, getCurrentBlockNumber, getGasPrice } from '../utils/helpers'
+import { getOrgidContract, getLifTokenContract, getCurrentBlockNumber, getGasPrice } from '../web3/w3'
 import { selectSignInAddress } from "./signIn";
 
 // region == [CONSTANTS] ===============================================

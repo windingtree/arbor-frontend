@@ -1,7 +1,5 @@
-import { Web3Provider } from '@ethersproject/providers';
+import {getWeb3 } from './w3';
 
-export default function getLibrary(provider) {
-    const library = new Web3Provider(provider);
-    library.pollingInterval = 8000;
-    return library
-  }
+export const getLibrary = (provider, connector) => {
+  return getWeb3();
+}

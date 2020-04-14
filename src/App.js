@@ -6,7 +6,7 @@ import {createMuiTheme} from '@material-ui/core/styles';
 import RootRouter from './routes/RootRouter';
 import { MuiThemeProvider } from '@material-ui/core/styles'
 import  store, { persistor } from './redux/store';
-import getLibrary from './web3/getLibrary'
+import {getLibrary} from './web3/getLibrary'
 
 import colors from './styles/colors';
 

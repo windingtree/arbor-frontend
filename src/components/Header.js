@@ -15,6 +15,7 @@ import PlaneIcon from '../assets/SvgComponents/plane-icon.svg';
 import HotelIcon from '../assets/SvgComponents/hotel-icon.svg';
 import PaperIcon from '../assets/SvgComponents/paper-icon.svg';
 import TravelIcon from '../assets/SvgComponents/travel-icon.svg';
+import {getWeb3} from '../web3/w3';
 
 import colors from '../styles/colors';
 
@@ -231,11 +232,14 @@ export default function Header(props) {
   const [isOpen, toggleOpen] = useState(false);
   const { isAuthenticated } = props;
 
+  // Redirect users depending on Web3 presence or not
   const handleSignInRedirect = () => {
-    if(window.web3 === undefined) {
-      history.push('/authorization/register')
-    } else {
+    let w3 = getWeb3();
+    if(w3 !== undefined) {
       history.push('/authorization/signin');
+    }
+    else {
+      history.push('/authorization/register')
     }
   };
 

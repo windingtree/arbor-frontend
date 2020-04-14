@@ -4,7 +4,8 @@ import {createSelector} from "reselect";
 import {keccak256} from 'js-sha3';
 import {appName} from "../utils/constants";
 import {callApi} from "../redux/api";
-import {idGenerator, getWeb3, getGasPrice, getOrgidContract} from "../utils/helpers";
+import {getWeb3, getGasPrice, getOrgidContract} from "../web3/w3";
+import {idGenerator} from "../utils/helpers";
 
 //region == [Constants] ================================================================================================
 export const moduleName = 'wizard';

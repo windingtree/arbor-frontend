@@ -12,10 +12,15 @@ export const getWeb3 = () => {
       window.ethereum.autoRefreshOnNetworkChange = false;
       cachedWeb3 = new Web3(window['ethereum']);
       console.log("Ethereum provider detected.");
-    
+    }
+
+    // Given Provider (eg: Mist)
+    else if(Web3.givenProvider) {
+      cachedWeb3 = new Web3(Web3.givenProvider);
+      console.log("Given provider detected.");
     }
     
-    // Check for injected web3
+    // Check for injected web3 (old browsers or extensions)
     else if (typeof window.web3 !== undefined) {
       cachedWeb3 = window.web3;
       console.log("Injected web3 detected.");
@@ -28,6 +33,18 @@ export const getWeb3 = () => {
 
   return cachedWeb3;
 };
+
+// Register to chain change event
+export const onChainChange = (callback) => {
+  let w3 = getWeb3();
+  if(w3.currentProvider.on !== undefined) {
+    w3.currentProvider.on('networkChanged', callback);
+  }
+  else {
+    console.log('No network event change callbacks');
+  }
+
+}
 
 /*******************************************/
 /* Handle connecting, per EIP 1102/1193    */
@@ -58,7 +75,7 @@ export const connect = () => {
       .catch(err => reject(err));
     }
   });
-}
+};
 
 // get the Gas Price
 export const getGasPrice = () => {

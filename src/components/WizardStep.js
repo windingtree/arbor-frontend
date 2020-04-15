@@ -91,6 +91,7 @@ const WizardStep = (props) => {
     })))), 'schema')).keyBy('orgidJsonPath').mapValues('schema').value() :
     {};
 
+  // Modal to provide more details on how to obtain Ether
   const renderModal = () => {
     return (
       <DialogComponent
@@ -104,7 +105,7 @@ const WizardStep = (props) => {
             <Typography className={classes.paragraph}>It is common to obtain Ether through online exchange platforms that
               operate in your country and accept your preferred currency. Reputable exchange platforms have strict KYC
               processes and will ask you to share your personal data.</Typography>
-            <Typography className={classes.paragraph}>MetaMask is linked with two exchanges, <b>Coinbase</b> and <b>ShapeShift</b>, so you can purchase Ether directly from your account.</Typography>
+            <Typography className={classes.paragraph}>MetaMask is linked with two exchanges, <b>Wyre</b> and <b>Coinswitch</b>, so you can purchase Ether directly from your account.</Typography>
             <Typography className={classes.paragraph}>It is also possible to buy Ether from crypto
               ATMs or through Peer-to-Peer options like <b>LocalCryptos</b>, <b>Hodl Hodl</b> or similar services. The latter can be
               private or centralized and offer a wide selection of buying and selling options, from in-person meetings to
@@ -126,6 +127,8 @@ const WizardStep = (props) => {
   const handleCloseModal = () => {
     toggleModalOpenState(false)
   };
+
+  //console.log(`[In WizardStep] Rendering form with initial values: ${JSON.stringify(props.orgidJson)}`);
 
   return (
     <div key={index}>
@@ -182,6 +185,8 @@ const WizardStep = (props) => {
                 <div/>
                 : sections.map((section, index) => {
                   // console.log(`<Section key="${index}" name="${section.name}" ... />`);
+                  //console.log(`[In WizardStep] Loading section ${section.name} and index ${index} with values: ${JSON.stringify(values)}`);
+
                   return (
                     <Section
                       key={index}

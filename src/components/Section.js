@@ -51,7 +51,7 @@ const Section = (props) => {
       )
     }
     if (knownFields[item.type]) {
-      // console.log(`<${item.type} name="${item.name}" `, item);
+      //console.log(`knownFields <${item.type} name="${item.name}" `, item, values);
       return knownFields[item.type]({...item, index, handleChange, handleBlur, values, errors, touched})
     }
     return (

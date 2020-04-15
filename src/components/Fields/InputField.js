@@ -46,7 +46,7 @@ const InputField = (props) => {
         label={name}
         variant={'filled'}
         name={orgidJsonPath}
-        value={_.get(values, orgidJsonPath)}
+        value={_.get(values, orgidJsonPath, '')}
         helperText={isError ? `${_.get(errors, orgidJsonPath)}`.replace('ValidationError: "value" ', '') : helperText}
         required={required}
         InputProps={

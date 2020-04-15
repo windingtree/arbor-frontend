@@ -150,8 +150,8 @@ function Previews(props) {
   };
 
   const thumbs = files.map(file => (
-    <div className={classes.previewContainer}>
-      <div className={classes.thumb} key={file.name}>
+    <div className={classes.previewContainer} key={file.name}>
+      <div className={classes.thumb}>
         <div className={classes.thumbInner}>
           <img
             alt={'Preview'}
@@ -220,11 +220,19 @@ const DropzoneField = (props) => {
   const [showPreviewOnly, setShowPreviewOnly] = useState(!!_.get(values, orgidJsonPath, false));
   const [files, setFiles] = useState([]);
 
-  useEffect(() => () => {
+  /* useEffect(() => () => {
     // Make sure to revoke the data uris to avoid memory leaks
     files.forEach(file => URL.revokeObjectURL(file.preview));
     props.extendOrgidJson(values);
   }, [files]); // eslint-disable-line react-hooks/exhaustive-deps
+  */
+ useEffect(() => {
+  // Make sure to clean the component state
+  return function cleanup() {
+    files.forEach(file => URL.revokeObjectURL(file.preview));
+  };
+
+ });
 
   const handleChangeTab = (event, newValue) => {
     setTabValue(newValue);
@@ -233,69 +241,70 @@ const DropzoneField = (props) => {
   const removePhotoHandler = () => {
     setShowPreviewOnly(false);
     props.saveMediaToArbor({address, id: orgidJson.id, file: null});
+    setFiles([]);
   };
 
-  const value = _.get(values, orgidJsonPath);
+  let value = _.get(values, orgidJsonPath, '');
+  let hideUpdateTabs = (orgidJson.media && orgidJson.media.logo && showPreviewOnly);
 
   return (
     <div key={index} className={classes.tabsContainer}>
-      {showPreviewOnly &&
-      <div>
+      {hideUpdateTabs ?
+      (
         <div>
-          <img className={classes.uploadedImage} src={value} alt={`File cannot be shown as image. URI: ${value}`}/> {/* eslint-disable-line jsx-a11y/img-redundant-alt */}
+          <div>
+            <img className={classes.uploadedImage} src={value} alt={`File cannot be shown as image. URI: ${value}`}/> {/* eslint-disable-line jsx-a11y/img-redundant-alt */}
+          </div>
+          <Link className={classes.removePhotoLink} onClick={removePhotoHandler}>Remove photo</Link>
         </div>
-        <Link className={classes.removePhotoLink} onClick={removePhotoHandler}>Remove photo</Link>
-      </div>
-      }
-
-      {!showPreviewOnly &&
-      <div>
+      ):(
         <div>
-          <Tabs
-            value={tabValue}
-            onChange={handleChangeTab}
-            indicatorColor='primary'
-            textColor="primary"
-          >
-            <Tab label={'Upload an image'}/>
-            <Tab label={'Add link to image'}/>
-          </Tabs>
-        </div>
-        <TabPanel value={tabValue} index={0}>
-          <Previews
-            files={files}
-            setFiles={setFiles}
-            address={address}
-            orgidJson={orgidJson}
-            saveMediaToArbor={saveMediaToArbor}
-            name={orgidJsonPath}
-            description={description}
-            value={value}
-            helperText={isError ? _.get(errors, orgidJsonPath) : helperText}
-            required={required}
-            onChange={handleChange}
-            onBlur={handleBlur}
-          />
-        </TabPanel>
-        <TabPanel value={tabValue} index={1}>
-          <div className={classes.inputWrapper}>
-            <TextField
-              type={type}
-              variant={'filled'}
-              label={name}
+          <div>
+            <Tabs
+              value={tabValue}
+              onChange={handleChangeTab}
+              indicatorColor='primary'
+              textColor="primary"
+            >
+              <Tab label={'Upload an image'}/>
+              <Tab label={'Add link to image'}/>
+            </Tabs>
+          </div>
+          <TabPanel value={tabValue} index={0}>
+            <Previews
+              files={files}
+              setFiles={setFiles}
+              address={address}
+              orgidJson={orgidJson}
+              saveMediaToArbor={saveMediaToArbor}
               name={orgidJsonPath}
+              description={description}
               value={value}
               helperText={isError ? _.get(errors, orgidJsonPath) : helperText}
               required={required}
-              fullWidth
-              error={isError}
               onChange={handleChange}
               onBlur={handleBlur}
             />
-          </div>
-        </TabPanel>
-      </div>
-      }
+          </TabPanel>
+          <TabPanel value={tabValue} index={1}>
+            <div className={classes.inputWrapper}>
+              <TextField
+                type={type}
+                variant={'filled'}
+                label={name}
+                name={orgidJsonPath}
+                value={value}
+                helperText={isError ? _.get(errors, orgidJsonPath) : helperText}
+                required={required}
+                fullWidth
+                error={isError}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+            </div>
+          </TabPanel>
+        </div>
+      )}
     </div>
   )
 };

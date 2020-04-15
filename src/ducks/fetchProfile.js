@@ -3,6 +3,7 @@ import { createSelector } from 'reselect';
 import { all, takeEvery, call, put } from 'redux-saga/effects';
 import { callApi } from '../redux/api';
 import _ from 'lodash';
+import {ACCOUNT_CHANGE_NOTIF} from './signIn'
 
 /**
  * Constants
@@ -118,6 +119,7 @@ function fetchProfileOrganizationsFailure(error) {
 /**
  * Sagas
  * */
+// Saga to fetch the organizations from the profile
 function* fetchProfileOrganizationsSaga({payload}) {
   try {
     const result = yield call(ApiFetchProfileOrganizations, payload);
@@ -128,9 +130,16 @@ function* fetchProfileOrganizationsSaga({payload}) {
   }
 }
 
+// Saga to reload the profile on account change
+function* reloadProfileSaga({payload}) {
+  yield fetchProfileOrganizationsSaga({payload: {owner: payload}});
+}
+
+// Main saga listening to explicit requests and account changes
 export const saga = function* () {
   return yield all([
     takeEvery(FETCH_PROFILE_ORGANIZATIONS_REQUEST, fetchProfileOrganizationsSaga),
+    takeEvery(ACCOUNT_CHANGE_NOTIF, reloadProfileSaga),
   ])
 };
 

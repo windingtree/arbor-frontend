@@ -35,15 +35,32 @@ export const getWeb3 = () => {
 };
 
 // Register to chain change event
-export const onChainChange = (callback) => {
+export const onChainChanged = (callback) => {
   let w3 = getWeb3();
   if(w3.currentProvider.on !== undefined) {
+    // Legacy Method
     w3.currentProvider.on('networkChanged', callback);
+    
+    // EIP 1193 Method
+    w3.currentProvider.on('chainChanged', (chainIdHex) => {
+      callback(parseInt(chainIdHex, 16));
+    });
   }
   else {
     console.log('No network event change callbacks');
   }
+}
 
+// Register to account change event
+export const onAccountsChanged = (callback) => {
+  let w3 = getWeb3();
+  if(w3.currentProvider.on !== undefined) {
+    // EIP 1193 Method
+    w3.currentProvider.on('accountsChanged', callback);
+  }
+  else {
+    console.log('No network event change callbacks');
+  }
 }
 
 /*******************************************/

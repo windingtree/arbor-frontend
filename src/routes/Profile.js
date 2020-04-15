@@ -63,7 +63,12 @@ const styles = makeStyles({
     fontWeight: 400,
     lineHeight: 1.45,
     color: colors.greyScale.common,
-  }
+  },
+  address: {
+    fontSize: '12px',
+    fontWeight: 400,
+    color: colors.greyScale.light,
+  },
 });
 
 function Profile(props) {
@@ -112,6 +117,7 @@ function Profile(props) {
         )}
       </List>
       }
+       <Typography variant={'subtitle2'} className={classes.address}>Address: {address}</Typography>
     </Container>
   )
 }

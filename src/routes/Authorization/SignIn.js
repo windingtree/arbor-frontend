@@ -6,7 +6,7 @@ import { fetchSignInRequest } from '../../ducks/signIn';
 import {Container, Grid, Typography, Box, Button} from '@material-ui/core';
 import {makeStyles} from '@material-ui/styles';
 import {MAINTENANCE, CHAIN_ID} from "../../utils/constants";
-import {getWeb3, onChainChange} from "../../web3/w3"
+import {getWeb3, onChainChanged} from "../../web3/w3"
 
 import LoginIllustration from '../../assets/SvgComponents/login-illustration.svg';
 
@@ -135,7 +135,7 @@ const SignInActionBox = (classes, props) => {
   };
 
   // Register to Web3 provider chain change events
-  onChainChange(handleChainChange);
+  onChainChanged(handleChainChange);
 
   // Update the Chain ID
   useEffect(() => {

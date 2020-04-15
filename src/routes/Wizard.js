@@ -199,9 +199,41 @@ const WizardGeneral = (props) => {
     const { type } = content;
 
     switch (type) {
-      case 'step': return <WizardStep data={content} action={action} handleNext={handleNext} key={stepIndex} index={stepIndex}/>;
-      case 'step_hosting': return <WizardStepHosting data={content} action={action} handleNext={handleNext} key={stepIndex} index={stepIndex}/>;
-      case 'step_metamask': return <WizardStepMetaMask data={content} action={action} handleNext={handleNext} key={stepIndex} index={stepIndex} parent={parent}/>;
+      // One of the initial steps
+      case 'step': 
+        return (
+          <WizardStep 
+            data={content} 
+            action={action}
+            handleNext={handleNext}
+            key={stepIndex}
+            index={stepIndex}/>
+        );
+
+      // Hosting step
+      case 'step_hosting': 
+        return (
+          <WizardStepHosting
+            data={content}
+            action={action}
+            handleNext={handleNext}
+            key={stepIndex}
+            index={stepIndex}/>
+        );
+      
+      // Transaction sending step
+      case 'step_metamask': 
+        return (
+          <WizardStepMetaMask
+            data={content}
+            action={action}
+            handleNext={handleNext}
+            key={stepIndex}
+            index={stepIndex}
+            parent={parent}/>
+        );
+      
+      // Default Step - Should not happen
       default: return (
         <div key={stepIndex}>Step <pre>${content.name}</pre> has unknown type: <pre>{content.type}</pre></div>
       );

@@ -33,13 +33,13 @@ const SelectField = (props) => {
         <Select
           variant={'filled'}
           name={orgidJsonPath}
-          value={_.get(values, orgidJsonPath)}
+          value={_.get(values, orgidJsonPath, '')}
           required={required}
           error={isError}
           onChange={handleChange}
           onBlur={handleBlur}
         >
-          <MenuItem value={undefined} key={''}/>
+          <MenuItem value={''} key={''}/>
           {
             Object.keys(optionsObj).map((value) => (
               <MenuItem value={value} key={value}>{optionsObj[value]}</MenuItem>

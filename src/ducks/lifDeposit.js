@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 import { all, call, put, takeEvery, select } from 'redux-saga/effects';
 import { appName, LIF_DEPOSIT_AMOUNT, ORGID_PROXY_ADDRESS } from '../utils/constants';
-import { getOrgidContract, getLifTokenContract, getCurrentBlockNumber, getGasPrice } from '../web3/w3'
+import { getOrgidContract, getLifTokenContract, getCurrentBlockNumber, getWeb3 } from '../web3/w3'
 import { selectSignInAddress } from "./signIn";
 
 // region == [CONSTANTS] ===============================================
@@ -232,9 +232,7 @@ function* enrichLifDataSaga({payload}) {
     console.log('>>>', 'yield call(lifTokenAllowanceAmountForOrgId, userAddress)');
     const lifTokenAllowanceAmountForOrgId = yield call(ApiGetLifTokenAllowanceAmountForOrgId, userAddress);
     // OrgIdLifTokenDepositedAmount
-    const {
-      deposit: orgIdLifDepositAmount
-    } = yield call(ApiGetOrgIdLifTokenDepositedAmount, orgid);
+    let orgIdLifDepositAmount = yield call(ApiGetOrgIdLifTokenDepositedAmount, orgid);
     // lifTokenWithdrawDelay
     // OrgIdLifTokenWithdrawalRequest
     const {
@@ -313,149 +311,142 @@ export const saga = function*() {
 // endregion
 
 // region == [API] =====================================================
+// Get the LIF Token Balance of user
 function ApiGetLifTokenBalance(userAddress) {
   console.log('[.]', 'ApiGetLifTokenBalance');
-  const lifContract = getLifTokenContract();
+  let lifContract = getLifTokenContract();
+  let web3 = getWeb3();
+
   return new Promise((resolve, reject) => {
-    try {
-      lifContract.balanceOf(userAddress, (error, balance) => {
-        if (error) return reject(error);
-        // Get decimals
-        lifContract.DECIMALS((error, decimals) => {
-          if (error) return reject(error);
-          balance = balance.div(10**decimals).toNumber();
-          resolve(balance)
-        });
-      });
-    } catch (e) {
-      reject(`Error in ApiGetLifTokenBalance: ${e.toString()}`);
-    }
+    lifContract.methods.balanceOf(userAddress)
+    .call()
+    .then(balance => {
+      resolve(web3.utils.fromWei(balance));
+    })
+    .catch(error => reject(error));
+    
   });
 }
 
+// Get the LIF Spending allowance for the user (ERC20 function)
 function ApiGetLifTokenAllowanceAmountForOrgId(_owner, _spender = ORGID_PROXY_ADDRESS) {
   console.log('[.]', 'ApiGetLifTokenAllowanceAmountForOrgId');
-  const lifContract = getLifTokenContract();
+  let lifContract = getLifTokenContract();
+  let web3 = getWeb3();
+
   return new Promise((resolve, reject) => {
-    try {
-      lifContract.allowance(_owner, _spender, (error, allowed) => {
-        if (error) return reject(error);
-        // Get decimals
-        lifContract.DECIMALS((error, decimals) => {
-          if (error) return reject(error);
-          allowed = allowed.div(10**decimals).toNumber();
-          resolve(allowed)
-        });
-      });
-    } catch (e) {
-      reject(`Error in ApiGetLifTokenAllowanceAmountForOrgId: ${e.toString()}`);
-    }
+      lifContract.methods.allowance(_owner, _spender)
+      .call()
+      .then(allowance => {
+        resolve(web3.utils.fromWei(allowance));
+      })
+      .catch(error => reject(error));
   });
 }
 
+// Get the LIF Deposit amount for the Org.ID
 function ApiGetOrgIdLifTokenDepositedAmount(orgId) {
   console.log('[.]', 'ApiGetOrgIdLifTokenDepositedAmount', orgId);
-  const orgidContract = getOrgidContract();
-  const lifContract = getLifTokenContract();
+  let orgidContract = getOrgidContract();
+  let web3 = getWeb3();
+
   return new Promise((resolve, reject) => {
-    try {
-      lifContract.DECIMALS((error, decimals) => {
-        if(error) return reject(error);
-        orgidContract.getOrganization(orgId, (error, [exist, orgId, orgJsonUri, orgJsonHash, parentEntity, owner, director, state, directorConfirmed, deposit]) => {
-          console.log('<<< orgidContract.getOrganization', 'args', exist, orgId, orgJsonUri, orgJsonHash, parentEntity, owner, director, state, directorConfirmed, deposit.toNumber());
-          if (error) return reject(error);
-          // Get decimals
-          resolve({
-            deposit: deposit.div(10**decimals).toNumber()
-          });
-        });
-      })
-    } catch (e) {
-      reject(`Error in ApiGetOrgIdLifTokenDepositedAmount: ${e.toString()}`);
-    }
+    orgidContract.methods.getOrganization(orgId)
+    .call()
+    .then(organization => {
+      console.log('<<< orgidContract.getOrganization', organization);
+      resolve(web3.utils.fromWei(organization.deposit));
+    })
+    .catch(error => reject(error));
   });
 }
 
+// Check if a withdrawal request exists
 function ApiGetOrgIdLifTokenWithdrawalRequest(userAddress) {
   console.log('[.]', 'ApiGetOrgIdLifTokenWithdrawalRequest');
-  const orgidContract = getOrgidContract();
-  const lifContract = getLifTokenContract();
+  let orgidContract = getOrgidContract();
+  let web3 = getWeb3();
+
   return new Promise((resolve, reject) => {
-    try {
-      lifContract.DECIMALS((error, decimals) => {
-        if(error) return reject(error);
-        orgidContract.getWithdrawalRequest(userAddress, (error, [exist, value, withdrawTime]) => {
-          console.log('<<< orgidContract.getWithdrawalRequest', 'args', exist, value.toNumber(), withdrawTime.toNumber());
-          if (error) return reject(error);
-          // Get decimals
-          resolve({
-            exist,
-            value: value.div(10**decimals).toNumber(),
-            withdrawTime: withdrawTime.div(10**decimals).toNumber(),
-          });
-        });
-      })
-    } catch (e) {
-      reject(`Error in ApiGetOrgIdLifTokenWithdrawalRequest: ${e.toString()}`);
-    }
+    orgidContract.methods.getWithdrawalRequest(userAddress)
+    .call()
+    .then(withdrawalRequest => {
+      console.log('<<< orgidContract.getWithdrawalRequest', withdrawalRequest);
+      resolve({
+        exist: withdrawalRequest.exist,
+        value: web3.utils.fromWei(withdrawalRequest.value),
+        withdrawTime: withdrawalRequest.withdrawTime
+      });
+    })
+    .catch(error => reject(error));
   });
+
 }
 
 function ApiGetCurrentBlockNumber() {
   return getCurrentBlockNumber()
 }
 
+// Increase the allowance to be spent by ORG.ID contract - ERC20 function
 function ApiIncreaseAllowance(userAddress) {
   const lifContract = getLifTokenContract();
-  return new Promise((resolve, reject) => {
-    lifContract.DECIMALS((error, decimals) => {
-      if (error) return reject(error);
-      lifContract.increaseApproval(
-        ORGID_PROXY_ADDRESS, `${LIF_DEPOSIT_AMOUNT}${(10**decimals).toString().substr(1)}`,
-        { from: userAddress, gas: 500000, gasPrice: getGasPrice() },
-        (error, success) => {
-          if(error) reject(error);
-          resolve(success);
-        }
-      )
-    });
-  })
-}
+  let web3 = getWeb3();
 
-function ApiAddDeposit(userAddress, orgid) {
-  const orgidContract = getOrgidContract();
-  const lifContract = getLifTokenContract();
   return new Promise((resolve, reject) => {
-    lifContract.DECIMALS((error, decimals) => {
-      if (error) return reject(error);
-      orgidContract.addDeposit(
-        orgid, `${LIF_DEPOSIT_AMOUNT}${(10**decimals).toString().substr(1)}`,
-        { from: userAddress, gas: 500000, gasPrice: getGasPrice() },
-        (error, data) => {
-          if(error) reject(error);
-          resolve(data);
-        }
-      )
-    });
+    lifContract.methods.increaseApproval(
+      ORGID_PROXY_ADDRESS,
+      web3.utils.toWei(LIF_DEPOSIT_AMOUNT)
+    )
+    .send(
+      { from: userAddress },
+      (error, success) => {
+        if(error) reject(error);
+        resolve(success);
+      }
+    );
   });
 }
 
+// Add a deposit on the contract
+function ApiAddDeposit(userAddress, orgid) {
+  const orgidContract = getOrgidContract();
+  let web3 = getWeb3();
+
+  return new Promise((resolve, reject) => {
+
+    orgidContract.methods.addDeposit(
+      orgid,
+      web3.utils.toWei(LIF_DEPOSIT_AMOUNT)
+    )
+    .send(
+      { from: userAddress },
+      (error, data) => {
+        if(error) reject(error);
+        resolve(data);
+      }
+    );
+
+  });
+}
+
+// Create a withdrwal request
 function ApiPostWithdrawalRequest(userAddress, orgid) {
   const orgidContract = getOrgidContract();
-  const lifContract = getLifTokenContract();
+  let web3 = getWeb3();
   console.log('[..]', 'Post Withdrawal request');
+
   return new Promise((resolve, reject) => {
-    lifContract.DECIMALS((error, decimals) => {
-      if (error) return reject(error);
-      orgidContract.submitWithdrawalRequest(
-        orgid, `${LIF_DEPOSIT_AMOUNT}${(10**decimals).toString().substr(1)}`,
-        { from: userAddress, gas: 500000, gasPrice: getGasPrice() },
-        (error, data) => {
-          if(error) return reject(error);
-          resolve(data);
-        }
-      )
-    });
+    orgidContract.methods.submitWithdrawalRequest(
+      orgid,
+      web3.utils.toWei(LIF_DEPOSIT_AMOUNT)
+    )
+    .send(
+      { from: userAddress },
+      (error, data) => {
+        if(error) return reject(error);
+        resolve(data);
+      }
+    );
   });
 }
 // endregion

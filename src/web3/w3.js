@@ -2,6 +2,8 @@ import Web3 from 'web3';
 import { ORGID_ABI, ORGID_PROXY_ADDRESS, LIF_TOKEN_ABI, LIF_TOKEN_PROXY_ADDRESS } from "../utils/constants";
 
 var cachedWeb3;
+var orgidContract;
+var lifContract;
 
 // Retrieve the Web3 object
 export const getWeb3 = () => {
@@ -96,8 +98,7 @@ export const connect = () => {
 
 // get the Gas Price
 export const getGasPrice = () => {
-  const web3 = getWeb3();
-  return web3.toWei("10", "gwei"); // todo: calculate gwei
+  return getWeb3().utils.toWei("10", "gwei");
 };
 
 // get the current block number
@@ -113,14 +114,19 @@ export const getCurrentBlockNumber = async () => {
 
 // Get the ORG.ID contract
 export const getOrgidContract = () => {
-  const web3 = getWeb3();
-  const orgidAbi = web3.eth.contract(ORGID_ABI); // todo: optimize ABI by removing methods that not used
-  return orgidAbi.at(ORGID_PROXY_ADDRESS);
+  if(orgidContract === undefined) {
+    let web3 = getWeb3();
+    orgidContract =  new web3.eth.Contract(ORGID_ABI, ORGID_PROXY_ADDRESS)
+  }
+  return orgidContract;
 };
 
 
 // Get the LIF Token contract
 export const getLifTokenContract = () => {
-  const web3 = getWeb3();
-  return web3.eth.contract(LIF_TOKEN_ABI).at(LIF_TOKEN_PROXY_ADDRESS);
+  if(lifContract === undefined) {
+    let web3 = getWeb3();
+    lifContract = new web3.eth.Contract(LIF_TOKEN_ABI, LIF_TOKEN_PROXY_ADDRESS);
+  }
+  return lifContract;
 };

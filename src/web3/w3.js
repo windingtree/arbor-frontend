@@ -1,5 +1,10 @@
 import Web3 from 'web3';
-import { ORGID_ABI, ORGID_PROXY_ADDRESS, LIF_TOKEN_ABI, LIF_TOKEN_PROXY_ADDRESS } from "../utils/constants";
+import { 
+  ORGID_ABI,
+  ORGID_PROXY_ADDRESS,
+  LIF_TOKEN_ABI,
+  LIF_TOKEN_PROXY_ADDRESS,
+} from "../utils/constants";
 
 var cachedWeb3;
 var orgidContract;

@@ -24,6 +24,10 @@ const REQUEST_WITHDRAWAL_REQUEST = `${prefix}/REQUEST_WITHDRAWAL_REQUEST`;
 const REQUEST_WITHDRAWAL_SUCCESS = `${prefix}/REQUEST_WITHDRAWAL_SUCCESS`;
 const REQUEST_WITHDRAWAL_FAILURE = `${prefix}/REQUEST_WITHDRAWAL_FAILURE`;
 
+const REQUEST_FAUCET_REQUEST = `${prefix}/REQUEST_FAUCET_REQUEST`;
+const REQUEST_FAUCET_SUCCESS = `${prefix}/REQUEST_FAUCET_SUCCESS`;
+const REQUEST_FAUCET_FAILURE = `${prefix}/REQUEST_FAUCET_FAILURE`;
+
 const initialState = {
   isFetching: false,
   isFetched: false,
@@ -51,6 +55,7 @@ export default function reducer(state = initialState, action) {
     case ALLOW_DEPOSIT_REQUEST:
     case MAKE_DEPOSIT_REQUEST:
     case REQUEST_WITHDRAWAL_REQUEST:
+    case REQUEST_FAUCET_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
         isFetched: false,
@@ -67,6 +72,7 @@ export default function reducer(state = initialState, action) {
     case ALLOW_DEPOSIT_SUCCESS:
     case MAKE_DEPOSIT_SUCCESS:
     case REQUEST_WITHDRAWAL_SUCCESS:
+    case REQUEST_FAUCET_SUCCESS:
       return Object.assign({}, state, {
         isFetching: false,
         isFetched: true,
@@ -77,6 +83,7 @@ export default function reducer(state = initialState, action) {
     case ALLOW_DEPOSIT_FAILURE:
     case MAKE_DEPOSIT_FAILURE:
     case REQUEST_WITHDRAWAL_FAILURE:
+    case REQUEST_FAUCET_FAILURE:
       return Object.assign({}, state, {
         isFetching: false,
         isFetched: false,
@@ -214,6 +221,27 @@ function requestWithdrawalFailure(error) {
   }
 }
 
+export function requestFaucet(payload) {
+  return {
+    type: REQUEST_FAUCET_REQUEST,
+    payload
+  }
+}
+
+function requestFaucetSuccess(payload) {
+  return {
+    type: REQUEST_FAUCET_SUCCESS,
+    payload
+  }
+}
+
+function requestFaucetFailure(error) {
+  return {
+    type: REQUEST_FAUCET_FAILURE,
+    error
+  }
+}
+
 
 // endregion
 
@@ -300,12 +328,26 @@ function* requestWithdrawalSaga({payload}) {
   }
 }
 
+function* requestFaucetSaga({payload}) {
+  console.log('requestFaucetSaga', payload);
+  try {
+    const userAddress = yield select(selectSignInAddress);
+
+    yield call(ApiRequestFaucet, userAddress);
+    yield put(requestFaucetSuccess({}));
+    yield put(enrichLifData(payload));
+  } catch(error) {
+    yield put(requestFaucetFailure(error))
+  }
+}
+
 export const saga = function*() {
   yield all([
     takeEvery(ENRICH_LIF_DATA_REQUEST, enrichLifDataSaga),
     takeEvery(ALLOW_DEPOSIT_REQUEST, allowDepositSaga),
     takeEvery(MAKE_DEPOSIT_REQUEST, makeDepositSaga),
     takeEvery(REQUEST_WITHDRAWAL_REQUEST, requestWithdrawalSaga),
+    takeEvery(REQUEST_FAUCET_REQUEST, requestFaucetSaga),
   ])
 };
 // endregion
@@ -338,6 +380,7 @@ function ApiGetLifTokenAllowanceAmountForOrgId(_owner, _spender = ORGID_PROXY_AD
       lifContract.methods.allowance(_owner, _spender)
       .call()
       .then(allowance => {
+        console.log('<<< orgidContract.allowance', web3.utils.fromWei(allowance));
         resolve(web3.utils.fromWei(allowance));
       })
       .catch(error => reject(error));
@@ -391,19 +434,37 @@ function ApiGetCurrentBlockNumber() {
 function ApiIncreaseAllowance(userAddress) {
   const lifContract = getLifTokenContract();
   let web3 = getWeb3();
+  let allowedTokens = web3.utils.toWei(String(LIF_DEPOSIT_AMOUNT));
 
   return new Promise((resolve, reject) => {
     lifContract.methods.increaseApproval(
       ORGID_PROXY_ADDRESS,
-      web3.utils.toWei(LIF_DEPOSIT_AMOUNT)
+      allowedTokens
     )
-    .send(
-      { from: userAddress },
-      (error, success) => {
-        if(error) reject(error);
-        resolve(success);
-      }
-    );
+    .send({ from: userAddress })
+    .on('receipt', receipt => {
+      resolve(receipt);
+    })
+    .on('error', (error, receipt) => {
+      reject({error, receipt});
+    });
+  });
+}
+
+// Request funds from the Faucet (Ropsten only)
+function ApiRequestFaucet(userAddress) {
+  //const lifContract = getLifFaucetContract();
+  const lifContract = getLifTokenContract();
+
+  return new Promise((resolve, reject) => {
+    lifContract.methods.faucetLif()
+    .send({ from: userAddress })
+    .on('receipt', receipt => {
+      resolve(receipt);
+    })
+    .on('error', (error, receipt) => {
+      reject({error, receipt});
+    });
   });
 }
 
@@ -416,15 +477,15 @@ function ApiAddDeposit(userAddress, orgid) {
 
     orgidContract.methods.addDeposit(
       orgid,
-      web3.utils.toWei(LIF_DEPOSIT_AMOUNT)
+      web3.utils.toWei(String(LIF_DEPOSIT_AMOUNT))
     )
-    .send(
-      { from: userAddress },
-      (error, data) => {
-        if(error) reject(error);
-        resolve(data);
-      }
-    );
+    .send({ from: userAddress })
+    .on('receipt', receipt => {
+      resolve(receipt);
+    })
+    .on('error', (error, receipt) => {
+      reject({error, receipt});
+    });
 
   });
 }
@@ -438,15 +499,15 @@ function ApiPostWithdrawalRequest(userAddress, orgid) {
   return new Promise((resolve, reject) => {
     orgidContract.methods.submitWithdrawalRequest(
       orgid,
-      web3.utils.toWei(LIF_DEPOSIT_AMOUNT)
+      web3.utils.toWei(String(LIF_DEPOSIT_AMOUNT))
     )
-    .send(
-      { from: userAddress },
-      (error, data) => {
-        if(error) return reject(error);
-        resolve(data);
-      }
-    );
+    .send({ from: userAddress })
+    .on('receipt', receipt => {
+      resolve(receipt);
+    })
+    .on('error', (error, receipt) => {
+      reject({error, receipt});
+    });
   });
 }
 // endregion

@@ -748,6 +748,14 @@ export const LIF_TOKEN_ABI = [
     "type": "function",
     "signature": "0xd73dd623"
   },
+  {
+    "constant":false,
+    "inputs":[],
+    "name":"faucetLif",
+    "outputs":[],
+    "payable":false,
+    "type":"function"
+  }
 ];
 
 // For in-browser debug purposes.

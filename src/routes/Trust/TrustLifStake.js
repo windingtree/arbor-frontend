@@ -4,7 +4,7 @@ import {Container, Typography, Grid, Card, Box, Button} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles';
 import moment from 'moment';
 
-import { LIF_DEPOSIT_AMOUNT } from "../../utils/constants";
+import { LIF_DEPOSIT_AMOUNT, CHAIN_ID } from "../../utils/constants";
 import history from '../../redux/history';
 import { selectSignInAddress } from '../../ducks/signIn';
 import {
@@ -12,6 +12,7 @@ import {
   allowDeposit,
   makeDeposit,
   requestWithdrawal,
+  requestFaucet,
 
   selectLifTokenBalance,
   selectLifTokenAllowanceAmountForOrgId,
@@ -263,14 +264,14 @@ const TrustLifStake = (props) => {
                 <img className={classes.stepsCardImg} src={LifIcon2} alt={'icon'}/>
                 <Typography noWrap className={classes.stepCountText}>Step 2.</Typography>
                 <Typography className={classes.stepTex}>
-                  Purchase Líf to have at least 1000 in your Metamask account
+                  Purchase Líf to have at least {LIF_DEPOSIT_AMOUNT} in your wallet
                 </Typography>
               </Card>
               <Card className={classes.stepsCard}>
                 <img className={classes.stepsCardImg} src={LifIcon3} alt={'icon'}/>
                 <Typography noWrap className={classes.stepCountText}>Step 3.</Typography>
                 <Typography className={classes.stepTex}>
-                  Click "Purchase Lif" to submit your deposit
+                  Click "Allow deposit", then "Make deposit" to submit your deposit
                 </Typography>
               </Card>
             </Grid>
@@ -284,13 +285,27 @@ const TrustLifStake = (props) => {
                 deposits.
               </Typography>
               <Typography className={classes.paragraph}>
-                Make sure that you have at least 1000 Líf in your MetaMask account. Líf deposit will automatically
+                Make sure that you have at least {LIF_DEPOSIT_AMOUNT} Líf in your wallet. Líf deposit will automatically
                 generate Lög tokens required for voting.
               </Typography>
 
               {/* LIF DEPOSIT */}
-
               <div className={classes.buttonsContainer}>
+                { 
+                  // Enable Ropsten faucet
+                  (CHAIN_ID === '3') && 
+                  (
+                    <div className={classes.buttonWrapper}>
+                      <Button
+                          onClick={() => props.requestFaucet({ orgid })}
+                          className={classes.buttonPurchaseWithdraw}>
+                        <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
+                          Get Líf
+                        </Typography>
+                      </Button>
+                    </div>
+                  )
+                }
                 <div className={classes.buttonWrapper}>
                   {/* LIF DEPOSIT: Allow deposit */}
                   <Button disabled={!allowDepositButtonEnabled}
@@ -402,7 +417,8 @@ const mapDispatchToProps = {
   enrichLifData,
   allowDeposit,
   makeDeposit,
-  requestWithdrawal
+  requestWithdrawal,
+  requestFaucet
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrustLifStake);

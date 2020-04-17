@@ -187,7 +187,13 @@ const WizardGeneral = (props) => {
         'contacts': [],
         'locations': []
       },
-      'organizationalUnit': {}
+      'organizationalUnit': {
+        'address': {},
+        'media': {'logo':''},
+        'type': [],
+        'contacts': [],
+        'description': ''
+      }
     };
     props.rewriteOrgidJson({
       "@context": "https://windingtree.com/ns/did/v1",

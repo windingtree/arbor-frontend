@@ -831,7 +831,6 @@ export function validateOrgidSchema(orgidJson) {
 
   // Perform the validation
   let validation = validator.validate(orgidJson, orgidSchema);
-  console.log(validation);
   return validation;
 }
 

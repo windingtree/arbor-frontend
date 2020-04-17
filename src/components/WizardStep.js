@@ -147,23 +147,30 @@ const WizardStep = (props) => {
 
     // Validate according to JSON schema
     if(Object.keys(errors).length === 0) {
+      //console.log('<<< validateForm', values);
       let validation = validateOrgidSchema(values);
 
       // If errors are found, set it according to the path
       validation.errors.forEach(error =>{
         // Determine the path of the element in error
-        let orgidJsonPathElements = error.property.split('.')
-        orgidJsonPathElements.push(error.argument);
+        let orgidJsonPathElements = error.property.split('.');
+        if(error.name === 'required') {
+          orgidJsonPathElements.push(error.argument);
+        }
         orgidJsonPathElements.shift(); // removes the first element 'instance'
         let orgidJsonPath = orgidJsonPathElements.join('.');
 
         // Fine tune the error message
         let message;
         switch(error.name) {
+          case 'type':
+            message = `Field ${error.message}`;
+            break;
           case 'required':
-            message = 'Field required'
+            message = 'Field Required';
             break;
           default:
+            console.log('<<< validateForm.default', error);
             message = error.message;
         }
         

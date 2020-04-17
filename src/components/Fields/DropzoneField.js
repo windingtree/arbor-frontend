@@ -136,6 +136,7 @@ function Previews(props) {
     multiple: false,
     onDrop: (acceptedFiles, ) => {
       window['file_0'] = acceptedFiles[0];
+      props.extendOrgidJson(props.values);
       props.saveMediaToArbor({address, id, file: acceptedFiles[0]});
 
       setFiles(acceptedFiles.map(file => Object.assign(file, {
@@ -145,6 +146,7 @@ function Previews(props) {
   });
 
   const handleDeletePreview = () => {
+    props.extendOrgidJson(props.values);
     props.saveMediaToArbor({address, id, file: null});
     setFiles([]);
   };
@@ -214,7 +216,7 @@ const TabPanel = (props) => {
 
 const DropzoneField = (props) => {
   const classes = styles();
-  const {saveMediaToArbor, address, orgidJson, type, name, description, orgidJsonPath, index, helperText, required, values, errors, touched, handleChange, handleBlur} = props;
+  const {saveMediaToArbor, extendOrgidJson, address, orgidJson, type, name, description, orgidJsonPath, index, helperText, required, values, errors, touched, handleChange, handleBlur} = props;
   const isError = _.get(errors, orgidJsonPath) && _.get(touched, orgidJsonPath);
   const [tabValue, setTabValue] = useState(0);
   const [showPreviewOnly, setShowPreviewOnly] = useState(!!_.get(values, orgidJsonPath, false));
@@ -240,6 +242,7 @@ const DropzoneField = (props) => {
 
   const removePhotoHandler = () => {
     setShowPreviewOnly(false);
+    props.extendOrgidJson(values);
     props.saveMediaToArbor({address, id: orgidJson.id, file: null});
     setFiles([]);
   };
@@ -277,9 +280,11 @@ const DropzoneField = (props) => {
               address={address}
               orgidJson={orgidJson}
               saveMediaToArbor={saveMediaToArbor}
+              extendOrgidJson={extendOrgidJson}
               name={orgidJsonPath}
               description={description}
               value={value}
+              values={values}
               helperText={isError ? _.get(errors, orgidJsonPath) : helperText}
               required={required}
               onChange={handleChange}

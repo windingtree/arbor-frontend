@@ -147,7 +147,7 @@ const WizardStep = (props) => {
 
     // Validate according to JSON schema
     if(Object.keys(errors).length === 0) {
-      //console.log('<<< validateForm', values);
+      console.log('<<< validateForm', values);
       let validation = validateOrgidSchema(values);
 
       // If errors are found, set it according to the path

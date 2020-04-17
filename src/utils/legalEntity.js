@@ -63,7 +63,8 @@ export const wizardConfig = [
           {
             type: 'input',
             name: 'State or region',
-            orgidJsonPath: 'legalEntity.registeredAddress.subdivision'
+            orgidJsonPath: 'legalEntity.registeredAddress.subdivision',
+            required: true
           },
           {
             type: 'input',
@@ -80,7 +81,8 @@ export const wizardConfig = [
           {
             type: 'input',
             name: 'Apartment or office',
-            orgidJsonPath: 'legalEntity.registeredAddress.premise'
+            orgidJsonPath: 'legalEntity.registeredAddress.premise',
+            required: true
           },
           {
             type: 'input',

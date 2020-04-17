@@ -42,7 +42,8 @@ export const config = [
               type: 'input',
               name: 'Registration number',
               helperText: 'Number of your organization in the country-specific business registry',
-              orgidJsonPath: 'legalEntity.legalIdentifier'
+              orgidJsonPath: 'legalEntity.legalIdentifier',
+              required: true,
             }
           ]
         },
@@ -78,12 +79,14 @@ export const config = [
             {
               type: 'input',
               name: 'Apartment or office',
-              orgidJsonPath: 'legalEntity.registeredAddress.premise'
+              orgidJsonPath: 'legalEntity.registeredAddress.premise',
+              required: true,
             },
             {
               type: 'input',
               name: 'Postal code',
-              orgidJsonPath: 'legalEntity.registeredAddress.postalCode'
+              orgidJsonPath: 'legalEntity.registeredAddress.postalCode',
+              required: true,
             }
           ]
         }

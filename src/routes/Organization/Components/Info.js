@@ -389,8 +389,8 @@ const styles = makeStyles({
 });
 
 const getAddressString = (addressObj) => {
-  const { country, subdivision, locality, street_address, premise, postal_code } = addressObj;
-  return _.isEmpty(addressObj) ? false : _.compact([street_address, premise, postal_code,  locality, subdivision,country]).join(', ')
+  const { country, subdivision, locality, streetAddress, premise, postalCode } = addressObj;
+  return _.isEmpty(addressObj) ? false : _.compact([streetAddress, premise, postalCode,  locality, subdivision,country]).join(', ')
 };
 
 function Info(props) {
@@ -497,8 +497,10 @@ function Info(props) {
               <div>
                 <p className={classes.orgAddress}>
                   {addressString}<br />
-                  <a href={`https://www.google.com.ua/maps/search/${addressString}`}
-                     className={classes.mapLink}>show on the map</a>
+                  <a href={`https://www.openstreetmap.org/search?query=${addressString}`}
+                     className={classes.mapLink}
+                     onclick={() => {window.open(`https://www.openstreetmap.org/search?query=${addressString}`, '_blank').focus()}}
+                     >show on the map</a>
                 </p>
               </div>
               }

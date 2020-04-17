@@ -182,11 +182,18 @@ const WizardGeneral = (props) => {
   }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
+    let skeletons = {
+      'legalEntity': {
+        'contacts': [],
+        'locations': []
+      },
+      'organizationalUnit': {}
+    };
     props.rewriteOrgidJson({
       "@context": "https://windingtree.com/ns/did/v1",
       "id": idGenerator(),
       "created": new Date().toJSON(),
-      [wizardType]: {}
+      [wizardType]: skeletons[wizardType]
     })
   }, [wizardType]); // eslint-disable-line react-hooks/exhaustive-deps
 

@@ -6,6 +6,8 @@ import {appName} from "../utils/constants";
 import {callApi} from "../redux/api";
 import {getWeb3, getOrgidContract} from "../web3/w3";
 import {idGenerator} from "../utils/helpers";
+import {Validator} from 'jsonschema';
+import orgidSchema from '@windingtree/org.json-schema';
 
 //region == [Constants] ================================================================================================
 export const moduleName = 'wizard';
@@ -293,6 +295,11 @@ export const selectSuccessState = createSelector(
   stateSelector,
   wizard => wizard.successTransaction
 );
+
+export const selectError = createSelector(
+  stateSelector,
+  wizard => wizard.error
+);
 //endregion
 
 //region == [ACTIONS] ==================================================================================================
@@ -573,7 +580,7 @@ function* rewriteOrgidJsonSaga({payload}) {
 function* extendOrgidJsonSaga({payload}) {
   try {
     const result = yield call((data) => data, payload);
-
+    //ValidateOrgidSchema(result);
     yield put(extendOrgidJsonSuccess(result));
   } catch(error) {
     yield put(extendOrgidJsonFailure(error));
@@ -815,6 +822,17 @@ function ApiGetTxStatus(transactionHash) {
       clearInterval(interval);
     }, 60000);
   })
+}
+
+// Validate a JSON document according to scehma
+export function validateOrgidSchema(orgidJson) {
+  // Load the JSON schema validator
+  let validator = new Validator();
+
+  // Perform the validation
+  let validation = validator.validate(orgidJson, orgidSchema);
+  console.log(validation);
+  return validation;
 }
 
 //endregion

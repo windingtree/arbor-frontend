@@ -78,7 +78,7 @@ export const wizardConfig = [
           {
             type: 'input',
             name: 'Street, building',
-            orgidJsonPath: 'organizationalUnit.address.street_address'
+            orgidJsonPath: 'organizationalUnit.address.streetAddress'
           },
           {
             type: 'input',
@@ -88,7 +88,7 @@ export const wizardConfig = [
           {
             type: 'input',
             name: 'Postal code',
-            orgidJsonPath: 'organizationalUnit.address.postal_code'
+            orgidJsonPath: 'organizationalUnit.address.postalCode'
           },
         ]
       },

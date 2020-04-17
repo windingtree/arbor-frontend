@@ -7,7 +7,7 @@ import {Formik} from 'formik';
 import _ from 'lodash';
 
 import DialogComponent from './Dialog';
-import {extendOrgidJson, selectWizardOrgidJson} from '../ducks/wizard'
+import {extendOrgidJson, selectWizardOrgidJson, validateOrgidSchema} from '../ducks/wizard'
 import {Section} from './index';
 import ArrowLeftIcon from '../assets/SvgComponents/ArrowLeftIcon';
 
@@ -83,13 +83,7 @@ const WizardStep = (props) => {
   const classes = styles();
 
   const {index, extendOrgidJson, data: {longName, description, sections, cta}, handleNext} = props;
-  // next line collect from "sections" all fields with non empty "schema" to object { [fieldName]:schema }
-  const validators = sections ?
-    _.chain(_.filter(_.flatten(sections.map(({fields}) => fields.map(({orgidJsonPath, schema}) => ({
-      orgidJsonPath,
-      schema
-    })))), 'schema')).keyBy('orgidJsonPath').mapValues('schema').value() :
-    {};
+
 
   // Modal to provide more details on how to obtain Ether
   const renderModal = () => {
@@ -128,6 +122,61 @@ const WizardStep = (props) => {
     toggleModalOpenState(false)
   };
 
+  // next line collect from "sections" all fields with non empty "schema" to object { [fieldName]:schema }
+  const validators = sections ?
+    _.chain(_.filter(_.flatten(sections.map(({fields}) => fields.map(({orgidJsonPath, schema}) => ({
+      orgidJsonPath,
+      schema
+    })))), 'schema')).keyBy('orgidJsonPath').mapValues('schema').value() :
+    {};
+
+  // Validate the form
+  const validateForm = (values) => {
+    const errors = {};
+
+    // Basic Check for each field presence
+    _.each(validators, (validator, orgidJsonPath) => {
+      const value = _.get(values, orgidJsonPath, false);
+      if (value !== false) {
+        const {error} = validator.validate(value);
+        if (error) {
+          _.set(errors, orgidJsonPath, error.toString());
+        }
+      }
+    });
+
+    // Validate according to JSON schema
+    if(Object.keys(errors).length === 0) {
+      let validation = validateOrgidSchema(values);
+
+      // If errors are found, set it according to the path
+      validation.errors.forEach(error =>{
+        // Determine the path of the element in error
+        let orgidJsonPathElements = error.property.split('.')
+        orgidJsonPathElements.push(error.argument);
+        orgidJsonPathElements.shift(); // removes the first element 'instance'
+        let orgidJsonPath = orgidJsonPathElements.join('.');
+
+        // Fine tune the error message
+        let message;
+        switch(error.name) {
+          case 'required':
+            message = 'Field required'
+            break;
+          default:
+            message = error.message;
+        }
+        
+        // Set the error
+        _.set(errors, orgidJsonPath, message);
+      });
+    }
+    
+    // Return errors
+    if (!_.isEmpty(errors)) console.log('ERRORS', errors);
+    return errors;
+  };
+
   //console.log(`[In WizardStep] Rendering form with initial values: ${JSON.stringify(props.orgidJson)}`);
 
   return (
@@ -150,20 +199,7 @@ const WizardStep = (props) => {
       <Formik
         initialValues={Object.assign({}, props.orgidJson)}
         enableReinitialize={true}
-        validate={values => {
-          const errors = {};
-          _.each(validators, (validator, orgidJsonPath) => {
-            const value = _.get(values, orgidJsonPath, false);
-            if (value !== false) {
-              const {error} = validator.validate(value);
-              if (error) {
-                _.set(errors, orgidJsonPath, error.toString());
-              }
-            }
-          });
-          if (!_.isEmpty(errors)) console.log('ERRORS', errors);
-          return errors;
-        }}
+        validate={validateForm}
         onSubmit={(values, /*{setSubmitting}*/) => {
           extendOrgidJson(values);
           handleNext();

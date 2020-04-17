@@ -60,17 +60,20 @@ export const config = [
             {
               type: 'input',
               name: 'State or region',
-              orgidJsonPath: 'legalEntity.registeredAddress.subdivision'
+              orgidJsonPath: 'legalEntity.registeredAddress.subdivision',
+              required: true,
             },
             {
               type: 'input',
               name: 'City',
-              orgidJsonPath: 'legalEntity.registeredAddress.locality'
+              orgidJsonPath: 'legalEntity.registeredAddress.locality',
+              required: true,
             },
             {
               type: 'input',
               name: 'Street, building',
-              orgidJsonPath: 'legalEntity.registeredAddress.street_address'
+              orgidJsonPath: 'legalEntity.registeredAddress.streetAddress',
+              required: true,
             },
             {
               type: 'input',
@@ -80,7 +83,7 @@ export const config = [
             {
               type: 'input',
               name: 'Postal code',
-              orgidJsonPath: 'legalEntity.registeredAddress.postal_code'
+              orgidJsonPath: 'legalEntity.registeredAddress.postalCode'
             }
           ]
         }

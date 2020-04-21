@@ -7,7 +7,7 @@ import {Formik} from 'formik';
 import _ from 'lodash';
 
 import DialogComponent from './Dialog';
-import {extendOrgidJson, selectWizardOrgidJson} from '../ducks/wizard'
+import {extendOrgidJson, selectWizardOrgidJson, validateOrgidSchema} from '../ducks/wizard'
 import {Section} from './index';
 import ArrowLeftIcon from '../assets/SvgComponents/ArrowLeftIcon';
 
@@ -83,14 +83,9 @@ const WizardStep = (props) => {
   const classes = styles();
 
   const {index, extendOrgidJson, data: {longName, description, sections, cta}, handleNext} = props;
-  // next line collect from "sections" all fields with non empty "schema" to object { [fieldName]:schema }
-  const validators = sections ?
-    _.chain(_.filter(_.flatten(sections.map(({fields}) => fields.map(({orgidJsonPath, schema}) => ({
-      orgidJsonPath,
-      schema
-    })))), 'schema')).keyBy('orgidJsonPath').mapValues('schema').value() :
-    {};
 
+
+  // Modal to provide more details on how to obtain Ether
   const renderModal = () => {
     return (
       <DialogComponent
@@ -104,7 +99,7 @@ const WizardStep = (props) => {
             <Typography className={classes.paragraph}>It is common to obtain Ether through online exchange platforms that
               operate in your country and accept your preferred currency. Reputable exchange platforms have strict KYC
               processes and will ask you to share your personal data.</Typography>
-            <Typography className={classes.paragraph}>MetaMask is linked with two exchanges, <b>Coinbase</b> and <b>ShapeShift</b>, so you can purchase Ether directly from your account.</Typography>
+            <Typography className={classes.paragraph}>MetaMask is linked with two exchanges, <b>Wyre</b> and <b>Coinswitch</b>, so you can purchase Ether directly from your account.</Typography>
             <Typography className={classes.paragraph}>It is also possible to buy Ether from crypto
               ATMs or through Peer-to-Peer options like <b>LocalCryptos</b>, <b>Hodl Hodl</b> or similar services. The latter can be
               private or centralized and offer a wide selection of buying and selling options, from in-person meetings to
@@ -127,6 +122,70 @@ const WizardStep = (props) => {
     toggleModalOpenState(false)
   };
 
+  // next line collect from "sections" all fields with non empty "schema" to object { [fieldName]:schema }
+  const validators = sections ?
+    _.chain(_.filter(_.flatten(sections.map(({fields}) => fields.map(({orgidJsonPath, schema}) => ({
+      orgidJsonPath,
+      schema
+    })))), 'schema')).keyBy('orgidJsonPath').mapValues('schema').value() :
+    {};
+
+  // Validate the form
+  const validateForm = (values) => {
+    const errors = {};
+
+    // Basic Check for each field presence
+    _.each(validators, (validator, orgidJsonPath) => {
+      const value = _.get(values, orgidJsonPath, false);
+      if (value !== false) {
+        const {error} = validator.validate(value);
+        if (error) {
+          _.set(errors, orgidJsonPath, error.toString());
+        }
+      }
+    });
+
+    // Validate according to JSON schema
+    if(Object.keys(errors).length === 0) {
+      console.log('<<< validateForm', values);
+      let validation = validateOrgidSchema(values);
+
+      // If errors are found, set it according to the path
+      validation.errors.forEach(error =>{
+        // Determine the path of the element in error
+        let orgidJsonPathElements = error.property.split('.');
+        if(error.name === 'required') {
+          orgidJsonPathElements.push(error.argument);
+        }
+        orgidJsonPathElements.shift(); // removes the first element 'instance'
+        let orgidJsonPath = orgidJsonPathElements.join('.');
+
+        // Fine tune the error message
+        let message;
+        switch(error.name) {
+          case 'type':
+            message = `Field ${error.message}`;
+            break;
+          case 'required':
+            message = 'Field Required';
+            break;
+          default:
+            console.log('<<< validateForm.default', error);
+            message = error.message;
+        }
+        
+        // Set the error
+        _.set(errors, orgidJsonPath, message);
+      });
+    }
+    
+    // Return errors
+    if (!_.isEmpty(errors)) console.log('ERRORS', errors);
+    return errors;
+  };
+
+  //console.log(`[In WizardStep] Rendering form with initial values: ${JSON.stringify(props.orgidJson)}`);
+
   return (
     <div key={index}>
       <Typography variant={'h3'} className={classes.stepTitle}>Step {index + 1}. {longName}</Typography>
@@ -147,20 +206,7 @@ const WizardStep = (props) => {
       <Formik
         initialValues={Object.assign({}, props.orgidJson)}
         enableReinitialize={true}
-        validate={values => {
-          const errors = {};
-          _.each(validators, (validator, orgidJsonPath) => {
-            const value = _.get(values, orgidJsonPath, false);
-            if (value !== false) {
-              const {error} = validator.validate(value);
-              if (error) {
-                _.set(errors, orgidJsonPath, error.toString());
-              }
-            }
-          });
-          if (!_.isEmpty(errors)) console.log('ERRORS', errors);
-          return errors;
-        }}
+        validate={validateForm}
         onSubmit={(values, /*{setSubmitting}*/) => {
           extendOrgidJson(values);
           handleNext();
@@ -182,6 +228,8 @@ const WizardStep = (props) => {
                 <div/>
                 : sections.map((section, index) => {
                   // console.log(`<Section key="${index}" name="${section.name}" ... />`);
+                  //console.log(`[In WizardStep] Loading section ${section.name} and index ${index} with values: ${JSON.stringify(values)}`);
+
                   return (
                     <Section
                       key={index}

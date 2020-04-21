@@ -68,27 +68,32 @@ export const wizardConfig = [
           {
             type: 'input',
             name: 'State or region',
-            orgidJsonPath: 'organizationalUnit.address.subdivision'
+            orgidJsonPath: 'organizationalUnit.address.subdivision',
+            required: true,
           },
           {
             type: 'input',
             name: 'City',
-            orgidJsonPath: 'organizationalUnit.address.locality'
+            orgidJsonPath: 'organizationalUnit.address.locality',
+            required: true,
           },
           {
             type: 'input',
             name: 'Street, building',
-            orgidJsonPath: 'organizationalUnit.address.street_address'
+            orgidJsonPath: 'organizationalUnit.address.streetAddress',
+            required: true,
           },
           {
             type: 'input',
             name: 'Apartment or office',
-            orgidJsonPath: 'organizationalUnit.address.premise'
+            orgidJsonPath: 'organizationalUnit.address.premise',
+            required: true,
           },
           {
             type: 'input',
             name: 'Postal code',
-            orgidJsonPath: 'organizationalUnit.address.postal_code'
+            orgidJsonPath: 'organizationalUnit.address.postalCode',
+            required: true,
           },
         ]
       },

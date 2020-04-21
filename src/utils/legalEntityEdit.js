@@ -42,7 +42,8 @@ export const config = [
               type: 'input',
               name: 'Registration number',
               helperText: 'Number of your organization in the country-specific business registry',
-              orgidJsonPath: 'legalEntity.legalIdentifier'
+              orgidJsonPath: 'legalEntity.legalIdentifier',
+              required: true,
             }
           ]
         },
@@ -60,27 +61,32 @@ export const config = [
             {
               type: 'input',
               name: 'State or region',
-              orgidJsonPath: 'legalEntity.registeredAddress.subdivision'
+              orgidJsonPath: 'legalEntity.registeredAddress.subdivision',
+              required: true,
             },
             {
               type: 'input',
               name: 'City',
-              orgidJsonPath: 'legalEntity.registeredAddress.locality'
+              orgidJsonPath: 'legalEntity.registeredAddress.locality',
+              required: true,
             },
             {
               type: 'input',
               name: 'Street, building',
-              orgidJsonPath: 'legalEntity.registeredAddress.street_address'
+              orgidJsonPath: 'legalEntity.registeredAddress.streetAddress',
+              required: true,
             },
             {
               type: 'input',
               name: 'Apartment or office',
-              orgidJsonPath: 'legalEntity.registeredAddress.premise'
+              orgidJsonPath: 'legalEntity.registeredAddress.premise',
+              required: true,
             },
             {
               type: 'input',
               name: 'Postal code',
-              orgidJsonPath: 'legalEntity.registeredAddress.postal_code'
+              orgidJsonPath: 'legalEntity.registeredAddress.postalCode',
+              required: true,
             }
           ]
         }

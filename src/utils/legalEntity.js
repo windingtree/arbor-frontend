@@ -43,6 +43,7 @@ export const wizardConfig = [
           {
             type: 'input',
             name: 'Registration number',
+            required: true,
             helperText: 'Number of your organization in the country-specific business registry',
             orgidJsonPath: 'legalEntity.legalIdentifier'
           }
@@ -62,27 +63,32 @@ export const wizardConfig = [
           {
             type: 'input',
             name: 'State or region',
-            orgidJsonPath: 'legalEntity.registeredAddress.subdivision'
+            orgidJsonPath: 'legalEntity.registeredAddress.subdivision',
+            required: true
           },
           {
             type: 'input',
             name: 'City',
+            required: true,
             orgidJsonPath: 'legalEntity.registeredAddress.locality'
           },
           {
             type: 'input',
             name: 'Street, building',
-            orgidJsonPath: 'legalEntity.registeredAddress.street_address'
+            required: true,
+            orgidJsonPath: 'legalEntity.registeredAddress.streetAddress'
           },
           {
             type: 'input',
             name: 'Apartment or office',
-            orgidJsonPath: 'legalEntity.registeredAddress.premise'
+            orgidJsonPath: 'legalEntity.registeredAddress.premise',
+            required: true
           },
           {
             type: 'input',
             name: 'Postal code',
-            orgidJsonPath: 'legalEntity.registeredAddress.postal_code'
+            required: true,
+            orgidJsonPath: 'legalEntity.registeredAddress.postalCode'
           }
         ]
       },

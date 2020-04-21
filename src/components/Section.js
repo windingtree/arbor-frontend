@@ -1,6 +1,6 @@
 import React from "react";
 
-import {  Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { InputField, SelectField, JsonHostingField, DropzoneField } from "./Fields";
 
@@ -51,7 +51,7 @@ const Section = (props) => {
       )
     }
     if (knownFields[item.type]) {
-      // console.log(`<${item.type} name="${item.name}" `, item);
+      //console.log(`knownFields <${item.type} name="${item.name}" `, item, values);
       return knownFields[item.type]({...item, index, handleChange, handleBlur, values, errors, touched})
     }
     return (

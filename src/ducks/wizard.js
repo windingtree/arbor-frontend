@@ -4,7 +4,10 @@ import {createSelector} from "reselect";
 import {keccak256} from 'js-sha3';
 import {appName} from "../utils/constants";
 import {callApi} from "../redux/api";
-import {idGenerator, getWeb3, getGasPrice, getOrgidContract} from "../utils/helpers";
+import {getWeb3, getOrgidContract} from "../web3/w3";
+import {idGenerator} from "../utils/helpers";
+import {Validator} from 'jsonschema';
+import orgidSchema from '@windingtree/org.json-schema';
 
 //region == [Constants] ================================================================================================
 export const moduleName = 'wizard';
@@ -123,9 +126,7 @@ export default function reducer( state = initialState, action) {
       orgidJsonUpdates = payload;
 
       // Checking for merge of different orgids
-      console.log(`[IN REWRITE_ORGID_JSON_SUCCESS] ${JSON.stringify(state.orgidJson)} | ${JSON.stringify(payload)} => ${JSON.stringify(orgidJsonUpdates)}`);
       if(state.orgidJson.id && payload.id && payload.id !== state.orgidJson.id) {
-        console.info(`[IN REWRITE_ORGID_JSON_SUCCESS] Now working on different org.id.`);
         orgidJsonUpdates = payload;
       }
       state.orgidJson = payload;
@@ -293,6 +294,11 @@ export const selectPendingState = createSelector(
 export const selectSuccessState = createSelector(
   stateSelector,
   wizard => wizard.successTransaction
+);
+
+export const selectError = createSelector(
+  stateSelector,
+  wizard => wizard.error
 );
 //endregion
 
@@ -574,7 +580,7 @@ function* rewriteOrgidJsonSaga({payload}) {
 function* extendOrgidJsonSaga({payload}) {
   try {
     const result = yield call((data) => data, payload);
-
+    //ValidateOrgidSchema(result);
     yield put(extendOrgidJsonSuccess(result));
   } catch(error) {
     yield put(extendOrgidJsonFailure(error));
@@ -717,10 +723,24 @@ function ApiSendCreateLegalEntity(data) {
   const orgidId = orgidJson.id.replace('did:orgid:', '');
 
   return new Promise((resolve, reject) => {
-    orgidContract.createOrganization(
-      orgidId, orgidUri, orgidHash,
-      { from: address, gas: 500000, gasPrice: getGasPrice() },
-      (err, data) => { if(err) return reject(err); console.log('data', data); resolve(data); }
+    // Create the transaction
+    orgidContract.methods.createOrganization(
+      orgidId, orgidUri, orgidHash
+    )
+
+    // Send it to the network
+    .send(
+      // Options: only from address
+      { from: address },
+
+      // Callback
+      (error, transactionHash) => {
+        if(error) {
+          return reject(error);
+        }
+        console.log('transactionHash', transactionHash);
+        resolve(transactionHash); 
+      }
     );
   });
 }
@@ -732,14 +752,25 @@ function ApiSendCreateOrganizationalUnit(data) {
 
   return new Promise((resolve, reject) => {
     console.log(`createSubsidiary ${orgidId} from parent ${orgidParent}`);
-    orgidContract.createSubsidiary(
+    // Create the transaction
+    orgidContract.methods.createSubsidiary(
       orgidParent,
       orgidId,
-      address /*subsidiaryDirector*/,
+      address, /*subsidiaryDirector*/
       orgidUri,
-      orgidHash,
-      { from: address, gas: 500000, gasPrice: getGasPrice() },
-      (err, data) => { if(err) return reject(err); resolve(data); }
+      orgidHash
+    )
+    
+    // Send transaction to the network
+    .send(
+      // Options
+      { from: address },
+
+      // Callback
+      (error, transactionHash) => {
+        if(error) return reject(error);
+        resolve(transactionHash); 
+      }
     );
   });
 }
@@ -750,19 +781,31 @@ function ApiSendChangeOrgidUriAndHash(data) {
   const orgidId = orgidJson.id.replace('did:orgid:', '');
 
   return new Promise((resolve, reject) => {
-    orgidContract.changeOrgJsonUriAndHash(
-      orgidId, orgidUri, orgidHash,
-      { from: address, gas: 500000, gasPrice: getGasPrice() },
-      (err, data) => { if(err) return reject(err); console.log('data', data); resolve(data); }
+    orgidContract.methods.changeOrgJsonUriAndHash(
+      orgidId, orgidUri, orgidHash
+    )
+
+    .send(
+      // Options
+      { from: address },
+      
+      // Callback
+      (error, transactionHash) => {
+        if(error) {
+          return reject(error);
+        }
+        console.log('transactionHash', transactionHash);
+        resolve(transactionHash); 
+      }
     );
   });
 }
 
-function ApiGetTxStatus(transactionIn) {
+function ApiGetTxStatus(transactionHash) {
   return new Promise((resolve, reject) => {
     const web3 = getWeb3();
     let interval = setInterval(() => {
-      web3.eth.getTransactionReceipt(transactionIn, (err, data) => {
+      web3.eth.getTransactionReceipt(transactionHash, (err, data) => {
         if (err) {
           reject(err);
           return clearInterval(interval);
@@ -770,7 +813,7 @@ function ApiGetTxStatus(transactionIn) {
           resolve(data);
           return clearInterval(interval);
         } else {
-          console.log(`...waiting for ... ${transactionIn}`)
+          console.log(`...waiting for ... ${transactionHash}`)
         }
       })
     }, 3000);
@@ -779,6 +822,16 @@ function ApiGetTxStatus(transactionIn) {
       clearInterval(interval);
     }, 60000);
   })
+}
+
+// Validate a JSON document according to scehma
+export function validateOrgidSchema(orgidJson) {
+  // Load the JSON schema validator
+  let validator = new Validator();
+
+  // Perform the validation
+  let validation = validator.validate(orgidJson, orgidSchema);
+  return validation;
 }
 
 //endregion

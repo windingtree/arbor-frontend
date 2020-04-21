@@ -6,7 +6,8 @@ import {createMuiTheme} from '@material-ui/core/styles';
 import RootRouter from './routes/RootRouter';
 import { MuiThemeProvider } from '@material-ui/core/styles'
 import  store, { persistor } from './redux/store';
-import getLibrary from './web3/getLibrary'
+//import {getLibrary} from './web3/getLibrary'
+import {getWeb3} from './web3/w3'
 
 import colors from './styles/colors';
 
@@ -331,7 +332,7 @@ const theme = createMuiTheme({
 
 function App() {
   return (
-    <Web3ReactProvider getLibrary={getLibrary}>
+    <Web3ReactProvider getLibrary={getWeb3}>
       <Provider store={store}>
         <MuiThemeProvider theme={theme}>
           <PersistGate loading={null} persistor={persistor}>

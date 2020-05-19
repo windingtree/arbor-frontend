@@ -499,7 +499,7 @@ function Info(props) {
                   {addressString}<br />
                   <a href={`https://www.openstreetmap.org/search?query=${addressString}`}
                      className={classes.mapLink}
-                     onclick={() => {window.open(`https://www.openstreetmap.org/search?query=${addressString}`, '_blank').focus()}}
+                     onClick={() => {window.open(`https://www.openstreetmap.org/search?query=${addressString}`, '_blank').focus()}}
                      >show on the map</a>
                 </p>
               </div>

@@ -9,6 +9,9 @@ echo "NOW_GITHUB_COMMIT_SHA: $NOW_GITHUB_COMMIT_SHA"
 
 # Create the build according to the branch name
 case "$NOW_GITHUB_COMMIT_REF" in
+develop)  echo "Building $NOW_GITHUB_COMMIT_REF"
+    yarn build:staging
+    ;;
 staging)  echo "Building $NOW_GITHUB_COMMIT_REF"
     yarn build:staging
     ;;

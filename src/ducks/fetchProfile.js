@@ -46,8 +46,16 @@ export default function reducer( state = initialState, action) {
 
       payload.data.forEach((org, i) => {
         if(org.parent) {
-          if(!payload.data[index[org.parent.orgid]].subs) payload.data[index[org.parent.orgid]].subs = [];
-          payload.data[index[org.parent.orgid]].subs.push(org);
+          
+          if(index[org.parent.orgid]) {
+
+            if (!payload.data[index[org.parent.orgid]].subs) {
+              payload.data[index[org.parent.orgid]].subs = [];
+            }
+            
+            payload.data[index[org.parent.orgid]].subs.push(org);
+          }
+          
           delete payload.data[i];
         }
       });

@@ -66,6 +66,7 @@ const proofsTemplate = [
     }
 ];
 
+// Extract specific assertion from the list
 const extractAssertion = (type, socialType, assertions = []) => {
     const assertion = assertions.filter(a =>
         (
@@ -76,6 +77,7 @@ const extractAssertion = (type, socialType, assertions = []) => {
     return assertion.length > 0 ? assertion[0] : {};
 };
 
+// Create base template for displaing of the poofs list
 const createTemplate = orgid => orgid
     ? JSON.parse(JSON.stringify(proofsTemplate)) 
         .map(
@@ -89,6 +91,8 @@ const createTemplate = orgid => orgid
         )
     : [];
 
+// Extend basic proofs list template with information of actual assertions, 
+// verifications and local changes
 const applyExtensions = (
     proofsListTemplate,
     assertions,
@@ -133,6 +137,16 @@ const applyExtensions = (
     }
 );
 
+const SaveWizard = props => {
+
+    return (
+        <div>
+
+        </div>
+    );
+};
+
+// ProofsList component
 const ProofsList = props => {
     const { title, orgid, assertions, verifications } = props;
     const [isOpen, toggleModalOpenState] = useState(false);
@@ -188,6 +202,7 @@ const ProofsList = props => {
 
     return (
         <Container>
+            <SaveWizard />
             <ProofsWizard
                 isOpen={isOpen}
                 proof={chosenProof}

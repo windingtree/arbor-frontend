@@ -29,6 +29,14 @@ const REMOVE_AGENT_KEY_REQUEST = `${prefix}/REMOVE_AGENT_KEY_REQUEST`;
 const REMOVE_AGENT_KEY_SUCCESS = `${prefix}/REMOVE_AGENT_KEY_SUCCESS`;
 const REMOVE_AGENT_KEY_FAILURE = `${prefix}/REMOVE_AGENT_KEY_FAILURE`;
 
+const ADD_ASSERTION_REQUEST = `${prefix}/ADD_ASSERTION_REQUEST`;
+const ADD_ASSERTION_SUCCESS = `${prefix}/ADD_ASSERTION_SUCCESS`;
+const ADD_ASSERTION_FAILURE = `${prefix}/ADD_ASSERTION_FAILURE`;
+
+const REMOVE_ASSERTION_REQUEST = `${prefix}/REMOVE_ASSERTION_REQUEST`;
+const REMOVE_ASSERTION_SUCCESS = `${prefix}/REMOVE_ASSERTION_SUCCESS`;
+const REMOVE_ASSERTION_FAILURE = `${prefix}/REMOVE_ASSERTION_FAILURE`;
+
 const SAVE_MEDIA_TO_ARBOR_REQUEST = `${prefix}/SAVE_MEDIA_TO_ARBOR_REQUEST`;
 const SAVE_MEDIA_TO_ARBOR_SUCCESS = `${prefix}/SAVE_MEDIA_TO_ARBOR_SUCCESS`;
 const SAVE_MEDIA_TO_ARBOR_FAILURE = `${prefix}/SAVE_MEDIA_TO_ARBOR_FAILURE`;
@@ -62,13 +70,17 @@ const RESET_TRANSACTION_STATUS = `${prefix}/RESET_TRANSACTION_STATUS`;
 const initialState = {
   isFetching: false,
   isFetched: false,
+  isSaved: false,
   orgidJson: {
-    "@context": "https://windingtree.com/ns/did/v1",
-    "id": idGenerator(),
-    "created": new Date().toJSON(),
-    "publicKey": [],
-    "service": [],
-    "trust": {}
+    '@context': [
+      'https://www.w3.org/ns/did/v1',
+      'https://windingtree.com/ns/orgid/v1'
+    ],
+    id: idGenerator(),
+    created: new Date().toJSON(),
+    publicKey: [],
+    service: [],
+    trust: {}
   },
   orgidUri: null,
   orgidHash: null,
@@ -94,6 +106,8 @@ export default function reducer( state = initialState, action) {
     case EXTEND_ORGID_JSON_REQUEST:
     case ADD_AGENT_KEY_REQUEST:
     case REMOVE_AGENT_KEY_REQUEST:
+    case ADD_ASSERTION_REQUEST:
+    case REMOVE_ASSERTION_REQUEST:
     case SAVE_MEDIA_TO_ARBOR_REQUEST:
     case SAVE_ORGID_JSON_TO_ARBOR_REQUEST:
     case SAVE_ORGID_JSON_URI_REQUEST:
@@ -199,13 +213,48 @@ export default function reducer( state = initialState, action) {
         orgidHash: `0x${keccak256(JSON.stringify(updatedJsonWithoutAgentKey, null, 2))}`,
         error: null
       });
+    case ADD_ASSERTION_SUCCESS:
+      const updatedJsonWithAddedAssertion = {
+        ...state.orgidJson,
+        trust: {
+          ...state.orgidJson.trust,
+          assertions: Array.from(
+            new Set([
+              ...(state.orgidJson.trust.assertions || []),
+              ...[payload]
+            ])
+          )
+        }
+      };
+      return Object.assign({}, state, {
+        isFetching: false,
+        isFetched: true,
+        orgidJson: updatedJsonWithAddedAssertion,
+        orgidHash: `0x${keccak256(JSON.stringify(updatedJsonWithAddedAssertion, null, 2))}`,
+        error: null
+      });
+    case REMOVE_ASSERTION_SUCCESS:
+      const updatedJsonWithRemovedAssertion = {
+        ...state.orgidJson,
+        trust: {
+          ...state.orgidJson.trust,
+          assertions: (state.orgidJson.trust.assertions || [])
+            .filter(a => JSON.stringify(a) !== JSON.stringify(payload))
+        }
+      };
+      return Object.assign({}, state, {
+        isFetching: false,
+        isFetched: true,
+        orgidJson: updatedJsonWithRemovedAssertion,
+        orgidHash: `0x${keccak256(JSON.stringify(updatedJsonWithRemovedAssertion, null, 2))}`,
+        error: null
+      });
     case SAVE_MEDIA_TO_ARBOR_SUCCESS:
       orgidJsonUpdates = Object.assign({}, state.orgidJson, {
         ...state.orgidJson,
         updated: new Date().toJSON(),
         media: { logo: payload }
       });
-
       return Object.assign({}, state, {
         isFetching: false,
         isFetched: true,
@@ -243,6 +292,8 @@ export default function reducer( state = initialState, action) {
     case REWRITE_ORGID_JSON_FAILURE:
     case EXTEND_ORGID_JSON_FAILURE:
     case ADD_AGENT_KEY_FAILURE:
+    case ADD_ASSERTION_FAILURE:
+    case REMOVE_ASSERTION_FAILURE:
     case SAVE_MEDIA_TO_ARBOR_FAILURE:
     case SAVE_ORGID_JSON_URI_FAILURE:
     case SAVE_ORGID_JSON_TO_ARBOR_FAILURE:
@@ -390,6 +441,52 @@ function removeAgentKeySuccess(payload) {
 function removeAgentKeyFailure(error) {
   return {
     type: REMOVE_AGENT_KEY_FAILURE,
+    error
+  }
+}
+//endregion
+
+//region == [ACTIONS: addAssertion] =================================================================================
+export function addAssertion(payload) {
+  return {
+    type: ADD_ASSERTION_REQUEST,
+    payload
+  }
+}
+
+export function addAssertionSuccess(payload) {
+  return {
+    type: ADD_ASSERTION_SUCCESS,
+    payload
+  }
+}
+
+export function addAssertionFailure(error) {
+  return {
+    type: ADD_ASSERTION_FAILURE,
+    error
+  }
+}
+//endregion
+
+//region == [ACTIONS: removeAssertion] =================================================================================
+export function removeAssertion(payload) {
+  return {
+    type: REMOVE_ASSERTION_REQUEST,
+    payload
+  }
+}
+
+export function removeAssertionSuccess(payload) {
+  return {
+    type: REMOVE_ASSERTION_SUCCESS,
+    payload
+  }
+}
+
+export function removeAssertionFailure(error) {
+  return {
+    type: REMOVE_ASSERTION_FAILURE,
     error
   }
 }
@@ -607,6 +704,26 @@ function* removeAgentKeyFromOrgidJsonSaga({payload}) {
   }
 }
 
+function* addAssertionToOrgidJsonSaga({payload}) {
+  try {
+    const result = yield call((data) => data, payload);
+
+    yield put(addAssertionSuccess(result));
+  } catch(error) {
+    yield put(addAssertionFailure(error));
+  }
+}
+
+function* removeAssertionFromOrgidJsonSaga({payload}) {
+  try {
+    const result = yield call((data) => data, payload);
+
+    yield put(removeAssertionSuccess(result));
+  } catch(error) {
+    yield put(removeAssertionFailure(error));
+  }
+}
+
 function* saveMediaToArborSaga({payload}) {
   try {
     if(payload.file === null) {
@@ -691,6 +808,8 @@ export const saga = function* () {
     takeEvery(EXTEND_ORGID_JSON_REQUEST, extendOrgidJsonSaga),
     takeEvery(ADD_AGENT_KEY_REQUEST, addAgentKeyToOrgidJsonSaga),
     takeEvery(REMOVE_AGENT_KEY_REQUEST, removeAgentKeyFromOrgidJsonSaga),
+    takeEvery(ADD_ASSERTION_REQUEST, addAssertionToOrgidJsonSaga),
+    takeEvery(REMOVE_ASSERTION_REQUEST, removeAssertionFromOrgidJsonSaga),
     takeEvery(SAVE_MEDIA_TO_ARBOR_REQUEST, saveMediaToArborSaga),
     takeEvery(SAVE_ORGID_JSON_TO_ARBOR_REQUEST, saveOrgidJsonToArborSaga),
     takeEvery(SAVE_ORGID_JSON_URI_REQUEST, saveOrgidUriSaga),

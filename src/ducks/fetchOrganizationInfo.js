@@ -125,6 +125,16 @@ export const selectSubs = createSelector(
   orgInfo => orgInfo.subs
 );
 
+export const selectAssertions = createSelector(
+  stateSelector,
+  orgInfo => orgInfo.item &&
+    orgInfo.item.jsonContent &&
+    orgInfo.item.jsonContent.trust &&
+    orgInfo.item.jsonContent.trust.assertions
+    ? orgInfo.item.jsonContent.trust.assertions
+    : []
+);
+
 /**
  * Sagas
  * */

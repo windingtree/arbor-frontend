@@ -399,7 +399,7 @@ function Agents(props) {
                           <Grid container justify={'space-between'} alignItems={'center'}>
                             <Grid item xs={2}>
                               <CopyIdComponent
-                                id={agent.key}
+                                id={agent.publicKeyPem}
                                 leftElement={(<VpnKeyIcon className={classes.keyIcon}/>)}
                                 fontSize={'14px'}
                                 color={colors.greyScale.dark}

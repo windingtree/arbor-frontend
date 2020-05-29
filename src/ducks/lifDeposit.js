@@ -103,6 +103,11 @@ export const selectLifTokenBalance = createSelector(
   deposit => deposit.lifTokenBalance
 );
 
+export const selectLifDepositDataFetching = createSelector(
+  stateSelector,
+  deposit => deposit.isFetching
+);
+
 export const selectLifTokenAllowanceAmountForOrgId = createSelector(
   stateSelector,
   deposit => deposit.lifTokenAllowanceAmountForOrgId

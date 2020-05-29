@@ -18,12 +18,13 @@ const LifDepostValue = props => {
         deposit,
         withdrawalExist,
         withdrawalValue,
-        withdrawalTime
+        withdrawalTime,
+        enrichLifData
     } = props;
 
     useEffect(() => {
-        props.enrichLifData({ orgid });
-    }, [orgid]);
+        enrichLifData({ orgid });
+    }, [orgid, enrichLifData]);
 
     return (
         <Typography>

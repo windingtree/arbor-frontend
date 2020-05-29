@@ -939,7 +939,12 @@ function ApiGetTxStatus(transactionHash) {
 
     setTimeout(() => {
       clearInterval(interval);
-    }, 60000);
+      reject(new Error(
+        `Transaction status not obtained during long time. 
+        You can get a transaction status on Etherscan. 
+        Transaction Hash: ${transactionHash}`
+      ));
+    }, 10 * 60 * 1000);// 10 min
   })
 }
 

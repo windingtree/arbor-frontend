@@ -22,7 +22,7 @@ const extractSocialClaim = uri => {
 }
 
 const ProofForm = props => {
-    const { proof, addAssertion, onWizardClose } = props;
+    const { proof, addAssertion, handleClose } = props;
 
     return (
         <Container>
@@ -50,7 +50,7 @@ const ProofForm = props => {
                     };
                     addAssertion(assertion);
                     setSubmitting(false);
-                    onWizardClose({
+                    handleClose({
                         ...proof,
                         assertion,
                         title: assertion.claim,

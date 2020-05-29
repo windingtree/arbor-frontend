@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { connect } from 'react-redux';
-import { extendOrgidJson, addAgentKey, removeAgentKey, resetTransactionStatus, selectPendingState, selectSuccessState } from '../../../ducks/wizard';
+import {
+  extendOrgidJson,
+  addAgentKey,
+  removeAgentKey,
+  resetTransactionStatus,
+  selectPendingState,
+  selectSuccessState
+} from '../../../ducks/wizard';
 import {Formik} from 'formik';
 import {
   Button,
@@ -167,12 +174,18 @@ function Agents(props) {
   const [isTooltipOpen, setTooltipOpen] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [agentIndexToRemove, setAgentIndexToRemove] = useState(null);
-  const { owner, agents, pendingTransaction, successTransaction } = props;
+  const {
+    owner,
+    agents,
+    pendingTransaction,
+    successTransaction,
+    resetTransactionStatus
+  } = props;
 
   useEffect(() => {
-    props.resetTransactionStatus();
+    resetTransactionStatus();
     setActiveStep(0);
-  }, [isModalOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isModalOpen, resetTransactionStatus]);
 
   const handleTooltipClose = () => {
     setTooltipOpen(false);

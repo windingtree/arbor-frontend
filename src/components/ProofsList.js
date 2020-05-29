@@ -1,12 +1,16 @@
-import React, { useState, useReducer, useEffect } from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { Container, Typography, Button } from "@material-ui/core";
 import ProofItem from './ProofItem';
 // import LifDepositValue from './LifDepositValue';
 import ProofsWizard from './ProofsWizard';
-import { fetchOrganizationInfo } from '../ducks/fetchOrganizationInfo';
+import ProofsSaver from './ProofsSaver';
 import {
-    removeAssertion
+    fetchOrganizationInfo
+} from '../ducks/fetchOrganizationInfo';
+import {
+    removeAssertion,
+    resetTransactionStatus
 } from '../ducks/wizard';
 
 const proofsTemplate = [
@@ -137,24 +141,27 @@ const applyExtensions = (
     }
 );
 
-const SaveWizard = props => {
-
-    return (
-        <div>
-
-        </div>
-    );
-};
-
 // ProofsList component
 const ProofsList = props => {
     const { title, orgid, assertions, verifications } = props;
     const [isOpen, toggleModalOpenState] = useState(false);
     const [chosenProof, setProof] = useState();
     const [updatedProofs, setUpdatedProofs] = useState({});
+    const [isSaverOpen, toggleSaverState] = useState(false);
 
-    const resetProofsList = () => {
-        setUpdatedProofs({});
+    const handleReset = (orgid, doReset = true) => {
+        // Sometimes this action should not has effect
+        if (doReset) {
+            setUpdatedProofs({});
+            props.fetchOrganizationInfo({ id: orgid });
+        }
+    }
+
+    const openSaver = () => toggleSaverState(true);
+
+    const onSaverClose = (orgid, isSuccess) => {
+        handleReset(orgid, isSuccess);
+        toggleSaverState(false);
     };
 
     const openWizard = proof => {
@@ -202,11 +209,14 @@ const ProofsList = props => {
 
     return (
         <Container>
-            <SaveWizard />
+            <ProofsSaver
+                isOpen={isSaverOpen}
+                handleClose={isSuccess => onSaverClose(orgid, isSuccess)}
+            />
             <ProofsWizard
                 isOpen={isOpen}
                 proof={chosenProof}
-                onWizardClose={updatedProof => onWizardClose(updatedProof)}
+                handleClose={updatedProof => onWizardClose(updatedProof)}
             />
             <Typography>{title}</Typography>
             {proofsList.map((proof, key) => (
@@ -224,14 +234,11 @@ const ProofsList = props => {
             }
             {notDeployedCount > 0 &&
                 <div>
-                    <Button>
+                    <Button onClick={openSaver}>
                         Save to ORG.JSON
                     </Button>
                     <Typography>You have {notDeployedCount} unsaved change</Typography>
-                    <Button onClick={() => {
-                        resetProofsList(orgid);
-                        props.fetchOrganizationInfo({ id: orgid });
-                    }}>
+                    <Button onClick={() => handleReset(orgid)}>
                         Cancel
                     </Button>
                 </div>
@@ -246,6 +253,7 @@ const mapStateToProps = state => {
   
 const mapDispatchToProps = {
     fetchOrganizationInfo,
+    resetTransactionStatus,
     removeAssertion
 };
 

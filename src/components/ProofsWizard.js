@@ -3,14 +3,46 @@ import { connect } from 'react-redux';
 import DialogComponent from './Dialog';
 import { Formik } from 'formik';
 import {
-    Container,
+    TextareaAutosize,
     TextField,
-    Button,
     Typography
 } from "@material-ui/core";
+import { makeStyles } from '@material-ui/core/styles';
 import {
     addAssertion
 } from '../ducks/wizard';
+import SaveButton from './buttons/Save';
+
+const useStyles = makeStyles({
+    root: {
+        
+    },
+    info: {
+        fontFamily: 'Inter',
+        fontDtyle: 'normal',
+        fontWeight: 'normal',
+        fontSize: '16px',
+        lineHeight: '28px',
+        color: '#8F999F',
+        marginBottom: '20px'
+    },
+    textarea: {
+        width: '100%',
+        backgroundColor: '#FAFAFA',
+        border: 'none',
+        padding: '12px',
+        borderRadius: '8px',
+        color: '#5E666A',
+        resize: 'none',
+        '&:focus': {
+            outline: 'none !important',
+            border: '1px solid #8F999F'
+        }
+    },
+    save: {
+        marginTop: '40px'
+    }
+});
 
 const extractDomainName = uri => new URL(uri).hostname;
 
@@ -22,10 +54,10 @@ const extractSocialClaim = uri => {
 }
 
 const ProofForm = props => {
-    const { proof, addAssertion, handleClose } = props;
-
+    const { proof, addAssertion, handleClose, classes } = props;
+    
     return (
-        <Container>
+        <>
             <Formik
                 initialValues={{
                     proofUri: ''
@@ -70,16 +102,28 @@ const ProofForm = props => {
                 }) => (
                     <form onSubmit={handleSubmit}>
                         <div>
-                            {proof.notes.map((n, i) => (
-                                <Typography key={i}>
-                                    {n}
-                                </Typography>
-                            ))}
+                            {proof.notes.map((n, i) => {
+
+                                if (n.match(/^>/)) {
+                                    return (
+                                        <TextareaAutosize
+                                            className={classes.textarea}
+                                            value={n.replace(/^>/, '')}
+                                        />
+                                    ); 
+                                }
+
+                                return (
+                                    <Typography className={classes.info} key={i}>
+                                        {n}
+                                    </Typography>
+                                );
+                            })}
                         </div>
                         <div>                            
                             <TextField
                                 type='input'
-                                label='Proof URL'
+                                label='Enter proof URL: https://...'
                                 name='proofUri'
                                 value={values['proofUri']}
                                 helperText={errors['proofUri'] && touched['proofUri'] ? errors['proofUri'] : undefined}
@@ -90,23 +134,24 @@ const ProofForm = props => {
                                 fullWidth
                             />
                         </div>
-                        <div>
-                            <Button
+                        <div className={classes.save}>
+                            <SaveButton
                                 type='submit'
                                 disabled={isSubmitting}
                             >
                                 Save
-                            </Button>
+                            </SaveButton>
                         </div>
                     </form>
                 )}
             </Formik>
-        </Container>
+        </>
     );
 };
 
 const ProofsWizard = props => {
-    const { isOpen, onWizardClose, proof } = props;
+    const { isOpen, handleClose, proof } = props;
+    const classes = useStyles();
 
     if (!proof) {
         return false;
@@ -114,10 +159,12 @@ const ProofsWizard = props => {
 
     return (
         <DialogComponent
-            handleClose={onWizardClose}
+            className={classes.root}
+            maxWidth='xs'
+            handleClose={handleClose}
             isOpen={isOpen}
             children={(
-                <ProofForm {...props} />
+                <ProofForm classes={classes} {...props} />
             )}
         />
     );

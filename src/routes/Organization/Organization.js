@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import {
@@ -18,7 +18,7 @@ import ProofsList from '../../components/ProofsList';
 function Organization (props) {
   const id = history.location.state ? history.location.state.id : history.location.pathname.split('/')[2];
   const canManage = history.location.pathname !== `/organization/${id}`;
-  const { organization, subs, assertions } = props;
+  const { organization, subs, assertions, fetchOrganizationSubsInfo, fetchOrganizationInfo } = props;
   const subsidiaries = _.get(organization, 'subsidiaries', []);
   const agents = _.get(organization, 'jsonContent.publicKey', []);
   const {
@@ -43,28 +43,34 @@ function Organization (props) {
     }
   };
 
-  useEffect(() => {
-    props.fetchOrganizationInfo({ id });
-  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+  const proofsRef = useRef(null);
 
   useEffect(() => {
-    subsidiaries && subsidiaries.length && props.fetchOrganizationSubsInfo({ id });
-  }, [id, subsidiaries]); // eslint-disable-line react-hooks/exhaustive-deps
+    fetchOrganizationInfo({ id });
+  }, [id, fetchOrganizationInfo]);
 
-  console.log('@@@', id, assertions, verifications);
+  useEffect(() => {
+    subsidiaries && subsidiaries.length && fetchOrganizationSubsInfo({ id });
+  }, [id, subsidiaries, fetchOrganizationSubsInfo]);
 
   return (
     <div>
-      <TopNavigation organization={organization} canManage={canManage} />
+      <TopNavigation
+        organization={organization}
+        canManage={canManage}
+        scrollToRef={() => proofsRef.current.scrollIntoView({behavior: 'smooth'})}
+      />
       <Info organization={organization} canManage={canManage}/>
+      {subsidiaries && subsidiaries.length > 0 && <SubOrganizations organization={organization} subs={subs} canManage={canManage} />}
+      {canManage && <Agents owner={owner} agents={agents}/>}
+      <div ref={proofsRef} />
       <ProofsList
+        canManage={canManage}
         title='Trust proofs'
         orgid={id}
         assertions={assertions}
         verifications={verifications}
       />
-      {subsidiaries && subsidiaries.length > 0 && <SubOrganizations organization={organization} subs={subs} canManage={canManage} />}
-      {canManage && <Agents owner={owner} agents={agents}/>}
     </div>
   )
 }

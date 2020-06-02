@@ -67,6 +67,8 @@ const GET_TRANSACTION_STATUS_FAILURE = `${prefix}/GET_TRANSACTION_STATUS_FAILURE
 
 const RESET_TRANSACTION_STATUS = `${prefix}/RESET_TRANSACTION_STATUS`;
 
+const SET_TRANSACTION_HASH = `${prefix}/SET_TRANSACTION_HASH`;
+
 const initialState = {
   isFetching: false,
   isFetched: false,
@@ -84,6 +86,7 @@ const initialState = {
   },
   orgidUri: null,
   orgidHash: null,
+  transactionHash: null,
   pendingTransaction: false,
   successTransaction: false,
   error: null
@@ -127,8 +130,13 @@ export default function reducer( state = initialState, action) {
         successTransaction: false,
         error: null
       });
+    case SET_TRANSACTION_HASH:
+      return _.merge({}, state, {
+        transactionHash: payload
+      });
     case RESET_TRANSACTION_STATUS:
       return _.merge({}, state, {
+        transactionHash: null,
         pendingTransaction: false,
         successTransaction: false,
       });
@@ -350,6 +358,11 @@ export const selectSuccessState = createSelector(
 export const selectError = createSelector(
   stateSelector,
   wizard => wizard.error
+);
+
+export const selectTransactionHash = createSelector(
+  stateSelector,
+  wizard => wizard.transactionHash
 );
 //endregion
 
@@ -652,6 +665,13 @@ function getTransactionStatusFailure(error) {
     error
   }
 }
+
+function setTransactionHash(payload) {
+  return {
+    type: SET_TRANSACTION_HASH,
+    payload
+  };
+}
 //endregion
 
 //region == [ACTIONS: resetTransactionStatus] ====================================================================================
@@ -794,6 +814,7 @@ function* sendChangeOrgidUriAndHashSaga({payload}) {
 
 function* getTransactionStatusSaga({payload}) {
   try {
+    yield put(setTransactionHash(payload));
     const result = yield call(ApiGetTxStatus, payload);
 
     yield put(getTransactionStatusSuccess(result));

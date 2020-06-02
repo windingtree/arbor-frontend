@@ -38,10 +38,9 @@ const styles = makeStyles({
     justifyContent: 'center',
     alignItems: 'center',
     height: '46px',
-    borderRadius: '4px',
     backgroundColor: colors.primary.white,
     color: colors.greyScale.common,
-    border: `1px solid ${colors.greyScale.lightest}`,
+    border: 'none',
     padding: '0 22px'
   },
   itemStage: {
@@ -138,11 +137,28 @@ const styles = makeStyles({
     color: colors.primary.black,
     marginRight: '9px'
   },
+  goTrust: {
+    backgroundColor: '#98CCB0',
+    borderRadius: '4px',
+    height: '48px',
+    color: 'white',
+    fontFamily: 'Inter',
+    fontStyle: 'normal',
+    fontWeight: 500,
+    fontSize: '16px',
+    lineHeight: '20px',
+    letterSpacing: '0.005em',
+    textTransform: 'none',
+    padding: '0 70px 0 70px',
+    '&:hover': {
+      backgroundColor: '#98CCB0'
+    }
+  }
 });
 
 function TopNavigation(props) {
   const classes = styles();
-  const { organization, canManage } = props;
+  const { organization, canManage, scrollToRef } = props;
   const { orgid: id, jsonContent, proofsQty } = organization;
   const orgidType = _.get(organization, 'orgidType', '') === 'legalEntity' ? 'legalEntity' : 'organizationalUnit';
   const editState = {action: 'edit', type: orgidType, id, jsonContent};
@@ -204,6 +220,14 @@ function TopNavigation(props) {
               <Typography variant={'caption'} className={classes.itemTrustInfoTitle}>Trust proofs: </Typography>
               <TrustLevelIcon className={classes.iconTrustLevel}/>
               <Typography variant={'caption'} className={classes.trustLevelValue}>{!!proofsQty ? proofsQty : '0'}</Typography>
+            </div>
+            <div>
+              <Button
+                onClick={scrollToRef}
+                className={classes.goTrust}
+              >
+                Gain trust proofs
+              </Button>
             </div>
           </div>
         )

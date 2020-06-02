@@ -191,7 +191,7 @@ const ProofsList = props => {
     const [isRefreshing, toggleRefreshingState] = useState(false);
     const classes = useStyles();
 
-    const handleReset = (orgid, doReset = true) => {
+    const handleReset = (orgid, doReset = true, delay = 3000) => {
         // Sometimes this action should not has effect
         if (doReset) {
             toggleRefreshingState(true);
@@ -199,7 +199,7 @@ const ProofsList = props => {
                 setUpdatedProofs({});
                 fetchOrganizationInfo({ id: orgid });
                 toggleRefreshingState(false);
-            }, 3000);
+            }, delay);
         }
     }
 
@@ -297,7 +297,7 @@ const ProofsList = props => {
                                 </SaveButton>
                             </Grid>
                             <Grid item>
-                                <CancelButton onClick={() => handleReset(orgid)}>
+                                <CancelButton onClick={() => handleReset(orgid, true, 1000)}>
                                     Cancel
                                 </CancelButton>
                             </Grid>

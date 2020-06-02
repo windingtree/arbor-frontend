@@ -107,6 +107,7 @@ const ProofForm = props => {
                                 if (n.match(/^>/)) {
                                     return (
                                         <TextareaAutosize
+                                            key={i}
                                             className={classes.textarea}
                                             value={n.replace(/^>/, '')}
                                         />
@@ -114,7 +115,10 @@ const ProofForm = props => {
                                 }
 
                                 return (
-                                    <Typography className={classes.info} key={i}>
+                                    <Typography
+                                        key={i}
+                                        className={classes.info}
+                                    >
                                         {n}
                                     </Typography>
                                 );
@@ -161,7 +165,7 @@ const ProofsWizard = props => {
         <DialogComponent
             className={classes.root}
             maxWidth='xs'
-            handleClose={handleClose}
+            handleClose={() => handleClose(null)}
             isOpen={isOpen}
             children={(
                 <ProofForm classes={classes} {...props} />

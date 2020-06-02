@@ -1,6 +1,7 @@
 import {countries} from './countries';
 import _ from 'lodash';
 import validators from './validators'
+import { entityTypes } from './constants';
 
 export const config = [
   {
@@ -33,20 +34,7 @@ export const config = [
             {
               type: 'select',
               name: 'Legal form',
-              options: [
-                'private entrepreneur',
-                'private company limited by shares or Ltd. (UK, Ireland and the Commonwealth)',
-                'public limited company (UK, Ireland and the Commonwealth)',
-                'limited partnership',
-                'unlimited partnership',
-                'chartered company',
-                'statutory company',
-                'holding company',
-                'subsidiary company',
-                'one man company (sole proprietorship)',
-                'charitable incorporated organisation (UK)',
-                'non-governmental organization',
-              ],
+              options: entityTypes,
               required: true,
               orgidJsonPath: 'organizationalUnit.legalType'
             },

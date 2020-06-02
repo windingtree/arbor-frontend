@@ -8,6 +8,22 @@ export const LIF_TOKEN_PROXY_ADDRESS = process.env.REACT_APP_LIF_TOKEN_PROXY_ADD
 export const CHAIN_ID = process.env.REACT_APP_ETHEREUM_CHAIN_ID;
 export const MAINTENANCE = process.env.REACT_APP_MAINTENANCE ? JSON.parse(process.env.REACT_APP_MAINTENANCE): undefined;
 
+export const entityTypes = [
+  'private entrepreneur',
+  'private company limited by shares or Ltd. (UK, Ireland and the Commonwealth)',
+  'public limited company (UK, Ireland and the Commonwealth)',
+  'OÜ',
+  'limited partnership',
+  'unlimited partnership',
+  'chartered company',
+  'statutory company',
+  'holding company',
+  'subsidiary company',
+  'one man company (sole proprietorship)',
+  'charitable incorporated organisation (UK)',
+  'non-governmental organization',
+]
+
 export const ORGID_ABI = [
   {
     "anonymous": false,

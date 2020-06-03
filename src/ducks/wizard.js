@@ -69,6 +69,27 @@ const RESET_TRANSACTION_STATUS = `${prefix}/RESET_TRANSACTION_STATUS`;
 
 const SET_TRANSACTION_HASH = `${prefix}/SET_TRANSACTION_HASH`;
 
+// Fix orgJson structure in old broken versions
+const fixJsonRequiredProps = json => ({
+  ...json,
+  '@context': [
+    'https://www.w3.org/ns/did/v1',
+    'https://windingtree.com/ns/orgid/v1'
+  ],
+  publicKey: [
+    ...(json.publicKey ? json.publicKey : [])
+  ],
+  service: [
+    ...(json.service ? json.service : [])
+  ],
+  trust: {
+    ...(json.trust ? json.trust : {}),
+    assertions: [
+      ...(json.trust && json.trust.assertions ? json.trust.assertions : [])
+    ]
+  }
+});
+
 const initialState = {
   isFetching: false,
   isFetched: false,
@@ -82,7 +103,9 @@ const initialState = {
     created: new Date().toJSON(),
     publicKey: [],
     service: [],
-    trust: {}
+    trust: {
+      assertions: []
+    }
   },
   orgidUri: null,
   orgidHash: null,
@@ -97,8 +120,10 @@ const initialState = {
 export default function reducer( state = initialState, action) {
   const { type, payload, error } = action;
 
+  state.orgidJson = fixJsonRequiredProps(state.orgidJson);
   const statePublicKey = _.get(state.orgidJson, 'publicKey', []);
   const publicKey = statePublicKey.slice();
+  
   let orgidJsonUpdates;
 
   switch(type) {
@@ -258,7 +283,7 @@ export default function reducer( state = initialState, action) {
         error: null
       });
     case SAVE_MEDIA_TO_ARBOR_SUCCESS:
-      orgidJsonUpdates = Object.assign({}, state.orgidJson, {
+      orgidJsonUpdates = Object.assign({}, fixJsonRequiredProps(state.orgidJson), {
         ...state.orgidJson,
         updated: new Date().toJSON(),
         media: { logo: payload }

@@ -75,17 +75,17 @@ const proofsTemplate = [
         ],
         icon: 'facebook'
     },
-    {
-        id: 's2',
-        type: 'social',
-        subtype: 'twitter',
-        title: 'Prove your Twitter account',
-        notes: [
-            'To prove that a Twitter account is yours copy this exactrly as it appears and create a post in your Twitter',
-            '>Verifying my ORG.ID identifier: [ORGID]'
-        ],
-        icon: 'twitter'
-    },
+    // {
+    //     id: 's2',
+    //     type: 'social',
+    //     subtype: 'twitter',
+    //     title: 'Prove your Twitter account',
+    //     notes: [
+    //         'To prove that a Twitter account is yours copy this exactrly as it appears and create a post in your Twitter',
+    //         '>Verifying my ORG.ID identifier: [ORGID]'
+    //     ],
+    //     icon: 'twitter'
+    // },
     {
         id: 's3',
         type: 'social',

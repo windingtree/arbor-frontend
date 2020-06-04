@@ -1,8 +1,6 @@
-import React, {useState} from 'react';
+import React, { useRef } from 'react';
 import {Container, Typography, Grid, Card, Button} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
-import { fadeIn } from 'react-animations';
-import Radium, { StyleRoot } from 'radium';
 
 import trustTopIllustration from '../../assets/SvgComponents/trust-g-top.svg';
 import cardWebsiteIllustration from '../../assets/SvgComponents/trust-g-website.svg';
@@ -11,20 +9,26 @@ import cardLockIllustration from '../../assets/SvgComponents/trust-g-lock.svg';
 import cardLifIllustration from '../../assets/SvgComponents/trust-g-lif.svg';
 import MetamaskIllustration from '../../assets/SvgComponents/trust-metamask-illustration.svg';
 
-import trustPointsIcon from '../../assets/SvgComponents/trust-lvl-icon.svg';
-import stepOrgidIcon from '../../assets/SvgComponents/trust-step-orgid-icon.svg';
-import stepMetamaskIcon from '../../assets/SvgComponents/trust-step-mm-icon.svg';
-import stepWebsiteIcon from '../../assets/SvgComponents/trust-step-website-icon.svg';
-import stepEntityIcon from '../../assets/SvgComponents/trust-step-legal-entity-icon.svg';
-import stepSocialIcon from '../../assets/SvgComponents/trust-step-social-icon.svg';
-import stepLifIcon from '../../assets/SvgComponents/trust-step-lif-icon.svg';
-import stepDirectoryIcon from '../../assets/SvgComponents/trust-step-directory-icon.svg';
 import stepsBg from '../../assets/SvgComponents/tiles-bg.svg';
 
 import verifyWebsiteSvg from '../../assets/SvgComponents/verify-your-website.svg';
 import verifyYourLegalEntity from '../../assets/SvgComponents/verifyYourLegalEntity.svg';
 import globeIconSvg from '../../assets/SvgComponents/globe-icon.svg';
-import listPlaceholderSvg from '../../assets/SvgComponents/list-placeholder.svg';
+
+import rapidSSLSvg from '../../assets/SvgComponents/partner-rapid-ssl.svg';
+import symantecSvg from '../../assets/SvgComponents/partner-symantec.svg';
+import thawteSvg from '../../assets/SvgComponents/partner-thawte.svg';
+import geotrustSvg from '../../assets/SvgComponents/partner-geotrust.svg';
+import comodoSvg from '../../assets/SvgComponents/partner-comodo.svg';
+import liMarker from '../../assets/SvgComponents/marker.svg';
+import evSSLok from '../../assets/SvgComponents/trust-ev-illustration.svg';
+import trustLifDeposit from '../../assets/SvgComponents/trust-lif-deposit.svg';
+import trustSocial from '../../assets/SvgComponents/verify-social-media.svg';
+
+import iconFacebook from '../../assets/SvgComponents/facebook-icon.svg';
+import iconInstagram from '../../assets/SvgComponents/instagram-icon.svg';
+import iconLinkedin from '../../assets/SvgComponents/linkedin-icon.svg';
+
 
 import colors from '../../styles/colors';
 
@@ -46,9 +50,30 @@ const styles = makeStyles({
       paddingBottom: '30px'
     }
   },
+  grayDivNoTop: {
+    width: '100%',
+    backgroundColor: '#FAFBFC',
+    paddingTop: 0,
+    paddingBottom: '98px',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      paddingBottom: '30px'
+    }
+  },
+  whiteDiv: {
+    width: '100%',
+    backgroundColor: 'white',
+    paddingTop: '98px',
+    paddingBottom: '98px',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      paddingBottom: '30px'
+    }
+  },
   graySpacer: {
     width: '100%',
     marginBottom: '98px'
+  },
+  rightFrame: {
+    marginLeft: '98px'
   },
   topSectionWrapper: {
     padding: '57px 30px 20px 30px',
@@ -62,6 +87,13 @@ const styles = makeStyles({
   },
   grayTitle: {
     fontSize: '40px',
+    fontWeight: 500,
+    lineHeight: 1.14,
+    color: colors.greyScale.darkest,
+    margin: '0 0 20px 0'
+  },
+  grayTitleSm: {
+    fontSize: '32px',
     fontWeight: 500,
     lineHeight: 1.14,
     color: colors.greyScale.darkest,
@@ -112,6 +144,73 @@ const styles = makeStyles({
     border: '0 none',
     borderRadius: '0',
     boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)'
+  },
+  verificationSmall: {
+    fontSize: '18px',
+    lineHeight: '28px',
+    fontWeight: 500,
+    padding: '27px 27px 27px 27px',
+    display: 'flex',
+    alignItems: 'center',
+    height: '80px',
+    backgroundColor: colors.primary.white,
+    border: '0 none',
+    borderRadius: '6px',
+    boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)'
+  },
+  verificationSmallSocial: {
+    fontSize: '18px',
+    lineHeight: '28px',
+    fontWeight: 500,
+    padding: '16px 16px 16px 16px',
+    display: 'flex',
+    alignItems: 'center',
+    height: 'auto',
+    backgroundColor: colors.primary.white,
+    border: '0 none',
+    borderRadius: '6px',
+    boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)'
+  },
+  verificationIconSocial: {
+    margin: '0 8px 0 0',
+    alignSelf: 'flex-start'
+  },
+  socialLabel: {
+    fontFamily: 'Inter',
+    fontStyle: 'normal',
+    fontWeight: 500,
+    fontSize: '16px',
+    lineHeight: '20px',
+    letterSpacing: '0.005em',
+    color: '#5072B6'
+  },
+  socialCardContent: {
+    display: 'flex',
+    alignItems: 'start',
+    alignContent: 'stretch'
+  },
+  verificationLogo: {
+    width: '80%',
+    margin: 'auto auto'
+  },
+  list: {
+    listStyle: 'none',
+    listStyleImage: `url(${liMarker})`,
+    marginLeft: '14px',
+    padding: 0,
+    '& li': {
+      fontFamily: 'Inter',
+      fontStyle: 'normal',
+      fontWeight: 500,
+      fontSize: '14px',
+      lineHeight: '16px',
+      color: '#5E666A',
+      paddingLeft: '12px',
+      marginBottom: '16px'
+    },
+    '& li::marker': {
+      color: '#F58F7F'
+    }
   },
   verificationContent: {
     display: 'flex'
@@ -308,6 +407,13 @@ const styles = makeStyles({
 function TrustGeneral() {
   const classes = styles();
 
+  const websiteRef = useRef(null);
+  const socialRef = useRef(null);
+  const legalEntityRef = useRef(null);
+  const lifDeositRef = useRef(null);
+
+  const scrollToRef = ref => ref.current.scrollIntoView({behavior: 'smooth'});
+
   return (
     <div>
       <div className={classes.topDiv}>
@@ -337,7 +443,7 @@ function TrustGeneral() {
           <Grid container spacing={5} justify={'space-between'}>
             <Grid item container spacing={4} xs={12} lg={5} className={classes.verificationsWrapper}>
               <Grid item xs={6}>
-                <Card className={classes.verification}>
+                <Card className={classes.verification} onClick={() => scrollToRef(websiteRef)}>
                   <div className={classes.verificationContent}>
                     <img className={classes.verificationIcon} src={cardWebsiteIllustration}
                          alt={'img'}/>
@@ -346,7 +452,7 @@ function TrustGeneral() {
                 </Card>
               </Grid>
               <Grid item xs={6}>
-                <Card className={classes.verification}>
+                <Card className={classes.verification} onClick={() => scrollToRef(socialRef)}>
                   <div className={classes.verificationContent}>
                     <img className={classes.verificationIcon} src={cardTwitterIllustration}
                          alt={'img'}/>
@@ -355,7 +461,7 @@ function TrustGeneral() {
                 </Card>
               </Grid>
               <Grid item xs={6}>
-                <Card className={classes.verification}>
+                <Card className={classes.verification} onClick={() => scrollToRef(legalEntityRef)}>
                   <div className={classes.verificationContent}>
                     <img className={classes.verificationIcon} src={cardLockIllustration} alt={'img'}/>
                     <Typography className={classes.verificationIconTitle}>Legal entity verification</Typography>
@@ -363,7 +469,7 @@ function TrustGeneral() {
                 </Card>
               </Grid>
               <Grid item xs={6}>
-                <Card className={classes.verification}>
+                <Card className={classes.verification} onClick={() => scrollToRef(lifDeositRef)}>
                   <div className={classes.verificationContent}>
                     <img className={classes.verificationIcon} src={cardLifIllustration} alt={'img'}/>
                     <Typography className={classes.verificationIconTitle}>Líf deposit submission</Typography>
@@ -390,14 +496,14 @@ function TrustGeneral() {
         </div>
       </Container>
       
-      <div className={classes.grayDiv}>
+      <div ref={websiteRef} className={classes.grayDiv}>
         <Container className={classes.topContent}>
           <Grid container justify='space-between' alignItems='start'>
             <Grid item xs={6}>
               <Typography className={classes.grayTitle} variant={'h1'}>Verify your website</Typography>
               <Card className={classes.websiteAddressCard}>
-                <img className={classes.websiteAddressGlobe} src={globeIconSvg} alt={"icon"}/>
-                <Typography className={classes.link} noWrap={true}>https://userwebsitexample.com/</Typography></Card>
+                <img className={classes.verificationIconSocial} src={globeIconSvg} alt={"icon"}/>
+                <Typography className={classes.link} noWrap={true}>https://yourwebsitexample.com/</Typography></Card>
                 <Typography className={classes.topSectionText}>
                   Most users get acquainted with companies via their websites. Prove that you are a proud owner of your corporate website in a few steps.
                 </Typography>
@@ -412,19 +518,175 @@ function TrustGeneral() {
           </Grid>          
         </Container>
         <Container className={classes.graySpacer}></Container>
-        <Container className={classes.topContent}>
+        <Container ref={legalEntityRef} className={classes.topContent}>
           <Grid container justify='space-between' alignItems='center'>
             <Grid item xs={6}>
               <Typography className={classes.grayTitle} variant={'h1'}>Verify your legal entity</Typography>
-                <Typography className={classes.topSectionText}>
+              <Typography className={classes.topSectionText}>
                 Extended Validation Certificate offers the highest available levels of trust and authentication to your website.
-                </Typography>
-                <div className={classes.line}/>
+              </Typography>
+              <div className={classes.line}/>
             </Grid>
             <Grid item xs={6} style={{ marginRight: '-25px' }}>
               <img src={verifyYourLegalEntity} alt={'illustration'}/>
             </Grid>
           </Grid>          
+        </Container>
+      </div>
+
+      <div className={classes.whiteDiv}>
+        <Container className={classes.topContent}>
+          <Grid container justify='space-between' alignItems='start'>
+            <Grid item xs={5}>
+              <div>
+                <Grid container spacing={5} justify={'space-between'}>
+                  <Grid item xs={6}>
+                    <Card className={classes.verificationSmall}>
+                      <img className={classes.verificationLogo} src={rapidSSLSvg} alt={'SSL provider'}/>
+                    </Card>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Card className={classes.verificationSmall}>
+                      <img className={classes.verificationLogo} src={symantecSvg} alt={'SSL provider'}/>
+                    </Card>
+                  </Grid>
+                </Grid>
+                <Grid container spacing={5} justify={'space-between'}>
+                  <Grid item xs={6}>
+                    <Card className={classes.verificationSmall}>
+                      <img className={classes.verificationLogo} src={thawteSvg} alt={'SSL provider'}/>
+                    </Card>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Card className={classes.verificationSmall}>
+                      <img className={classes.verificationLogo} src={geotrustSvg} alt={'SSL provider'}/>
+                    </Card>
+                  </Grid>
+                </Grid>
+                <Grid container spacing={5} justify={'space-between'}>
+                  <Grid item xs={6}>
+                    <Card className={classes.verificationSmall}>
+                      <img className={classes.verificationLogo} src={comodoSvg} alt={'SSL provider'}/>
+                    </Card>
+                  </Grid>
+                  <Grid item xs={6}>
+                    
+                  </Grid>
+                </Grid>
+              </div>
+            </Grid>
+            <Grid item xs={7}>
+              <div className={classes.rightFrame}>
+                <Typography className={classes.grayTitleSm} variant={'h1'}>Request an Extended Validation Certificate</Typography>
+                <Typography className={classes.topSectionText}>
+                  There are numerous Certificate Authorities that can issue an Extended Validation Certificate for your company. You are free to request a legal entity verification from the Authority of your choice.
+                </Typography>
+                <Typography className={classes.topSectionText}>
+                  Here is what will be verified:
+                </Typography>
+                <ul className={classes.list}>
+                  <li>
+                    Legal status and country of jurisdiction
+                  </li>
+                  <li>
+                    Operational status
+                  </li>
+                  <li>
+                    Identity of the business owner
+                  </li>
+                  <li>
+                    Exclusive domain ownership
+                  </li>
+                </ul>
+              </div>
+            </Grid>
+          </Grid>
+        </Container>
+      </div>
+
+      <div className={classes.grayDiv}>
+        <Container className={classes.topContent}>
+          <Grid container justify={'space-between'}>
+            <Grid item xs={6}>
+              <Typography className={classes.grayTitleSm} variant={'h1'}>
+                If you already have an EV SSL Certificate, your legal entity will be verified automatically!
+              </Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <img style={{ marginLeft: '12%' }} src={evSSLok} alt={'EV SSL'}/>
+            </Grid>
+          </Grid>
+        </Container>
+      </div>
+
+      <div ref={lifDeositRef} className={classes.grayDivNoTop}>
+        <Container className={classes.topContent}>
+          <Grid container justify={'space-between'} alignItems={'center'}>
+            <Grid item xs={6}>
+              <Typography className={classes.grayTitle} variant={'h1'}>
+                Submit your Líf deposit
+              </Typography>
+              <Typography className={classes.topSectionText}>
+                Líf deposit is a small amount of cryptocurrency that is staked when you register your organization profile on Arbor. This action minimizes spam registrations and proves your commitment to the cause.
+              </Typography>
+              <div className={classes.line}/>
+            </Grid>
+            <Grid item xs={6}>
+              <img src={trustLifDeposit} alt={'EV SSL'}/>
+            </Grid>
+          </Grid>
+        </Container>
+      </div>
+
+      <div ref={socialRef} className={classes.grayDivNoTop}>
+        <Container className={classes.topContent}>
+          <Grid container justify={'space-between'} alignItems={'center'}>
+            <Grid item xs={7}>
+              <Typography className={classes.grayTitle} variant={'h1'}>
+                Verify your social media
+              </Typography>
+              <Grid container spacing={2} justify={'space-between'}>
+                <Grid item xs={4}>
+                  <Card className={classes.verificationSmallSocial}>
+                    <div className={classes.socialCardContent}>
+                      <img className={classes.verificationIconSocial} src={iconFacebook} alt={'facebook'}/>
+                      <Typography className={classes.socialLabel}>
+                        /legal entity profile
+                      </Typography>
+                    </div>
+                  </Card>
+                </Grid>
+                <Grid item xs={4}>
+                  <Card className={classes.verificationSmallSocial}>
+                    <div className={classes.socialCardContent}>
+                      <img className={classes.verificationIconSocial} src={iconLinkedin} alt={'linkedin'}/>
+                      <Typography className={classes.socialLabel}>
+                        /legal entity profile
+                      </Typography>
+                    </div>
+                  </Card>
+                </Grid>
+                <Grid item xs={4}>
+                  <Card className={classes.verificationSmallSocial}>
+                    <div className={classes.socialCardContent}>
+                      <img className={classes.verificationIconSocial} src={iconInstagram} alt={'instagram'}/>
+                      <Typography className={classes.socialLabel}>
+                        /legal entity profile
+                      </Typography>
+                    </div>
+                  </Card>
+                </Grid>
+              </Grid>
+              <div style={{marginBottom: '34px'}} />
+              <Typography className={classes.topSectionText}>
+                Your social media accounts are the main source of corporate news and announcements. Improve your trust level with every verified account.
+              </Typography>
+              <div className={classes.line}/>
+            </Grid>
+            <Grid item xs={5}>
+              <img src={trustSocial} alt={'Social Accounts'}/>
+            </Grid>
+          </Grid>
         </Container>
       </div>
       

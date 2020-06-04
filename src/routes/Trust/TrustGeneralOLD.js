@@ -21,11 +21,6 @@ import stepLifIcon from '../../assets/SvgComponents/trust-step-lif-icon.svg';
 import stepDirectoryIcon from '../../assets/SvgComponents/trust-step-directory-icon.svg';
 import stepsBg from '../../assets/SvgComponents/tiles-bg.svg';
 
-import verifyWebsiteSvg from '../../assets/SvgComponents/verify-your-website.svg';
-import verifyYourLegalEntity from '../../assets/SvgComponents/verifyYourLegalEntity.svg';
-import globeIconSvg from '../../assets/SvgComponents/globe-icon.svg';
-import listPlaceholderSvg from '../../assets/SvgComponents/list-placeholder.svg';
-
 import colors from '../../styles/colors';
 
 const styles = makeStyles({
@@ -37,19 +32,6 @@ const styles = makeStyles({
       paddingBottom: '30px'
     }
   },
-  grayDiv: {
-    width: '100%',
-    backgroundColor: '#FAFBFC',
-    paddingTop: '98px',
-    paddingBottom: '98px',
-    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
-      paddingBottom: '30px'
-    }
-  },
-  graySpacer: {
-    width: '100%',
-    marginBottom: '98px'
-  },
   topSectionWrapper: {
     padding: '57px 30px 20px 30px',
   },
@@ -59,13 +41,6 @@ const styles = makeStyles({
     lineHeight: 1.14,
     color: colors.greyScale.darkest,
     margin: '85px 0 40px 0'
-  },
-  grayTitle: {
-    fontSize: '40px',
-    fontWeight: 500,
-    lineHeight: 1.14,
-    color: colors.greyScale.darkest,
-    margin: '0 0 20px 0'
   },
   topText: {
     color: colors.greyScale.dark,
@@ -111,7 +86,7 @@ const styles = makeStyles({
     backgroundColor: colors.primary.white,
     border: '0 none',
     borderRadius: '0',
-    boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)'
+    boxShadow: '0 0 0 0'
   },
   verificationContent: {
     display: 'flex'
@@ -280,33 +255,191 @@ const styles = makeStyles({
     fontSize: '16px',
     lineHeight: '24px',
     color: colors.primary.white
-  },
-  websiteAddressCard: {
-    padding: '20px',
-    fontWeight: 500,
-    fontSize: '16px',
-    lineHeight: '20px',
-    display: 'flex',
-    alignItems: 'center',
-    textAlign: 'center',
-    marginBottom: '35px',
-    width: 'min-content',
-    boxShadow: ' 0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
-    borderRadius: '6px'
-  },
-  link: {
-    color: colors.secondary.peach,
-    fontWeight: 500
-  },
-  topSectionText: {
-    color: colors.greyScale.dark,
-    marginBottom: '19px',
-    lineHeight: '28px'
   }
 });
 
+const animation = {
+  fadeIn: {
+    animation: 'x 1s',
+    animationName: Radium.keyframes(fadeIn, 'fadeIn'),
+  }
+};
+
 function TrustGeneral() {
+  const [activeStep, setActiveStep] = useState(0);
   const classes = styles();
+
+  const stepCards = [
+    {
+      title: 'Create ORG.ID, your own unique business identifier',
+      trustPoints: 0,
+      icon: stepOrgidIcon,
+      content: <Grid container>
+        <Typography className={classes.paragraph}>
+          It looks like this:
+        </Typography>
+        <div className={classes.orgIdBadge}>
+          0x48da4438c2373053a52a80ee04c3ce3834e1080a
+        </div>
+        <Typography className={classes.paragraph}>
+          As we use Ethereum blockchain, you have an exclusive control over your data and profile!
+        </Typography>
+      </Grid>
+    },
+    {
+      title: 'Add information on your company’s business activities',
+      trustPoints: 0,
+      icon: stepMetamaskIcon,
+      content: <Grid container>
+        <Typography className={classes.paragraph}>
+          Are you operating a hotel, managing an online travel agency or working for an airline? Add these details as
+          you fill in your company profile.
+        </Typography>
+        <Typography className={classes.paragraph}>
+          At this point, other members of Arbor community see that there is a new company registered and wait for your
+          information to be verified.
+        </Typography>
+      </Grid>
+    },
+    {
+      title: 'Prove that your company owns a certain website',
+      trustPoints: 1,
+      icon: stepWebsiteIcon,
+      content: <Grid container>
+        <Typography className={classes.paragraph}>
+          There are two ways to share credible information about your company: claims and credentials.
+        </Typography>
+        <Typography className={classes.paragraph}>
+          Claims are the facts about your company that can be verified without involving third parties. Verify your
+          corporate website ownership to secure your first trust point.
+        </Typography>
+      </Grid>
+    },
+    {
+      title: 'Verify your company\'s legal entity information',
+      trustPoints: 2,
+      icon: stepEntityIcon,
+      content: <Grid container>
+        <Typography className={classes.paragraph}>
+          Extended Validation Certificate belongs to credentials – facts about the company that can be verified by third
+          parties.
+        </Typography>
+        <Typography className={classes.paragraph}>
+          Certificate Authorities validate your legal information and issue an EV Certificate. An icon that appears next
+          to your domain in the browser search bar signals that your company is officially registered and operating.
+        </Typography>
+      </Grid>
+    },
+    {
+      title: 'Prove that your company owns certain social media accounts',
+      trustPoints: 3,
+      icon: stepSocialIcon,
+      content: <Grid container>
+        <Typography className={classes.paragraph}>
+          Well-established social media accounts can mean a lot to your potential partners. Verify your corporate
+          profiles on Twitter, Facebook and Instagram within a few minutes!
+        </Typography>
+      </Grid>
+    },
+    {
+      title: 'Submit your Líf deposit to protect Arbor registry against spam',
+      trustPoints: 4,
+      icon: stepLifIcon,
+      content: <Grid container>
+        <Typography className={classes.paragraph}>
+          Depositing a certain amount of Líf shows other organizations on the platform that you couldn't possibly create
+          more than a few records, otherwise it would be too expensive.
+        </Typography>
+        <Typography className={classes.paragraph}>
+          Líf deposit makes your organization a true citizen of this decentralized global commerce platform and allows
+          you to participate in the platform governance.
+        </Typography>
+      </Grid>
+    },
+    {
+      title: 'Register your organization in one of the directories',
+      trustPoints: 5,
+      icon: stepDirectoryIcon,
+      content: <Grid container>
+        <Typography className={classes.paragraph}>
+          Register your organization in one of the directories to make it easily discoverable. Each directory has its
+          own rules that your organization has to comply with in order to be listed.
+        </Typography>
+        <Typography className={classes.paragraph}>
+          Once your organization gets verified by community, it achieves the ultimate trust level!
+        </Typography>
+      </Grid>
+    }
+  ];
+
+  const stepControllers = [
+    'step 1: org.id',
+    'step 2: business activities',
+    'step 3: website',
+    'step 4: legal entity',
+    'step 5: social media',
+    'step 6: lif deposit',
+    'step 7: directories'
+  ];
+
+  const renderStepControllers = () => {
+    const controllers = stepControllers.map((item, index) => {
+      const name = index === activeStep ? item : item.slice(0, 6);
+      return (
+        <li className={index === activeStep ? classes.activeController : [classes.controllerItem, classes.stepControllerItem].join(' ')}
+            key={index.toString()} style={{margin: '15px 0'}}>
+          <button
+            className={[classes.controllerButton, classes.stepControllerButton].join(' ')}
+            onClick={handleChangeActiveStep}
+          >
+            {name}
+          </button>
+          <span className={[classes.controllerLine, classes.stepControllerLine].join(' ')}/>
+        </li>
+      )
+    });
+
+    return (
+      <ul className={classes.stepControllers}>{controllers}</ul>
+    )
+  };
+
+  const handleChangeActiveStep = (e) => {
+    const item = e.target.innerHTML;
+    const itemIndex = parseInt(item[5]) - 1; // 5th char of "step N"
+
+    if (activeStep === itemIndex) return;
+    setActiveStep(itemIndex);
+  };
+
+  function CardAnimatedContent(props) {
+    const cardContent = <div style={animation.fadeIn}>{props.cardContent}</div>;
+    const step = <span style={animation.fadeIn}>{props.step + 1}</span>;
+    const image = <img style={animation.fadeIn} className={classes.stepCardIcon} src={props.icon} alt="icon"/>;
+    const title = <span style={animation.fadeIn}>{props.cardTitle}</span>;
+    const trustLevel = <span style={animation.fadeIn} >{props.trustPoints}</span>;
+
+    return (
+      <StyleRoot>
+        <div style={{display: 'flex'}}>
+          <Card className={classes.stepCard}>
+            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+              <Typography className={classes.stepCardPreTitle}>step {step}.</Typography>
+              <div className={classes.stepCardIconWrapper}>
+                {image}
+              </div>
+            </div>
+            <Typography className={classes.stepCardTitle}>{title}</Typography>
+            {cardContent}
+          </Card>
+          <Card className={classes.trustPointsBadge}>
+            <img src={trustPointsIcon} alt="trust points"/>
+            <Typography className={classes.trustPointBadgeText}>{trustLevel}</Typography>
+          </Card>
+        </div>
+      </StyleRoot>
+    )
+  }
 
   return (
     <div>
@@ -389,45 +522,30 @@ function TrustGeneral() {
           </Grid>
         </div>
       </Container>
-      
-      <div className={classes.grayDiv}>
-        <Container className={classes.topContent}>
-          <Grid container justify='space-between' alignItems='start'>
-            <Grid item xs={6}>
-              <Typography className={classes.grayTitle} variant={'h1'}>Verify your website</Typography>
-              <Card className={classes.websiteAddressCard}>
-                <img className={classes.websiteAddressGlobe} src={globeIconSvg} alt={"icon"}/>
-                <Typography className={classes.link} noWrap={true}>https://userwebsitexample.com/</Typography></Card>
-                <Typography className={classes.topSectionText}>
-                  Most users get acquainted with companies via their websites. Prove that you are a proud owner of your corporate website in a few steps.
-                </Typography>
-                <Typography className={classes.topSectionText}>
-                  Go to your organization profile/trust proofs, download the txt file and upload it to your server or paste info to DNS zone. That is a solid proof that you own the website.
-                </Typography>
-                <div className={classes.line}/>
-            </Grid>
-            <Grid item xs={6}>
-              <img src={verifyWebsiteSvg} alt={'illustration'}/>
-            </Grid>
-          </Grid>          
+      <Grid className={classes.stepsSectionWrapper}>
+        <Container className={classes.stepsSection}>
+          <Grid style={{width: '50%'}}>
+            <Typography variant={'h3'} className={classes.blockTitle}>
+              How to achieve the ultimate trust level?
+            </Typography>
+            <Typography className={classes.paragraph}>
+              Arbor allows organizations all over the world to opt-in and verify themselves without involving a
+              third-party
+              intermediary.
+            </Typography>
+          </Grid>
+          <Grid className={classes.stepCardsWrapper} container justify={'space-between'}>
+            <CardAnimatedContent
+              step={activeStep}
+              cardContent={stepCards[activeStep].content}
+              icon={stepCards[activeStep].icon}
+              cardTitle={stepCards[activeStep].title}
+              trustPoints={stepCards[activeStep].trustPoints}
+            />
+            {renderStepControllers()}
+          </Grid>
         </Container>
-        <Container className={classes.graySpacer}></Container>
-        <Container className={classes.topContent}>
-          <Grid container justify='space-between' alignItems='center'>
-            <Grid item xs={6}>
-              <Typography className={classes.grayTitle} variant={'h1'}>Verify your legal entity</Typography>
-                <Typography className={classes.topSectionText}>
-                Extended Validation Certificate offers the highest available levels of trust and authentication to your website.
-                </Typography>
-                <div className={classes.line}/>
-            </Grid>
-            <Grid item xs={6} style={{ marginRight: '-25px' }}>
-              <img src={verifyYourLegalEntity} alt={'illustration'}/>
-            </Grid>
-          </Grid>          
-        </Container>
-      </div>
-      
+      </Grid>
       <Grid className={classes.moreVerifiedSection}>
         <Container>
           <Grid container spacing={5} wrap={'nowrap'}>

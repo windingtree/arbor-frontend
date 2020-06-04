@@ -10,6 +10,7 @@ import { rewriteOrgidJson } from './wizard'
 export const moduleName = 'orgInfo';
 const prefix = `${appName}/${moduleName}`;
 const FETCH_ORGANIZATION_INFO_REQUEST = `${prefix}/FETCH_ORGANIZATION_INFO_REQUEST`;
+const FETCH_ORGANIZATION_INFO_REQUEST_REFRESH = `${prefix}/FETCH_ORGANIZATION_INFO_REQUEST_REFRESH`;
 const FETCH_ORGANIZATION_INFO_SUCCESS = `${prefix}/FETCH_ORGANIZATION_INFO_SUCCESS`;
 const FETCH_ORGANIZATION_INFO_FAILURE = `${prefix}/FETCH_ORGANIZATION_INFO_FAILURE`;
 
@@ -33,6 +34,7 @@ export default function reducer(state = initialState, action) {
 
   switch (type) {
     case FETCH_ORGANIZATION_INFO_REQUEST:
+    case FETCH_ORGANIZATION_INFO_REQUEST_REFRESH:
     case FETCH_ORGANIZATION_SUBS_INFO_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
@@ -71,6 +73,13 @@ export default function reducer(state = initialState, action) {
 export function fetchOrganizationInfo(payload) {
   return {
     type: FETCH_ORGANIZATION_INFO_REQUEST,
+    payload
+  }
+}
+
+export function fetchOrganizationInfoWithRefresh(payload) {
+  return {
+    type: FETCH_ORGANIZATION_INFO_REQUEST_REFRESH,
     payload
   }
 }
@@ -150,6 +159,18 @@ function* fetchOrganizationInfoSaga({payload}) {
   }
 }
 
+function* fetchOrganizationInfoSagaWithRefresh({payload}) {
+  try {
+    const result = yield call(ApiFetchOrganizationInfoWithRefresh, payload);
+
+    yield put(fetchOrganizationInfoSuccess(result));
+    console.log('%cyield put(rewriteOrgidJson(result))', 'background-color:orange; color: black', result.data);
+    yield put(rewriteOrgidJson(_.get(result, 'data.jsonContent', {})));
+  } catch(error) {
+    yield put(fetchOrganizationInfoFailure(error));
+  }
+}
+
 function* fetchOrganizationSubsInfoSaga({payload}) {
   try {
     const result = yield call(ApiFetchOrganizationSubsInfo, payload);
@@ -163,6 +184,7 @@ function* fetchOrganizationSubsInfoSaga({payload}) {
 export const saga = function*() {
   return yield all([
     takeEvery(FETCH_ORGANIZATION_INFO_REQUEST, fetchOrganizationInfoSaga),
+    takeEvery(FETCH_ORGANIZATION_INFO_REQUEST_REFRESH, fetchOrganizationInfoSagaWithRefresh),
     takeEvery(FETCH_ORGANIZATION_SUBS_INFO_REQUEST, fetchOrganizationSubsInfoSaga),
   ]);
 };
@@ -172,6 +194,10 @@ export const saga = function*() {
  * */
 function ApiFetchOrganizationInfo(data) {
   return callApi(`orgids/${data.id}`);
+}
+
+function ApiFetchOrganizationInfoWithRefresh(data) {
+  return callApi(`orgids/${data.id}/refresh`, 'POST');
 }
 
 function ApiFetchOrganizationSubsInfo(data) {

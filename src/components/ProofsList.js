@@ -10,7 +10,8 @@ import RefreshButton from './buttons/Refresh';
 import CancelButton from './buttons/Cancel';
 import SaveButton from './buttons/Save';
 import {
-    fetchOrganizationInfo
+    fetchOrganizationInfo,
+    fetchOrganizationInfoWithRefresh
 } from '../ducks/fetchOrganizationInfo';
 import {
     removeAssertion,
@@ -283,7 +284,7 @@ const ProofsList = props => {
             <Box className={classes.actionBlock}>
                 {!notDeployedCount &&
                     <RefreshButton
-                        onClick={() => props.fetchOrganizationInfo({ id: orgid })}
+                        onClick={() => props.fetchOrganizationInfoWithRefresh({ id: orgid })}
                     >
                         Refresh
                     </RefreshButton>
@@ -324,6 +325,7 @@ const mapStateToProps = state => {
   
 const mapDispatchToProps = {
     fetchOrganizationInfo,
+    fetchOrganizationInfoWithRefresh,
     resetTransactionStatus,
     removeAssertion
 };

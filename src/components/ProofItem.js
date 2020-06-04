@@ -166,16 +166,16 @@ const ProofItem = props => {
                 }        
             </Grid>
             <Grid item xs={4}>
-                {(!verified && deployed) &&
+                {(deployed && !verified) &&
                     <State classes={{ state: 'not-verified' }}>Not verified</State>
                 }
-                {(verified && deployed) &&
+                {(deployed && verified) &&
                     <State classes={{ state: 'verified' }}>Verified</State>
                 }
-                {(assertion.proof && assertion.type === 'domain' && sslVerified) &&
+                {(deployed && assertion.proof && assertion.type === 'domain' && sslVerified) &&
                     <State classes={{ state: 'verified' }}>, SSL verified</State>
                 }
-                {(assertion.proof && assertion.type === 'domain' && !sslVerified) &&
+                {(deployed && assertion.proof && assertion.type === 'domain' && !sslVerified) &&
                     <State classes={{ state: 'not-verified' }}>, SSL not verified</State>
                 }
                 {removed &&

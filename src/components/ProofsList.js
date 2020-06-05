@@ -105,18 +105,18 @@ const proofsTemplate = [
     //     ],
     //     icon: 'twitter'
     // },
-    {
-        id: 's3',
-        type: 'social',
-        subtype: 'instagram',
-        title: 'Prove your Instagram account',
-        pubTitle: 'Proof not submitted yet',
-        notes: [
-            'To prove that a Instagram account is yours copy this exactrly as it appears and create a post in your Instagram',
-            '>Verifying my ORG.ID identifier: [ORGID]'
-        ],
-        icon: 'instagram'
-    },
+    // {
+    //     id: 's3',
+    //     type: 'social',
+    //     subtype: 'instagram',
+    //     title: 'Prove your Instagram account',
+    //     pubTitle: 'Proof not submitted yet',
+    //     notes: [
+    //         'To prove that a Instagram account is yours copy this exactrly as it appears and create a post in your Instagram',
+    //         '>Verifying my ORG.ID identifier: [ORGID]'
+    //     ],
+    //     icon: 'instagram'
+    // },
     {
         id: 's4',
         type: 'social',

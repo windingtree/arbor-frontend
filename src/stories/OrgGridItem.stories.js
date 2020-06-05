@@ -13,9 +13,9 @@ storiesOf( 'ORG ID/Grid Item', module)
     const isSub = boolean('SubOrganization', true);
     const type = text('SubOrganization type', 'Hotel');
     const subs = array('subs', ['1', 'a', '0xpps'], ', ');
-    const trustLevel = number('Trust level', 4);
+    const trustLevel = number('Trust proofs', 4);
     const entityName = text('Legal entity name', 'Default corp.');
-    const entityTrustLevel = number('Entity Trust level', 5) ;
+    const entityTrustLevel = number('Entity Trust proofs', 5) ;
 
     return (
      <Container>

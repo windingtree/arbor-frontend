@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
+import history from '../redux/history';
 import { Container, Grid, Box, Typography } from "@material-ui/core";
 import { makeStyles } from '@material-ui/core/styles';
 import ProofItem from './ProofItem';
-// import LifDepositValue from './LifDepositValue';
+import LifDepositValue from './LifDepositValue';
 import ProofsWizard from './ProofsWizard';
 import ProofsSaver from './ProofsSaver';
 import RefreshButton from './buttons/Refresh';
@@ -17,6 +18,7 @@ import {
     removeAssertion,
     resetTransactionStatus
 } from '../ducks/wizard';
+import iconInfo from '../assets/SvgComponents/info.svg';
 
 const useStyles = makeStyles({
     container : {
@@ -50,6 +52,19 @@ const useStyles = makeStyles({
         fontSize: '14px',
         color: '#969696',
         marginTop: '12px'
+    },
+    titleLine: {
+        display: 'flex',
+        alignItems: 'start'
+    },
+    infoIcon: {
+        marginTop: '26px',
+        marginLeft: '10px',
+        width: '18px',
+        height: '18px',
+        '&:hover': {
+            cursor: 'pointer'
+        }
     }
 });
 
@@ -58,6 +73,7 @@ const proofsTemplate = [
         id: 'd1',
         type: 'domain',
         title: 'Prove your website',
+        pubTitle: 'Proof not submitted yet',
         notes: [
             'Copy your ORG.ID and save this Id to the file or publication somewhere under the domain.',
             'Add a link to this file or publication as proof.',
@@ -70,6 +86,7 @@ const proofsTemplate = [
         type: 'social',
         subtype: 'facebook',
         title: 'Prove your Facebook account',
+        pubTitle: 'Proof not submitted yet',
         notes: [
             'To prove that a Facebook account is yours copy this exactrly as it appears and create a post in your Facebook',
             '>Verifying my ORG.ID identifier: [ORGID]'
@@ -81,6 +98,7 @@ const proofsTemplate = [
     //     type: 'social',
     //     subtype: 'twitter',
     //     title: 'Prove your Twitter account',
+    //     pubTitle: 'Twitter account proof not submitted yet',
     //     notes: [
     //         'To prove that a Twitter account is yours copy this exactrly as it appears and create a post in your Twitter',
     //         '>Verifying my ORG.ID identifier: [ORGID]'
@@ -92,6 +110,7 @@ const proofsTemplate = [
         type: 'social',
         subtype: 'instagram',
         title: 'Prove your Instagram account',
+        pubTitle: 'Proof not submitted yet',
         notes: [
             'To prove that a Instagram account is yours copy this exactrly as it appears and create a post in your Instagram',
             '>Verifying my ORG.ID identifier: [ORGID]'
@@ -103,6 +122,7 @@ const proofsTemplate = [
         type: 'social',
         subtype: 'linkedin',
         title: 'Prove your LinkedIn account',
+        pubTitle: 'Proof not submitted yet',
         notes: [
             'To prove that a LinkedIn account is yours copy this exactrly as it appears and create a post in your LinkedIn',
             '>Verifying my ORG.ID identifier: [ORGID]'
@@ -142,11 +162,16 @@ const applyExtensions = (
     proofsListTemplate,
     assertions,
     verifications,
-    updatedProofs
+    updatedProofs,
+    canManage
 ) => proofsListTemplate.map(
     p => {
         let subtype;
         const assertion = extractAssertion(p.type, p.subtype, assertions);
+
+        if (!canManage) {
+            p.title = p.pubTitle;
+        }
 
         switch (assertion.type) {
             case 'domain':
@@ -245,12 +270,13 @@ const ProofsList = props => {
         proofsListTemplate,
         assertions,
         verifications,
-        updatedProofs
+        updatedProofs,
+        canManage
     );
 
     const notDeployedCount = Object.keys(updatedProofs).length;
 
-    if (!canManage || !orgid) {
+    if (!orgid) {
         return false;
     }
 
@@ -265,15 +291,25 @@ const ProofsList = props => {
                 proof={chosenProof}
                 handleClose={updatedProof => onWizardClose(updatedProof)}
             />
-            <Typography
-                className={classes.title}
-            >
-                {title}
-            </Typography>
+            <Box className={classes.titleLine}>
+                <Typography
+                    className={classes.title}
+                >
+                    {title}
+                </Typography>
+                <img
+                    onClick={() => history.push('/trust/general')}
+                    className={classes.infoIcon}
+                    src={iconInfo}
+                    alt={'Info'}
+                />    
+            </Box>
             <Box className={classes.proofsBlock}>
+                <LifDepositValue canManage={canManage} />
                 {proofsList.map((proof, key) => (
                     <ProofItem
                         key={key}
+                        canManage={canManage}
                         {...proof}
                         isRefreshing={isRefreshing}
                         onRemove={assertToRemove => handleAssertionRemove(assertToRemove, proof)}
@@ -281,40 +317,42 @@ const ProofsList = props => {
                     />
                 ))}
             </Box>
-            <Box className={classes.actionBlock}>
-                {!notDeployedCount &&
-                    <RefreshButton
-                        onClick={() => props.fetchOrganizationInfoWithRefresh({ id: orgid })}
-                    >
-                        Refresh
-                    </RefreshButton>
-                }
-                {notDeployedCount > 0 &&
-                    <>
-                        <Grid container>
-                            <Grid item>
-                                <SaveButton onClick={openSaver}>
-                                    Save to ORG.JSON
-                                </SaveButton>
+            {canManage &&
+                <Box className={classes.actionBlock}>
+                    {!notDeployedCount &&
+                        <RefreshButton
+                            onClick={() => props.fetchOrganizationInfoWithRefresh({ id: orgid })}
+                        >
+                            Refresh
+                        </RefreshButton>
+                    }
+                    {notDeployedCount > 0 &&
+                        <>
+                            <Grid container>
+                                <Grid item>
+                                    <SaveButton onClick={openSaver}>
+                                        Save to ORG.JSON
+                                    </SaveButton>
+                                </Grid>
+                                <Grid item>
+                                    <CancelButton onClick={() => handleReset(orgid, true, 1000)}>
+                                        Cancel
+                                    </CancelButton>
+                                </Grid>
                             </Grid>
-                            <Grid item>
-                                <CancelButton onClick={() => handleReset(orgid, true, 1000)}>
-                                    Cancel
-                                </CancelButton>
+                            <Grid>
+                                <Grid item>
+                                    <Typography
+                                        className={classes.saveNote}
+                                    >
+                                        You have {notDeployedCount} unsaved change
+                                    </Typography>
+                                </Grid>
                             </Grid>
-                        </Grid>
-                        <Grid>
-                            <Grid item>
-                                <Typography
-                                    className={classes.saveNote}
-                                >
-                                    You have {notDeployedCount} unsaved change
-                                </Typography>
-                            </Grid>
-                        </Grid>
-                    </>
-                }
-            </Box>                
+                        </>
+                    }
+                </Box>
+            }                
         </Container>
     );
 };

@@ -260,10 +260,17 @@ function* enrichLifDataSaga({payload}) {
     console.log('userAddress', userAddress);
     // lifTokenBalance
     console.log('>>>', 'yield call(ApiGetLifTokenBalance, userAddress)');
-    const lifTokenBalance = yield call(ApiGetLifTokenBalance, userAddress);
-    // lifTokenAllowanceAmountForOrgId
-    console.log('>>>', 'yield call(lifTokenAllowanceAmountForOrgId, userAddress)');
-    const lifTokenAllowanceAmountForOrgId = yield call(ApiGetLifTokenAllowanceAmountForOrgId, userAddress);
+    let lifTokenBalance;
+    let lifTokenAllowanceAmountForOrgId;
+
+    if (userAddress) {
+      lifTokenBalance = yield call(ApiGetLifTokenBalance, userAddress);
+      console.log('balance', lifTokenBalance);
+      // lifTokenAllowanceAmountForOrgId
+      console.log('>>>', 'yield call(lifTokenAllowanceAmountForOrgId, userAddress)');
+      lifTokenAllowanceAmountForOrgId = yield call(ApiGetLifTokenAllowanceAmountForOrgId, userAddress);
+    }
+    
     // OrgIdLifTokenDepositedAmount
     let orgIdLifDepositAmount = yield call(ApiGetOrgIdLifTokenDepositedAmount, orgid);
     // lifTokenWithdrawDelay
@@ -272,8 +279,7 @@ function* enrichLifDataSaga({payload}) {
       exist: orgIdLifWithdrawalExist,
       value: orgIdLifWithdrawalValue,
       withdrawTime: orgIdLifWithdrawalTime,
-    } = yield call(ApiGetOrgIdLifTokenWithdrawalRequest, userAddress);
-    console.log('balance', lifTokenBalance);
+    } = yield call(ApiGetOrgIdLifTokenWithdrawalRequest, orgid);
 
     const currentBlockNumber = yield call(ApiGetCurrentBlockNumber);
 
@@ -283,7 +289,7 @@ function* enrichLifDataSaga({payload}) {
       orgIdLifDepositAmount,
       orgIdLifWithdrawalExist,
       orgIdLifWithdrawalValue,
-      orgIdLifWithdrawalTime,
+      orgIdLifWithdrawalTime: Number(orgIdLifWithdrawalTime) * 1000,
       currentBlockNumber
     }));
   } catch(error) {
@@ -410,13 +416,13 @@ function ApiGetOrgIdLifTokenDepositedAmount(orgId) {
 }
 
 // Check if a withdrawal request exists
-function ApiGetOrgIdLifTokenWithdrawalRequest(userAddress) {
+function ApiGetOrgIdLifTokenWithdrawalRequest(orgid) {
   console.log('[.]', 'ApiGetOrgIdLifTokenWithdrawalRequest');
   let orgidContract = getOrgidContract();
   let web3 = getWeb3();
 
   return new Promise((resolve, reject) => {
-    orgidContract.methods.getWithdrawalRequest(userAddress)
+    orgidContract.methods.getWithdrawalRequest(orgid)
     .call()
     .then(withdrawalRequest => {
       console.log('<<< orgidContract.getWithdrawalRequest', withdrawalRequest);

@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from 'react-redux';
-import {Container, Typography, Grid, Card, Box, Button} from '@material-ui/core';
+import {Container, Typography, Grid, Card, Box, Button, CircularProgress} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 import moment from 'moment';
 
@@ -20,7 +20,8 @@ import {
   selectOrgIdLifWithdrawalExist,
   selectOrgIdLifWithdrawalValue,
   selectOrgIdLifWithdrawalTime,
-  selectCurrentBlockNumber
+  selectCurrentBlockNumber,
+  selectLifDepositDataFetching
 } from '../../ducks/lifDeposit';
 
 import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
@@ -154,7 +155,8 @@ const styles = makeStyles({
     }
   },
   buttonPurchaseWithdraw: {
-    display: 'block',
+    display: 'flex',
+    alignContent: 'center',
     height: '44px',
     backgroundImage: colors.gradients.orange,
     boxShadow: '0 2px 12px rgba(12, 64, 78, 0.1)',
@@ -182,13 +184,18 @@ const styles = makeStyles({
     padding: '4px 14px'
   },
   timeToWithdrawalWrapper: {
-    marginBottom: '16px'
+    marginRight: '16px',
+    maxWidth: '360px'
   },
   timeToWithdrawal: {
-    fontSize: '12px',
+    fontSize: '18px',
     fontWeight: 400,
     color: colors.secondary.peach
   },
+  withProgress: {
+    display: 'flex',
+    alignContent: 'center'
+  }
 });
 
 const TrustLifStake = (props) => {
@@ -204,6 +211,12 @@ const TrustLifStake = (props) => {
     orgIdLifWithdrawalValue,
     orgIdLifWithdrawalTime,
     currentBlockNumber,
+    isFetching,
+    enrichLifData,
+    requestFaucet,
+    allowDeposit,
+    makeDeposit,
+    requestWithdrawal
   } = props;
 
   const makeDepositButtonEnabled = lifTokenAllowanceAmountForOrgId >= LIF_DEPOSIT_AMOUNT && lifTokenBalance >= LIF_DEPOSIT_AMOUNT;
@@ -212,12 +225,17 @@ const TrustLifStake = (props) => {
   const makeWithdrawalButtonEnabled = orgIdLifWithdrawalExist && currentBlockNumber >= orgIdLifWithdrawalTime && orgIdLifWithdrawalValue > 0;
   const makeWithdrawalButtonWait = orgIdLifWithdrawalExist && currentBlockNumber < orgIdLifWithdrawalTime;
 
+  const [currentAction, setCurrentAction] = useState(null);
+
+  useEffect(() => {
+      window.scrollTo(0, 0)
+  }, []);
   useEffect(() => {
     console.log('%cuseEffect, [address]', 'background-color:yellow; color: black', address);
-    props.enrichLifData({orgid});
-  }, [address]); // eslint-disable-line react-hooks/exhaustive-deps
+    enrichLifData({orgid});
+  }, [address, orgid, enrichLifData]);
 
-  let timeWithdrawalInUnixTimestamp = moment(orgIdLifWithdrawalTime, 'MMM DD');
+  let timeWithdrawalInUnixTimestamp = (new Date(orgIdLifWithdrawalTime)).toISOString().split('T')[0]; //moment(orgIdLifWithdrawalTime, 'MMM DD');
 
   return (
     <div>
@@ -297,11 +315,17 @@ const TrustLifStake = (props) => {
                   (
                     <div className={classes.buttonWrapper}>
                       <Button
-                          onClick={() => props.requestFaucet({ orgid })}
+                          onClick={() => {
+                            setCurrentAction('requestFaucet');
+                            requestFaucet({ orgid });
+                          }}
                           className={classes.buttonPurchaseWithdraw}>
                         <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
                           Get Líf
                         </Typography>
+                        {isFetching && currentAction === 'requestFaucet' &&
+                          <CircularProgress size={18} color={'secondary'} />
+                        }
                       </Button>
                     </div>
                   )
@@ -309,7 +333,10 @@ const TrustLifStake = (props) => {
                 <div className={classes.buttonWrapper}>
                   {/* LIF DEPOSIT: Allow deposit */}
                   <Button disabled={!allowDepositButtonEnabled}
-                          onClick={() => props.allowDeposit({ orgid })}
+                          onClick={() => {
+                            setCurrentAction('allowDeposit');
+                            allowDeposit({ orgid });
+                          }}
                           className={ !allowDepositButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
                     <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
                       {
@@ -317,18 +344,33 @@ const TrustLifStake = (props) => {
                       }
                       Allow deposit
                     </Typography>
+                    {(isFetching && currentAction === 'allowDeposit' && allowDepositButtonEnabled) &&
+                      <CircularProgress size={18} color={'secondary'} />
+                    }
                   </Button>
                 </div>
                 <div className={classes.buttonWrapper}>
                   {/* LIF DEPOSIT: Make deposit */}
                   <Button disabled={!makeDepositButtonEnabled}
-                          onClick={() => props.makeDeposit({ orgid })}
+                          onClick={() => {
+                            setCurrentAction('makeDeposit');
+                            makeDeposit({ orgid });
+                          }}
                           className={ !makeDepositButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
                     <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
                       Make deposit
                     </Typography>
+                    {(isFetching && currentAction === 'makeDeposit' && makeDepositButtonEnabled) &&
+                      <CircularProgress size={18} color={'secondary'} />
+                    }
                   </Button>
                 </div>
+                {/* <div>
+                  [{requestWithdrawalButtonEnabled}]
+                  [{makeDepositButtonEnabled}]
+                  [{lifTokenBalance}]
+                  [{LIF_DEPOSIT_AMOUNT}]
+                </div> */}
               </div>
 
               {/* END LIF DEPOSIT */}
@@ -343,7 +385,7 @@ const TrustLifStake = (props) => {
                 wrap={'nowrap'}>
             <Grid item style={{width: '50%'}}>
               <Typography variant={'h3'} className={classes.blockTitle}>
-                Withdraw your Líf deposit anytime
+                Request your Líf deposit withdrawal anytime
               </Typography>
               <Typography className={classes.paragraph}>
                 You may request to withdraw your Líf deposit at any point. However, as a safety measure
@@ -358,12 +400,18 @@ const TrustLifStake = (props) => {
                   {!(makeWithdrawalButtonWait || makeWithdrawalButtonEnabled) && (
                     <Button
                       disabled={!requestWithdrawalButtonEnabled}
-                      onClick={() => props.requestWithdrawal({ orgid })}
+                      onClick={() => {
+                        setCurrentAction('requestWithdrawal');
+                        requestWithdrawal({ orgid });
+                      }}
                       className={ !requestWithdrawalButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}
                     >
                       <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
                         <span>Request withdrawal</span>
                       </Typography>
+                      {(isFetching && currentAction === 'requestWithdrawal' && requestWithdrawalButtonEnabled) &&
+                        <CircularProgress size={18} color={'secondary'} />
+                      }
                     </Button>
                   )}
                   {(makeWithdrawalButtonWait || makeWithdrawalButtonEnabled) && (
@@ -377,12 +425,18 @@ const TrustLifStake = (props) => {
                       }
                       <Button
                         disabled={!makeWithdrawalButtonEnabled}
-                        onClick={() => props.requestWithdrawal({ orgid })}
+                        onClick={() => {
+                          setCurrentAction('requestWithdrawal');
+                          requestWithdrawal({ orgid });
+                        }}
                         className={ !requestWithdrawalButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}
                       >
                         <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
                           <span>Withdraw</span>
                         </Typography>
+                        {(isFetching && currentAction === 'requestWithdrawal' && makeWithdrawalButtonEnabled) &&
+                          <CircularProgress size={18} color={'secondary'} />
+                        }
                       </Button>
                     </>
                   )}
@@ -410,6 +464,7 @@ const mapStateToProps = state => {
     orgIdLifWithdrawalValue: selectOrgIdLifWithdrawalValue(state),
     orgIdLifWithdrawalTime: selectOrgIdLifWithdrawalTime(state),
     currentBlockNumber: selectCurrentBlockNumber(state),
+    isFetching: selectLifDepositDataFetching(state)
   }
 };
 

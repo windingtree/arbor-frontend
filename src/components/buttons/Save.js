@@ -31,7 +31,6 @@ export default props => {
         <Button
             className={classes.root}
             onClick={onClick}
-            noWrap
             {...props}
         >
             {children}

@@ -13,6 +13,7 @@ import {
   makeDeposit,
   requestWithdrawal,
   requestFaucet,
+  withdrawDeposit,
 
   selectLifTokenBalance,
   selectLifTokenAllowanceAmountForOrgId,
@@ -210,20 +211,34 @@ const TrustLifStake = (props) => {
     orgIdLifWithdrawalExist,
     orgIdLifWithdrawalValue,
     orgIdLifWithdrawalTime,
-    currentBlockNumber,
     isFetching,
     enrichLifData,
     requestFaucet,
     allowDeposit,
     makeDeposit,
-    requestWithdrawal
+    requestWithdrawal,
+    withdrawDeposit
   } = props;
 
-  const makeDepositButtonEnabled = lifTokenAllowanceAmountForOrgId >= LIF_DEPOSIT_AMOUNT && lifTokenBalance >= LIF_DEPOSIT_AMOUNT;
-  const requestWithdrawalButtonEnabled = !orgIdLifWithdrawalExist && orgIdLifDepositAmount >= LIF_DEPOSIT_AMOUNT;
-  const allowDepositButtonEnabled = !requestWithdrawalButtonEnabled && !makeDepositButtonEnabled && lifTokenBalance >= LIF_DEPOSIT_AMOUNT;
-  const makeWithdrawalButtonEnabled = orgIdLifWithdrawalExist && currentBlockNumber >= orgIdLifWithdrawalTime && orgIdLifWithdrawalValue > 0;
-  const makeWithdrawalButtonWait = orgIdLifWithdrawalExist && currentBlockNumber < orgIdLifWithdrawalTime;
+  const currentTimestamp = Date.now();
+  let timeWithdrawalInUnixTimestamp = (new Date(orgIdLifWithdrawalTime)).toISOString().split('T')[0]; //moment(orgIdLifWithdrawalTime, 'MMM DD');
+
+  const makeDepositButtonEnabled = lifTokenAllowanceAmountForOrgId >= LIF_DEPOSIT_AMOUNT && 
+                                    (lifTokenBalance >= LIF_DEPOSIT_AMOUNT);
+
+  const requestWithdrawalButtonEnabled = !orgIdLifWithdrawalExist && 
+                                        (orgIdLifDepositAmount >= LIF_DEPOSIT_AMOUNT);
+
+  const allowDepositButtonEnabled = !requestWithdrawalButtonEnabled && 
+                                    !makeDepositButtonEnabled && 
+                                    (lifTokenBalance >= LIF_DEPOSIT_AMOUNT);
+
+  const makeWithdrawalButtonEnabled = orgIdLifWithdrawalExist && 
+                                      orgIdLifWithdrawalValue > 0 &&
+                                      (currentTimestamp >= orgIdLifWithdrawalTime);
+
+  const makeWithdrawalButtonWait = orgIdLifWithdrawalExist && 
+                                    (currentTimestamp < orgIdLifWithdrawalTime);
 
   const [currentAction, setCurrentAction] = useState(null);
 
@@ -234,8 +249,6 @@ const TrustLifStake = (props) => {
     console.log('%cuseEffect, [address]', 'background-color:yellow; color: black', address);
     enrichLifData({orgid});
   }, [address, orgid, enrichLifData]);
-
-  let timeWithdrawalInUnixTimestamp = (new Date(orgIdLifWithdrawalTime)).toISOString().split('T')[0]; //moment(orgIdLifWithdrawalTime, 'MMM DD');
 
   return (
     <div>
@@ -365,12 +378,6 @@ const TrustLifStake = (props) => {
                     }
                   </Button>
                 </div>
-                {/* <div>
-                  [{requestWithdrawalButtonEnabled}]
-                  [{makeDepositButtonEnabled}]
-                  [{lifTokenBalance}]
-                  [{LIF_DEPOSIT_AMOUNT}]
-                </div> */}
               </div>
 
               {/* END LIF DEPOSIT */}
@@ -419,7 +426,9 @@ const TrustLifStake = (props) => {
                       {
                         orgIdLifWithdrawalTime > 0 && (
                           <div className={classes.timeToWithdrawalWrapper}>
-                            <Typography variant={'caption'} className={classes.timeToWithdrawal}>You will be able to withdraw your deposit around {timeWithdrawalInUnixTimestamp}</Typography>
+                            <Typography variant={'caption'} className={classes.timeToWithdrawal}>
+                              You will be able to withdraw your deposit around {timeWithdrawalInUnixTimestamp}
+                            </Typography>
                           </div>
                         )
                       }
@@ -427,9 +436,9 @@ const TrustLifStake = (props) => {
                         disabled={!makeWithdrawalButtonEnabled}
                         onClick={() => {
                           setCurrentAction('requestWithdrawal');
-                          requestWithdrawal({ orgid });
+                          withdrawDeposit({ orgid });
                         }}
-                        className={ !requestWithdrawalButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}
+                        className={ requestWithdrawalButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}
                       >
                         <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
                           <span>Withdraw</span>
@@ -473,7 +482,8 @@ const mapDispatchToProps = {
   allowDeposit,
   makeDeposit,
   requestWithdrawal,
-  requestFaucet
+  requestFaucet,
+  withdrawDeposit
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrustLifStake);

@@ -2,7 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { connect } from "react-redux";
 import _ from 'lodash';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { Container, Button, Typography, Stepper, StepConnector, Step, StepLabel, Grid } from "@material-ui/core";
+import {
+  Container, 
+  Button, 
+  Typography, 
+  Stepper, 
+  StepConnector, 
+  Step, 
+  StepLabel, 
+  Grid,
+  CircularProgress
+} from "@material-ui/core";
 
 import history from '../redux/history';
 import { rewriteOrgidJson, selectPendingState, selectSuccessState } from "../ducks/wizard";
@@ -127,6 +137,9 @@ const styles = makeStyles({
   },
   successButtonLabel: {
     color: colors.primary.white
+  },
+  progress: {
+    marginLeft: '20px',
   }
 });
 
@@ -302,7 +315,19 @@ const WizardGeneral = (props) => {
               <div className={classes.pendingContentWrapper}>
                 <img src={PendingTransactionIllustration} alt={'illustration'} className={classes.pendingIllustration}/>
                 <div className={classes.pendingTextContainer}>
-                  <Typography variant={'h3'} className={classes.pendingTitle}>Almost there!</Typography>
+                  <Grid container alignItems={'center'}>
+                    <Grid item>
+                      <Typography variant={'h3'} className={classes.pendingTitle}>Almost there!</Typography>
+                    </Grid>
+                    <Grid item>
+                      <CircularProgress 
+                        className={classes.progress}
+                        variant='indeterminate'
+                        size={20}
+                        thickness={4}
+                      />
+                    </Grid>
+                  </Grid>
                   <Typography variant={'subtitle2'} className={classes.pendingSubtitle}>Creating your organization profile might take some time. You can wait here or add another organization in the meantime. We will let you know once everything is ready. </Typography>
                 </div>
                 <div className={classes.pendingButtonWrapper}>

@@ -24,6 +24,10 @@ const REQUEST_WITHDRAWAL_REQUEST = `${prefix}/REQUEST_WITHDRAWAL_REQUEST`;
 const REQUEST_WITHDRAWAL_SUCCESS = `${prefix}/REQUEST_WITHDRAWAL_SUCCESS`;
 const REQUEST_WITHDRAWAL_FAILURE = `${prefix}/REQUEST_WITHDRAWAL_FAILURE`;
 
+const WITHDRAWAL_REQUEST = `${prefix}/WITHDRAWAL_REQUEST`;
+const WITHDRAWAL_SUCCESS = `${prefix}/WITHDRAWAL_SUCCESS`;
+const WITHDRAWAL_FAILURE = `${prefix}/WITHDRAWAL_FAILURE`;
+
 const REQUEST_FAUCET_REQUEST = `${prefix}/REQUEST_FAUCET_REQUEST`;
 const REQUEST_FAUCET_SUCCESS = `${prefix}/REQUEST_FAUCET_SUCCESS`;
 const REQUEST_FAUCET_FAILURE = `${prefix}/REQUEST_FAUCET_FAILURE`;
@@ -55,6 +59,7 @@ export default function reducer(state = initialState, action) {
     case ALLOW_DEPOSIT_REQUEST:
     case MAKE_DEPOSIT_REQUEST:
     case REQUEST_WITHDRAWAL_REQUEST:
+    case WITHDRAWAL_REQUEST:
     case REQUEST_FAUCET_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
@@ -72,6 +77,7 @@ export default function reducer(state = initialState, action) {
     case ALLOW_DEPOSIT_SUCCESS:
     case MAKE_DEPOSIT_SUCCESS:
     case REQUEST_WITHDRAWAL_SUCCESS:
+    case WITHDRAWAL_SUCCESS:
     case REQUEST_FAUCET_SUCCESS:
       return Object.assign({}, state, {
         isFetching: false,
@@ -83,6 +89,7 @@ export default function reducer(state = initialState, action) {
     case ALLOW_DEPOSIT_FAILURE:
     case MAKE_DEPOSIT_FAILURE:
     case REQUEST_WITHDRAWAL_FAILURE:
+    case WITHDRAWAL_FAILURE:
     case REQUEST_FAUCET_FAILURE:
       return Object.assign({}, state, {
         isFetching: false,
@@ -212,6 +219,13 @@ export function requestWithdrawal(payload) {
   }
 }
 
+export function withdrawDeposit(payload) {
+  return {
+    type: WITHDRAWAL_REQUEST,
+    payload
+  }
+}
+
 function requestWithdrawalSuccess(payload) {
   return {
     type: REQUEST_WITHDRAWAL_SUCCESS,
@@ -222,6 +236,20 @@ function requestWithdrawalSuccess(payload) {
 function requestWithdrawalFailure(error) {
   return {
     type: REQUEST_WITHDRAWAL_FAILURE,
+    error
+  }
+}
+
+function withdrawalSuccess(payload) {
+  return {
+    type: WITHDRAWAL_SUCCESS,
+    payload
+  }
+}
+
+function withdrawalFailure(error) {
+  return {
+    type: WITHDRAWAL_FAILURE,
     error
   }
 }
@@ -276,20 +304,20 @@ function* enrichLifDataSaga({payload}) {
     // lifTokenWithdrawDelay
     // OrgIdLifTokenWithdrawalRequest
     const {
-      exist: orgIdLifWithdrawalExist,
-      value: orgIdLifWithdrawalValue,
-      withdrawTime: orgIdLifWithdrawalTime,
+      exist,
+      value,
+      withdrawTime,
     } = yield call(ApiGetOrgIdLifTokenWithdrawalRequest, orgid);
 
     const currentBlockNumber = yield call(ApiGetCurrentBlockNumber);
 
     yield put(enrichLifDataSuccess({
-      lifTokenBalance,
-      lifTokenAllowanceAmountForOrgId,
-      orgIdLifDepositAmount,
-      orgIdLifWithdrawalExist,
-      orgIdLifWithdrawalValue,
-      orgIdLifWithdrawalTime: Number(orgIdLifWithdrawalTime) * 1000,
+      lifTokenBalance: Number(lifTokenBalance),
+      lifTokenAllowanceAmountForOrgId: Number(lifTokenAllowanceAmountForOrgId),
+      orgIdLifDepositAmount: Number(orgIdLifDepositAmount),
+      orgIdLifWithdrawalExist: Boolean(exist),
+      orgIdLifWithdrawalValue: Number(value),
+      orgIdLifWithdrawalTime: Number(withdrawTime) * 1000,
       currentBlockNumber
     }));
   } catch(error) {
@@ -339,6 +367,20 @@ function* requestWithdrawalSaga({payload}) {
   }
 }
 
+function* withdrawDepositSaga({payload}) {
+  console.log('withdrawDepositSaga', payload);
+  try {
+    const userAddress = yield select(selectSignInAddress);
+    const { orgid } = payload;
+
+    yield call(ApiPostWithdrawDeposit, userAddress, orgid);
+    yield put(withdrawalSuccess({}));
+    yield put(enrichLifData(payload));
+  } catch(error) {
+    yield put(withdrawalFailure(error))
+  }
+}
+
 function* requestFaucetSaga({payload}) {
   console.log('requestFaucetSaga', payload);
   try {
@@ -358,6 +400,7 @@ export const saga = function*() {
     takeEvery(ALLOW_DEPOSIT_REQUEST, allowDepositSaga),
     takeEvery(MAKE_DEPOSIT_REQUEST, makeDepositSaga),
     takeEvery(REQUEST_WITHDRAWAL_REQUEST, requestWithdrawalSaga),
+    takeEvery(WITHDRAWAL_REQUEST, withdrawDepositSaga),
     takeEvery(REQUEST_FAUCET_REQUEST, requestFaucetSaga),
   ])
 };
@@ -511,6 +554,24 @@ function ApiPostWithdrawalRequest(userAddress, orgid) {
     orgidContract.methods.submitWithdrawalRequest(
       orgid,
       web3.utils.toWei(String(LIF_DEPOSIT_AMOUNT))
+    )
+    .send({ from: userAddress })
+    .on('receipt', receipt => {
+      resolve(receipt);
+    })
+    .on('error', (error, receipt) => {
+      reject({error, receipt});
+    });
+  });
+}
+
+function ApiPostWithdrawDeposit(userAddress, orgid) {
+  const orgidContract = getOrgidContract();
+  console.log('[..]', 'Post Withdraw deposit');
+
+  return new Promise((resolve, reject) => {
+    orgidContract.methods.withdrawDeposit(
+      orgid
     )
     .send({ from: userAddress })
     .on('receipt', receipt => {

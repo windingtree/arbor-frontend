@@ -73,7 +73,7 @@ export const config = [
               type: 'input',
               name: 'Apartment or office',
               orgidJsonPath: 'organizationalUnit.address.premise',
-              required: true
+              required: false
             },
             {
               type: 'input',

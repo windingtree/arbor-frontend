@@ -9,7 +9,8 @@ import {
   Typography,
   Tabs,
   Tab,
-  Button
+  Button,
+  CircularProgress
 } from "@material-ui/core";
 import { Formik } from "formik";
 
@@ -188,6 +189,9 @@ const styles = makeStyles({
   editDialogContent: {
     width: '440px',
   },
+  progress: {
+    marginLeft: '20px'
+  }
 });
 
 const TabPanel = (props) => {
@@ -275,7 +279,19 @@ const Edit = (props) => {
                 <div className={classes.pendingContentWrapper}>
                   <img src={PendingTransactionIllustration} alt={'illustration'} className={classes.pendingIllustration}/>
                   <div className={classes.pendingTextContainer}>
-                    <Typography variant={'h3'} className={classes.pendingTitle}>Almost there!</Typography>
+                    <Grid container alignItems={'center'}>
+                      <Grid item>
+                        <Typography variant={'h3'} className={classes.pendingTitle}>Almost there!</Typography>
+                      </Grid>
+                      <Grid item>
+                        <CircularProgress 
+                          className={classes.progress}
+                          variant='indeterminate'
+                          size={20}
+                          thickness={4}
+                        />
+                      </Grid>
+                    </Grid>
                     <Typography variant={'subtitle2'} className={classes.pendingSubtitle}>Editing your organization profile might take some time. You can wait here, edit or add another organization in the meantime. We will let you know once everything is ready. </Typography>
                   </div>
                   <div className={classes.pendingButtonWrapper}>

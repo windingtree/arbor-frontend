@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import {Container, Typography, Grid, Card, Button} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 
@@ -390,7 +390,7 @@ const styles = makeStyles({
     textAlign: 'center',
     marginBottom: '35px',
     width: 'min-content',
-    boxShadow: ' 0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
+    boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
     borderRadius: '6px'
   },
   link: {
@@ -401,6 +401,11 @@ const styles = makeStyles({
     color: colors.greyScale.dark,
     marginBottom: '19px',
     lineHeight: '28px'
+  },
+  topContent: {
+    position: 'relative',
+    display: 'flex',
+    justifyContent: 'space-between'
   }
 });
 
@@ -411,6 +416,10 @@ function TrustGeneral() {
   const socialRef = useRef(null);
   const legalEntityRef = useRef(null);
   const lifDeositRef = useRef(null);
+
+  useEffect(() => {
+      window.scrollTo(0, 0)
+  }, []);
 
   const scrollToRef = ref => ref.current.scrollIntoView({behavior: 'smooth'});
 
@@ -498,7 +507,7 @@ function TrustGeneral() {
       
       <div ref={websiteRef} className={classes.grayDiv}>
         <Container className={classes.topContent}>
-          <Grid container justify='space-between' alignItems='start'>
+          <Grid container justify='space-between' alignItems='flex-start'>
             <Grid item xs={6}>
               <Typography className={classes.grayTitle} variant={'h1'}>Verify your website</Typography>
               <Card className={classes.websiteAddressCard}>
@@ -517,7 +526,7 @@ function TrustGeneral() {
             </Grid>
           </Grid>          
         </Container>
-        <Container className={classes.graySpacer}></Container>
+        <div className={classes.graySpacer}></div>
         <Container ref={legalEntityRef} className={classes.topContent}>
           <Grid container justify='space-between' alignItems='center'>
             <Grid item xs={6}>
@@ -536,7 +545,7 @@ function TrustGeneral() {
 
       <div className={classes.whiteDiv}>
         <Container className={classes.topContent}>
-          <Grid container justify='space-between' alignItems='start'>
+          <Grid container justify='space-between' alignItems='flex-start'>
             <Grid item xs={5}>
               <div>
                 <Grid container spacing={5} justify={'space-between'}>
@@ -627,7 +636,8 @@ function TrustGeneral() {
                 Submit your Líf deposit
               </Typography>
               <Typography className={classes.topSectionText}>
-                Líf deposit is a small amount of cryptocurrency that is staked when you register your organization profile on Arbor. This action minimizes spam registrations and proves your commitment to the cause.
+                Líf deposit is a small amount of cryptocurrency that is staked when you register your organization profile on Arbor. 
+                This action minimizes spam registrations and proves your commitment to the cause.
               </Typography>
               <div className={classes.line}/>
             </Grid>

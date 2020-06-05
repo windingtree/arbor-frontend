@@ -482,7 +482,7 @@ function Info(props) {
                 canManage || (
                   <div className={classes.publicTrustLevelWrapper}>
                     <Typography variant={'caption'} className={classes.itemTrustInfoTitle}
-                                style={{color: colors.greyScale.common}}>Trust level: </Typography>
+                                style={{color: colors.greyScale.common}}>Trust proofs: </Typography>
                     <TrustLevelIcon className={classes.iconTrustLevel}/>
                     <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{proofsQty}</Typography>
                   </div>

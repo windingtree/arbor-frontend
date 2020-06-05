@@ -39,6 +39,21 @@ const useStyles = makeStyles({
             cursor: 'auto'
         }
     },
+    labelPub: {
+        fontFamily: 'Inter',
+        fontSize: '16px',
+        fontWeight: 500,
+        lineHeight: '20px',
+        color: 'black',
+        textDecoration: 'none',
+        cursor: 'pointer',
+        marginLeft: '27px',
+        '&.removed': {
+            color: '#5E666A',
+            textDecoration: 'none',
+            cursor: 'auto'
+        }
+    },
     labelProof: {
         fontFamily: 'Inter',
         fontSize: '16px',
@@ -123,6 +138,7 @@ const ProofIcon = ({ icon }) => {
 
 const ProofItem = props => {
     const {
+        canManage,
         title,
         verified,
         sslVerified,
@@ -144,7 +160,7 @@ const ProofItem = props => {
                 {!assertion.proof &&
                     <Typography
                         onClick={!removed ? onClick : () => {}}
-                        className={classes.label}
+                        className={canManage ? classes.label : classes.labelPub}
                         classes={{ root: removed ? 'removed' : undefined }}
                     >
                         {title}
@@ -200,7 +216,7 @@ const ProofItem = props => {
                 }
             </Grid>
             <Grid item xs={1}>
-                {(deployed || removed) &&
+                {((deployed || removed) && canManage) &&
                     <IconDelete
                         className={
                             !removed

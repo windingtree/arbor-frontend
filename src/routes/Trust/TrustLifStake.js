@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { connect } from 'react-redux';
 import {Container, Typography, Grid, Card, Box, Button, CircularProgress} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
-import moment from 'moment';
+// import moment from 'moment';
 
 import { LIF_DEPOSIT_AMOUNT, CHAIN_ID } from "../../utils/constants";
 import history from '../../redux/history';
@@ -22,7 +22,8 @@ import {
   selectOrgIdLifWithdrawalValue,
   selectOrgIdLifWithdrawalTime,
   selectCurrentBlockNumber,
-  selectLifDepositDataFetching
+  selectLifDepositDataFetching,
+  selectError
 } from '../../ducks/lifDeposit';
 
 import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
@@ -129,6 +130,11 @@ const styles = makeStyles({
     lineHeight: '28px',
     color: colors.greyScale.dark,
   },
+  paragraphError: {
+    marginTop: 0,
+    lineHeight: '28px',
+    color: colors.secondary.peach,
+  },
   withdrawSectionDiv: {
     backgroundColor: colors.greyScale.moreLighter,
     padding: '100px 0'
@@ -148,6 +154,12 @@ const styles = makeStyles({
     justifyContent: 'flex-start',
     alignItems: 'center',
     marginTop: '40px',
+  },
+  errorContainer: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    marginTop: '10px',
   },
   buttonWrapper: {
     marginRight: '20px',
@@ -211,6 +223,7 @@ const TrustLifStake = (props) => {
     orgIdLifWithdrawalExist,
     orgIdLifWithdrawalValue,
     orgIdLifWithdrawalTime,
+    error,
     isFetching,
     enrichLifData,
     requestFaucet,
@@ -379,7 +392,13 @@ const TrustLifStake = (props) => {
                   </Button>
                 </div>
               </div>
-
+              <div className={classes.errorContainer}>
+                {(error && ['requestFaucet', 'allowDeposit', 'makeDeposit'].includes(currentAction)) && 
+                  <Typography className={classes.paragraphError}>
+                    {error}
+                  </Typography>
+                }
+              </div>
               {/* END LIF DEPOSIT */}
 
             </Grid>
@@ -450,6 +469,13 @@ const TrustLifStake = (props) => {
                     </>
                   )}
                 </div>
+                <div className={classes.errorContainer}>
+                  {(error && ['requestWithdrawal'].includes(currentAction)) && 
+                    <Typography className={classes.paragraphError}>
+                      {error}
+                    </Typography>
+                  }
+                </div>
               </Box>
             </Grid>
             <Grid item className={classes.lifWithdrawIllustrationWrapper}>
@@ -473,7 +499,8 @@ const mapStateToProps = state => {
     orgIdLifWithdrawalValue: selectOrgIdLifWithdrawalValue(state),
     orgIdLifWithdrawalTime: selectOrgIdLifWithdrawalTime(state),
     currentBlockNumber: selectCurrentBlockNumber(state),
-    isFetching: selectLifDepositDataFetching(state)
+    isFetching: selectLifDepositDataFetching(state),
+    error: selectError(state)
   }
 };
 

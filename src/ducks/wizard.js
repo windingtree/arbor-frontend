@@ -8,6 +8,7 @@ import {getWeb3, getOrgidContract} from "../web3/w3";
 import {idGenerator} from "../utils/helpers";
 import {Validator} from 'jsonschema';
 import orgidSchema from '@windingtree/org.json-schema';
+import { ApiGetGasPrice } from './utils/ethereum';
 
 //region == [Constants] ================================================================================================
 export const moduleName = 'wizard';
@@ -806,7 +807,8 @@ function* saveOrgidUriSaga({payload}) {
 
 function* sendCreateLegalEntitySaga({payload}) {
   try {
-    const result = yield call(ApiSendCreateLegalEntity, payload);
+    const gasPrice = yield call(ApiGetGasPrice);
+    const result = yield call(ApiSendCreateLegalEntity, payload, gasPrice);
 
     yield put(getTransactionStatus(result));
     yield put(sendCreateLegalEntitySuccess(result));
@@ -817,7 +819,8 @@ function* sendCreateLegalEntitySaga({payload}) {
 
 function* sendCreateOrganizationalUnitSaga({payload}) {
   try {
-    const result = yield call(ApiSendCreateOrganizationalUnit, payload);
+    const gasPrice = yield call(ApiGetGasPrice);
+    const result = yield call(ApiSendCreateOrganizationalUnit, payload, gasPrice);
 
     yield put(getTransactionStatus(result));
     yield put(sendCreateOrganizationalUnitSuccess(result));
@@ -828,7 +831,8 @@ function* sendCreateOrganizationalUnitSaga({payload}) {
 
 function* sendChangeOrgidUriAndHashSaga({payload}) {
   try {
-    const result = yield call(ApiSendChangeOrgidUriAndHash, payload);
+    const gasPrice = yield call(ApiGetGasPrice);
+    const result = yield call(ApiSendChangeOrgidUriAndHash, payload, gasPrice);
 
     yield put(getTransactionStatus(result));
     yield put(sendChangeOrgidUriAndHashSuccess(result));
@@ -882,7 +886,7 @@ function ApiPostOrgidJson(data) {
   return callApi(`json`, 'POST', { body: JSON.stringify(data),  headers: { 'Content-Type': 'application/json' } });
 }
 
-function ApiSendCreateLegalEntity(data) {
+function ApiSendCreateLegalEntity(data, gasPrice) {
   const orgidContract = getOrgidContract();
   const { orgidUri, orgidHash, address, orgidJson } = data;
   const orgidId = orgidJson.id.replace('did:orgid:', '');
@@ -896,7 +900,7 @@ function ApiSendCreateLegalEntity(data) {
     // Send it to the network
     .send(
       // Options: only from address
-      { from: address },
+      { from: address, gasPrice },
 
       // Callback
       (error, transactionHash) => {
@@ -910,7 +914,7 @@ function ApiSendCreateLegalEntity(data) {
   });
 }
 
-function ApiSendCreateOrganizationalUnit(data) {
+function ApiSendCreateOrganizationalUnit(data, gasPrice) {
   const orgidContract = getOrgidContract();
   const { parent: { orgid: orgidParent }, orgidUri, orgidHash, address, orgidJson } = data;
   const orgidId = orgidJson.id.replace('did:orgid:', '');
@@ -929,7 +933,7 @@ function ApiSendCreateOrganizationalUnit(data) {
     // Send transaction to the network
     .send(
       // Options
-      { from: address },
+      { from: address, gasPrice },
 
       // Callback
       (error, transactionHash) => {
@@ -940,7 +944,7 @@ function ApiSendCreateOrganizationalUnit(data) {
   });
 }
 
-function ApiSendChangeOrgidUriAndHash(data) {
+function ApiSendChangeOrgidUriAndHash(data, gasPrice) {
   const orgidContract = getOrgidContract();
   const { orgidUri, orgidHash, address, orgidJson } = data;
   const orgidId = orgidJson.id.replace('did:orgid:', '');
@@ -952,7 +956,7 @@ function ApiSendChangeOrgidUriAndHash(data) {
 
     .send(
       // Options
-      { from: address },
+      { from: address, gasPrice },
       
       // Callback
       (error, transactionHash) => {

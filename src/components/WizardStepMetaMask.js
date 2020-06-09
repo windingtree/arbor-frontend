@@ -44,7 +44,12 @@ const WizardStep = (props) => {
           {action === 'edit' ? 'Submit transaction fee' : longName}
         </Typography>
         <div className={inheritClasses.subtitleWrapper}>
-          <Typography variant={'subtitle1'} className={inheritClasses.subtitle}>{ action === 'edit' ? 'You need to submit an Ethereum transaction to pay the miners’ fee for every profile update or verification.' : description}</Typography>
+          <Typography variant={'subtitle1'} className={inheritClasses.subtitle}>
+            { action === 'edit' ? 'You need to submit an Ethereum transaction to pay the miners’ fee for every profile update or verification.' : description}
+          </Typography>
+          <Typography  className={inheritClasses.subtitle}>
+            You can adjust the fee using gas fee's "edit" feature, which is available in Metamask popup window.
+          </Typography>
         </div>
         <div className={inheritClasses.buttonWrapper}>
           <Button type="submit" className={inheritClasses.button}>

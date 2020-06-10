@@ -175,7 +175,7 @@ export default function Footer(props) {
             <Typography variant={'h4'} className={classes.columnTitle}>Contacts</Typography>
             <Typography variant={'h6'} className={classes.columnItem} noWrap>Gubelstrasse 11, 6300
               Zug, Switzerland</Typography>
-            <a href={'mailto:join@windingtree.com'} className={classes.navLink}>
+            <a href={'mailto:info@windingtree.com'} className={classes.navLink}>
               <Typography variant={'h6'} className={classes.columnItem}>info@windingtree.com</Typography>
             </a>
           </Grid>

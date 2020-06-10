@@ -117,7 +117,6 @@ function Profile(props) {
         )}
       </List>
       }
-       <Typography variant={'subtitle2'} className={classes.address}>Address: {address}</Typography>
     </Container>
   )
 }

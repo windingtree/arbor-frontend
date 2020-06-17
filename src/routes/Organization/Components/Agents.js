@@ -8,6 +8,9 @@ import {
   selectPendingState,
   selectSuccessState
 } from '../../../ducks/wizard';
+import {
+  fetchOrganizationInfo
+} from '../../../ducks/fetchOrganizationInfo';
 import {Formik} from 'formik';
 import {
   Button,
@@ -20,6 +23,7 @@ import {
   InputAdornment,
   CircularProgress,
   withStyles,
+  Link
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import colors from "../../../styles/colors";
@@ -32,6 +36,7 @@ import DialogComponent from '../../../components/Dialog';
 import CopyIdComponent from "../../../components/CopyIdComponent";
 import VpnKeyIcon from "@material-ui/icons/VpnKey";
 import CopyIcon from '../../../assets/SvgComponents/CopyIcon';
+import SelectField from '../../../components/Fields/SelectField';
 
 const styles = makeStyles({
   buttonWrapper: {
@@ -175,17 +180,31 @@ function Agents(props) {
   const [activeStep, setActiveStep] = useState(0);
   const [agentIndexToRemove, setAgentIndexToRemove] = useState(null);
   const {
+    orgid,
     owner,
     agents,
     pendingTransaction,
     successTransaction,
+    fetchOrganizationInfo,
     resetTransactionStatus
   } = props;
 
+  const fragments = agents.reduce(
+    (a, v) => {
+      const fragment = v.id.split('#')[1];
+      if (fragment) {
+        a.push(fragment);
+      }      
+      return a;
+    },
+    []
+  );
+
   useEffect(() => {
+    fetchOrganizationInfo({ id: orgid });
     resetTransactionStatus();
     setActiveStep(0);
-  }, [isModalOpen, resetTransactionStatus]);
+  }, [isModalOpen, orgid, fetchOrganizationInfo, resetTransactionStatus]);
 
   const handleTooltipClose = () => {
     setTooltipOpen(false);
@@ -225,21 +244,83 @@ function Agents(props) {
           <Typography variant={'caption'} className={classes.dialogTitle}>{ agentIndexToRemove !== null ? 'Remove' : 'Add' } agent key</Typography>
           <div className={classes.dialogSubtitleWrapper}>
             <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>{ agentIndexToRemove !== null ? 'To remove an agent' : 'To add an agent, enter its key and  write a comment, then' } confirm the transaction in MetaMask. </Typography>
+            <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>
+            More details about agents keys management process can be found&nbsp; 
+            <Link
+              target='_blank'
+              href={'https://github.com/windingtree/arbor-frontend/blob/develop/docs/keys.md'}
+            >here</Link>
+            </Typography>
           </div>
           {
             agentIndexToRemove !== null ? (
               <div className={classes.dialogButtonWrapper}>
                 <Button className={classes.dialogButton} onClick={deleteAgent}>
                   <Typography variant={'caption'} className={classes.dialogButtonLabel}>
-                    Confirm in MetaMask
+                    Save Changes
                   </Typography>
                 </Button>
               </div>
             ) : (
               <Formik
-                initialValues={{ key: '', note: '' }}
-                onSubmit={(values) => {
-                  props.addAgentKey(values);
+                initialValues={{ type: '', fragment: '', key: '', note: '' }}
+                validate={values => {
+                  const errors = {};
+
+                  Object.keys(values).forEach(
+                    key => {
+                      const value = values[key];
+                      switch (key) {
+                        case 'type':
+                          if (!value) {
+                            errors[key] = 'You must choose a public key type';
+                          }
+                          break;
+                        case 'key':
+                          if (!values['type']) {
+                            errors[key] = 'Unable to validate key format. You must choose a public key type also';
+                            break;
+                          }
+                          if (values['type'] === 'ETH' && !value.match(/^0x[a-fA-F0-9]{40}$/)) {
+                            errors[key] = `Public key has wrong format of type "${values['type']}"`;
+                            break;
+                          }
+                          if (values['type'] === 'secp256k1' && !value.match(/^MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAE[a-zA-Z0-9+/]{86}==$/)) {
+                            errors[key] = `Public key has wrong format of type "${values['type']}"`;
+                            break;
+                          }
+                          break;
+                        case 'fragment':
+                          if (!value) {
+                            errors[key] = 'You must define a public key fragment (unique tag)';
+                            break;
+                          }
+                          if (fragments.includes(value)) {
+                            errors[key] = 'This fragment is already in use';
+                            break;
+                          }
+                          if (!value.match(/^[a-zA-Z0-9_]+$/)) {
+                            errors[key] = 'There are only letters, numbers and underscore can be used in fragment';
+                            break;
+                          }
+                          break;
+                        case 'note':
+                          break;
+                        default:
+                      }
+                    }
+                  );
+
+                  return errors;
+                }}
+                onSubmit={values => {
+                  props.addAgentKey({
+                    id: `${orgid}#${values.fragment}`,
+                    type: values.type,
+                    controller: `did:orgid:${orgid}`,
+                    publicKeyPem: values.key,
+                    note: values.note
+                  });
                   handleNext();
                 }}
               >
@@ -254,12 +335,28 @@ function Agents(props) {
                   }) => (
                   <form onSubmit={handleSubmit}>
                     <div className={classes.inputFieldWrapper}>
+                      <SelectField
+                        name={'type'}
+                        variant={'filled'}
+                        label={'Select a public key type'}
+                        fullWidth
+                        required
+                        options={['ETH', 'secp256k1']}
+                        values={values.type}
+                        handleChange={handleChange}
+                        handleBlur={handleBlur}
+                        helperText={errors.type && touched.type ? errors.type : null}
+                      />
+                    </div>
+                    <div className={classes.inputFieldWrapper}>
                       <TextField
                         name={'key'}
                         autoComplete={'none'}
                         variant={'filled'}
-                        label={'Enter Agent Key'}
+                        label={'Enter an Agent Key'}
                         fullWidth
+                        required
+                        error={errors.key && touched.key}
                         values={values.key}
                         onChange={handleChange}
                         onBlur={handleBlur}
@@ -296,11 +393,27 @@ function Agents(props) {
                     </div>
                     <div className={classes.inputFieldWrapper}>
                       <TextField
+                        name={'fragment'}
+                        autoComplete={'none'}
+                        variant={'filled'}
+                        label={'Enter a public key fragment (unique tag)'}
+                        fullWidth
+                        required
+                        error={errors.fragment && touched.fragment}
+                        values={values.fragment}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        helperText={errors.fragment && touched.fragment ? errors.fragment : null}
+                      />
+                    </div>
+                    <div className={classes.inputFieldWrapper}>
+                      <TextField
                         name={'note'}
                         autoComplete={'none'}
                         variant={'filled'}
                         label={'Write a comment for this agent'}
                         fullWidth
+                        error={errors.note && touched.note}
                         values={values.note}
                         onChange={handleChange}
                         onBlur={handleBlur}
@@ -310,7 +423,7 @@ function Agents(props) {
                     <div className={classes.dialogButtonWrapper}>
                       <Button type={'submit'} disabled={isSubmitting} className={classes.dialogButton}>
                         <Typography variant={'caption'} className={classes.dialogButtonLabel}>
-                          Confirm in MetaMask
+                          Save Agent Key
                         </Typography>
                       </Button>
                     </div>
@@ -343,7 +456,12 @@ function Agents(props) {
             {
               !!pendingTransaction ? (
                 <div className={classes.progressWrapper}>
-                  <CircularProgress/>
+                  <Typography variant={'caption'} className={classes.dialogTitle}>
+                    Wait for the transaction be mined
+                  </Typography>
+                  <div className={classes.dialogSubtitleWrapper}>
+                    <CircularProgress/>
+                  </div>
                 </div>
               ) : !successTransaction ? (
                 dialogStepsContent(activeStep)
@@ -456,7 +574,8 @@ const mapDispatchToProps = {
   extendOrgidJson,
   addAgentKey,
   removeAgentKey,
-  resetTransactionStatus
+  resetTransactionStatus,
+  fetchOrganizationInfo
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Agents);

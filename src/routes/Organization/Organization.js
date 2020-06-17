@@ -101,7 +101,13 @@ function Organization (props) {
           <SubOrganizations organization={organization} subs={subs} canManage={canManage} />
         </div>
       }
-      {canManage && <Agents owner={owner} agents={agents}/>}
+      {canManage && 
+        <Agents
+          orgid={id}
+          owner={owner}
+          agents={agents}
+        />
+      }
       {canManage &&
         <div className={classes.greyDiv}>
           <Container className={classes.lifContent}>

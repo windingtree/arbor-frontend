@@ -22,11 +22,15 @@ const styles = makeStyles({
 
 const SelectField = (props) => {
   const classes = styles();
-  const {name, orgidJsonPath, index, options, required, values, errors, touched, handleChange, handleBlur, helperText} = props;
+  const {name, label, variant, orgidJsonPath, index, options, required, 
+    values, errors, touched, handleChange, handleBlur, helperText} = props;
   const optionsObj = Array.isArray(options) ? options.reduce((o, key) => Object.assign(o, {[key]: key}), {}) : options;
-  const isError = _.get(errors, orgidJsonPath) && _.get(touched, orgidJsonPath);
+  const isError = (_.get(errors, orgidJsonPath) && _.get(touched, orgidJsonPath)) || helperText;
 
   const getValue = () => {
+    if (typeof values !== 'object') {
+      return values;
+    }
     // Hardcode for directories
     if(orgidJsonPath === 'organizationalUnit.type') {
       let value = _.get(values, orgidJsonPath, []);
@@ -56,10 +60,15 @@ const SelectField = (props) => {
   return (
     <div key={index} className={classes.selectWrapper}>
       <FormControl className={classes.formControl}>
-        <InputLabel>{name}{required ? ' *' : ''}</InputLabel>
+        {label &&
+          <InputLabel>{label}{required ? ' *' : ''}</InputLabel>
+        }
+        {!label &&
+          <InputLabel>{name}{required ? ' *' : ''}</InputLabel>
+        }
         <Select
-          variant={'filled'}
-          name={orgidJsonPath}
+          variant={variant ? variant : 'filled'}
+          name={orgidJsonPath ? orgidJsonPath : name}
           value={getValue()}
           required={required}
           error={isError}
@@ -77,7 +86,9 @@ const SelectField = (props) => {
             ))
           }
         </Select>
-        <FormHelperText>{isError ? `${_.get(errors, orgidJsonPath)}`.replace('ValidationError: "value" ', '') : helperText}</FormHelperText>
+        <FormHelperText>
+          {isError ? `${helperText || _.get(errors, orgidJsonPath)}`.replace('ValidationError: "value" ', '') : ''}
+        </FormHelperText>
       </FormControl>
     </div>
   );

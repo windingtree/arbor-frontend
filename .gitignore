@@ -20,6 +20,7 @@ yarn-error.log*
 # test
 test.js
 _test
+temp
 
 # IDE
 .idea/

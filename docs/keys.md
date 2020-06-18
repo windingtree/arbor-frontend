@@ -11,6 +11,14 @@ openssl ecparam -name secp256k1 -genkey -noout -out secp256k1.pem
 openssl ec -in secp256k1.pem -pubout -out secp256k1.pub
 ```
 
+### Creation of ECDSA keypair using openssl
+
+```
+openssl ecparam -name secp256k1 -genkey -out key.pem
+openssl ec -in key.pem -text -noout | grep priv -A 3 | tail -n +2 | tr -d '\n[:space:]:' | awk '{print $1""}' > ethereum.pem
+openssl ec -in key.pem -text -noout | grep pub -A 5 | tail -n +2 | tr -d '\n[:space:]:' | sed 's/^04//' | awk '{print $1""}' | sha256sum | tr -d ' -' | tail -c 41 | awk '{print "0x" $0}' > ethereum.pub
+```
+
 ### Creation of ECDSA keypair using Metamask
 
 - Create new account in Metamask browser extension. Ethereum address of your the created account it is your public key

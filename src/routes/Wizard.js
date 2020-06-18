@@ -175,8 +175,26 @@ const useStepStyles = makeStyles({
   },
 });
 
+const skeletons = {
+  'legalEntity': {
+    'contacts': [],
+    'locations': []
+  },
+  'organizationalUnit': {
+    'address': {},
+    'media': {'logo':''},
+    'type': [],
+    'contacts': [],
+    'description': ''
+  }
+};
+
 const WizardGeneral = (props) => {
-  const { pendingTransaction, successTransaction } = props;
+  const {
+    pendingTransaction,
+    successTransaction,
+    rewriteOrgidJson
+  } = props;
   const classes = styles();
   const [activeStep, setActiveStep] = useState(0);
   const wizardType = _.get(history, 'location.state.type', 'legalEntity');
@@ -190,31 +208,21 @@ const WizardGeneral = (props) => {
 
   useEffect(() => {
     if(id) {
-      props.rewriteOrgidJson(jsonContent)
+      rewriteOrgidJson(jsonContent)
     }
-  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [id, rewriteOrgidJson, jsonContent]);
 
   useEffect(() => {
-    let skeletons = {
-      'legalEntity': {
-        'contacts': [],
-        'locations': []
-      },
-      'organizationalUnit': {
-        'address': {},
-        'media': {'logo':''},
-        'type': [],
-        'contacts': [],
-        'description': ''
-      }
-    };
-    props.rewriteOrgidJson({
-      "@context": "https://windingtree.com/ns/did/v1",
+    rewriteOrgidJson({
+      "@context": [
+        "https://www.w3.org/ns/did/v1",
+        "https://windingtree.com/ns/orgid/v1"
+      ],
       "id": idGenerator(),
       "created": new Date().toJSON(),
       [wizardType]: skeletons[wizardType]
     })
-  }, [wizardType]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [wizardType, rewriteOrgidJson]);
 
   useEffect(() => {
     window.scrollTo(0, 0)

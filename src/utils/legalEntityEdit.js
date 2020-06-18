@@ -1,7 +1,7 @@
 import {countries} from './countries';
 import _ from 'lodash';
 import validators from "./validators";
-import { entityTypes } from './constants';
+// import { entityTypes } from './constants';
 
 export const config = [
   {
@@ -13,10 +13,16 @@ export const config = [
           name: 'Main info',
           type: 'section',
           fields: [
+            // {
+            //   type: 'select',
+            //   name: 'Legal entity type',
+            //   options: entityTypes,
+            //   required: true,
+            //   orgidJsonPath: 'legalEntity.legalType'
+            // },
             {
-              type: 'select',
+              type: 'input',
               name: 'Legal entity type',
-              options: entityTypes,
               required: true,
               orgidJsonPath: 'legalEntity.legalType'
             },

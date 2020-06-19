@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
+import { connect } from 'react-redux';
 import { Link, NavLink } from 'react-router-dom';
 import history from '../redux/history';
-import {Container, Grid, Typography, Button, Hidden, Collapse} from '@material-ui/core';
+import {Container, Grid, Typography, Button, Hidden, Collapse, Card} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 import { fadeIn } from 'react-animations';
 import Radium, { StyleRoot } from 'radium';
+
+import {
+  getBackendConnectionStatus
+} from '../ducks/backendStatus';
 
 import Logo from '../assets/SvgComponents/Logo';
 import SearchIcon from '../assets/SvgComponents/SearchIcon';
@@ -15,6 +20,7 @@ import PlaneIcon from '../assets/SvgComponents/plane-icon.svg';
 import HotelIcon from '../assets/SvgComponents/hotel-icon.svg';
 import PaperIcon from '../assets/SvgComponents/paper-icon.svg';
 import TravelIcon from '../assets/SvgComponents/travel-icon.svg';
+import InfoIcon from '../components/icons/IconInfo';
 import {getWeb3} from '../web3/w3';
 
 import colors from '../styles/colors';
@@ -217,6 +223,18 @@ const styles = makeStyles({
     fontWeight: 400,
     lineHeight: 1.42,
     color: colors.greyScale.darkest
+  },
+  statusAlert: {
+    margin: '16px',
+    padding: '16px',
+    backgroundColor: '#f44336'
+  },
+  statusText: {
+    color: 'white',
+    fontSize: '16px'
+  },
+  statusIcon: {
+    marginRight: '16px'
   }
 });
 
@@ -227,10 +245,10 @@ const animation = {
   }
 };
 
-export default function Header(props) {
+const Header = (props) => {
   const classes = styles();
   const [isOpen, toggleOpen] = useState(false);
-  const { isAuthenticated } = props;
+  const { isAuthenticated, connectionStatus } = props;
 
   // Redirect users depending on Web3 presence or not
   const handleSignInRedirect = () => {
@@ -401,6 +419,23 @@ export default function Header(props) {
               </Button>
             </div>
           </Grid>
+          {!connectionStatus &&
+            <Card className={classes.statusAlert}>
+              <Grid container alignItems='center'>
+                <Grid item>
+                  <InfoIcon iconColor={'#FFFFFF'} className={classes.statusIcon} />
+                </Grid>
+                <Grid item>
+                  <Typography className={classes.statusText}>
+                    Looks like there are some Ethereum network connection difficulties at the moment.
+                  </Typography>
+                  <Typography className={classes.statusText}>
+                    While we reconnect your updates may not go live, but don't worry - data will be synced once the connection is up again
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Card>
+          }
         </Container>
       </div>
       <Collapse in={isOpen} className={classes.mobileMenu}>
@@ -416,3 +451,13 @@ export default function Header(props) {
     </div>
   )
 };
+
+const mapStateToProps = state => {
+  return {
+      connectionStatus: getBackendConnectionStatus(state)
+  };
+};
+
+const mapDispatchToProps = {};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Header);

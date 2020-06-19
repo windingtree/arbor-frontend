@@ -31,6 +31,7 @@ import DirectoryCard from '../components/DirectoryCardItem';
 import CardsGridList from '../components/CardsGridList';
 import BuiltByIllustration from '../assets/SvgComponents/built-by-illustration.svg';
 import listPlaceholderSvg from '../assets/SvgComponents/list-placeholder.svg';
+
 //styles && colors
 import colors from '../styles/colors';
 import '@brainhubeu/react-carousel/lib/style.css';

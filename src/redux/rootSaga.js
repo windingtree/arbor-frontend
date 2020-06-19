@@ -5,6 +5,7 @@ import { saga as fetchOrganizationInfoSaga } from '../ducks/fetchOrganizationInf
 import { saga as fetchSignInSaga } from '../ducks/signIn';
 import { saga as wizardSaga } from '../ducks/wizard';
 import { saga as  lifDepositSaga} from '../ducks/lifDeposit';
+import { saga as  backendStatus} from '../ducks/backendStatus';
 
 //Add all sagas here
 export default function* rootSaga() {
@@ -14,4 +15,5 @@ export default function* rootSaga() {
   yield spawn(fetchSignInSaga);
   yield spawn(wizardSaga);
   yield spawn(lifDepositSaga);
+  yield spawn(backendStatus);
 }

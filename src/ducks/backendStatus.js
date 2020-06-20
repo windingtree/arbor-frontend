@@ -16,7 +16,7 @@ const initialState = {
     isPolling: false,
     isFetching: false,
     isFetched: false,
-    connected: false,
+    connected: true,
     reconnection: false,
     error: null
 };

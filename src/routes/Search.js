@@ -154,7 +154,8 @@ function Search(props) {
   const [lastSearchValue, setLastSearchValue] = useState('');
   const [directoryFilterValue, setDirectoryFilterValue] = useState('');
   const [countryFilterValue, setCountryFilterValue] = useState('');
-  const {items, meta: {page, per_page, total, pages}, isFetched, isFetching} = props;
+  const {items, meta: {page, per_page, total, pages}, isFetched, isFetching, 
+  fetchSearchOrganizations, fetchAllOrganizations} = props;
 
   const CardsList = () => {
     let OrgCards = items.map((item, index) => {
@@ -244,21 +245,13 @@ function Search(props) {
     else if(isFetching) {
       searchTitle = `Searching...`;
     }
-    
 
     // Store search title in state
     return(searchTitle);
-
-    
   };
 
   const handleSearch = event => {
     setSearchValue(event.target.value);
-  };
-
-  const handleSearchFromHome = () => {
-    setSearchValue(request);
-    setLastSearchValue(request);
   };
 
   const fetchSearchResults = async () => {
@@ -287,13 +280,13 @@ function Search(props) {
 
   };
 
-
   useEffect(() => {
-    handleSearchFromHome();
+    setSearchValue(request);
+    setLastSearchValue(request);
     if (request && request !== "") {
-      props.fetchSearchOrganizations({name: request, page: page, per_page: per_page});
-    } else props.fetchAllOrganizations({page: page, per_page: per_page});
-  }, [request]); // eslint-disable-line react-hooks/exhaustive-deps
+      fetchSearchOrganizations({name: request, page: page, per_page: per_page});
+    } else fetchAllOrganizations({page: page, per_page: per_page});
+  }, [request, page, per_page, fetchSearchOrganizations, fetchAllOrganizations]);
 
   useEffect(() => {
     window.scrollTo(0, 0)

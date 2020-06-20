@@ -5,9 +5,9 @@ import Radium, { StyleRoot } from 'radium';
 import { fetchSearchOrganizationsByType } from '../ducks/fetchSearchResults';
 import history from '../redux/history';
 import {Link} from 'react-router-dom';
-import {Container, Typography, Grid, Card, CardContent, Box, Hidden} from '@material-ui/core';
+import {Container, Typography, Grid, Card, Box, Hidden} from '@material-ui/core'; // CardContent,
 import {makeStyles} from '@material-ui/core/styles';
-import Ellipsis from 'react-dotdotdot';
+// import Ellipsis from 'react-dotdotdot';
 //components
 import SearchComponent from '../components/SearchComponent';
 //icons && illustrations
@@ -399,59 +399,60 @@ const animation = {
 function Home(props) {
   const classes = styles();
   const trustClasses = trustStyles();
+  const { fetchSearchOrganizationsByType } = props;
   const [searchValue, setSearchValue] = useState('');
-  const [activeUseCase, setActiveUseCase] = useState(0);
+  // const [activeUseCase, setActiveUseCase] = useState(0);
   const [activeSlide, setActiveSlide] = useState(0);
   const {directories} = props;
   const dirType = history.location.state && history.location.state.dirType;
 
   useEffect(() => {
-    if (dirType) props.fetchSearchOrganizationsByType({ type: dirType, page: 1, per_page: 12 })
-  }, [dirType]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (dirType) fetchSearchOrganizationsByType({ type: dirType, page: 1, per_page: 12 })
+  }, [dirType, fetchSearchOrganizationsByType]); 
 
   const handleSearch = event => {
     setSearchValue(event.target.value);
   };
 
-  const useCasesControllers = [
-    'AirFrance KLM',
-    'Hotels',
-    'airlines',
-    'Category 4',
-  ];
+  // const useCasesControllers = [
+  //   'AirFrance KLM',
+  //   'Hotels',
+  //   'airlines',
+  //   'Category 4',
+  // ];
 // -- Scrolling to top on first render
   useEffect(() => {
     window.scrollTo(0, 0)
   }, []);
 
-  const renderUseCasesControllers = () => {
-    const controllers = useCasesControllers.map((item, index) => {
-      return (
-        <li className={index === activeUseCase ? classes.activeController : classes.controllerItem}
-            key={index.toString()} style={{margin: '8px 0'}}>
-          <span className={classes.controllerLine}/>
-          <button
-            className={classes.controllerButton}
-            onClick={handleChangeActiveUseCase}
-          >
-            {item}
-          </button>
-        </li>
-      )
-    });
+  // const renderUseCasesControllers = () => {
+  //   const controllers = useCasesControllers.map((item, index) => {
+  //     return (
+  //       <li className={index === activeUseCase ? classes.activeController : classes.controllerItem}
+  //           key={index.toString()} style={{margin: '8px 0'}}>
+  //         <span className={classes.controllerLine}/>
+  //         <button
+  //           className={classes.controllerButton}
+  //           onClick={handleChangeActiveUseCase}
+  //         >
+  //           {item}
+  //         </button>
+  //       </li>
+  //     )
+  //   });
 
-    return (
-      <ul className={classes.useCasesControllers}>{controllers}</ul>
-    )
-  };
+  //   return (
+  //     <ul className={classes.useCasesControllers}>{controllers}</ul>
+  //   )
+  // };
 
-  const handleChangeActiveUseCase = (e) => {
-    const item = e.target.innerHTML;
-    const itemIndex = useCasesControllers.indexOf(item);
+  // const handleChangeActiveUseCase = (e) => {
+  //   const item = e.target.innerHTML;
+  //   const itemIndex = useCasesControllers.indexOf(item);
 
-    if (activeUseCase === itemIndex) return;
-    setActiveUseCase(itemIndex);
-  };
+  //   if (activeUseCase === itemIndex) return;
+  //   setActiveUseCase(itemIndex);
+  // };
 
   function SliderAnimatedImage(props) {
     const image = <img src={props.image} style={animation.fadeInUp} alt={'illustration'} className={classes.carouselImage}/>;
@@ -639,7 +640,7 @@ function Home(props) {
             </Grid>
             <Grid item xs={12} md={6} container spacing={2} >
               {
-                [AirFinanceImage, ERevMaxImage, NordicImage, MachefertImage].map((src, index) => (
+                [ERevMaxImage, NordicImage].map((src, index) => (
                   <Grid item xs={6} className={classes.partnerCardContainer} key={index}>
                     <Card className={classes.partnerCard}>
                       <img className={classes.partnerCardImage} src={src} alt={'partner'}/>
@@ -685,7 +686,7 @@ function Home(props) {
         </div>
       </Container>
       {/* ================================================ BLOCK 06: Use cases =================================================*/}
-      <Container hidden={true}>
+      {/* <Container hidden={true}>
         <div className={classes.contentWrapper}>
           <Grid container spacing={5} justify={'space-between'} alignItems={'center'}>
             <Grid item xs={12} md={6} className={classes.useCasesInfoContainer}>
@@ -735,7 +736,7 @@ function Home(props) {
             </Grid>
           </Grid>
         </div>
-      </Container>
+      </Container> */}
       {/* ================================================ BLOCK 07: Built by =================================================*/}
       <div className={classes.builtByContainer}>
         <Container>

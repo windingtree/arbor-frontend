@@ -37,7 +37,7 @@ export default props => {
                 />
             )}
             onClick={onClick}
-            noWrap
+            nowrap='true'
             {...props}
         >
             {children}

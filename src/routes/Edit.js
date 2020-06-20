@@ -213,7 +213,7 @@ const TabPanel = (props) => {
 const Edit = (props) => {
   const orgid = history.location.pathname.split('/')[2];
   const classes = styles();
-  const { pendingTransaction, successTransaction } = props;
+  const { pendingTransaction, successTransaction, rewriteOrgidJson, resetTransactionStatus } = props;
   const [isModalOpen, toggleModalOpenState] = useState(false);
   const [value, setValue] = useState(0);
   const [activeStep, setActiveStep] = useState(1);
@@ -228,19 +228,17 @@ const Edit = (props) => {
 
   useEffect(() => {
     if(orgid) {
-      props.rewriteOrgidJson(jsonContent)
+      rewriteOrgidJson(jsonContent)
     }
-  }, [orgid]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [orgid, rewriteOrgidJson, jsonContent]);
 
   useEffect(() => {
-    props.resetTransactionStatus();
-  }, [isModalOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+    resetTransactionStatus();
+  }, [isModalOpen, resetTransactionStatus]);
 
   const handleChangeTab = (event, newValue) => {
     setValue(newValue);
   };
-
-  const validators = {};
 
   const handleOpenModal = () => {
     toggleModalOpenState(true);
@@ -323,26 +321,84 @@ const Edit = (props) => {
     )
   };
 
+  // Validate the form
+  const validateForm = (values) => {
+    const errors = {};
+    const validators = editConfig
+      ? editConfig
+          .reduce(
+            (a, v) => {
+              let left = [];
+              let right = [];
+
+              if (v.sections && v.sections.left) {
+                left = v.sections.left.reduce(
+                  (al, vl) => {
+                    const fields = vl.fields.map(
+                      f => ({
+                        orgidJsonPath: f.orgidJsonPath,
+                        validate: f.validate
+                      })
+                    );
+                    return [
+                      ...al,
+                      ...fields
+                    ];
+                  },
+                  []
+                );
+              }
+              
+              if (v.sections && v.sections.right) {
+                right = v.sections.right.reduce(
+                  (ar, vr) => {
+                    const fields = vr.fields.map(
+                      f => ({
+                        orgidJsonPath: f.orgidJsonPath,
+                        validate: f.validate
+                      })
+                    );
+                    return [
+                      ...ar,
+                      ...fields
+                    ];
+                  },
+                  []
+                );
+              }
+              
+              return [
+                ...a,
+                ...left,
+                ...right
+              ];
+            },
+            []
+          )
+      : [];
+    console.log('@@@', validators);
+    validators.forEach(v => {
+      const value = _.get(values, v.orgidJsonPath, undefined);
+      if (v.validate) {
+        const error = v.validate(value);
+        if (error) {
+          errors[v.orgidJsonPath] = error;
+        }
+      }
+    });
+    
+    // Return errors
+    console.log('ERRORS', errors)
+    return errors;
+  };
+
   return (
     <div className={classes.mainContainer}>
       <div>
         <Formik
           initialValues={Object.assign({}, props.orgidJson)}
           enableReinitialize={true}
-          validate={values => {
-            const errors = {};
-            _.each(validators, (validator, orgidJsonPath) => {
-              const value = _.get(values, orgidJsonPath, false);
-              if (value !== false) {
-                const {error} = validator.validate(value);
-                if (error) {
-                  _.set(errors, orgidJsonPath, error.toString());
-                }
-              }
-            });
-            if (!_.isEmpty(errors)) console.log('ERRORS', errors);
-            return errors;
-          }}
+          validate={validateForm}
           onSubmit={(values, {setSubmitting}) => {
             setSubmitting(false);
             props.extendOrgidJson(values);

@@ -99,7 +99,7 @@ const styles = makeStyles({
 
 function Directory(props) {
   const classes = styles();
-  const { items, meta: { per_page, total, pages} }  = props;
+  const { items, fetchSearchOrganizations, meta: { per_page, total, pages} }  = props;
   const [forcePage, setForcePage] = useState(undefined);
   const [countryFilterValue, setCountryFilterValue] = useState('');
   const currentDirectory = props.match.params.directory;
@@ -111,8 +111,8 @@ function Directory(props) {
   };
 
   useEffect(() => {
-    props.fetchSearchOrganizations(data);
-  }, [currentDirectory]); // eslint-disable-line react-hooks/exhaustive-deps
+    fetchSearchOrganizations(data);
+  }, [currentDirectory, fetchSearchOrganizations, data]);
 
   const CardsList = () => {
     let OrgCards = items.map((item, index) => {

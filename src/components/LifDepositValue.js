@@ -186,7 +186,7 @@ const LifDepostValue = props => {
                     ? () => enrichLifData({ orgid })
                     : () => {}
                 }>
-                    <IconRestart stroke='#F79A8B' />
+                    <IconRestart style={{marginLeft: '4px'}} stroke='#F79A8B' />
                 </div>
                 
             </Grid>                

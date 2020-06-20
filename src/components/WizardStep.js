@@ -7,7 +7,7 @@ import {Formik} from 'formik';
 import _ from 'lodash';
 
 import DialogComponent from './Dialog';
-import {extendOrgidJson, selectWizardOrgidJson, validateOrgidSchema} from '../ducks/wizard'
+import {extendOrgidJson, selectWizardOrgidJson} from '../ducks/wizard'; //validateOrgidSchema
 import {Section} from './index';
 import ArrowLeftIcon from '../assets/SvgComponents/ArrowLeftIcon';
 
@@ -84,7 +84,6 @@ const WizardStep = (props) => {
 
   const {index, extendOrgidJson, data: {longName, description, sections, cta}, handleNext} = props;
 
-
   // Modal to provide more details on how to obtain Ether
   const renderModal = () => {
     return (
@@ -122,65 +121,39 @@ const WizardStep = (props) => {
     toggleModalOpenState(false)
   };
 
-  // next line collect from "sections" all fields with non empty "schema" to object { [fieldName]:schema }
-  const validators = sections ?
-    _.chain(_.filter(_.flatten(sections.map(({fields}) => fields.map(({orgidJsonPath, schema}) => ({
-      orgidJsonPath,
-      schema
-    })))), 'schema')).keyBy('orgidJsonPath').mapValues('schema').value() :
-    {};
-
   // Validate the form
   const validateForm = (values) => {
     const errors = {};
-
-    // Basic Check for each field presence
-    _.each(validators, (validator, orgidJsonPath) => {
-      const value = _.get(values, orgidJsonPath, false);
-      if (value !== false) {
-        const {error} = validator.validate(value);
+    const validators = sections
+      ? sections
+          .reduce(
+            (a, v) => {
+              return [
+                ...a,
+                ...v.fields.map(
+                  f => ({
+                    orgidJsonPath: f.orgidJsonPath,
+                    validate: f.validate
+                  })
+                )
+              ];
+            },
+            []
+          )
+      : [];
+    
+    validators.forEach(v => {
+      const value = _.get(values, v.orgidJsonPath, undefined);
+      if (v.validate) {
+        const error = v.validate(value);
         if (error) {
-          _.set(errors, orgidJsonPath, error.toString());
+          errors[v.orgidJsonPath] = error;
         }
       }
     });
-
-    // Validate according to JSON schema
-    if(Object.keys(errors).length === 0) {
-      console.log('<<< validateForm', values);
-      let validation = validateOrgidSchema(values);
-
-      // If errors are found, set it according to the path
-      validation.errors.forEach(error =>{
-        // Determine the path of the element in error
-        let orgidJsonPathElements = error.property.split('.');
-        if(error.name === 'required') {
-          orgidJsonPathElements.push(error.argument);
-        }
-        orgidJsonPathElements.shift(); // removes the first element 'instance'
-        let orgidJsonPath = orgidJsonPathElements.join('.');
-
-        // Fine tune the error message
-        let message;
-        switch(error.name) {
-          case 'type':
-            message = `Field ${error.message}`;
-            break;
-          case 'required':
-            message = 'Field Required';
-            break;
-          default:
-            console.log('<<< validateForm.default', error);
-            message = error.message;
-        }
-        
-        // Set the error
-        _.set(errors, orgidJsonPath, message);
-      });
-    }
     
     // Return errors
-    if (!_.isEmpty(errors)) console.log('ERRORS', errors);
+    console.log('ERRORS', errors)
     return errors;
   };
 
@@ -219,17 +192,17 @@ const WizardStep = (props) => {
             handleChange,
             handleBlur,
             handleSubmit,
-            isSubmitting,
+            isSubmitting
             /* and other goodies */
           }) => (
           <form onSubmit={handleSubmit}>
             {
-              !sections ?
-                <div/>
+              !sections
+                ? <div/>
                 : sections.map((section, index) => {
-                  // console.log(`<Section key="${index}" name="${section.name}" ... />`);
+                  //console.log(`<Section key="${index}" name="${section.name}" ... />`);
                   //console.log(`[In WizardStep] Loading section ${section.name} and index ${index} with values: ${JSON.stringify(values)}`);
-
+                  
                   return (
                     <Section
                       key={index}

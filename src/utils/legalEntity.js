@@ -38,20 +38,35 @@ export const wizardConfig = [
             type: 'input',
             name: 'Legal entity type',
             required: true,
-            orgidJsonPath: 'legalEntity.legalType'
+            orgidJsonPath: 'legalEntity.legalType',
+            validate: value => {
+              if (!value) {
+                return 'Required field';
+              }
+            }
           },
           {
             type: 'input',
             name: 'Legal name',
             required: true,
-            orgidJsonPath: 'legalEntity.legalName'
+            orgidJsonPath: 'legalEntity.legalName',
+            validate: value => {
+              if (!value) {
+                return 'Required field';
+              }
+            }
           },
           {
             type: 'input',
             name: 'Registration number',
             required: true,
             helperText: 'Number of your organization in the country-specific business registry',
-            orgidJsonPath: 'legalEntity.legalIdentifier'
+            orgidJsonPath: 'legalEntity.legalIdentifier',
+            validate: value => {
+              if (!value) {
+                return 'Required field';
+              }
+            }
           }
         ]
       },
@@ -64,37 +79,67 @@ export const wizardConfig = [
             name: 'Country',
             options: countries,
             required: true,
-            orgidJsonPath: 'legalEntity.registeredAddress.country'
+            orgidJsonPath: 'legalEntity.registeredAddress.country',
+            validate: value => {
+              if (!value) {
+                return 'Required field';
+              }
+            }
           },
           {
             type: 'input',
             name: 'State or region',
             orgidJsonPath: 'legalEntity.registeredAddress.subdivision',
-            required: true
+            required: true,
+            validate: value => {
+              if (!value) {
+                return 'Required field';
+              }
+            }
           },
           {
             type: 'input',
             name: 'City',
             required: true,
-            orgidJsonPath: 'legalEntity.registeredAddress.locality'
+            orgidJsonPath: 'legalEntity.registeredAddress.locality',
+            validate: value => {
+              if (!value) {
+                return 'Required field';
+              }
+            }
           },
           {
             type: 'input',
             name: 'Street, building',
             required: true,
-            orgidJsonPath: 'legalEntity.registeredAddress.streetAddress'
+            orgidJsonPath: 'legalEntity.registeredAddress.streetAddress',
+            validate: value => {
+              if (!value) {
+                return 'Required field';
+              }
+            }
           },
           {
             type: 'input',
             name: 'Apartment or office',
             orgidJsonPath: 'legalEntity.registeredAddress.premise',
-            required: true
+            required: true,
+            validate: value => {
+              if (!value) {
+                return 'Required field';
+              }
+            }
           },
           {
             type: 'input',
             name: 'Postal code',
             required: true,
-            orgidJsonPath: 'legalEntity.registeredAddress.postalCode'
+            orgidJsonPath: 'legalEntity.registeredAddress.postalCode',
+            validate: value => {
+              if (!value) {
+                return 'Required field';
+              }
+            }
           }
         ]
       },
@@ -106,21 +151,36 @@ export const wizardConfig = [
             type: 'input',
             subtype: 'phone',
             name: 'Phone',
-            orgidJsonPath: 'legalEntity.contacts[0].phone'
+            orgidJsonPath: 'legalEntity.contacts[0].phone',
+            validate: value => {
+              if (value && !value.trim().match(/^([+]{0,1})([0-9- ]+)$/)) {
+                return 'Wrong phone number format';
+              }
+            }
           },
           {
             type: 'input',
             subtype: 'website',
             name: 'Website',
             orgidJsonPath: 'legalEntity.contacts[0].website',
-            schema: validators.website
+            schema: validators.website,
+            validate: value => {
+              if (value && !value.trim().match(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/)) {
+                return 'Wrong website URL';
+              }
+            }
           },
           {
             type: 'input',
             subtype: 'email',
             name: 'Email',
             orgidJsonPath: 'legalEntity.contacts[0].email',
-            schema: validators.email
+            schema: validators.email,
+            validate: value => {
+              if (value && !value.trim().match(/^[\w.-]+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) {
+                return 'Wrong email format';
+              }
+            }
           }
         ]
       },
@@ -133,18 +193,21 @@ export const wizardConfig = [
             type: 'input',
             icon: 'facebook',
             orgidJsonPath: 'legalEntity.contacts[0].facebook',
+            validate: value => {}
           },
           {
             name: 'Twitter',
             type: 'input',
             icon: 'twitter',
             orgidJsonPath: 'legalEntity.contacts[0].twitter',
+            validate: value => {}
           },
           {
             name: 'Instagram',
             type: 'input',
             icon: 'instagram',
             orgidJsonPath: 'legalEntity.contacts[0].instagram',
+            validate: value => {}
           },
           {
             name: 'Logo',

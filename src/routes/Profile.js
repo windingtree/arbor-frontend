@@ -73,11 +73,11 @@ const styles = makeStyles({
 
 function Profile(props) {
   const classes = styles();
-  const { organizations, address } = props;
+  const { organizations, address, fetchProfileOrganizations } = props;
 
   useEffect(() => {
-    props.fetchProfileOrganizations({owner: address});
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    fetchProfileOrganizations({owner: address});
+  }, [address, fetchProfileOrganizations]);
 
   return (
     <Container className={classes.rootContainer}>

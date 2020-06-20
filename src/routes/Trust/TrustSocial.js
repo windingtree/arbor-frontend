@@ -295,7 +295,7 @@ function TrustSocial(props) {
   const [activeStep, setActiveStep] = useState(1);
   const [verification, setVerification] = useState(false);
   const [isModalOpen, toggleModalOpenState] = useState(false);
-  const {successTransaction, pendingTransaction} = props;
+  const {successTransaction, pendingTransaction, resetTransactionStatus} = props;
   const contacts = (!!history.location.state && !!history.location.state.contacts) ? history.location.state.contacts : false;
   const orgid = (!!history.location.state && !!history.location.state.orgid) ? history.location.state.orgid : 'undefined';
   const {twitter, facebook, instagram} = contacts;
@@ -304,11 +304,11 @@ function TrustSocial(props) {
     if(!contacts) {
       history.goBack()
     }
-  }); // eslint-disable-line react-hooks/exhaustive-deps
+  });
 
   useEffect(() => {
-    props.resetTransactionStatus();
-  }, [isModalOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+    resetTransactionStatus();
+  }, [isModalOpen, resetTransactionStatus]);
 
   const socialsControllers = [
     'Twitter',

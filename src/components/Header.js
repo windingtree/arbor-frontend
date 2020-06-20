@@ -423,7 +423,7 @@ const Header = (props) => {
             <Card className={classes.statusAlert}>
               <Grid container alignItems='center'>
                 <Grid item>
-                  <InfoIcon iconColor={'#FFFFFF'} className={classes.statusIcon} />
+                  <InfoIcon iconcolor={'#FFFFFF'} className={classes.statusIcon} />
                 </Grid>
                 <Grid item>
                   <Typography className={classes.statusText}>

@@ -1,6 +1,6 @@
 import {countries} from './countries';
-import _ from 'lodash';
-import validators from "./validators";
+// import _ from 'lodash';
+// import validators from "./validators";
 // import { entityTypes } from './constants';
 
 export const config = [
@@ -24,13 +24,23 @@ export const config = [
               type: 'input',
               name: 'Legal entity type',
               required: true,
-              orgidJsonPath: 'legalEntity.legalType'
+              orgidJsonPath: 'legalEntity.legalType',
+              validate: value => {
+                if (!value) {
+                  return 'Required field';
+                }
+              }
             },
             {
               type: 'input',
               name: 'Legal name',
               required: true,
-              orgidJsonPath: 'legalEntity.legalName'
+              orgidJsonPath: 'legalEntity.legalName',
+              validate: value => {
+                if (!value) {
+                  return 'Required field';
+                }
+              }
             },
             {
               type: 'input',
@@ -38,6 +48,11 @@ export const config = [
               helperText: 'Number of your organization in the country-specific business registry',
               orgidJsonPath: 'legalEntity.legalIdentifier',
               required: true,
+              validate: value => {
+                if (!value) {
+                  return 'Required field';
+                }
+              }
             }
           ]
         },
@@ -50,37 +65,63 @@ export const config = [
               name: 'Country',
               options: countries,
               required: true,
-              orgidJsonPath: 'legalEntity.registeredAddress.country'
+              orgidJsonPath: 'legalEntity.registeredAddress.country',
+              validate: value => {
+                if (!value) {
+                  return 'Required field';
+                }
+              }
             },
             {
               type: 'input',
               name: 'State or region',
               orgidJsonPath: 'legalEntity.registeredAddress.subdivision',
               required: true,
+              validate: value => {
+                if (!value) {
+                  return 'Required field';
+                }
+              }
             },
             {
               type: 'input',
               name: 'City',
               orgidJsonPath: 'legalEntity.registeredAddress.locality',
               required: true,
+              validate: value => {
+                if (!value) {
+                  return 'Required field';
+                }
+              }
             },
             {
               type: 'input',
               name: 'Street, building',
               orgidJsonPath: 'legalEntity.registeredAddress.streetAddress',
               required: true,
+              validate: value => {
+                if (!value) {
+                  return 'Required field';
+                }
+              }
             },
             {
               type: 'input',
               name: 'Apartment or office',
               orgidJsonPath: 'legalEntity.registeredAddress.premise',
               required: false,
+              validate: value => {}
             },
             {
               type: 'input',
               name: 'Postal code',
               orgidJsonPath: 'legalEntity.registeredAddress.postalCode',
               required: true,
+              validate: value => {
+                if (!value) {
+                  return 'Required field';
+                }
+              }
             }
           ]
         }
@@ -115,22 +156,37 @@ export const config = [
               type: 'input',
               subtype: 'phone',
               name: 'Phone',
-              orgidJsonPath: 'legalEntity.contacts[0].phone'
+              orgidJsonPath: 'legalEntity.contacts[0].phone',
+              validate: value => {
+                if (value && !value.trim().match(/^([+]{0,1})([0-9- ]+)$/)) {
+                  return 'Wrong phone number format';
+                }
+              }
             },
             {
               type: 'input',
               subtype: 'website',
               name: 'Website',
               orgidJsonPath: 'legalEntity.contacts[0].website',
-              schema: validators.website,
-              trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'domain'}).get('[0]', false).value()
+              validate: value => {
+                if (value && !value.trim().match(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/)) {
+                  return 'Wrong website URL';
+                }
+              }
+              // schema: validators.website,
+              // trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'domain'}).get('[0]', false).value()
             },
             {
               type: 'input',
               subtype: 'email',
               name: 'Email',
               orgidJsonPath: 'legalEntity.contacts[0].email',
-              schema: validators.email
+              validate: value => {
+                if (value && !value.trim().match(/^[\w.-]+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) {
+                  return 'Wrong email format';
+                }
+              }
+              // schema: validators.email
             }
           ]
         }
@@ -145,21 +201,24 @@ export const config = [
               type: 'input',
               icon: 'facebook',
               orgidJsonPath: 'legalEntity.contacts[0].facebook',
-              trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'facebook'}).get('[0]', false).value()
+              validate: value => {}
+              // trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'facebook'}).get('[0]', false).value()
             },
             {
               name: 'Twitter',
               type: 'input',
               icon: 'twitter',
               orgidJsonPath: 'legalEntity.contacts[0].twitter',
-              trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'twitter'}).get('[0]', false).value()
+              validate: value => {}
+              // trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'twitter'}).get('[0]', false).value()
             },
             {
               name: 'Instagram',
               type: 'input',
               icon: 'instagram',
               orgidJsonPath: 'legalEntity.contacts[0].instagram',
-              trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'instagram'}).get('[0]', false).value()
+              validate: value => {}
+              // trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'instagram'}).get('[0]', false).value()
             }
           ]
         }

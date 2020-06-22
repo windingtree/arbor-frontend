@@ -1,6 +1,6 @@
 import {countries} from './countries';
-import _ from 'lodash';
-import validators from './validators'
+// import _ from 'lodash';
+// import validators from './validators';
 import { entityTypes } from './constants';
 
 export const config = [
@@ -23,20 +23,35 @@ export const config = [
                 'ota': 'Travel agencies'
               },
               required: true,
-              orgidJsonPath: 'organizationalUnit.type'
+              orgidJsonPath: 'organizationalUnit.type',
+              validate: value => {
+                if (!value) {
+                  return 'Required field';
+                }
+              }
             },
             {
               type: 'input',
               name: 'Organization name',
               required: true,
-              orgidJsonPath: 'organizationalUnit.name'
+              orgidJsonPath: 'organizationalUnit.name',
+              validate: value => {
+                if (!value) {
+                  return 'Required field';
+                }
+              }
             },
             {
               type: 'select',
               name: 'Legal form',
               options: entityTypes,
               required: true,
-              orgidJsonPath: 'organizationalUnit.legalType'
+              orgidJsonPath: 'organizationalUnit.legalType',
+              validate: value => {
+                if (!value) {
+                  return 'Required field';
+                }
+              }
             },
           ]
         },
@@ -49,37 +64,61 @@ export const config = [
               name: 'Country',
               options: countries,
               required: true,
-              orgidJsonPath: 'organizationalUnit.address.country'
+              orgidJsonPath: 'organizationalUnit.address.country',
+              validate: value => {
+                if (!value) {
+                  return 'Required field';
+                }
+              }
             },
             {
               type: 'input',
               name: 'State or region',
               orgidJsonPath: 'organizationalUnit.address.subdivision',
-              required: true
+              required: true,
+              validate: value => {
+                if (!value) {
+                  return 'Required field';
+                }
+              }
             },
             {
               type: 'input',
               name: 'City',
               orgidJsonPath: 'organizationalUnit.address.locality',
-              required: true
+              required: true,
+              validate: value => {
+                if (!value) {
+                  return 'Required field';
+                }
+              }
             },
             {
               type: 'input',
               name: 'Street, building',
               orgidJsonPath: 'organizationalUnit.address.streetAddress',
-              required: true
+              required: true,
+              validate: value => {
+                if (!value) {
+                  return 'Required field';
+                }
+              }
             },
             {
               type: 'input',
               name: 'Apartment or office',
-              orgidJsonPath: 'organizationalUnit.address.premise',
-              required: false
+              orgidJsonPath: 'organizationalUnit.address.premise'
             },
             {
               type: 'input',
               name: 'Postal code',
               orgidJsonPath: 'organizationalUnit.address.postalCode',
-              required: true
+              required: true,
+              validate: value => {
+                if (!value) {
+                  return 'Required field';
+                }
+              }
             }
           ]
         }
@@ -114,22 +153,35 @@ export const config = [
               type: 'input',
               subtype: 'phone',
               name: 'Phone',
-              orgidJsonPath: 'organizationalUnit.contacts[0].phone'
+              orgidJsonPath: 'organizationalUnit.contacts[0].phone',
+              validate: value => {
+                if (value && !value.trim().match(/^([+]{0,1})([0-9- ]+)$/)) {
+                  return 'Wrong phone number format';
+                }
+              }
             },
             {
               type: 'input',
               subtype: 'website',
               name: 'Website',
               orgidJsonPath: 'organizationalUnit.contacts[0].website',
-              schema: validators.website,
-              trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'domain'}).get('[0]', false).value()
+              // trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'domain'}).get('[0]', false).value(),
+              validate: value => {
+                if (value && !value.trim().match(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/)) {
+                  return 'Wrong website URL';
+                }
+              }
             },
             {
               type: 'input',
               subtype: 'email',
               name: 'Email',
               orgidJsonPath: 'organizationalUnit.contacts[0].email',
-              schema: validators.email
+              validate: value => {
+                if (value && !value.trim().match(/^[\w.-]+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) {
+                  return 'Wrong email format';
+                }
+              }
             }
           ]
         }
@@ -144,21 +196,24 @@ export const config = [
               type: 'input',
               icon: 'facebook',
               orgidJsonPath: 'organizationalUnit.contacts[0].facebook',
-              trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'facebook'}).get('[0]', false).value()
+              validate: value => {},
+              // trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'facebook'}).get('[0]', false).value()
             },
             {
               name: 'Twitter',
               type: 'input',
               icon: 'twitter',
               orgidJsonPath: 'organizationalUnit.contacts[0].twitter',
-              trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'twitter'}).get('[0]', false).value()
+              validate: value => {},
+              // trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'twitter'}).get('[0]', false).value()
             },
             {
               name: 'Instagram',
               type: 'input',
               icon: 'instagram',
               orgidJsonPath: 'organizationalUnit.contacts[0].instagram',
-              trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'instagram'}).get('[0]', false).value()
+              validate: value => {},
+              // trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'instagram'}).get('[0]', false).value()
             },
           ]
         }

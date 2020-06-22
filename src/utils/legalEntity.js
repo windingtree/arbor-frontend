@@ -1,5 +1,4 @@
 import {countries} from './countries';
-import validators from "./validators";
 import { StepperGeneralIcon, StepperHostingIcon, StepperMetaMaskIcon } from '../assets/SvgComponents';
 
 export const wizardConfig = [
@@ -163,7 +162,6 @@ export const wizardConfig = [
             subtype: 'website',
             name: 'Website',
             orgidJsonPath: 'legalEntity.contacts[0].website',
-            schema: validators.website,
             validate: value => {
               if (value && !value.trim().match(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/)) {
                 return 'Wrong website URL';
@@ -175,7 +173,6 @@ export const wizardConfig = [
             subtype: 'email',
             name: 'Email',
             orgidJsonPath: 'legalEntity.contacts[0].email',
-            schema: validators.email,
             validate: value => {
               if (value && !value.trim().match(/^[\w.-]+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) {
                 return 'Wrong email format';

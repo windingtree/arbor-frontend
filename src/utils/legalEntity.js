@@ -121,13 +121,7 @@ export const wizardConfig = [
           {
             type: 'input',
             name: 'Apartment or office',
-            orgidJsonPath: 'legalEntity.registeredAddress.premise',
-            required: true,
-            validate: value => {
-              if (!value) {
-                return 'Required field';
-              }
-            }
+            orgidJsonPath: 'legalEntity.registeredAddress.premise'
           },
           {
             type: 'input',

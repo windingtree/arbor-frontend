@@ -22,7 +22,8 @@ export default {
     lighter: '#E6E7EB',
     moreLighter: '#FAFBFC',
     lightest: '#EFEFEF',
-    inputBg: '#FAFAFA'
+    inputBg: '#FAFAFA',
+    info: 'rgba(224, 224, 224, .2)'
   },
   social: {
     facebook: '#4873C3',

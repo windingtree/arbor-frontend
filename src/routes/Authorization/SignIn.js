@@ -150,12 +150,13 @@ const SignInActionBox = (classes, props) => {
   return (
     <Box style={{width: '80%', margin: '0 auto'}}>
       <div className={classes.screenTitleWrapper}>
-        <Typography variant={'h1'} className={classes.screenTitle}>Welcome to Arbor</Typography>
+        <Typography variant={'h1'} className={classes.screenTitle}>Step in</Typography>
           <div className={classes.line}/>
       </div>
       <div className={classes.subtitleWrapper}>
-        <Typography variant={'subtitle2'} className={classes.subtitle}>You can create and manage your organization profile on
-          Arbor using your Ethereum Wallet. Please sign-in to create or access your organization profile.</Typography>
+        <Typography variant={'subtitle2'} className={classes.subtitle}>
+          MetaMask is a browser extension that allows you to hold Ether and tokens as well as create and manage your organization profile on Arbor.
+        </Typography>
       </div>
       { chainMistmatch ? <ChainMistmatchInfo classes={classes} chainId={chainId}/> : null}
       <div className={classes.buttonWrapper}>

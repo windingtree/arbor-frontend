@@ -83,7 +83,6 @@ const WizardStep = (props) => {
   const classes = styles();
 
   const {index, extendOrgidJson, data: {longName, description, sections, cta}, handleNext} = props;
-
   // Modal to provide more details on how to obtain Ether
   const renderModal = () => {
     return (

@@ -97,9 +97,9 @@ const Registration = () => {
           <img src={RegisterIllustration} alt={'Register-illustration'} className={classes.illustration}/>
         </Grid>
         <Grid item className={classes.itemContainer}>
-          <Box style={{width: '80%', margin: '0 auto'}}>
+          <Box style={{width: '82%', margin: '0 auto'}}>
             <div className={classes.screenTitleWrapper}>
-              <Typography variant={'h1'} className={classes.screenTitle}>Welcome to Arbor</Typography>
+              <Typography variant={'h1'} className={classes.screenTitle}>Welcome to Marketplace</Typography>
               <div className={classes.line}/>
             </div>
             <div className={classes.subtitleWrapper}>

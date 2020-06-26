@@ -41,7 +41,7 @@ export const ORGID_ABI = [
         "type": "address"
       }
     ],
-    "name": "DirectorOwnershipConfirmed",
+    "name": "DirectorshipAccepted",
     "type": "event"
   },
   {
@@ -66,7 +66,7 @@ export const ORGID_ABI = [
         "type": "address"
       }
     ],
-    "name": "DirectorOwnershipTransferred",
+    "name": "DirectorshipTransferred",
     "type": "event"
   },
   {
@@ -85,13 +85,49 @@ export const ORGID_ABI = [
         "type": "bytes32"
       },
       {
+        "indexed": false,
+        "internalType": "string",
+        "name": "previousOrgJsonUri",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "previousOrgJsonUriBackup1",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "previousOrgJsonUriBackup2",
+        "type": "string"
+      },
+      {
         "indexed": true,
         "internalType": "bytes32",
         "name": "newOrgJsonHash",
         "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "newOrgJsonUri",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "newOrgJsonUriBackup1",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "newOrgJsonUriBackup2",
+        "type": "string"
       }
     ],
-    "name": "OrgJsonHashChanged",
+    "name": "OrgJsonChanged",
     "type": "event"
   },
   {
@@ -105,18 +141,18 @@ export const ORGID_ABI = [
       },
       {
         "indexed": false,
-        "internalType": "string",
-        "name": "previousOrgJsonUri",
-        "type": "string"
+        "internalType": "bool",
+        "name": "previousState",
+        "type": "bool"
       },
       {
         "indexed": false,
-        "internalType": "string",
-        "name": "newOrgJsonUri",
-        "type": "string"
+        "internalType": "bool",
+        "name": "newState",
+        "type": "bool"
       }
     ],
-    "name": "OrgJsonUriChanged",
+    "name": "OrganizationActiveStateChanged",
     "type": "event"
   },
   {
@@ -168,31 +204,6 @@ export const ORGID_ABI = [
     "inputs": [
       {
         "indexed": true,
-        "internalType": "bytes32",
-        "name": "orgId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "previousState",
-        "type": "bool"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "newState",
-        "type": "bool"
-      }
-    ],
-    "name": "OrganizationToggled",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
         "internalType": "address",
         "name": "previousOwner",
         "type": "address"
@@ -219,7 +230,7 @@ export const ORGID_ABI = [
       {
         "indexed": true,
         "internalType": "bytes32",
-        "name": "subOrgId",
+        "name": "unitOrgId",
         "type": "bytes32"
       },
       {
@@ -229,8 +240,248 @@ export const ORGID_ABI = [
         "type": "address"
       }
     ],
-    "name": "SubsidiaryCreated",
+    "name": "UnitCreated",
     "type": "event"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "orgId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "acceptDirectorship",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "solt",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "orgJsonHash",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "string",
+        "name": "orgJsonUri",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "orgJsonUriBackup1",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "orgJsonUriBackup2",
+        "type": "string"
+      }
+    ],
+    "name": "createOrganization",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "id",
+        "type": "bytes32"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "solt",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "parentOrgId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "director",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "orgJsonHash",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "string",
+        "name": "orgJsonUri",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "orgJsonUriBackup1",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "orgJsonUriBackup2",
+        "type": "string"
+      }
+    ],
+    "name": "createUnit",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "newUnitOrgId",
+        "type": "bytes32"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_orgId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getOrganization",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "exists",
+        "type": "bool"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "orgId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "orgJsonHash",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "string",
+        "name": "orgJsonUri",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "orgJsonUriBackup1",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "orgJsonUriBackup2",
+        "type": "string"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "parentOrgId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "director",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "isActive",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "isDirectorshipAccepted",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "includeInactive",
+        "type": "bool"
+      }
+    ],
+    "name": "getOrganizations",
+    "outputs": [
+      {
+        "internalType": "bytes32[]",
+        "name": "",
+        "type": "bytes32[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "parentOrgId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bool",
+        "name": "includeInactive",
+        "type": "bool"
+      }
+    ],
+    "name": "getUnits",
+    "outputs": [
+      {
+        "internalType": "bytes32[]",
+        "name": "",
+        "type": "bytes32[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address payable",
+        "name": "__owner",
+        "type": "address"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
     "constant": true,
@@ -264,6 +515,21 @@ export const ORGID_ABI = [
   },
   {
     "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "orgId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "renounceDirectorship",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
     "inputs": [],
     "name": "renounceOwnership",
     "outputs": [],
@@ -273,116 +539,8 @@ export const ORGID_ABI = [
   },
   {
     "constant": false,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "transferOwnership",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "orgId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "string",
-        "name": "orgJsonUri",
-        "type": "string"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "orgJsonHash",
-        "type": "bytes32"
-      }
-    ],
-    "name": "createOrganization",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "id",
-        "type": "bytes32"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
     "inputs": [],
-    "name": "getLifTokenAddress",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "lifToken",
-        "type": "bytes32"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "orgId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "subOrgId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address",
-        "name": "subsidiaryDirector",
-        "type": "address"
-      },
-      {
-        "internalType": "string",
-        "name": "orgJsonUri",
-        "type": "string"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "orgJsonHash",
-        "type": "bytes32"
-      }
-    ],
-    "name": "createSubsidiary",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "id",
-        "type": "bytes32"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "orgId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "toggleOrganization",
+    "name": "setInterfaces",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -395,9 +553,65 @@ export const ORGID_ABI = [
         "internalType": "bytes32",
         "name": "orgId",
         "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "orgJsonHash",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "string",
+        "name": "orgJsonUri",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "orgJsonUriBackup1",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "orgJsonUriBackup2",
+        "type": "string"
       }
     ],
-    "name": "confirmDirectorOwnership",
+    "name": "setOrgJson",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "bytes4",
+        "name": "interfaceId",
+        "type": "bytes4"
+      }
+    ],
+    "name": "supportsInterface",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "orgId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "toggleActiveState",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -417,7 +631,7 @@ export const ORGID_ABI = [
         "type": "address"
       }
     ],
-    "name": "transferDirectorOwnership",
+    "name": "transferDirectorship",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -447,260 +661,17 @@ export const ORGID_ABI = [
     "constant": false,
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "orgId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "string",
-        "name": "orgJsonUri",
-        "type": "string"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "orgJsonHash",
-        "type": "bytes32"
-      }
-    ],
-    "name": "changeOrgJsonUriAndHash",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "getOrganizations",
-    "outputs": [
-      {
-        "internalType": "bytes32[]",
-        "name": "",
-        "type": "bytes32[]"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "orgId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "getSubsidiaries",
-    "outputs": [
-      {
-        "internalType": "bytes32[]",
-        "name": "",
-        "type": "bytes32[]"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_orgId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "getOrganization",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "exist",
-        "type": "bool"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "orgId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "string",
-        "name": "orgJsonUri",
-        "type": "string"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "orgJsonHash",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "parentEntity",
-        "type": "bytes32"
-      },
-      {
         "internalType": "address",
-        "name": "owner",
+        "name": "newOwner",
         "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "director",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "state",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "directorConfirmed",
-        "type": "bool"
-      },
-      {
-        "internalType": "uint256",
-        "name": "deposit",
-        "type": "uint256"
       }
     ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function",
-    "signature": "0x22b3cd4e"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "orgId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "string",
-        "name": "orgJsonUri",
-        "type": "string"
-      }
-    ],
-    "name": "changeOrgJsonUri",
+    "name": "transferOwnership",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "orgId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "orgJsonHash",
-        "type": "bytes32"
-      }
-    ],
-    "name": "changeOrgJsonHash",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "orgId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint256",
-        "name": "value",
-        "type": "uint256"
-      }
-    ],
-    "name": "addDeposit",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0x6e700a7f"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "orgId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint256",
-        "name": "value",
-        "type": "uint256"
-      }
-    ],
-    "name": "submitWithdrawalRequest",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0xfa094c70"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "orgId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "getWithdrawalRequest",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "exist",
-        "type": "bool"
-      },
-      {
-        "internalType": "uint256",
-        "name": "value",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "withdrawTime",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function",
-    "signature": "0x3e7d48ab"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "orgId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "withdrawDeposit",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0xa8e06bc3"
-  },
+  }
 ];
 export const LIF_TOKEN_ABI = [{
   "constant": false,

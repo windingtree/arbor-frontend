@@ -1,3 +1,4 @@
+import Web3 from 'web3';
 import { keccak256 } from "js-sha3";
 import DefaultHotelImage1 from '../assets/images/default-image-hotel-1.svg';
 import DefaultHotelImage2 from '../assets/images/default-image-hotel-2.svg';
@@ -35,8 +36,17 @@ export const setRandomDefaultImage = (orgid, directory) => {
   return arrayOfDefaultImages[index];
 };
 
-export const idGenerator = () => {
-  return `did:orgid:0x${keccak256(`${Date.now()}${Math.random()}`)}`
+// export const idGenerator = () => {
+//   return `did:orgid:0x${keccak256(`${Date.now()}${Math.random()}`)}`
+// };
+
+export const generateSolt = () => Web3.utils.keccak256(Math.random().toString());
+
+export const createIdWithSolt = (address, solt) => {
+  return `did:orgid:${Web3.utils.soliditySha3(
+    address,
+    solt
+  )}`;
 };
 
 /*

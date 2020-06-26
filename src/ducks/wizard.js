@@ -9,7 +9,7 @@ import {getWeb3, getOrgidContract} from "../web3/w3";
 import {Validator} from 'jsonschema';
 import orgidSchema from '@windingtree/org.json-schema';
 import { ApiGetGasPrice } from './utils/ethereum';
-import Web3 from 'web3';
+// import Web3 from 'web3';
 
 //region == [Constants] ================================================================================================
 export const moduleName = 'wizard';

@@ -1,5 +1,5 @@
 import Web3 from 'web3';
-import { keccak256 } from "js-sha3";
+// import { keccak256 } from "js-sha3";
 import DefaultHotelImage1 from '../assets/images/default-image-hotel-1.svg';
 import DefaultHotelImage2 from '../assets/images/default-image-hotel-2.svg';
 import DefaultHotelImage3 from '../assets/images/default-image-hotel-3.svg';

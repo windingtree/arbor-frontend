@@ -105,7 +105,7 @@ function Profile(props) {
         }
       </div>
       <div>
-        {Object.keys(joinOrganizations).length !== 0 &&
+        {(!isJoinFetching && Object.keys(joinOrganizations).length !== 0) &&
         <List>
           {Object.keys(joinOrganizations).map(org => (
              <JoinOrganizationItem key={org} legalName={joinOrganizations[org].legalEntity.legalName} />
@@ -128,7 +128,7 @@ function Profile(props) {
         </div>
       </div>
       }
-      {(!isJoinFetching && organizations.length !== 0) &&
+      {organizations.length !== 0 &&
       <List>
         {organizations.map((item, index) =>
           <OrgsListItem key={index.toString()} canManage={true} organization={item}/>

@@ -4,6 +4,7 @@ import { Container, Typography, Button, List } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 //Components
 import OrgsListItem from '../components/OrgsListItem';
+import JoinOrganizationItem from '../components/JoinOrganizationItem';
 //Icons, images
 import EmptyListIllustration from '../assets/SvgComponents/empty-list-illustration.svg';
 //styles
@@ -73,12 +74,14 @@ const styles = makeStyles({
 
 function Profile(props) {
   const classes = styles();
-  const { organizations, address, fetchProfileOrganizations } = props;
-
+  const { organizations, address, fetchProfileOrganizations, joinOrganizations } = props;
+  
+  // TODO: fetch request for non-confirmed organizations
+  
   useEffect(() => {
     fetchProfileOrganizations({owner: address});
   }, [address, fetchProfileOrganizations]);
-
+  
   return (
     <Container className={classes.rootContainer}>
       <div className={classes.headingContainer}>
@@ -86,7 +89,7 @@ function Profile(props) {
           <Typography variant={'h2'} className={classes.title}>My organizations</Typography>
         </div>
         {
-          organizations.length !== 0 && (
+          (organizations.length !== 0 || Object.keys(joinOrganizations).length !== 0) && (
             <div>
               <Button onClick={() => history.push('/my-organizations/wizard', { type: 'legalEntity' })} className={classes.button}>
                 <Typography variant={'subtitle2'} className={classes.buttonLabel}>+ Create organization profile</Typography>
@@ -95,7 +98,16 @@ function Profile(props) {
           )
         }
       </div>
-      {organizations.length === 0 &&
+      <div>
+        {Object.keys(joinOrganizations).length !== 0 &&
+        <List>
+          {Object.keys(joinOrganizations).map(org => (
+             <JoinOrganizationItem key={org} legalName={joinOrganizations[org].legalName} />
+          ))}
+        </List>
+        }
+      </div>
+      {organizations.length === 0 && Object.keys(joinOrganizations).length === 0 &&
       <div className={classes.emptyListContainer}>
         <div className={classes.emptyListContent}>
           <img src={EmptyListIllustration} alt={'illustration'}/>
@@ -123,6 +135,7 @@ function Profile(props) {
 
 const mapStateToProps = state => {
   return {
+    joinOrganizations: state.join.joinOrganizations,
     organizations: profileOrganizationsSelector(state),
     isFetched: isFetchedSelector(state),
     address: selectSignInAddress(state)

@@ -15,7 +15,7 @@ export default {
           name: 'Registration number',
           required: true,
           helperText: 'Number of your organization in the country-specific business registry',
-          orgidJsonPath: 'legalEntity.legalIdentifier',
+          orgidJsonPath: 'legalIdentifier',
           validate: value => {
             if (!value) {
               return 'Required field';
@@ -26,7 +26,7 @@ export default {
           type: 'input',
           name: 'Legal name',
           required: true,
-          orgidJsonPath: 'legalEntity.legalName',
+          orgidJsonPath: 'legalName',
           validate: value => {
             if (!value) {
               return 'Required field';
@@ -44,7 +44,7 @@ export default {
           name: 'Country',
           options: countries,
           required: true,
-          orgidJsonPath: 'legalEntity.registeredAddress.country',
+          orgidJsonPath: 'country',
           validate: value => {
             if (!value) {
               return 'Required field';
@@ -54,7 +54,7 @@ export default {
         {
           type: 'input',
           name: 'State or region',
-          orgidJsonPath: 'legalEntity.registeredAddress.subdivision',
+          orgidJsonPath: 'subdivision',
           required: true,
           validate: value => {
             if (!value) {
@@ -66,7 +66,7 @@ export default {
           type: 'input',
           name: 'City',
           required: true,
-          orgidJsonPath: 'legalEntity.registeredAddress.locality',
+          orgidJsonPath: 'locality',
           validate: value => {
             if (!value) {
               return 'Required field';
@@ -77,7 +77,7 @@ export default {
           type: 'input',
           name: 'Street, building',
           required: true,
-          orgidJsonPath: 'legalEntity.registeredAddress.streetAddress',
+          orgidJsonPath: 'streetAddress',
           validate: value => {
             if (!value) {
               return 'Required field';
@@ -87,13 +87,13 @@ export default {
         {
           type: 'input',
           name: 'Apartment',
-          orgidJsonPath: 'legalEntity.registeredAddress.premise'
+          orgidJsonPath: 'premise'
         },
         {
           type: 'input',
           name: 'Postal code',
           required: true,
-          orgidJsonPath: 'legalEntity.registeredAddress.postalCode',
+          orgidJsonPath: 'postalCode',
           validate: value => {
             if (!value) {
               return 'Required field';
@@ -110,7 +110,7 @@ export default {
           type: 'input',
           subtype: 'website',
           name: 'Website',
-          orgidJsonPath: 'legalEntity.contacts[0].website',
+          orgidJsonPath: 'website',
           validate: value => {
             if (value && !value.trim().match(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/)) {
               return 'Wrong website URL';
@@ -121,7 +121,7 @@ export default {
           type: 'input',
           subtype: 'email',
           name: 'Email',
-          orgidJsonPath: 'legalEntity.contacts[0].email',
+          orgidJsonPath: 'email',
           validate: value => {
             if (value && !value.trim().match(/^[\w.-]+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) {
               return 'Wrong email format';

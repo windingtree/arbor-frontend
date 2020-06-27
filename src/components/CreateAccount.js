@@ -1,12 +1,13 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import _ from 'lodash';
 import {makeStyles} from '@material-ui/core/styles';
 import {Container, Typography, Button} from '@material-ui/core';
 import {Formik} from 'formik';
 
-import history from '../redux/history';
 import noMetamaskConfig from '../utils/noMetamaskAccount';
 import { Section } from './index';
+import { postJoinRequest } from '../ducks/join';
 import colors from '../styles/colors';
 
 export const styles = makeStyles({
@@ -109,6 +110,7 @@ export const styles = makeStyles({
 const CreateAccount = props => {
   const classes = styles();
   const {longName, sections, cta} = noMetamaskConfig;
+  const dispatch = useDispatch();
 
   const validateForm = (values) => {
     const errors = {};
@@ -116,16 +118,10 @@ const CreateAccount = props => {
       ? sections.reduce((a, v) => {
         return [
           ...a,
-          ...v.fields.map(
-            f => ({
-              orgidJsonPath: f.orgidJsonPath,
-              validate: f.validate
-            })
-          )
+          ...v.fields.map(f => ({ orgidJsonPath: f.orgidJsonPath, validate: f.validate}))
         ];
       }, [])
       : [];
-    
     validators.forEach(v => {
       const value = _.get(values, v.orgidJsonPath, undefined);
       if (v.validate) {
@@ -135,17 +131,15 @@ const CreateAccount = props => {
         }
       }
     });
-    
     // Return errors
-    console.log('ERRORS', errors)
     return errors;
   };
 
   const onSubmitForm = (values) => {
-    // TODO: add post api call
+    // TODO: convert values props to string (???)
     console.log(values)
-    sessionStorage.setItem('email', values.legalEntity.contacts[0].email)
-    history.push('/email-sent')
+    dispatch(postJoinRequest(values))
+    sessionStorage.setItem('email', values.email)
   }
 
   return (

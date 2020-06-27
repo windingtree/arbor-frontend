@@ -101,12 +101,12 @@ class RootRouter extends Component {
           />
           <DefaultRoute
             // isAuthenticated={isAuthenticated}
-            path='/create-account'
+            path='/join'
             component={CreateAccount}
           />
           <DefaultRoute
             // isAuthenticated={isAuthenticated}
-            path='/confirm-account'
+            path='/confirm/my-organizations/:profileId?'
             component={ConfirmAccount}
           />
           <DefaultRoute

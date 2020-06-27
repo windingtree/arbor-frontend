@@ -5,6 +5,7 @@ import {Typography, Button} from '@material-ui/core';
 
 import {Formik} from 'formik';
 import _ from 'lodash';
+import { useSelector } from 'react-redux';
 
 import DialogComponent from './Dialog';
 import {extendOrgidJson, selectWizardOrgidJson} from '../ducks/wizard'; //validateOrgidSchema
@@ -79,6 +80,8 @@ export const styles = makeStyles({
 });
 
 const WizardStep = (props) => {
+  const {joinOrganizations} = useSelector(state => state.join);
+  const profileId = sessionStorage.getItem('profileId');
   const [isModalOpen, toggleModalOpenState] = useState(false);
   const classes = styles();
 
@@ -156,8 +159,20 @@ const WizardStep = (props) => {
     return errors;
   };
 
-  //console.log(`[In WizardStep] Rendering form with initial values: ${JSON.stringify(props.orgidJson)}`);
-
+  // TODO: DO WE NEED THIS STRUCTURE OF FIELD NAMES (???)
+  const transfromDataToFormValues = () => ({
+    'legalEntity.legalName': joinOrganizations[profileId].legalName,
+    'legalEntity.legalIdentifier': joinOrganizations[profileId].legalIdentifier,
+    'legalEntity.registeredAddress.country': joinOrganizations[profileId].country,
+    'legalEntity.registeredAddress.subdivision': joinOrganizations[profileId].subdivision,
+    'legalEntity.registeredAddress.locality': joinOrganizations[profileId].locality,
+    'legalEntity.registeredAddress.streetAddress': joinOrganizations[profileId].streetAddress,
+    'legalEntity.registeredAddress.premise': joinOrganizations[profileId].premise,
+    'legalEntity.registeredAddress.postalCode': joinOrganizations[profileId].postalCode,
+    'legalEntity.contacts[0].website': joinOrganizations[profileId].website,
+    'legalEntity.contacts[0].email': joinOrganizations[profileId].email
+  })
+  
   return (
     <div key={index}>
       <Typography variant={'h3'} className={classes.stepTitle}>Step {index + 1}. {longName}</Typography>
@@ -176,7 +191,7 @@ const WizardStep = (props) => {
       }
 
       <Formik
-        initialValues={Object.assign({}, props.orgidJson)}
+        initialValues={Object.assign({}, transfromDataToFormValues())}
         enableReinitialize={true}
         validate={validateForm}
         onSubmit={(values, /*{setSubmitting}*/) => {

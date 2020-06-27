@@ -17,7 +17,9 @@ import { styles } from './WizardStep';
 const WizardStep = (props) => {
   // Gather context
   const inheritClasses = styles();
-  const { index, orgidJson, orgidHash, orgidUri, address, parent, data: { longName, description, cta }, action, stepTitle = true } = props;
+  const { index, orgidJson, orgidHash, orgidUri, address, parent, solt,
+    data: { longName, description, cta }, 
+    action, stepTitle = true } = props;
   console.log(`props: ${JSON.stringify(props)}`);
 
   // Define the submit function
@@ -26,11 +28,11 @@ const WizardStep = (props) => {
     if (action === 'edit') {
       props.sendChangeOrgidUriAndHashRequest({orgidUri, orgidHash, address, orgidJson});
     } else if(typeof orgidJson.legalEntity === 'object') {
-      props.sendCreateLegalEntityRequest({orgidJson, orgidHash, orgidUri, address});
+      props.sendCreateLegalEntityRequest({orgidJson, orgidHash, orgidUri, address, solt});
     } else if (typeof orgidJson.organizationalUnit === 'object' && parent.orgid) {
-      props.sendCreateOrganizationalUnitRequest({orgidJson, orgidHash, orgidUri, address, parent});
+      props.sendCreateOrganizationalUnitRequest({orgidJson, orgidHash, orgidUri, address, parent, solt});
     } else {
-      console.error('Something going wrong with MetaMask request', {orgidJson, orgidHash, orgidUri, address, parent});
+      console.error('Something going wrong with MetaMask request', {orgidJson, orgidHash, orgidUri, address, solt, parent});
       console.log(typeof orgidJson.legalEntity, typeof orgidJson.organizationalUnit, parent.orgid);
     }
   };

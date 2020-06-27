@@ -104,15 +104,14 @@ function Directory(props) {
   const [countryFilterValue, setCountryFilterValue] = useState('');
   const currentDirectory = props.match.params.directory;
 
-  const data = {
-    directory: currentDirectory,
-    page: 1,
-    per_page: per_page
-  };
-
   useEffect(() => {
+    const data = {
+      directory: currentDirectory,
+      page: 1,
+      per_page: per_page
+    };
     fetchSearchOrganizations(data);
-  }, [currentDirectory, fetchSearchOrganizations, data]);
+  }, [currentDirectory, per_page, fetchSearchOrganizations]);
 
   const CardsList = () => {
     let OrgCards = items.map((item, index) => {

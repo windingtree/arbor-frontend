@@ -93,7 +93,7 @@ export default {
           type: 'input',
           name: 'Postal code',
           required: true,
-          orgidJsonPath: 'postalCode',
+          orgidJsonPath: 'legalEntity.registeredAddress.postalCode',
           validate: value => {
             if (!value) {
               return 'Required field';

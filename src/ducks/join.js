@@ -89,7 +89,6 @@ export const postJoinFailure = error => ({
 function* getJoinRequestSaga({payload}) {
   try {
     const response = yield call(ApiGetJoinOrganizations, payload);
-    sessionStorage.setItem('profileId', payload);
     yield put(getJoinSuccess({[payload]: response}));
   } catch(error) {
     yield put(getJoinFailure(error))

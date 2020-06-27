@@ -136,8 +136,6 @@ const CreateAccount = props => {
   };
 
   const onSubmitForm = (values) => {
-    // TODO: convert values props to string (???)
-    console.log(values)
     dispatch(postJoinRequest(values))
     sessionStorage.setItem('email', values.email)
   }

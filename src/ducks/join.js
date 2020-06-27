@@ -119,6 +119,6 @@ const ApiGetJoinOrganizations = data => {
   return callApi(`drafts/${data}`, 'GET');
 };
 const ApiPostJoinOrganizations = data => {
-  return callApi('drafts', 'POST', { body: data });
+  return callApi('drafts', 'POST', { body: JSON.stringify(data),  headers: { 'Content-Type': 'application/json' }});
 };
 

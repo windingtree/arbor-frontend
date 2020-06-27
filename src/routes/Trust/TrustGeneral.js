@@ -6,7 +6,7 @@ import trustTopIllustration from '../../assets/SvgComponents/trust-g-top.svg';
 import cardWebsiteIllustration from '../../assets/SvgComponents/trust-g-website.svg';
 import cardTwitterIllustration from '../../assets/SvgComponents/trust-g-twitter.svg';
 import cardLockIllustration from '../../assets/SvgComponents/trust-g-lock.svg';
-import cardLifIllustration from '../../assets/SvgComponents/trust-g-lif.svg';
+// import cardLifIllustration from '../../assets/SvgComponents/trust-g-lif.svg';
 import MetamaskIllustration from '../../assets/SvgComponents/trust-metamask-illustration.svg';
 
 import stepsBg from '../../assets/SvgComponents/tiles-bg.svg';
@@ -22,7 +22,7 @@ import geotrustSvg from '../../assets/SvgComponents/partner-geotrust.svg';
 import comodoSvg from '../../assets/SvgComponents/partner-comodo.svg';
 import liMarker from '../../assets/SvgComponents/marker.svg';
 import evSSLok from '../../assets/SvgComponents/trust-ev-illustration.svg';
-import trustLifDeposit from '../../assets/SvgComponents/trust-lif-deposit.svg';
+// import trustLifDeposit from '../../assets/SvgComponents/trust-lif-deposit.svg';
 import trustSocial from '../../assets/SvgComponents/verify-social-media.svg';
 
 import iconFacebook from '../../assets/SvgComponents/facebook-icon.svg';
@@ -415,7 +415,7 @@ function TrustGeneral() {
   const websiteRef = useRef(null);
   const socialRef = useRef(null);
   const legalEntityRef = useRef(null);
-  const lifDeositRef = useRef(null);
+  // const lifDeositRef = useRef(null);
 
   useEffect(() => {
       window.scrollTo(0, 0)
@@ -478,12 +478,12 @@ function TrustGeneral() {
                 </Card>
               </Grid>
               <Grid item xs={6}>
-                <Card className={classes.verification} onClick={() => scrollToRef(lifDeositRef)}>
+                {/* <Card className={classes.verification} onClick={() => scrollToRef(lifDeositRef)}>
                   <div className={classes.verificationContent}>
                     <img className={classes.verificationIcon} src={cardLifIllustration} alt={'img'}/>
                     <Typography className={classes.verificationIconTitle}>Líf deposit submission</Typography>
                   </div>
-                </Card>
+                </Card> */}
               </Grid>
             </Grid>
             <Grid item xs={12} lg={1}/>
@@ -628,7 +628,7 @@ function TrustGeneral() {
         </Container>
       </div>
 
-      <div ref={lifDeositRef} className={classes.grayDivNoTop}>
+      {/* <div ref={lifDeositRef} className={classes.grayDivNoTop}>
         <Container className={classes.topContent}>
           <Grid container justify={'space-between'} alignItems={'center'}>
             <Grid item xs={6}>
@@ -646,7 +646,7 @@ function TrustGeneral() {
             </Grid>
           </Grid>
         </Container>
-      </div>
+      </div> */}
 
       <div ref={socialRef} className={classes.grayDivNoTop}>
         <Container className={classes.topContent}>

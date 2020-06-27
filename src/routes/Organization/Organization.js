@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import _ from 'lodash';
 import { connect } from 'react-redux';
-import { Container, Typography, Grid } from '@material-ui/core';
+// import { Container, Typography, Grid } from '@material-ui/core';
 import {
   fetchOrganizationInfo,
   fetchOrganizationSubsInfo,
@@ -15,39 +15,39 @@ import Agents from "./Components/Agents";
 import Info from "./Components/Info";
 import SubOrganizations from './Components/SubOrganizations';
 import ProofsList from '../../components/ProofsList';
-import SaveButton from '../../components/buttons/Save';
-import { makeStyles } from '@material-ui/core/styles';
-import trustLifDeposit from '../../assets/SvgComponents/trust-lif-deposit.svg';
+// import SaveButton from '../../components/buttons/Save';
+// import { makeStyles } from '@material-ui/core/styles';
+// import trustLifDeposit from '../../assets/SvgComponents/trust-lif-deposit.svg';
 
-const styles = makeStyles({
-  greyDiv: {
-    width: '100%',
-    backgroundColor: '#FAFBFC',
-    paddingTop: '80px',
-    paddingBottom: '80px',
-    marginBottom: '50px',
-    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
-      paddingBottom: '30px'
-    }
-  },
-  lifContent: {
-    position: 'relative',
-    display: 'flex',
-    justifyContent: 'space-between'
-  },
-  grayTitle: {
-    fontSize: '40px',
-    fontWeight: 500,
-    lineHeight: 1.14,
-    color: '#42424F',
-    margin: '0 0 20px 0'
-  },
-  topSectionText: {
-    color: '#5E666A',
-    marginBottom: '19px',
-    lineHeight: '28px'
-  }
-});
+// const styles = makeStyles({
+//   greyDiv: {
+//     width: '100%',
+//     backgroundColor: '#FAFBFC',
+//     paddingTop: '80px',
+//     paddingBottom: '80px',
+//     marginBottom: '50px',
+//     ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+//       paddingBottom: '30px'
+//     }
+//   },
+//   lifContent: {
+//     position: 'relative',
+//     display: 'flex',
+//     justifyContent: 'space-between'
+//   },
+//   grayTitle: {
+//     fontSize: '40px',
+//     fontWeight: 500,
+//     lineHeight: 1.14,
+//     color: '#42424F',
+//     margin: '0 0 20px 0'
+//   },
+//   topSectionText: {
+//     color: '#5E666A',
+//     marginBottom: '19px',
+//     lineHeight: '28px'
+//   }
+// });
 
 function Organization (props) {
   const id = history.location.state ? history.location.state.id : history.location.pathname.split('/')[2];
@@ -76,7 +76,7 @@ function Organization (props) {
       instagram: isSocialIGProved
     }
   };
-  const classes = styles();
+  // const classes = styles();
 
   const proofsRef = useRef(null);
 
@@ -108,7 +108,7 @@ function Organization (props) {
           agents={agents}
         />
       }
-      {canManage &&
+      {/* {canManage &&
         <div className={classes.greyDiv}>
           <Container className={classes.lifContent}>
             <Grid container alignItems={'center'}>
@@ -137,7 +137,7 @@ function Organization (props) {
             </Grid>
           </Container>
         </div>
-      }
+      } */}
       <div ref={proofsRef} />
       <ProofsList
         canManage={canManage}

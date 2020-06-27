@@ -4,7 +4,7 @@ import history from '../redux/history';
 import { Container, Grid, Box, Typography } from "@material-ui/core";
 import { makeStyles } from '@material-ui/core/styles';
 import ProofItem from './ProofItem';
-import LifDepositValue from './LifDepositValue';
+// import LifDepositValue from './LifDepositValue';
 import ProofsWizard from './ProofsWizard';
 import ProofsSaver from './ProofsSaver';
 import RefreshButton from './buttons/Refresh';
@@ -305,7 +305,7 @@ const ProofsList = props => {
                 />    
             </Box>
             <Box className={classes.proofsBlock}>
-                <LifDepositValue canManage={canManage} />
+                {/* <LifDepositValue canManage={canManage} /> */}
                 {proofsList.map((proof, key) => (
                     <ProofItem
                         key={key}

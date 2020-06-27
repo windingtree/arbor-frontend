@@ -5,7 +5,6 @@ import {Typography, Button} from '@material-ui/core';
 
 import {Formik} from 'formik';
 import _ from 'lodash';
-import { useSelector } from 'react-redux';
 
 import DialogComponent from './Dialog';
 import {extendOrgidJson, selectWizardOrgidJson} from '../ducks/wizard'; //validateOrgidSchema
@@ -80,12 +79,11 @@ export const styles = makeStyles({
 });
 
 const WizardStep = (props) => {
-  const {joinOrganizations} = useSelector(state => state.join);
   const profileId = sessionStorage.getItem('profileId');
   const [isModalOpen, toggleModalOpenState] = useState(false);
   const classes = styles();
 
-  const {index, extendOrgidJson, data: {longName, description, sections, cta}, handleNext} = props;
+  const {index, extendOrgidJson, data: {longName, description, sections, cta}, handleNext, orgidJson, joinOrganizations} = props;
   // Modal to provide more details on how to obtain Ether
   const renderModal = () => {
     return (
@@ -159,19 +157,16 @@ const WizardStep = (props) => {
     return errors;
   };
 
-  // TODO: DO WE NEED THIS STRUCTURE OF FIELD NAMES (???)
-  const transfromDataToFormValues = () => ({
-    'legalEntity.legalName': joinOrganizations[profileId].legalName,
-    'legalEntity.legalIdentifier': joinOrganizations[profileId].legalIdentifier,
-    'legalEntity.registeredAddress.country': joinOrganizations[profileId].country,
-    'legalEntity.registeredAddress.subdivision': joinOrganizations[profileId].subdivision,
-    'legalEntity.registeredAddress.locality': joinOrganizations[profileId].locality,
-    'legalEntity.registeredAddress.streetAddress': joinOrganizations[profileId].streetAddress,
-    'legalEntity.registeredAddress.premise': joinOrganizations[profileId].premise,
-    'legalEntity.registeredAddress.postalCode': joinOrganizations[profileId].postalCode,
-    'legalEntity.contacts[0].website': joinOrganizations[profileId].website,
-    'legalEntity.contacts[0].email': joinOrganizations[profileId].email
-  })
+  const setInitialValues = () => {
+    if (profileId) {
+      const values = {...joinOrganizations[profileId]}
+      values['legalEntity.contacts[0].email'] = values.email
+      delete values.email
+      return values
+    } else {
+      return orgidJson
+    }
+  }
   
   return (
     <div key={index}>
@@ -191,7 +186,7 @@ const WizardStep = (props) => {
       }
 
       <Formik
-        initialValues={Object.assign({}, transfromDataToFormValues())}
+        initialValues={Object.assign({}, setInitialValues())}
         enableReinitialize={true}
         validate={validateForm}
         onSubmit={(values, /*{setSubmitting}*/) => {
@@ -245,6 +240,7 @@ const WizardStep = (props) => {
 
 const mapStateToProps = state => {
   return {
+    joinOrganizations: state.join.joinOrganizations,
     orgidJson: selectWizardOrgidJson(state)
   }
 };

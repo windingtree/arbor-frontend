@@ -38,7 +38,7 @@ const ConfirmAccount = props => {
       <Container className={classes.mainContent}>
         <Typography variant={'h2'} className={classes.pageTitle}>My organizations</Typography>
         <JoinOrganizationItem
-          legalName={Object.keys(joinOrganizations).length ? joinOrganizations[profileId].legalName : ''}
+          legalName={Object.keys(joinOrganizations).length ? joinOrganizations[profileId].legalEntity.legalName : ''}
         />
       </Container>
     </div>

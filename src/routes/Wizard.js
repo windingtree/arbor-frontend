@@ -16,12 +16,13 @@ import {
 
 import history from '../redux/history';
 import { rewriteOrgidJson, selectPendingState, selectSuccessState } from "../ducks/wizard";
+import { selectSignInAddress } from '../ducks/signIn';
 
 import { WizardStep, WizardStepHosting, WizardStepMetaMask } from "../components";
 import { wizardConfig as legalEntity } from '../utils/legalEntity'
 import { wizardConfig as organizationalUnit} from '../utils/organizationalUnit'
 
-import { idGenerator } from "../utils/helpers";
+import { generateSolt, createIdWithSolt } from "../utils/helpers";
 
 import BgPattern from '../assets/SvgComponents/wizard-pattern.svg';
 import ArrowLeftIcon from '../assets/SvgComponents/ArrowLeftIcon';
@@ -193,10 +194,12 @@ const WizardGeneral = (props) => {
   const {
     pendingTransaction,
     successTransaction,
+    address,
     rewriteOrgidJson
   } = props;
   const classes = styles();
   const [activeStep, setActiveStep] = useState(0);
+  const [solt, setSolt] = useState();
   const wizardType = _.get(history, 'location.state.type', 'legalEntity');
   const action = _.get(history, 'location.state.action', 'create');
   const jsonContent = _.get(history, 'location.state.jsonContent', {});
@@ -213,16 +216,16 @@ const WizardGeneral = (props) => {
   }, [id, rewriteOrgidJson, jsonContent]);
 
   useEffect(() => {
+    const idSolt = generateSolt();
+    setSolt(idSolt); 
     rewriteOrgidJson({
-      "@context": [
-        "https://www.w3.org/ns/did/v1",
-        "https://windingtree.com/ns/orgid/v1"
-      ],
-      "id": idGenerator(),
-      "created": new Date().toJSON(),
+      id: createIdWithSolt(address, idSolt),
+      created: new Date().toJSON(),
       [wizardType]: skeletons[wizardType]
     })
-  }, [wizardType, rewriteOrgidJson]);
+  }, [wizardType, address, rewriteOrgidJson]);
+
+  // console.log('@@@@@@@@@@@@@@@', solt);
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -264,7 +267,9 @@ const WizardGeneral = (props) => {
             handleNext={handleNext}
             key={stepIndex}
             index={stepIndex}
-            parent={parent}/>
+            parent={parent}
+            solt={solt}
+          />
         );
       
       // Default Step - Should not happen
@@ -398,7 +403,8 @@ const WizardGeneral = (props) => {
 const mapStateToProps = state => {
   return {
     pendingTransaction: selectPendingState(state),
-    successTransaction: selectSuccessState(state)
+    successTransaction: selectSuccessState(state),
+    address: selectSignInAddress(state)
   }
 };
 

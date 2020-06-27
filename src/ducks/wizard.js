@@ -5,10 +5,11 @@ import {keccak256} from 'js-sha3';
 import {appName} from "../utils/constants";
 import {callApi} from "../redux/api";
 import {getWeb3, getOrgidContract} from "../web3/w3";
-import {idGenerator} from "../utils/helpers";
+// import {idGenerator} from "../utils/helpers";
 import {Validator} from 'jsonschema';
 import orgidSchema from '@windingtree/org.json-schema';
 import { ApiGetGasPrice } from './utils/ethereum';
+// import Web3 from 'web3';
 
 //region == [Constants] ================================================================================================
 export const moduleName = 'wizard';
@@ -72,11 +73,11 @@ const SET_TRANSACTION_HASH = `${prefix}/SET_TRANSACTION_HASH`;
 
 // Fix orgJson structure in old broken versions
 const fixJsonRequiredProps = json => ({
-  ...json,
   '@context': [
     'https://www.w3.org/ns/did/v1',
     'https://windingtree.com/ns/orgid/v1'
   ],
+  ...json,
   publicKey: [
     ...(json.publicKey ? json.publicKey : [])
   ],
@@ -100,8 +101,6 @@ const initialState = {
       'https://www.w3.org/ns/did/v1',
       'https://windingtree.com/ns/orgid/v1'
     ],
-    id: idGenerator(),
-    created: new Date().toJSON(),
     publicKey: [],
     service: [],
     trust: {
@@ -888,13 +887,16 @@ function ApiPostOrgidJson(data) {
 
 function ApiSendCreateLegalEntity(data, gasPrice) {
   const orgidContract = getOrgidContract();
-  const { orgidUri, orgidHash, address, orgidJson } = data;
-  const orgidId = orgidJson.id.replace('did:orgid:', '');
+  const { orgidUri, orgidHash, address, solt } = data;
 
   return new Promise((resolve, reject) => {
     // Create the transaction
     orgidContract.methods.createOrganization(
-      orgidId, orgidUri, orgidHash
+      solt,
+      orgidHash,
+      orgidUri,
+      '',
+      ''
     )
 
     // Send it to the network
@@ -916,18 +918,19 @@ function ApiSendCreateLegalEntity(data, gasPrice) {
 
 function ApiSendCreateOrganizationalUnit(data, gasPrice) {
   const orgidContract = getOrgidContract();
-  const { parent: { orgid: orgidParent }, orgidUri, orgidHash, address, orgidJson } = data;
-  const orgidId = orgidJson.id.replace('did:orgid:', '');
+  const { parent: { orgid: orgidParent }, orgidUri, orgidHash, address, solt } = data;
+  // const orgidId = orgidJson.id.replace('did:orgid:', '');
 
   return new Promise((resolve, reject) => {
-    console.log(`createSubsidiary ${orgidId} from parent ${orgidParent}`);
     // Create the transaction
-    orgidContract.methods.createSubsidiary(
+    orgidContract.methods.createUnit(
+      solt,// should be solt
       orgidParent,
-      orgidId,
-      address, /*subsidiaryDirector*/
+      address,
+      orgidHash,
       orgidUri,
-      orgidHash
+      '',
+      ''
     )
     
     // Send transaction to the network

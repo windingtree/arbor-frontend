@@ -234,7 +234,7 @@ const DropzoneField = (props) => {
     files.forEach(file => URL.revokeObjectURL(file.preview));
   };
 
- });
+ }, [files]);
 
   const handleChangeTab = (event, newValue) => {
     setTabValue(newValue);

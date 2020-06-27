@@ -975,6 +975,7 @@ function ApiSendChangeOrgidUriAndHash(data, gasPrice) {
 
 function ApiGetTxStatus(transactionHash) {
   return new Promise((resolve, reject) => {
+    const profileId = sessionStorage.getItem('profileId');
     const web3 = getWeb3();
     let interval = setInterval(() => {
       web3.eth.getTransactionReceipt(transactionHash, (err, data) => {
@@ -982,6 +983,9 @@ function ApiGetTxStatus(transactionHash) {
           reject(err);
           return clearInterval(interval);
         } else if (data) {
+          if (profileId) {
+            sessionStorage.removeItem('profileId');
+          }
           resolve(data);
           return clearInterval(interval);
         } else {

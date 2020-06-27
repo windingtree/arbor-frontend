@@ -100,17 +100,17 @@ class RootRouter extends Component {
             component={Profile}
           />
           <DefaultRoute
-            // isAuthenticated={isAuthenticated}
+            isAuthenticated={isAuthenticated}
             path='/join'
             component={CreateAccount}
           />
-          <DefaultRoute
-            // isAuthenticated={isAuthenticated}
-            path='/confirm/my-organizations/:profileId?'
+          <PrivateRoute
+            isAuthenticated={isAuthenticated}
+            path='/my-organizations/:profileId?'
             component={ConfirmAccount}
           />
           <DefaultRoute
-            // isAuthenticated={isAuthenticated}
+            isAuthenticated={isAuthenticated}
             path='/email-sent'
             component={EmailSent}
           />

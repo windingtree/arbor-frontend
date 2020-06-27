@@ -79,11 +79,11 @@ export const styles = makeStyles({
 });
 
 const WizardStep = (props) => {
+  const profileId = sessionStorage.getItem('profileId');
   const [isModalOpen, toggleModalOpenState] = useState(false);
   const classes = styles();
 
-  const {index, extendOrgidJson, data: {longName, description, sections, cta}, handleNext} = props;
-
+  const {index, extendOrgidJson, data: {longName, description, sections, cta}, handleNext, orgidJson, joinOrganizations} = props;
   // Modal to provide more details on how to obtain Ether
   const renderModal = () => {
     return (
@@ -157,8 +157,17 @@ const WizardStep = (props) => {
     return errors;
   };
 
-  //console.log(`[In WizardStep] Rendering form with initial values: ${JSON.stringify(props.orgidJson)}`);
-
+  const setInitialValues = () => {
+    if (profileId) {
+      const values = {...joinOrganizations[profileId]}
+      values['legalEntity.contacts[0].email'] = values.email
+      delete values.email
+      return values
+    } else {
+      return orgidJson
+    }
+  }
+  
   return (
     <div key={index}>
       <Typography variant={'h3'} className={classes.stepTitle}>Step {index + 1}. {longName}</Typography>
@@ -177,7 +186,7 @@ const WizardStep = (props) => {
       }
 
       <Formik
-        initialValues={Object.assign({}, props.orgidJson)}
+        initialValues={Object.assign({}, setInitialValues())}
         enableReinitialize={true}
         validate={validateForm}
         onSubmit={(values, /*{setSubmitting}*/) => {
@@ -231,6 +240,7 @@ const WizardStep = (props) => {
 
 const mapStateToProps = state => {
   return {
+    joinOrganizations: state.join.joinOrganizations,
     orgidJson: selectWizardOrgidJson(state)
   }
 };

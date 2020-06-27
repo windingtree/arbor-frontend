@@ -102,7 +102,7 @@ function Profile(props) {
         {Object.keys(joinOrganizations).length !== 0 &&
         <List>
           {Object.keys(joinOrganizations).map(org => (
-             <JoinOrganizationItem key={org} legalName={joinOrganizations[org].legalName} />
+             <JoinOrganizationItem key={org} legalName={joinOrganizations[org].legalEntity.legalName} />
           ))}
         </List>
         }

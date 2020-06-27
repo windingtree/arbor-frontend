@@ -83,7 +83,8 @@ const WizardStep = (props) => {
   const [isModalOpen, toggleModalOpenState] = useState(false);
   const classes = styles();
 
-  const {index, extendOrgidJson, data: {longName, description, sections, cta}, handleNext, orgidJson, joinOrganizations} = props;
+  const {index, extendOrgidJson, data: {longName, description, sections, cta}, 
+    handleNext, orgidJson, joinOrganizations} = props;
   // Modal to provide more details on how to obtain Ether
   const renderModal = () => {
     return (
@@ -159,9 +160,16 @@ const WizardStep = (props) => {
 
   const setInitialValues = () => {
     if (profileId) {
-      const values = {...joinOrganizations[profileId]}
-      values['legalEntity.contacts[0].email'] = values.email
-      delete values.email
+      const orgiProfile = Object.assign({}, joinOrganizations[profileId]);
+      const email = orgiProfile.email;
+      delete orgiProfile.email;
+
+      const values = {
+        ...orgidJson,
+        ...orgiProfile
+      }
+      
+      values.legalEntity.contacts[0].email = email;
       return values
     } else {
       return orgidJson
@@ -190,6 +198,7 @@ const WizardStep = (props) => {
         enableReinitialize={true}
         validate={validateForm}
         onSubmit={(values, /*{setSubmitting}*/) => {
+          console.log('@@@', values);
           extendOrgidJson(values);
           handleNext();
         }}

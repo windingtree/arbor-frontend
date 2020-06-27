@@ -1,5 +1,6 @@
 import { all, call, put, takeLatest } from 'redux-saga/effects';
 
+import { createSelector } from "reselect";
 import history from '../redux/history';
 import { callApi } from '../redux/api';
 
@@ -84,6 +85,19 @@ export const postJoinFailure = error => ({
   type: POST_JOIN_FAILURE,
   error
 });
+
+// Join Selectors
+const stateSelector = state => state.join;
+
+export const isJoinFetching = createSelector(
+  stateSelector,
+  join => join.isFetching
+);
+
+export const getJoinOrganizations = createSelector(
+  stateSelector,
+  join => join.joinOrganizations
+);
 
 // Join Sagas
 function* getJoinRequestSaga({payload}) {

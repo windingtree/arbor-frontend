@@ -12,7 +12,7 @@ import colors from '../styles/colors';
 import { connect } from "react-redux";
 import { fetchProfileOrganizations, isFetchedSelector, profileOrganizationsSelector} from "../ducks/fetchProfile";
 import { selectSignInAddress } from "../ducks/signIn";
-import { getJoinRequest } from '../ducks/join';
+import { getJoinRequest, isJoinFetching, getJoinOrganizations } from '../ducks/join';
 
 const styles = makeStyles({
   rootContainer: {
@@ -75,7 +75,8 @@ const styles = makeStyles({
 
 function Profile(props) {
   const classes = styles();
-  const { organizations, address, fetchProfileOrganizations, getJoinRequest, joinOrganizations } = props;
+  const { organizations, address, fetchProfileOrganizations, getJoinRequest, 
+    isJoinFetching, joinOrganizations } = props;
   
   // TODO: fetch request for non-confirmed organizations
   
@@ -104,7 +105,7 @@ function Profile(props) {
         }
       </div>
       <div>
-        {Object.keys(joinOrganizations).length !== 0 &&
+        {(!isJoinFetching && Object.keys(joinOrganizations).length !== 0) &&
         <List>
           {Object.keys(joinOrganizations).map(org => (
              <JoinOrganizationItem key={org} legalName={joinOrganizations[org].legalEntity.legalName} />
@@ -140,7 +141,8 @@ function Profile(props) {
 
 const mapStateToProps = state => {
   return {
-    joinOrganizations: state.join.joinOrganizations,
+    isJoinFetching: isJoinFetching(state),
+    joinOrganizations: getJoinOrganizations(state),
     organizations: profileOrganizationsSelector(state),
     isFetched: isFetchedSelector(state),
     address: selectSignInAddress(state)

@@ -17,6 +17,7 @@ export default {
   greyScale: {
     darkest: '#42424F',
     dark: '#5E666A',
+    darkBg: '#3F4244',
     common: '#8F999F',
     light: '#D9DBE1',
     lighter: '#E6E7EB',

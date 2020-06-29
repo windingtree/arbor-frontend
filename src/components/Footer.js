@@ -73,7 +73,7 @@ const styles = makeStyles({
   },
   navLink: {
     position: 'relative',
-    cursor: 'default',
+    cursor: 'pointer',
     textDecoration: 'none',
     padding: '8px 0'
   },

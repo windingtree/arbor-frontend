@@ -5,7 +5,8 @@ import { Link } from 'react-router-dom';
 import { Container, Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
-import Logo from '../assets/SvgComponents/Logo';
+// import Logo from '../assets/SvgComponents/Logo';
+import Logo2 from '../assets/images/wlogo.png';
 import TwitterIcon from '@material-ui/icons/Twitter';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import TelegramSocialIcon from '../assets/SvgComponents/TelegramSocialIcon';
@@ -148,7 +149,8 @@ export default function Footer(props) {
         <Grid container className={classes.footerContent}>
           <Grid item xs={12} md={5}>
             <button onClick={() => history.push('/')} className={classes.logoButton}>
-              <Logo viewBox={'0 0 90 32'} className={classes.logo}/>
+              <img alt="WindingTree" src={Logo2} />
+              {/* <Logo viewBox={'0 0 90 32'} className={classes.logo}/> */}
             </button>
           </Grid>
           <Grid container direction="column" item xs={12} md={2} className={classes.xsHidden}>

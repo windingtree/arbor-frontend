@@ -889,6 +889,16 @@ function ApiSendCreateLegalEntity(data, gasPrice) {
   const orgidContract = getOrgidContract();
   const { orgidUri, orgidHash, address, solt } = data;
 
+  console.log(
+    '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@',
+    solt,
+      orgidHash,
+      orgidUri,
+      '',
+      '',
+      address, gasPrice
+  );
+
   return new Promise((resolve, reject) => {
     // Create the transaction
     orgidContract.methods.createOrganization(

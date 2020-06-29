@@ -1,8 +1,7 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import { Container, Typography, Button } from '@material-ui/core';
 
-import { getWeb3 } from '../web3/w3';
 import history from '../redux/history';
 import colors from '../styles/colors';
 
@@ -45,17 +44,16 @@ export const styles = makeStyles(theme => ({
 }));
 
 const EmailSent = props => {
+  const profileId = history.location.state.profileId;
   const classes = styles();
   const userEmail = sessionStorage.getItem('email');
 
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, []);
+
   const handleSignInRedirect = () => {
-    let w3 = getWeb3();
-    if(w3 !== undefined) {
-      history.push('/authorization/signin');
-    }
-    else {
-      history.push('/authorization/register')
-    }
+    history.push(`/my-organizations?=profileId=${profileId}`);
   };
 
   return (
@@ -65,10 +63,10 @@ const EmailSent = props => {
         <div className={classes.devider} />
         <div className={classes.infoContainer}>
           <Typography>
-            The organization has been created and we’ve sent you an email to 
+            The organization has been created and we’ve sent you an email to
             <span className={classes.email}>{' '}{userEmail}</span>
           </Typography>
-          <Typography>Further instructions are there. You would need a computer to continue</Typography>
+          <Typography>Further instructions are there. You would need a desktop web browser to proceed</Typography>
         </div>
         <Button className={classes.button} onClick={handleSignInRedirect}>
           Go to My Organizations

@@ -46,7 +46,8 @@ export const styles = makeStyles(theme => ({
     borderRadius: '5px'
   },
   icon: {
-    fontSize: '36px'
+    fontSize: '36px',
+    cursor: 'pointer'
   },
   buttonContainer: {
     display: 'flex',
@@ -78,17 +79,17 @@ const JoinOrganizationItem = props => {
     <div className={classes.linkContainer}>
       <div className={classes.editContainer}>
         <div className={classes.iconContainer}>
-          <EditIcon className={classes.icon} viewBox="0 0 24 24" fill={colors.primary.white} />
+          <EditIcon  onClick={redirectToOrganizations} className={classes.icon} viewBox="0 0 24 24" fill={colors.primary.white} />
         </div>
         <div className={classes.editInfo}>
           <p className={classes.editLabel}>{props.legalName}</p>
           <p className={classes.editText}>
-            Something went wrong and organisation was not created. We saved all you info and you can try again
+            Your organization is almost there, few more steps required to complete the process
           </p>
         </div>
       </div>
       <div className={classes.buttonContainer}>
-        <p className={classes.buttonLabel}>Will be deleted in 7 days</p>
+        {/* <p className={classes.buttonLabel}>Will be deleted in 7 days</p> */}
         <Button className={classes.button} onClick={redirectToOrganizations}>
           Continue
         </Button>

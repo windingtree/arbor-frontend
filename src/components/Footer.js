@@ -78,11 +78,12 @@ const styles = makeStyles({
     padding: '8px 0'
   },
   logoButton: {
-    backgroundColor: colors.primary.white,
+    backgroundColor: 'transparent',
     outline: 'none',
     cursor: 'pointer'
   },
   logo: {
+    backgroundColor: 'transparent',
     width: '150px',
     height: '50px'
   },
@@ -141,6 +142,12 @@ const styles = makeStyles({
       width: '260px',
       justifyContent: 'space-between'
     },
+  },
+  logoContainer: {
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      width: '260px',
+      padding: '15px 0 20px'
+    }
   }
 });
 
@@ -150,10 +157,10 @@ export default function Footer(props) {
     <div id="app-footer" className={classes.footer}>
       <Container>
         <Grid container className={classes.footerContent}>
-          <Grid item xs={12} md={5}>
-            <button onClick={() => history.push('/')} className={classes.logoButton}>
-              <Logo viewBox={'0 0 90 32'} className={classes.logo} primary={colors.primary.white} />
-            </button>
+          <Grid item xs={12} md={5} className={classes.logoContainer}>
+              <button onClick={() => history.push('/')} className={classes.logoButton}>
+                    <Logo viewBox={'0 0 90 32'} className={classes.logo} primary={colors.primary.white} />
+              </button>
           </Grid>
           <Grid container direction="column" item xs={12} md={2} className={classes.xsVisible}>
             <Typography variant={'h4'} className={classes.columnTitle}>Organizations</Typography>

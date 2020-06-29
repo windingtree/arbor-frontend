@@ -46,7 +46,7 @@ const useStyles = makeStyles({
         lineHeight: '20px',
         color: 'black',
         textDecoration: 'none',
-        cursor: 'pointer',
+        cursor: 'auto',
         marginLeft: '27px',
         '&.removed': {
             color: '#5E666A',

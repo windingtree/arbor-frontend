@@ -12,6 +12,8 @@ import orgidSchema from '@windingtree/org.json-schema';
 import { ApiGetGasPrice } from './utils/ethereum';
 // import Web3 from 'web3';
 
+import { resetJoin } from './join';
+
 //region == [Constants] ================================================================================================
 export const moduleName = 'wizard';
 const prefix = `${appName}/${moduleName}`;
@@ -845,7 +847,8 @@ function* getTransactionStatusSaga({payload}) {
   try {
     yield put(setTransactionHash(payload));
     const result = yield call(ApiGetTxStatus, payload);
-
+    sessionStorage.removeItem('profileId');
+    yield put(resetJoin());
     yield put(getTransactionStatusSuccess(result));
   } catch(error) {
     yield put(getTransactionStatusFailure(error));
@@ -888,23 +891,16 @@ function ApiPostOrgidJson(data) {
 
 function ApiSendCreateLegalEntity(data, gasPrice) {
   const orgidContract = getOrgidContract();
-  const { orgidUri, orgidHash, address, solt } = data;
+  const { orgidUri, address, solt, orgidJson } = data;
 
-  console.log(
-    '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@',
-    solt,
-      orgidHash,
-      orgidUri,
-      '',
-      '',
-      address, gasPrice
-  );
+  // %(
+  const hash = Web3.utils.soliditySha3(JSON.stringify(orgidJson, null, 2));
 
   return new Promise((resolve, reject) => {
     // Create the transaction
     orgidContract.methods.createOrganization(
       solt,
-      orgidHash,
+      hash,
       orgidUri,
       '',
       ''
@@ -929,8 +925,11 @@ function ApiSendCreateLegalEntity(data, gasPrice) {
 
 function ApiSendCreateOrganizationalUnit(data, gasPrice) {
   const orgidContract = getOrgidContract();
-  const { parent: { orgid: orgidParent }, orgidUri, orgidHash, address, solt } = data;
+  const { parent: { orgid: orgidParent }, orgidUri, orgidJson, address, solt } = data;
   // const orgidId = orgidJson.id.replace('did:orgid:', '');
+
+  // %(
+  const hash = Web3.utils.soliditySha3(JSON.stringify(orgidJson, null, 2));
 
   return new Promise((resolve, reject) => {
     // Create the transaction
@@ -938,7 +937,7 @@ function ApiSendCreateOrganizationalUnit(data, gasPrice) {
       solt,// should be solt
       orgidParent,
       address,
-      orgidHash,
+      hash,
       orgidUri,
       '',
       ''
@@ -958,15 +957,18 @@ function ApiSendCreateOrganizationalUnit(data, gasPrice) {
   });
 }
 
-function ApiSendChangeOrgidUriAndHash(data, gasPrice) {
+async function ApiSendChangeOrgidUriAndHash(data, gasPrice) {
   const orgidContract = getOrgidContract();
-  const { orgidUri, orgidHash, address, orgidJson } = data;
+  const { orgidUri, address, orgidJson } = data;
   const orgidId = orgidJson.id.replace('did:orgid:', '');
+
+  // %(
+  const hash = Web3.utils.soliditySha3(JSON.stringify(orgidJson, null, 2));
 
   return new Promise((resolve, reject) => {
     orgidContract.methods.setOrgJson(
       orgidId,
-      orgidHash,
+      hash,
       orgidUri,
       '',
       ''
@@ -990,7 +992,6 @@ function ApiSendChangeOrgidUriAndHash(data, gasPrice) {
 
 function ApiGetTxStatus(transactionHash) {
   return new Promise((resolve, reject) => {
-    const profileId = sessionStorage.getItem('profileId');
     const web3 = getWeb3();
     let interval = setInterval(() => {
       web3.eth.getTransactionReceipt(transactionHash, (err, data) => {
@@ -998,9 +999,6 @@ function ApiGetTxStatus(transactionHash) {
           reject(err);
           return clearInterval(interval);
         } else if (data) {
-          if (profileId) {
-            sessionStorage.removeItem('profileId');
-          }
           resolve(data);
           return clearInterval(interval);
         } else {

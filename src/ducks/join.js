@@ -9,6 +9,7 @@ export const moduleName ='join';
 const GET_JOIN_REQUST = 'GET_JOIN_REQUST';
 const GET_JOIN_SUCCESS = 'GET_JOIN_SUCCESS';
 const GET_JOIN_FAILURE = 'GET_JOIN_FAILURE';
+const RESET_JOIN = 'RESET_JOIN';
 const POST_JOIN_REQUST = 'POST_JOIN_REQUST';
 const POST_JOIN_SUCCESS = 'POST_JOIN_SUCCESS';
 const POST_JOIN_FAILURE = 'POST_JOIN_FAILURE';
@@ -56,6 +57,8 @@ export default function reducer( state = initialState, action) {
         isFetching: false,
         error: error
       };
+    case RESET_JOIN:
+      return initialState;
     default:
       return state;
   }
@@ -84,6 +87,9 @@ export const postJoinSuccess = () => ({
 export const postJoinFailure = error => ({
   type: POST_JOIN_FAILURE,
   error
+});
+export const resetJoin = () => ({
+  type: RESET_JOIN
 });
 
 // Join Selectors

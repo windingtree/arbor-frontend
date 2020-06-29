@@ -256,6 +256,7 @@ const Header = (props) => {
   const classes = styles();
   const [isOpen, toggleOpen] = useState(false);
   const { isAuthenticated, connectionStatus } = props;
+  const pathname = history.location.pathname;
 
   // Redirect users depending on Web3 presence or not
   const handleSignInRedirect = () => {
@@ -336,7 +337,7 @@ const Header = (props) => {
 
   return (
     <div id="app-header" className={classes.headerContainer}>
-      <div className={history.location.pathname === '/join' ? classes.headerJoin : classes.header}>
+      <div className={pathname === '/join' ? classes.headerJoin : classes.header}>
         <Container>
           <Grid container justify={'space-between'} alignItems={'center'} className={classes.headerContent}>
             <Grid item lg={2} sm={4} xs={2}>

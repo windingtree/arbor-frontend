@@ -213,7 +213,6 @@ const WizardStep = (props) => {
         enableReinitialize={true}
         validate={validateForm}
         onSubmit={(values, /*{setSubmitting}*/) => {
-          console.log('@@@', values);
           extendOrgidJson(values);
           handleNext();
         }}

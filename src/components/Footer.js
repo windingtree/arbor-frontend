@@ -208,7 +208,7 @@ export default function Footer(props) {
             <Grid item container justify={'space-between'} alignItems={'center'} className={classes.copyrightInfoWrapper}>
               <Grid item>
                 <Typography variant={'caption'} className={classes.legalInfoLabel}>
-                  © 2020 Arbor
+                  © 2020 Winding Tree
                 </Typography>
               </Grid>
               <Grid item>
@@ -250,7 +250,7 @@ export default function Footer(props) {
 
 Footer.defaultProps = {
   socialLinks: [
-    { facebook: 'https://facebook.com/' },
+    { facebook: 'https://www.facebook.com/WindingTree' },
     { github: 'https://github.com/windingtree' },
     { twitter: 'https://blog.windingtree.com' },
     { medium: 'https://blog.windingtree.com/' },

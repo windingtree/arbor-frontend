@@ -158,19 +158,35 @@ const WizardStep = (props) => {
     return errors;
   };
 
+  const deepMerge = (target, source) => {
+  
+    for (const key of Object.keys(source)) {
+      
+      if (source[key].constructor === Object && target[key]) {
+        Object.assign(source[key], deepMerge(target[key], source[key]));
+      } else {
+        target[key] = source[key];
+      }
+    }
+  
+    return Object.assign(target || {}, source);
+  };
+
   const setInitialValues = () => {
     if (profileId) {
-      const orgiProfile = Object.assign({}, joinOrganizations[profileId]);
-      const email = orgiProfile.email;
-      delete orgiProfile.email;
-
-      const values = {
-        ...orgidJson,
-        ...orgiProfile
+      const clonJson = JSON.parse(JSON.stringify(orgidJson));
+      const clonProfile = JSON.parse(JSON.stringify(joinOrganizations[profileId]));
+      const email = clonProfile.email;
+      delete clonProfile.email;
+      const values = deepMerge(clonJson, clonProfile);
+      values.legalEntity.contacts = values.legalEntity.contacts ? values.legalEntity.contacts : [];      
+      if (values.legalEntity.contacts.length === 0) {
+        values.legalEntity.contacts.push({ email });
+      } else {
+        values.legalEntity.contacts[0].email = email;
       }
-      
-      values.legalEntity.contacts[0].email = email;
-      return values
+      console.log('1@@@@@@@@@@@@@@@@@@@@@@@', values);
+      return values;
     } else {
       return orgidJson
     }

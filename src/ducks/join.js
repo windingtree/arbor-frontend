@@ -112,8 +112,8 @@ function* getJoinRequestSaga({payload}) {
 function* postJoinRequestSaga({payload}) {
   try {
     const response = yield call(ApiPostJoinOrganizations, payload);
-    yield call(history.push, { pathname: '/email-sent' });
     yield put(postJoinSuccess(response));
+    yield call(history.push, { pathname: `/email-sent` }, { profileId: response.profileId });
   } catch(error) {
     yield put(postJoinFailure(error))
   }

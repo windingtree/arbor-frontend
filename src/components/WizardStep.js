@@ -185,7 +185,6 @@ const WizardStep = (props) => {
       } else {
         values.legalEntity.contacts[0].email = email;
       }
-      console.log('1@@@@@@@@@@@@@@@@@@@@@@@', values);
       return values;
     } else {
       return orgidJson

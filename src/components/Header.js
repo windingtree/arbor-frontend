@@ -47,11 +47,18 @@ const styles = makeStyles({
   header: {
     backgroundColor: colors.primary.white,
     zIndex: 100,
+    padding: '17px 0',
     borderBottom: `1px solid ${colors.greyScale.lightest}`,
     ['@media (max-width:960px)']: { // eslint-disable-line no-useless-computed-key
       position: 'fixed',
       width: '100%'
     }
+  },
+  headerJoin: {
+    backgroundColor: colors.greyScale.moreLighter,
+    zIndex: 100,
+    paddingBottom: '100px',
+    padding: '17px 0'
   },
   logoButton: {
     backgroundColor: 'white',
@@ -59,8 +66,8 @@ const styles = makeStyles({
     cursor: 'pointer'
   },
   logo: {
-    width: '89px',
-    height: '32px'
+    width: '150px',
+    height: '50px'
   },
   navigationContainer: {
     width: '100%',
@@ -329,95 +336,99 @@ const Header = (props) => {
 
   return (
     <div id="app-header" className={classes.headerContainer}>
-      <div className={classes.header}>
+      <div className={history.location.pathname === '/join' ? classes.headerJoin : classes.header}>
         <Container>
           <Grid container justify={'space-between'} alignItems={'center'} className={classes.headerContent}>
             <Grid item lg={2} sm={4} xs={2}>
               <button onClick={() => history.push('/')} className={classes.logoButton}>
-                <Logo viewBox={'0 0 90 32'} className={classes.logo}/>
+                <Logo viewBox={'0 0 90 32'} className={classes.logo} primary={colors.greyScale.darkBg}/>
               </button>
             </Grid>
-            <Hidden smDown>
-              <Grid item lg={isAuthenticated ? 6 : 4} sm={4} xs={6} container justify={'space-between'} className={classes.navigationContainer}>
-                <div className={classes.navLinksContainer}>
-                  <div className={classes.navLinksDirectoriesSearch}>
-                    <NavLink
-                      to="/directories"
-                      className={classes.navLink}
-                      activeClassName={classes.activeNavLink}
-                    >
-                      <Typography variant={'caption'} className={classes.linkTitle}>Directories</Typography>
-                    </NavLink>
-                    <NavLink
-                      to="/search"
-                      className={classes.navLink}
-                      activeClassName={classes.activeNavLink}
-                      style={{display: 'flex', alignItems: 'center'}}
-                    >
-                      <Typography variant={'caption'} className={classes.linkTitle}>Search</Typography>
-                      <SearchIcon
-                        width={'14px'}
-                        height={'14px'}
-                        viewBox={'0 0 14 14'}
-                        className={classes.searchIcon}
-                      />
-                    </NavLink>
+            {history.location.pathname !== '/join' &&
+              <Hidden smDown>
+                <Grid item lg={isAuthenticated ? 6 : 4} sm={4} xs={6} container justify={'space-between'} className={classes.navigationContainer}>
+                  <div className={classes.navLinksContainer}>
+                    <div className={classes.navLinksDirectoriesSearch}>
+                      <NavLink
+                        to="/directories"
+                        className={classes.navLink}
+                        activeClassName={classes.activeNavLink}
+                      >
+                        <Typography variant={'caption'} className={classes.linkTitle}>Directories</Typography>
+                      </NavLink>
+                      <NavLink
+                        to="/search"
+                        className={classes.navLink}
+                        activeClassName={classes.activeNavLink}
+                        style={{display: 'flex', alignItems: 'center'}}
+                      >
+                        <Typography variant={'caption'} className={classes.linkTitle}>Search</Typography>
+                        <SearchIcon
+                          width={'14px'}
+                          height={'14px'}
+                          viewBox={'0 0 14 14'}
+                          className={classes.searchIcon}
+                        />
+                      </NavLink>
+                    </div>
+                    {
+                      isAuthenticated ? (
+                        <div className={`${classes.xsHidden} ${classes.authenticatedBlock} `}>
+                          <NavLink
+                            to={'/trust'}
+                            className={classes.navLink}
+                            activeClassName={classes.activeNavLink}
+                          >
+                            <Typography variant={'caption'} className={classes.linkTitle} noWrap>
+                              Verification methods
+                            </Typography>
+                          </NavLink>
+                          <NavLink
+                            to={'/my-organizations'}
+                            className={classes.navLinkMyOrgs}
+                            activeClassName={classes.activeNavLink}
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'center',
+                              alignItems: 'center'
+                            }}
+                          >
+                            <HomeIcon
+                              width={'18px'}
+                              height={'15px'}
+                              viewBox={'0 0 15 18'}
+                              className={classes.navIcon}
+                            />
+                            <Typography variant={'caption'} className={classes.linkTitle} noWrap>
+                              My organizations
+                            </Typography>
+                          </NavLink>
+                        </div>
+                      ) : (
+                        <div className={`${classes.xsHidden} ${classes.unauthenticatedBlock} `}>
+                          <Button
+                            onClick={handleSignInRedirect}
+                            className={classes.authButton}
+                            style={{marginLeft: '20px'}}
+                          >
+                            <Typography variant={'subtitle2'} noWrap className={classes.buttonTitle}>
+                              Sign up / Sign in
+                            </Typography>
+                          </Button>
+                        </div>
+                      )
+                    }
                   </div>
-                  {
-                    isAuthenticated ? (
-                      <div className={`${classes.xsHidden} ${classes.authenticatedBlock} `}>
-                        <NavLink
-                          to={'/trust'}
-                          className={classes.navLink}
-                          activeClassName={classes.activeNavLink}
-                        >
-                          <Typography variant={'caption'} className={classes.linkTitle} noWrap>
-                            Verification methods
-                          </Typography>
-                        </NavLink>
-                        <NavLink
-                          to={'/my-organizations'}
-                          className={classes.navLinkMyOrgs}
-                          activeClassName={classes.activeNavLink}
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center'
-                          }}
-                        >
-                          <HomeIcon
-                            width={'18px'}
-                            height={'15px'}
-                            viewBox={'0 0 15 18'}
-                            className={classes.navIcon}
-                          />
-                          <Typography variant={'caption'} className={classes.linkTitle} noWrap>
-                            My organizations
-                          </Typography>
-                        </NavLink>
-                      </div>
-                    ) : (
-                      <div className={`${classes.xsHidden} ${classes.unauthenticatedBlock} `}>
-                        <Button
-                          onClick={handleSignInRedirect}
-                          className={classes.authButton}
-                          style={{marginLeft: '20px'}}
-                        >
-                          <Typography variant={'subtitle2'} noWrap className={classes.buttonTitle}>
-                            Sign up / Sign in
-                          </Typography>
-                        </Button>
-                      </div>
-                    )
-                  }
-                </div>
-              </Grid>
-            </Hidden>
-            <div className={classes.mobileMenuButtonContainer}>
-              <Button onClick={handleMobileMenuOpenState} className={classes.mobileMenuButton}>
-                <MenuIcon icon={isOpen ? MobileMenuIconClose : MobileMenuIcon}/>
-              </Button>
-            </div>
+                </Grid>
+              </Hidden>
+            }
+            {history.location.pathname !== '/join' &&
+              <div className={classes.mobileMenuButtonContainer}>
+                <Button onClick={handleMobileMenuOpenState} className={classes.mobileMenuButton}>
+                  <MenuIcon icon={isOpen ? MobileMenuIconClose : MobileMenuIcon}/>
+                </Button>
+              </div>
+            }
           </Grid>
           {!connectionStatus &&
             <Card className={classes.statusAlert}>
@@ -438,16 +449,18 @@ const Header = (props) => {
           }
         </Container>
       </div>
-      <Collapse in={isOpen} className={classes.mobileMenu}>
-        <Container>
-          {mobileMenuContent()}
-          <div className={classes.mobileMenuFootnoteWrapper}>
-            <Typography variant={'caption'} className={classes.mobileMenuFootnote}>
-              For full access use devices larger than 1024 px
-            </Typography>
-          </div>
-        </Container>
-      </Collapse>
+      {history.location.pathname !== '/join' &&
+        <Collapse in={isOpen} className={classes.mobileMenu}>
+          <Container>
+            {mobileMenuContent()}
+            <div className={classes.mobileMenuFootnoteWrapper}>
+              <Typography variant={'caption'} className={classes.mobileMenuFootnote}>
+                For full access use devices larger than 1024 px
+              </Typography>
+            </div>
+          </Container>
+        </Collapse>
+      }
     </div>
   )
 };

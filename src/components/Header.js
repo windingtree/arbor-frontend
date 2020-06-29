@@ -47,6 +47,7 @@ const styles = makeStyles({
   header: {
     backgroundColor: colors.primary.white,
     zIndex: 100,
+    padding: '17px 0',
     borderBottom: `1px solid ${colors.greyScale.lightest}`,
     ['@media (max-width:960px)']: { // eslint-disable-line no-useless-computed-key
       position: 'fixed',
@@ -56,7 +57,8 @@ const styles = makeStyles({
   headerJoin: {
     backgroundColor: colors.greyScale.moreLighter,
     zIndex: 100,
-    paddingBottom: '100px'
+    paddingBottom: '100px',
+    padding: '17px 0'
   },
   logoButton: {
     backgroundColor: 'white',
@@ -339,7 +341,7 @@ const Header = (props) => {
           <Grid container justify={'space-between'} alignItems={'center'} className={classes.headerContent}>
             <Grid item lg={2} sm={4} xs={2}>
               <button onClick={() => history.push('/')} className={classes.logoButton}>
-                <Logo viewBox={'0 0 90 32'} className={classes.logo}/>
+                <Logo viewBox={'0 0 90 32'} className={classes.logo} primary={colors.greyScale.darkBg}/>
               </button>
             </Grid>
             {history.location.pathname !== '/join' &&

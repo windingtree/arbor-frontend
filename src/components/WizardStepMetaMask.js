@@ -20,7 +20,7 @@ const WizardStep = (props) => {
   const { index, orgidJson, orgidHash, orgidUri, address, parent, solt,
     data: { longName, description, cta }, 
     action, stepTitle = true } = props;
-  console.log(`props: ${JSON.stringify(props)}`);
+  // console.log(`props: ${JSON.stringify(props)}`);
 
   // Define the submit function
   const handleSubmit = async (e) => {

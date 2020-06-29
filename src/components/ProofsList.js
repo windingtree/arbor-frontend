@@ -313,7 +313,7 @@ const ProofsList = props => {
                         {...proof}
                         isRefreshing={isRefreshing}
                         onRemove={assertToRemove => handleAssertionRemove(assertToRemove, proof)}
-                        onClick={() => openWizard(proof)}
+                        onClick={canManage ? () => openWizard(proof) : () => {}}
                     />
                 ))}
             </Box>

@@ -1,7 +1,8 @@
 import _ from 'lodash';
 import {all, takeEvery, call, put, select} from 'redux-saga/effects';
 import {createSelector} from "reselect";
-import {keccak256} from 'js-sha3';
+// import {keccak256} from 'js-sha3';
+import Web3 from 'web3';
 import {appName} from "../utils/constants";
 import {callApi} from "../redux/api";
 import {getWeb3, getOrgidContract} from "../web3/w3";
@@ -183,7 +184,7 @@ export default function reducer( state = initialState, action) {
         isFetching: false,
         isFetched: true,
         orgidJson: orgidJsonUpdates,
-        orgidHash: `0x${keccak256(JSON.stringify(orgidJsonUpdates, null, 2))}`,
+        orgidHash: Web3.utils.soliditySha3(JSON.stringify(orgidJsonUpdates, null, 2)),
         error: null
       };
     
@@ -214,7 +215,7 @@ export default function reducer( state = initialState, action) {
         isFetching: false,
         isFetched: true,
         orgidJson: orgidJsonUpdates,
-        orgidHash: `0x${keccak256(JSON.stringify(orgidJsonUpdates, null, 2))}`,
+        orgidHash: Web3.utils.soliditySha3(JSON.stringify(orgidJsonUpdates, null, 2)),
         error: null
       });
 
@@ -229,7 +230,7 @@ export default function reducer( state = initialState, action) {
         isFetching: false,
         isFetched: true,
         orgidJson: updatedJsonWithAgentKey,
-        orgidHash: `0x${keccak256(JSON.stringify(updatedJsonWithAgentKey, null, 2))}`,
+        orgidHash: Web3.utils.soliditySha3(JSON.stringify(updatedJsonWithAgentKey, null, 2)),
         error: null
       });
     case REMOVE_AGENT_KEY_SUCCESS:
@@ -243,7 +244,7 @@ export default function reducer( state = initialState, action) {
         isFetching: false,
         isFetched: true,
         orgidJson: updatedJsonWithoutAgentKey,
-        orgidHash: `0x${keccak256(JSON.stringify(updatedJsonWithoutAgentKey, null, 2))}`,
+        orgidHash: Web3.utils.soliditySha3(JSON.stringify(updatedJsonWithoutAgentKey, null, 2)),
         error: null
       });
     case ADD_ASSERTION_SUCCESS:
@@ -263,7 +264,7 @@ export default function reducer( state = initialState, action) {
         isFetching: false,
         isFetched: true,
         orgidJson: updatedJsonWithAddedAssertion,
-        orgidHash: `0x${keccak256(JSON.stringify(updatedJsonWithAddedAssertion, null, 2))}`,
+        orgidHash: Web3.utils.soliditySha3(JSON.stringify(updatedJsonWithAddedAssertion, null, 2)),
         error: null
       });
     case REMOVE_ASSERTION_SUCCESS:
@@ -279,7 +280,7 @@ export default function reducer( state = initialState, action) {
         isFetching: false,
         isFetched: true,
         orgidJson: updatedJsonWithRemovedAssertion,
-        orgidHash: `0x${keccak256(JSON.stringify(updatedJsonWithRemovedAssertion, null, 2))}`,
+        orgidHash: Web3.utils.soliditySha3(JSON.stringify(updatedJsonWithRemovedAssertion, null, 2)),
         error: null
       });
     case SAVE_MEDIA_TO_ARBOR_SUCCESS:
@@ -292,7 +293,7 @@ export default function reducer( state = initialState, action) {
         isFetching: false,
         isFetched: true,
         orgidJson: orgidJsonUpdates,
-        orgidHash: `0x${keccak256(JSON.stringify(orgidJsonUpdates, null, 2))}`,
+        orgidHash: Web3.utils.soliditySha3(JSON.stringify(orgidJsonUpdates, null, 2)),
         error: null
       });
     case SAVE_ORGID_JSON_TO_ARBOR_SUCCESS:
@@ -963,8 +964,12 @@ function ApiSendChangeOrgidUriAndHash(data, gasPrice) {
   const orgidId = orgidJson.id.replace('did:orgid:', '');
 
   return new Promise((resolve, reject) => {
-    orgidContract.methods.changeOrgJsonUriAndHash(
-      orgidId, orgidUri, orgidHash
+    orgidContract.methods.setOrgJson(
+      orgidId,
+      orgidHash,
+      orgidUri,
+      '',
+      ''
     )
 
     .send(

@@ -132,6 +132,7 @@ export default {
           subtype: 'email',
           name: 'Email',
           orgidJsonPath: 'email',
+          required: true,
           validate: value => {
             if (value && !value.trim().match(/^[\w.-]+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) {
               return 'Wrong email format';

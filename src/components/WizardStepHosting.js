@@ -127,7 +127,7 @@ const WizardStepHosting = (props) => {
       </div>
 
       <Formik
-        initialValues={Object.assign({}, { hostingType: 'default-hosting', orgidUri: orgidUri })}
+        initialValues={Object.assign({}, { hostingType: 'default-hosting', orgidUri: orgidUri || '' })}
         validate={values => {
           const errors = {};
           const { error } = scheme.validate(values.uri);

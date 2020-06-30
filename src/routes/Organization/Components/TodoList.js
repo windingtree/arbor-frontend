@@ -14,6 +14,7 @@ import MaxTrustLifIcon from '../../../assets/SvgComponents/max-trust-icon-lif.sv
 import MaxTrustDepositIcon from '../../../assets/SvgComponents/max-trust-icon-centred.svg';
 import MaxTrustSocialIcon from '../../../assets/SvgComponents/max-trust-icon-social.svg';
 import MaxTrustSSLIcon from '../../../assets/SvgComponents/max-trust-icon-ssl.svg';
+import {LIF_DEPOSIT_AMOUNT} from '../../../utils/constants'
 
 const allTodo = {
   website: {
@@ -46,7 +47,7 @@ const allTodo = {
     state: {},
     icon: lifIcon,
     title: 'Submit your Líf deposit and participate in platform governance ',
-    description: 'Líf deposit serves as an anti-spam protection. You are required to submit 1000 Líf ($100) for every organization profile you create.'
+    description: `Líf deposit serves as an anti-spam protection. You are required to submit at least ${LIF_DEPOSIT_AMOUNT} Líf for every organization profile you create.`
   },
 };
 
@@ -67,7 +68,7 @@ export const getTodo = (organization) => {
     todo.push(Object.assign({}, allTodo.website, {state: {website, isWebsiteVerified: organization.isWebsiteProved}}));
   }
   // SOCIAL
-  if ((contacts.twitter && !organization.isSocialTWProved) || (contacts.facebook && !organization.isSocialFBProved) || (contacts.instagram && !organization.isSocialIGProved)) {
+  if ((contacts.twitter && !organization.isSocialTWProved) || (contacts.facebook && !organization.isSocialFBProved) || (contacts.instagram && !organization.isSocialIGProved) || (contacts.linkedin && !organization.isSocialLNProved)) {
     todo.push(Object.assign({}, allTodo.social, {state: {contacts, id, orgid }}));
   }
   // SSL

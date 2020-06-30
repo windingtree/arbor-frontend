@@ -7,7 +7,7 @@ import {Formik} from 'formik';
 import _ from 'lodash';
 
 import DialogComponent from './Dialog';
-import {extendOrgidJson, selectWizardOrgidJson} from '../ducks/wizard'
+import {extendOrgidJson, selectWizardOrgidJson} from '../ducks/wizard'; //validateOrgidSchema
 import {Section} from './index';
 import ArrowLeftIcon from '../assets/SvgComponents/ArrowLeftIcon';
 
@@ -79,18 +79,13 @@ export const styles = makeStyles({
 });
 
 const WizardStep = (props) => {
+  const profileId = sessionStorage.getItem('profileId');
   const [isModalOpen, toggleModalOpenState] = useState(false);
   const classes = styles();
 
-  const {index, extendOrgidJson, data: {longName, description, sections, cta}, handleNext} = props;
-  // next line collect from "sections" all fields with non empty "schema" to object { [fieldName]:schema }
-  const validators = sections ?
-    _.chain(_.filter(_.flatten(sections.map(({fields}) => fields.map(({orgidJsonPath, schema}) => ({
-      orgidJsonPath,
-      schema
-    })))), 'schema')).keyBy('orgidJsonPath').mapValues('schema').value() :
-    {};
-
+  const {index, extendOrgidJson, data: {longName, description, sections, cta}, 
+    handleNext, orgidJson, joinOrganizations} = props;
+  // Modal to provide more details on how to obtain Ether
   const renderModal = () => {
     return (
       <DialogComponent
@@ -104,7 +99,7 @@ const WizardStep = (props) => {
             <Typography className={classes.paragraph}>It is common to obtain Ether through online exchange platforms that
               operate in your country and accept your preferred currency. Reputable exchange platforms have strict KYC
               processes and will ask you to share your personal data.</Typography>
-            <Typography className={classes.paragraph}>MetaMask is linked with two exchanges, <b>Coinbase</b> and <b>ShapeShift</b>, so you can purchase Ether directly from your account.</Typography>
+            <Typography className={classes.paragraph}>MetaMask is linked with two exchanges, <b>Wyre</b> and <b>Coinswitch</b>, so you can purchase Ether directly from your account.</Typography>
             <Typography className={classes.paragraph}>It is also possible to buy Ether from crypto
               ATMs or through Peer-to-Peer options like <b>LocalCryptos</b>, <b>Hodl Hodl</b> or similar services. The latter can be
               private or centralized and offer a wide selection of buying and selling options, from in-person meetings to
@@ -127,6 +122,75 @@ const WizardStep = (props) => {
     toggleModalOpenState(false)
   };
 
+  // Validate the form
+  const validateForm = (values) => {
+    const errors = {};
+    const validators = sections
+      ? sections
+          .reduce(
+            (a, v) => {
+              return [
+                ...a,
+                ...v.fields.map(
+                  f => ({
+                    orgidJsonPath: f.orgidJsonPath,
+                    validate: f.validate
+                  })
+                )
+              ];
+            },
+            []
+          )
+      : [];
+    
+    validators.forEach(v => {
+      const value = _.get(values, v.orgidJsonPath, undefined);
+      if (v.validate) {
+        const error = v.validate(value);
+        if (error) {
+          errors[v.orgidJsonPath] = error;
+        }
+      }
+    });
+    
+    // Return errors
+    console.log('ERRORS', errors)
+    return errors;
+  };
+
+  const deepMerge = (target, source) => {
+  
+    for (const key of Object.keys(source)) {
+      
+      if (source[key].constructor === Object && target[key]) {
+        Object.assign(source[key], deepMerge(target[key], source[key]));
+      } else {
+        target[key] = source[key];
+      }
+    }
+  
+    return Object.assign(target || {}, source);
+  };
+
+  const setInitialValues = () => {
+    if (profileId) {
+      const clonJson = JSON.parse(JSON.stringify(orgidJson));
+      const clonProfile = JSON.parse(JSON.stringify(joinOrganizations[profileId]));
+      const email = clonProfile.email;
+      delete clonProfile.email;
+      const values = deepMerge(clonJson, clonProfile);
+      values.legalEntity.contacts = values.legalEntity.contacts ? values.legalEntity.contacts : [];      
+      if (values.legalEntity.contacts.length === 0) {
+        values.legalEntity.contacts.push({ email });
+      } else {
+        values.legalEntity.contacts[0].email = email;
+      }
+      return values;
+    } else {
+      return orgidJson
+    }
+  }
+  
   return (
     <div key={index}>
       <Typography variant={'h3'} className={classes.stepTitle}>Step {index + 1}. {longName}</Typography>
@@ -145,22 +209,9 @@ const WizardStep = (props) => {
       }
 
       <Formik
-        initialValues={Object.assign({}, props.orgidJson)}
+        initialValues={Object.assign({}, setInitialValues())}
         enableReinitialize={true}
-        validate={values => {
-          const errors = {};
-          _.each(validators, (validator, orgidJsonPath) => {
-            const value = _.get(values, orgidJsonPath, false);
-            if (value !== false) {
-              const {error} = validator.validate(value);
-              if (error) {
-                _.set(errors, orgidJsonPath, error.toString());
-              }
-            }
-          });
-          if (!_.isEmpty(errors)) console.log('ERRORS', errors);
-          return errors;
-        }}
+        validate={validateForm}
         onSubmit={(values, /*{setSubmitting}*/) => {
           extendOrgidJson(values);
           handleNext();
@@ -173,15 +224,17 @@ const WizardStep = (props) => {
             handleChange,
             handleBlur,
             handleSubmit,
-            isSubmitting,
+            isSubmitting
             /* and other goodies */
           }) => (
           <form onSubmit={handleSubmit}>
             {
-              !sections ?
-                <div/>
+              !sections
+                ? <div/>
                 : sections.map((section, index) => {
-                  // console.log(`<Section key="${index}" name="${section.name}" ... />`);
+                  //console.log(`<Section key="${index}" name="${section.name}" ... />`);
+                  //console.log(`[In WizardStep] Loading section ${section.name} and index ${index} with values: ${JSON.stringify(values)}`);
+                  
                   return (
                     <Section
                       key={index}
@@ -210,6 +263,7 @@ const WizardStep = (props) => {
 
 const mapStateToProps = state => {
   return {
+    joinOrganizations: state.join.joinOrganizations,
     orgidJson: selectWizardOrgidJson(state)
   }
 };

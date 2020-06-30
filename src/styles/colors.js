@@ -17,12 +17,14 @@ export default {
   greyScale: {
     darkest: '#42424F',
     dark: '#5E666A',
+    darkBg: '#3F4244',
     common: '#8F999F',
     light: '#D9DBE1',
     lighter: '#E6E7EB',
     moreLighter: '#FAFBFC',
     lightest: '#EFEFEF',
-    inputBg: '#FAFAFA'
+    inputBg: '#FAFAFA',
+    info: 'rgba(224, 224, 224, .2)'
   },
   social: {
     facebook: '#4873C3',

@@ -23,6 +23,10 @@ import Wizard from './Wizard';
 import Edit from './Edit';
 import Profile from './Profile';
 
+import CreateAccount from '../components/CreateAccount';
+import ConfirmAccount from '../components/ConfirmAccount';
+import EmailSent from '../components/EmailSent';
+
 class RootRouter extends Component {
   render() {
     const { isAuthenticated } = this.props;
@@ -60,7 +64,7 @@ class RootRouter extends Component {
             path='/authorization'
             component={Authorization}
           />
-          <DefaultRoute
+          <PrivateRoute
             isAuthenticated={isAuthenticated}
             path='/trust'
             component={Trust}
@@ -94,6 +98,21 @@ class RootRouter extends Component {
             isAuthenticated={isAuthenticated}
             path='/my-organizations'
             component={Profile}
+          />
+          <DefaultRoute
+            isAuthenticated={isAuthenticated}
+            path='/join'
+            component={CreateAccount}
+          />
+          <PrivateRoute
+            isAuthenticated={isAuthenticated}
+            path='/my-organizations/:profileId?'
+            component={ConfirmAccount}
+          />
+          <DefaultRoute
+            isAuthenticated={isAuthenticated}
+            path='/email-sent'
+            component={EmailSent}
           />
           <Route
             path='/404' component={NotFound}/>

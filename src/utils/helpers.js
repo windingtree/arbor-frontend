@@ -1,4 +1,5 @@
-import { keccak256 } from "js-sha3";
+import Web3 from 'web3';
+// import { keccak256 } from "js-sha3";
 import DefaultHotelImage1 from '../assets/images/default-image-hotel-1.svg';
 import DefaultHotelImage2 from '../assets/images/default-image-hotel-2.svg';
 import DefaultHotelImage3 from '../assets/images/default-image-hotel-3.svg';
@@ -14,7 +15,7 @@ import DefaultAirlineImage3 from '../assets/images/default-image-airline-3.svg';
 import DefaultAirlineImage4 from '../assets/images/default-image-airline-4.svg';
 import DefaultAirlineImage5 from '../assets/images/default-image-airline-5.svg';
 import DefaultAirlineImage6 from '../assets/images/default-image-airline-6.svg';
-import { ORGID_ABI, ORGID_PROXY_ADDRESS, LIF_TOKEN_ABI, LIF_TOKEN_PROXY_ADDRESS } from "./constants";
+//import { ORGID_ABI, ORGID_PROXY_ADDRESS, LIF_TOKEN_ABI, LIF_TOKEN_PROXY_ADDRESS } from "./constants";
 
 export const copyStrToClipboard = str => navigator.clipboard.writeText(str).then(resolve => resolve);
 export const strCenterEllipsis = str => str ? `${str.substr(0, 4)}...${str.substr(-4, 4)}` : '0xUNDEFINED';
@@ -35,10 +36,20 @@ export const setRandomDefaultImage = (orgid, directory) => {
   return arrayOfDefaultImages[index];
 };
 
-export const idGenerator = () => {
-  return `did:orgid:0x${keccak256(`${Date.now()}${Math.random()}`)}`
+// export const idGenerator = () => {
+//   return `did:orgid:0x${keccak256(`${Date.now()}${Math.random()}`)}`
+// };
+
+export const generateSolt = () => Web3.utils.keccak256(Math.random().toString());
+
+export const createIdWithSolt = (address, solt) => {
+  return `did:orgid:${Web3.utils.soliditySha3(
+    address,
+    solt
+  )}`;
 };
 
+/*
 export const getWeb3 = () => {
   if (typeof window.web3 === 'undefined') {
     alert('MetaMask not found. If you just install MetaMask please refresh page to continue');
@@ -72,3 +83,4 @@ export const getLifTokenContract = () => {
   const web3 = getWeb3();
   return web3.eth.contract(LIF_TOKEN_ABI).at(LIF_TOKEN_PROXY_ADDRESS);
 };
+*/

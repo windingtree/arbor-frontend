@@ -21,7 +21,7 @@ import _ from 'lodash';
 
 const styles = makeStyles({
   screenHeader: {
-    padding: '60px 0 20px 0',
+    padding: '60px 0 20px 0'
   },
   buttonWrapper: {
     marginLeft: '-7px'
@@ -96,20 +96,19 @@ const styles = makeStyles({
 
 function Directory(props) {
   const classes = styles();
-  const { items, meta: { per_page, total, pages} }  = props;
+  const { items, fetchSearchOrganizations, meta: { per_page, total, pages} }  = props;
   const [forcePage, setForcePage] = useState(undefined);
   const [countryFilterValue, setCountryFilterValue] = useState('');
   const currentDirectory = props.match.params.directory;
 
-  const data = {
-    directory: currentDirectory,
-    page: 1,
-    per_page: per_page
-  };
-
   useEffect(() => {
-    props.fetchSearchOrganizations(data);
-  }, [currentDirectory]); // eslint-disable-line react-hooks/exhaustive-deps
+    const data = {
+      directory: currentDirectory,
+      page: 1,
+      per_page: per_page
+    };
+    fetchSearchOrganizations(data);
+  }, [currentDirectory, per_page, fetchSearchOrganizations]);
 
   const CardsList = () => {
     let OrgCards = items.map((item, index) => {

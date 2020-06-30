@@ -2,16 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { connect } from "react-redux";
 import _ from 'lodash';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { Container, Button, Typography, Stepper, StepConnector, Step, StepLabel, Grid } from "@material-ui/core";
+import {
+  Container, 
+  Button, 
+  Typography, 
+  Stepper, 
+  StepConnector, 
+  Step, 
+  StepLabel, 
+  Grid,
+  CircularProgress
+} from "@material-ui/core";
 
 import history from '../redux/history';
 import { rewriteOrgidJson, selectPendingState, selectSuccessState } from "../ducks/wizard";
+import { selectSignInAddress } from '../ducks/signIn';
 
 import { WizardStep, WizardStepHosting, WizardStepMetaMask } from "../components";
 import { wizardConfig as legalEntity } from '../utils/legalEntity'
 import { wizardConfig as organizationalUnit} from '../utils/organizationalUnit'
 
-import { idGenerator } from "../utils/helpers";
+import { generateSolt, createIdWithSolt } from "../utils/helpers";
 
 import BgPattern from '../assets/SvgComponents/wizard-pattern.svg';
 import ArrowLeftIcon from '../assets/SvgComponents/ArrowLeftIcon';
@@ -127,6 +138,9 @@ const styles = makeStyles({
   },
   successButtonLabel: {
     color: colors.primary.white
+  },
+  progress: {
+    marginLeft: '20px',
   }
 });
 
@@ -162,10 +176,30 @@ const useStepStyles = makeStyles({
   },
 });
 
+const skeletons = {
+  'legalEntity': {
+    'contacts': [],
+    'locations': []
+  },
+  'organizationalUnit': {
+    'address': {},
+    'media': {'logo':''},
+    'type': [],
+    'contacts': [],
+    'description': ''
+  }
+};
+
 const WizardGeneral = (props) => {
-  const { pendingTransaction, successTransaction } = props;
+  const {
+    pendingTransaction,
+    successTransaction,
+    address,
+    rewriteOrgidJson
+  } = props;
   const classes = styles();
   const [activeStep, setActiveStep] = useState(0);
+  const [solt, setSolt] = useState();
   const wizardType = _.get(history, 'location.state.type', 'legalEntity');
   const action = _.get(history, 'location.state.action', 'create');
   const jsonContent = _.get(history, 'location.state.jsonContent', {});
@@ -177,18 +211,21 @@ const WizardGeneral = (props) => {
 
   useEffect(() => {
     if(id) {
-      props.rewriteOrgidJson(jsonContent)
+      rewriteOrgidJson(jsonContent)
     }
-  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [id, rewriteOrgidJson, jsonContent]);
 
   useEffect(() => {
-    props.rewriteOrgidJson({
-      "@context": "https://windingtree.com/ns/did/v1",
-      "id": idGenerator(),
-      "created": new Date().toJSON(),
-      [wizardType]: {}
+    const idSolt = generateSolt();
+    setSolt(idSolt); 
+    rewriteOrgidJson({
+      id: createIdWithSolt(address, idSolt),
+      created: new Date().toJSON(),
+      [wizardType]: skeletons[wizardType]
     })
-  }, [wizardType]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [wizardType, address, rewriteOrgidJson]);
+
+  // console.log('@@@@@@@@@@@@@@@', solt);
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -199,9 +236,43 @@ const WizardGeneral = (props) => {
     const { type } = content;
 
     switch (type) {
-      case 'step': return <WizardStep data={content} action={action} handleNext={handleNext} key={stepIndex} index={stepIndex}/>;
-      case 'step_hosting': return <WizardStepHosting data={content} action={action} handleNext={handleNext} key={stepIndex} index={stepIndex}/>;
-      case 'step_metamask': return <WizardStepMetaMask data={content} action={action} handleNext={handleNext} key={stepIndex} index={stepIndex} parent={parent}/>;
+      // One of the initial steps
+      case 'step': 
+        return (
+          <WizardStep 
+            data={content} 
+            action={action}
+            handleNext={handleNext}
+            key={stepIndex}
+            index={stepIndex}/>
+        );
+
+      // Hosting step
+      case 'step_hosting': 
+        return (
+          <WizardStepHosting
+            data={content}
+            action={action}
+            handleNext={handleNext}
+            key={stepIndex}
+            index={stepIndex}/>
+        );
+      
+      // Transaction sending step
+      case 'step_metamask': 
+        return (
+          <WizardStepMetaMask
+            data={content}
+            action={action}
+            handleNext={handleNext}
+            key={stepIndex}
+            index={stepIndex}
+            parent={parent}
+            solt={solt}
+          />
+        );
+      
+      // Default Step - Should not happen
       default: return (
         <div key={stepIndex}>Step <pre>${content.name}</pre> has unknown type: <pre>{content.type}</pre></div>
       );
@@ -257,7 +328,19 @@ const WizardGeneral = (props) => {
               <div className={classes.pendingContentWrapper}>
                 <img src={PendingTransactionIllustration} alt={'illustration'} className={classes.pendingIllustration}/>
                 <div className={classes.pendingTextContainer}>
-                  <Typography variant={'h3'} className={classes.pendingTitle}>Almost there!</Typography>
+                  <Grid container alignItems={'center'}>
+                    <Grid item>
+                      <Typography variant={'h3'} className={classes.pendingTitle}>Almost there!</Typography>
+                    </Grid>
+                    <Grid item>
+                      <CircularProgress 
+                        className={classes.progress}
+                        variant='indeterminate'
+                        size={20}
+                        thickness={4}
+                      />
+                    </Grid>
+                  </Grid>
                   <Typography variant={'subtitle2'} className={classes.pendingSubtitle}>Creating your organization profile might take some time. You can wait here or add another organization in the meantime. We will let you know once everything is ready. </Typography>
                 </div>
                 <div className={classes.pendingButtonWrapper}>
@@ -320,7 +403,8 @@ const WizardGeneral = (props) => {
 const mapStateToProps = state => {
   return {
     pendingTransaction: selectPendingState(state),
-    successTransaction: selectSuccessState(state)
+    successTransaction: selectSuccessState(state),
+    address: selectSignInAddress(state)
   }
 };
 

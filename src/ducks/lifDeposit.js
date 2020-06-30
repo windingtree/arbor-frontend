@@ -1,7 +1,8 @@
 import { createSelector } from 'reselect';
 import { all, call, put, takeEvery, select } from 'redux-saga/effects';
 import { appName, LIF_DEPOSIT_AMOUNT, ORGID_PROXY_ADDRESS } from '../utils/constants';
-import { getOrgidContract, getLifTokenContract, getCurrentBlockNumber, getGasPrice } from '../utils/helpers'
+import { getOrgidContract, getLifTokenContract, getCurrentBlockNumber, getWeb3 } from '../web3/w3'
+import { ApiGetGasPrice } from './utils/ethereum';
 import { selectSignInAddress } from "./signIn";
 
 // region == [CONSTANTS] ===============================================
@@ -23,6 +24,14 @@ const MAKE_DEPOSIT_FAILURE = `${prefix}/MAKE_DEPOSIT_FAILURE`;
 const REQUEST_WITHDRAWAL_REQUEST = `${prefix}/REQUEST_WITHDRAWAL_REQUEST`;
 const REQUEST_WITHDRAWAL_SUCCESS = `${prefix}/REQUEST_WITHDRAWAL_SUCCESS`;
 const REQUEST_WITHDRAWAL_FAILURE = `${prefix}/REQUEST_WITHDRAWAL_FAILURE`;
+
+const WITHDRAWAL_REQUEST = `${prefix}/WITHDRAWAL_REQUEST`;
+const WITHDRAWAL_SUCCESS = `${prefix}/WITHDRAWAL_SUCCESS`;
+const WITHDRAWAL_FAILURE = `${prefix}/WITHDRAWAL_FAILURE`;
+
+const REQUEST_FAUCET_REQUEST = `${prefix}/REQUEST_FAUCET_REQUEST`;
+const REQUEST_FAUCET_SUCCESS = `${prefix}/REQUEST_FAUCET_SUCCESS`;
+const REQUEST_FAUCET_FAILURE = `${prefix}/REQUEST_FAUCET_FAILURE`;
 
 const initialState = {
   isFetching: false,
@@ -51,6 +60,8 @@ export default function reducer(state = initialState, action) {
     case ALLOW_DEPOSIT_REQUEST:
     case MAKE_DEPOSIT_REQUEST:
     case REQUEST_WITHDRAWAL_REQUEST:
+    case WITHDRAWAL_REQUEST:
+    case REQUEST_FAUCET_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
         isFetched: false,
@@ -67,6 +78,8 @@ export default function reducer(state = initialState, action) {
     case ALLOW_DEPOSIT_SUCCESS:
     case MAKE_DEPOSIT_SUCCESS:
     case REQUEST_WITHDRAWAL_SUCCESS:
+    case WITHDRAWAL_SUCCESS:
+    case REQUEST_FAUCET_SUCCESS:
       return Object.assign({}, state, {
         isFetching: false,
         isFetched: true,
@@ -77,6 +90,8 @@ export default function reducer(state = initialState, action) {
     case ALLOW_DEPOSIT_FAILURE:
     case MAKE_DEPOSIT_FAILURE:
     case REQUEST_WITHDRAWAL_FAILURE:
+    case WITHDRAWAL_FAILURE:
+    case REQUEST_FAUCET_FAILURE:
       return Object.assign({}, state, {
         isFetching: false,
         isFetched: false,
@@ -94,6 +109,11 @@ const stateSelector = state => state[moduleName];
 export const selectLifTokenBalance = createSelector(
   stateSelector,
   deposit => deposit.lifTokenBalance
+);
+
+export const selectLifDepositDataFetching = createSelector(
+  stateSelector,
+  deposit => deposit.isFetching
 );
 
 export const selectLifTokenAllowanceAmountForOrgId = createSelector(
@@ -124,6 +144,11 @@ export const selectOrgIdLifWithdrawalTime =  createSelector(
 export const selectCurrentBlockNumber =  createSelector(
   stateSelector,
   deposit => deposit.currentBlockNumber
+);
+
+export const selectError = createSelector(
+  stateSelector,
+  deposit => deposit.error ? deposit.error.message : deposit.error
 );
 
 
@@ -200,6 +225,13 @@ export function requestWithdrawal(payload) {
   }
 }
 
+export function withdrawDeposit(payload) {
+  return {
+    type: WITHDRAWAL_REQUEST,
+    payload
+  }
+}
+
 function requestWithdrawalSuccess(payload) {
   return {
     type: REQUEST_WITHDRAWAL_SUCCESS,
@@ -210,6 +242,41 @@ function requestWithdrawalSuccess(payload) {
 function requestWithdrawalFailure(error) {
   return {
     type: REQUEST_WITHDRAWAL_FAILURE,
+    error
+  }
+}
+
+function withdrawalSuccess(payload) {
+  return {
+    type: WITHDRAWAL_SUCCESS,
+    payload
+  }
+}
+
+function withdrawalFailure(error) {
+  return {
+    type: WITHDRAWAL_FAILURE,
+    error
+  }
+}
+
+export function requestFaucet(payload) {
+  return {
+    type: REQUEST_FAUCET_REQUEST,
+    payload
+  }
+}
+
+function requestFaucetSuccess(payload) {
+  return {
+    type: REQUEST_FAUCET_SUCCESS,
+    payload
+  }
+}
+
+function requestFaucetFailure(error) {
+  return {
+    type: REQUEST_FAUCET_FAILURE,
     error
   }
 }
@@ -227,32 +294,36 @@ function* enrichLifDataSaga({payload}) {
     console.log('userAddress', userAddress);
     // lifTokenBalance
     console.log('>>>', 'yield call(ApiGetLifTokenBalance, userAddress)');
-    const lifTokenBalance = yield call(ApiGetLifTokenBalance, userAddress);
-    // lifTokenAllowanceAmountForOrgId
-    console.log('>>>', 'yield call(lifTokenAllowanceAmountForOrgId, userAddress)');
-    const lifTokenAllowanceAmountForOrgId = yield call(ApiGetLifTokenAllowanceAmountForOrgId, userAddress);
+    let lifTokenBalance;
+    let lifTokenAllowanceAmountForOrgId;
+
+    if (userAddress) {
+      lifTokenBalance = yield call(ApiGetLifTokenBalance, userAddress);
+      console.log('balance', lifTokenBalance);
+      // lifTokenAllowanceAmountForOrgId
+      console.log('>>>', 'yield call(lifTokenAllowanceAmountForOrgId, userAddress)');
+      lifTokenAllowanceAmountForOrgId = yield call(ApiGetLifTokenAllowanceAmountForOrgId, userAddress);
+    }
+    
     // OrgIdLifTokenDepositedAmount
-    const {
-      deposit: orgIdLifDepositAmount
-    } = yield call(ApiGetOrgIdLifTokenDepositedAmount, orgid);
+    let orgIdLifDepositAmount = yield call(ApiGetOrgIdLifTokenDepositedAmount, orgid);
     // lifTokenWithdrawDelay
     // OrgIdLifTokenWithdrawalRequest
     const {
-      exist: orgIdLifWithdrawalExist,
-      value: orgIdLifWithdrawalValue,
-      withdrawTime: orgIdLifWithdrawalTime,
-  } = yield call(ApiGetOrgIdLifTokenWithdrawalRequest, userAddress);
-    console.log('balance', lifTokenBalance);
+      exist,
+      value,
+      withdrawTime,
+    } = yield call(ApiGetOrgIdLifTokenWithdrawalRequest, orgid);
 
     const currentBlockNumber = yield call(ApiGetCurrentBlockNumber);
 
     yield put(enrichLifDataSuccess({
-      lifTokenBalance,
-      lifTokenAllowanceAmountForOrgId,
-      orgIdLifDepositAmount,
-      orgIdLifWithdrawalExist,
-      orgIdLifWithdrawalValue,
-      orgIdLifWithdrawalTime,
+      lifTokenBalance: Number(lifTokenBalance),
+      lifTokenAllowanceAmountForOrgId: Number(lifTokenAllowanceAmountForOrgId),
+      orgIdLifDepositAmount: Number(orgIdLifDepositAmount),
+      orgIdLifWithdrawalExist: Boolean(exist),
+      orgIdLifWithdrawalValue: Number(value),
+      orgIdLifWithdrawalTime: Number(withdrawTime) * 1000,
       currentBlockNumber
     }));
   } catch(error) {
@@ -261,11 +332,12 @@ function* enrichLifDataSaga({payload}) {
 }
 
 function* allowDepositSaga({payload})  {
-  console.log('makeDepositSaga', payload);
+  console.log('allowDepositSaga', payload);
   try {
     const userAddress = yield select(selectSignInAddress);
+    const gasPrice = yield call(ApiGetGasPrice);
 
-    const isSuccess = yield call(ApiIncreaseAllowance, userAddress);
+    const isSuccess = yield call(ApiIncreaseAllowance, userAddress, gasPrice);
     if(!isSuccess) throw 'Unable allow deposit'; // eslint-disable-line  no-throw-literal
     yield put(allowDepositSuccess({}));
     yield put(enrichLifData(payload));
@@ -279,8 +351,9 @@ function* makeDepositSaga({payload}) {
   try {
     const userAddress = yield select(selectSignInAddress);
     const { orgid } = payload;
+    const gasPrice = yield call(ApiGetGasPrice);
 
-    yield call(ApiAddDeposit, userAddress, orgid);
+    yield call(ApiAddDeposit, userAddress, orgid, gasPrice);
     yield put(makeDepositSuccess({}));
     yield put(enrichLifData(payload));
   } catch(error) {
@@ -293,12 +366,49 @@ function* requestWithdrawalSaga({payload}) {
   try {
     const userAddress = yield select(selectSignInAddress);
     const { orgid } = payload;
+    const gasPrice = yield call(ApiGetGasPrice);
 
-    yield call(ApiPostWithdrawalRequest, userAddress, orgid);
+    yield call(ApiPostWithdrawalRequest, userAddress, orgid, gasPrice);
     yield put(requestWithdrawalSuccess({}));
     yield put(enrichLifData(payload));
   } catch(error) {
     yield put(requestWithdrawalFailure(error))
+  }
+}
+
+function* withdrawDepositSaga({payload}) {
+  console.log('withdrawDepositSaga', payload);
+  try {
+    const userAddress = yield select(selectSignInAddress);
+    const { orgid } = payload;
+    const gasPrice = yield call(ApiGetGasPrice);
+
+    yield call(ApiPostWithdrawDeposit, userAddress, orgid, gasPrice);
+    yield put(withdrawalSuccess({}));
+    yield put(enrichLifData(payload));
+  } catch(error) {
+    yield put(withdrawalFailure(error))
+  }
+}
+
+function* requestFaucetSaga({payload}) {
+  console.log('requestFaucetSaga', payload);
+  try {
+    const userAddress = yield select(selectSignInAddress);
+    const isAllowed = yield call(ApiCheckFaucetBalance, userAddress);
+
+    if (!isAllowed) {
+      yield put(requestFaucetFailure(new Error('You have reached your faucet limit')));
+      return;
+    }
+
+    const gasPrice = yield call(ApiGetGasPrice);
+
+    yield call(ApiRequestFaucet, userAddress, gasPrice);
+    yield put(requestFaucetSuccess({}));
+    yield put(enrichLifData(payload));
+  } catch(error) {
+    yield put(requestFaucetFailure(error))
   }
 }
 
@@ -308,145 +418,211 @@ export const saga = function*() {
     takeEvery(ALLOW_DEPOSIT_REQUEST, allowDepositSaga),
     takeEvery(MAKE_DEPOSIT_REQUEST, makeDepositSaga),
     takeEvery(REQUEST_WITHDRAWAL_REQUEST, requestWithdrawalSaga),
+    takeEvery(WITHDRAWAL_REQUEST, withdrawDepositSaga),
+    takeEvery(REQUEST_FAUCET_REQUEST, requestFaucetSaga),
   ])
 };
 // endregion
 
 // region == [API] =====================================================
+// Get the LIF Token Balance of user
 function ApiGetLifTokenBalance(userAddress) {
   console.log('[.]', 'ApiGetLifTokenBalance');
-  const lifContract = getLifTokenContract();
+  let lifContract = getLifTokenContract();
+  let web3 = getWeb3();
+
   return new Promise((resolve, reject) => {
-    try {
-      lifContract.balanceOf(userAddress, (error, balance) => {
-        if (error) return reject(error);
-        // Get decimals
-        lifContract.DECIMALS((error, decimals) => {
-          if (error) return reject(error);
-          balance = balance.div(10**decimals).toNumber();
-          resolve(balance)
-        });
-      });
-    } catch (e) {
-      reject(`Error in ApiGetLifTokenBalance: ${e.toString()}`);
-    }
+    lifContract.methods.balanceOf(userAddress)
+    .call()
+    .then(balance => {
+      resolve(web3.utils.fromWei(balance));
+    })
+    .catch(error => reject(error));
+    
   });
 }
 
+// Get the LIF Spending allowance for the user (ERC20 function)
 function ApiGetLifTokenAllowanceAmountForOrgId(_owner, _spender = ORGID_PROXY_ADDRESS) {
   console.log('[.]', 'ApiGetLifTokenAllowanceAmountForOrgId');
-  const lifContract = getLifTokenContract();
+  let lifContract = getLifTokenContract();
+  let web3 = getWeb3();
+
   return new Promise((resolve, reject) => {
-    try {
-      lifContract.allowance(_owner, _spender, (error, allowed) => {
-        if (error) return reject(error);
-        // Get decimals
-        lifContract.DECIMALS((error, decimals) => {
-          if (error) return reject(error);
-          allowed = allowed.div(10**decimals).toNumber();
-          resolve(allowed)
-        });
-      });
-    } catch (e) {
-      reject(`Error in ApiGetLifTokenAllowanceAmountForOrgId: ${e.toString()}`);
-    }
+      lifContract.methods.allowance(_owner, _spender)
+      .call()
+      .then(allowance => {
+        console.log('<<< orgidContract.allowance', web3.utils.fromWei(allowance));
+        resolve(web3.utils.fromWei(allowance));
+      })
+      .catch(error => reject(error));
   });
 }
 
+// Get the LIF Deposit amount for the Org.ID
 function ApiGetOrgIdLifTokenDepositedAmount(orgId) {
   console.log('[.]', 'ApiGetOrgIdLifTokenDepositedAmount', orgId);
-  const orgidContract = getOrgidContract();
+  let orgidContract = getOrgidContract();
+  let web3 = getWeb3();
+
   return new Promise((resolve, reject) => {
-    try {
-      orgidContract.getOrganization(orgId, (error, [exist, orgId, orgJsonUri, orgJsonHash, parentEntity, owner, director, state, directorConfirmed, deposit]) => {
-        console.log('<<< orgidContract.getOrganization', 'args', exist, orgId, orgJsonUri, orgJsonHash, parentEntity, owner, director, state, directorConfirmed, deposit);
-        if (error) return reject(error);
-        // Get decimals
-        resolve({
-          deposit: deposit.toNumber()
-        });
-      });
-    } catch (e) {
-      reject(`Error in ApiGetOrgIdLifTokenDepositedAmount: ${e.toString()}`);
-    }
+    orgidContract.methods.getOrganization(orgId)
+    .call()
+    .then(organization => {
+      console.log('<<< orgidContract.getOrganization', organization);
+      resolve(web3.utils.fromWei(organization.deposit));
+    })
+    .catch(error => reject(error));
   });
 }
 
-function ApiGetOrgIdLifTokenWithdrawalRequest(userAddress) {
+// Check if a withdrawal request exists
+function ApiGetOrgIdLifTokenWithdrawalRequest(orgid) {
   console.log('[.]', 'ApiGetOrgIdLifTokenWithdrawalRequest');
-  const orgidContract = getOrgidContract();
+  let orgidContract = getOrgidContract();
+  let web3 = getWeb3();
+
   return new Promise((resolve, reject) => {
-    try {
-      orgidContract.getWithdrawalRequest(userAddress, (error, [exist, value, withdrawTime]) => {
-        console.log('<<< orgidContract.getWithdrawalRequest', 'args', exist, value.toNumber(), withdrawTime.toNumber());
-        if (error) return reject(error);
-        // Get decimals
-        resolve({
-          exist,
-          value: value.toNumber(),
-          withdrawTime: withdrawTime.toNumber()
-        });
+    orgidContract.methods.getWithdrawalRequest(orgid)
+    .call()
+    .then(withdrawalRequest => {
+      console.log('<<< orgidContract.getWithdrawalRequest', withdrawalRequest);
+      resolve({
+        exist: withdrawalRequest.exist,
+        value: web3.utils.fromWei(withdrawalRequest.value),
+        withdrawTime: withdrawalRequest.withdrawTime
       });
-    } catch (e) {
-      reject(`Error in ApiGetOrgIdLifTokenWithdrawalRequest: ${e.toString()}`);
-    }
+    })
+    .catch(error => reject(error));
   });
+
 }
 
 function ApiGetCurrentBlockNumber() {
-  console.log('[.]', 'ApiGetCurrentBlockNumber');
   return getCurrentBlockNumber()
 }
 
-function ApiIncreaseAllowance(userAddress) {
+// Increase the allowance to be spent by ORG.ID contract - ERC20 function
+function ApiIncreaseAllowance(userAddress, gasPrice) {
   const lifContract = getLifTokenContract();
-  return new Promise((resolve, reject) => {
-    lifContract.DECIMALS((error, decimals) => {
-      if (error) return reject(error);
-      lifContract.increaseApproval(
-        ORGID_PROXY_ADDRESS, `${LIF_DEPOSIT_AMOUNT}${(10**decimals).toString().substr(1)}`,
-        { from: userAddress, gas: 500000, gasPrice: getGasPrice() },
-        (error, success) => {
-          if(error) reject(error);
-          resolve(success);
-        }
-      )
-    });
-  })
-}
+  let web3 = getWeb3();
+  let allowedTokens = web3.utils.toWei(String(LIF_DEPOSIT_AMOUNT));
 
-function ApiAddDeposit(userAddress, orgid) {
-  const orgidContract = getOrgidContract();
-  const lifContract = getLifTokenContract();
   return new Promise((resolve, reject) => {
-    lifContract.DECIMALS((error, decimals) => {
-      if (error) return reject(error);
-      orgidContract.addDeposit(
-        orgid, `${LIF_DEPOSIT_AMOUNT}${(10**decimals).toString().substr(1)}`,
-        { from: userAddress, gas: 500000, gasPrice: getGasPrice() },
-        (error, data) => {
-          if(error) reject(error);
-          resolve(data);
-        }
-      )
+    lifContract.methods.increaseApproval(
+      ORGID_PROXY_ADDRESS,
+      allowedTokens
+    )
+    .send({
+      from: userAddress,
+      gasPrice
+    })
+    .on('receipt', receipt => {
+      resolve(receipt);
+    })
+    .on('error', (error, receipt) => {
+      reject({error, receipt});
     });
   });
 }
 
-function ApiPostWithdrawalRequest(userAddress, orgid) {
-  const orgidContract = getOrgidContract();
+// Request funds from the Faucet (Ropsten only)
+function ApiRequestFaucet(userAddress, gasPrice) {
+  //const lifContract = getLifFaucetContract();
   const lifContract = getLifTokenContract();
+
   return new Promise((resolve, reject) => {
-    lifContract.DECIMALS((error, decimals) => {
-      if (error) return reject(error);
-      orgidContract.submitWithdrawalRequest(
-        orgid, `${LIF_DEPOSIT_AMOUNT}${(10**decimals).toString().substr(1)}`,
-        { from: userAddress, gas: 500000, gasPrice: getGasPrice() },
-        (error, data) => {
-          if(error) reject(error);
-          resolve(data);
-        }
-      )
+    lifContract.methods.faucetLif()
+    .send({
+      from: userAddress,
+      gasPrice
+    })
+    .on('receipt', receipt => {
+      resolve(receipt);
+    })
+    .on('error', (error, receipt) => {
+      reject({error, receipt});
+    });
+  });
+}
+
+async function ApiCheckFaucetBalance(userAddress) {
+  const lifContract = getLifTokenContract();
+  const MAX_LIF_FAUCET = await lifContract
+    .methods.MAX_LIF_FAUCET()
+    .call();
+  const balance = await await lifContract
+    .methods.balanceOf(userAddress)
+    .call();
+  return Number(balance) < Number(MAX_LIF_FAUCET);
+}
+
+// Add a deposit on the contract
+function ApiAddDeposit(userAddress, orgid, gasPrice) {
+  const orgidContract = getOrgidContract();
+  let web3 = getWeb3();
+
+  return new Promise((resolve, reject) => {
+
+    orgidContract.methods.addDeposit(
+      orgid,
+      web3.utils.toWei(String(LIF_DEPOSIT_AMOUNT))
+    )
+    .send({
+      from: userAddress,
+      gasPrice
+    })
+    .on('receipt', receipt => {
+      resolve(receipt);
+    })
+    .on('error', (error, receipt) => {
+      reject({error, receipt});
+    });
+
+  });
+}
+
+// Create a withdrwal request
+function ApiPostWithdrawalRequest(userAddress, orgid, gasPrice) {
+  const orgidContract = getOrgidContract();
+  let web3 = getWeb3();
+  console.log('[..]', 'Post Withdrawal request');
+
+  return new Promise((resolve, reject) => {
+    orgidContract.methods.submitWithdrawalRequest(
+      orgid,
+      web3.utils.toWei(String(LIF_DEPOSIT_AMOUNT))
+    )
+    .send({
+      from: userAddress,
+      gasPrice
+    })
+    .on('receipt', receipt => {
+      resolve(receipt);
+    })
+    .on('error', (error, receipt) => {
+      reject({error, receipt});
+    });
+  });
+}
+
+function ApiPostWithdrawDeposit(userAddress, orgid, gasPrice) {
+  const orgidContract = getOrgidContract();
+  console.log('[..]', 'Post Withdraw deposit');
+
+  return new Promise((resolve, reject) => {
+    orgidContract.methods.withdrawDeposit(
+      orgid
+    )
+    .send({
+      from: userAddress,
+      gasPrice
+    })
+    .on('receipt', receipt => {
+      resolve(receipt);
+    })
+    .on('error', (error, receipt) => {
+      reject({error, receipt});
     });
   });
 }

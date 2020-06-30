@@ -45,7 +45,6 @@ const styles = makeStyles({
     paddingTop: '60px',
     paddingBottom: '60px',
     ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
-      paddingTop: '88px',
       paddingBottom: '0'
     },
   },

@@ -8,6 +8,9 @@ const styles = makeStyles({
   container: {
     minHeight: '70vh',
     width: '100%',
+    ['@media (max-width:960px)']: { // eslint-disable-line no-useless-computed-key
+      paddingTop: '84px',
+    }
   }
 });
 

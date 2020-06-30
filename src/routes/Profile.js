@@ -113,7 +113,7 @@ function Profile(props) {
         </List>
         }
       </div>
-      {organizations.length === 0 && Object.keys(joinOrganizations).length === 0 &&
+      {!isJoinFetching && organizations.length === 0 && Object.keys(joinOrganizations).length === 0 &&
       <div className={classes.emptyListContainer}>
         <div className={classes.emptyListContent}>
           <img src={EmptyListIllustration} alt={'illustration'}/>

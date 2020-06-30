@@ -12,10 +12,9 @@ export default {
       fields: [
         {
           type: 'input',
-          name: 'Registration number',
+          name: 'Legal name',
           required: true,
-          helperText: 'Number of your organization in the country-specific business registry',
-          orgidJsonPath: 'legalEntity.legalIdentifier',
+          orgidJsonPath: 'legalEntity.legalName',
           validate: value => {
             if (!value) {
               return 'Required field';
@@ -24,9 +23,9 @@ export default {
         },
         {
           type: 'input',
-          name: 'Legal name',
+          name: 'Legal entity type',
           required: true,
-          orgidJsonPath: 'legalEntity.legalName',
+          orgidJsonPath: 'legalEntity.legalType',
           validate: value => {
             if (!value) {
               return 'Required field';
@@ -75,9 +74,20 @@ export default {
         },
         {
           type: 'input',
-          name: 'Street, building',
+          name: 'Street',
           required: true,
           orgidJsonPath: 'legalEntity.registeredAddress.streetAddress',
+          validate: value => {
+            if (!value) {
+              return 'Required field';
+            }
+          }
+        },
+        {
+          type: 'input',
+          name: 'Building',
+          required: true,
+          orgidJsonPath: 'legalEntity.registeredAddress.building',
           validate: value => {
             if (!value) {
               return 'Required field';

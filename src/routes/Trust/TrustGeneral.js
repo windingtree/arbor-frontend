@@ -26,7 +26,7 @@ import evSSLok from '../../assets/SvgComponents/trust-ev-illustration.svg';
 import trustSocial from '../../assets/SvgComponents/verify-social-media.svg';
 
 import iconFacebook from '../../assets/SvgComponents/facebook-icon.svg';
-import iconInstagram from '../../assets/SvgComponents/instagram-icon.svg';
+// import iconInstagram from '../../assets/SvgComponents/instagram-icon.svg';
 import iconLinkedin from '../../assets/SvgComponents/linkedin-icon.svg';
 
 
@@ -655,7 +655,7 @@ function TrustGeneral() {
               <Typography className={classes.grayTitle} variant={'h1'}>
                 Verify your social media
               </Typography>
-              <Grid container spacing={2} justify={'space-between'}>
+              <Grid container spacing={2} justify={'flex-start'}>
                 <Grid item xs={4}>
                   <Card className={classes.verificationSmallSocial}>
                     <div className={classes.socialCardContent}>
@@ -676,16 +676,16 @@ function TrustGeneral() {
                     </div>
                   </Card>
                 </Grid>
-                <Grid item xs={4}>
-                  <Card className={classes.verificationSmallSocial}>
-                    <div className={classes.socialCardContent}>
-                      <img className={classes.verificationIconSocial} src={iconInstagram} alt={'instagram'}/>
-                      <Typography className={classes.socialLabel}>
-                        /legal entity profile
-                      </Typography>
-                    </div>
-                  </Card>
-                </Grid>
+                {/* <Grid item xs={4}> */}
+                {/*   <Card className={classes.verificationSmallSocial}> */}
+                {/*     <div className={classes.socialCardContent}> */}
+                {/*       <img className={classes.verificationIconSocial} src={iconInstagram} alt={'instagram'}/> */}
+                {/*       <Typography className={classes.socialLabel}> */}
+                {/*         /legal entity profile */}
+                {/*       </Typography> */}
+                {/*     </div> */}
+                {/*   </Card> */}
+                {/* </Grid> */}
               </Grid>
               <div style={{marginBottom: '34px'}} />
               <Typography className={classes.topSectionText}>

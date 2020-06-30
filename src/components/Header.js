@@ -51,7 +51,8 @@ const styles = makeStyles({
     borderBottom: `1px solid ${colors.greyScale.lightest}`,
     ['@media (max-width:960px)']: { // eslint-disable-line no-useless-computed-key
       position: 'fixed',
-      width: '100%'
+      width: '100%',
+      padding: 0
     }
   },
   headerJoin: {

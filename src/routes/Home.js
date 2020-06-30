@@ -40,10 +40,7 @@ import '@brainhubeu/react-carousel/lib/style.css';
 const styles = makeStyles({
   searchContainer: {
     backgroundColor: colors.primary.white,
-    width: '100%',
-    ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
-      paddingTop: '70px'
-    }
+    width: '100%'
   },
   searchContent: {
     position: 'relative',

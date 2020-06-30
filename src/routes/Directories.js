@@ -21,10 +21,7 @@ import colors from '../styles/colors';
 
 const styles = makeStyles({
   content: {
-    padding: '64px 0',
-    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
-      padding: '28px 0'
-    },
+    padding: '64px 0'
   },
   title: {
     fontWeight: 500,
@@ -143,7 +140,7 @@ function Directories(props){
               </Hidden>
             </div>
             <div className={classes.addDirectoryButtonWrapper}>
-              <Button onClick={() => window.location = "mailto:propose@windingtree.com"} className={classes.addDirectoryButton}>
+              <Button onClick={() => window.location = "https://forms.gle/GsVZYqPXJMbdkerF8"} className={classes.addDirectoryButton}>
                 <Typography variant={'inherit'} className={classes.addDirectoryButtonTitle} noWrap={true}>Propose a new directory</Typography>
               </Button>
             </div>

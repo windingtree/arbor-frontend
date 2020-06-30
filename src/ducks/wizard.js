@@ -1,10 +1,18 @@
 import _ from 'lodash';
 import {all, takeEvery, call, put, select} from 'redux-saga/effects';
 import {createSelector} from "reselect";
-import {keccak256} from 'js-sha3';
+// import {keccak256} from 'js-sha3';
+import Web3 from 'web3';
 import {appName} from "../utils/constants";
 import {callApi} from "../redux/api";
-import {idGenerator, getWeb3, getGasPrice, getOrgidContract} from "../utils/helpers";
+import {getWeb3, getOrgidContract} from "../web3/w3";
+// import {idGenerator} from "../utils/helpers";
+import {Validator} from 'jsonschema';
+import orgidSchema from '@windingtree/org.json-schema';
+import { ApiGetGasPrice } from './utils/ethereum';
+// import Web3 from 'web3';
+
+import { resetJoin } from './join';
 
 //region == [Constants] ================================================================================================
 export const moduleName = 'wizard';
@@ -25,6 +33,14 @@ const ADD_AGENT_KEY_FAILURE = `${prefix}/ADD_AGENT_KEY_FAILURE`;
 const REMOVE_AGENT_KEY_REQUEST = `${prefix}/REMOVE_AGENT_KEY_REQUEST`;
 const REMOVE_AGENT_KEY_SUCCESS = `${prefix}/REMOVE_AGENT_KEY_SUCCESS`;
 const REMOVE_AGENT_KEY_FAILURE = `${prefix}/REMOVE_AGENT_KEY_FAILURE`;
+
+const ADD_ASSERTION_REQUEST = `${prefix}/ADD_ASSERTION_REQUEST`;
+const ADD_ASSERTION_SUCCESS = `${prefix}/ADD_ASSERTION_SUCCESS`;
+const ADD_ASSERTION_FAILURE = `${prefix}/ADD_ASSERTION_FAILURE`;
+
+const REMOVE_ASSERTION_REQUEST = `${prefix}/REMOVE_ASSERTION_REQUEST`;
+const REMOVE_ASSERTION_SUCCESS = `${prefix}/REMOVE_ASSERTION_SUCCESS`;
+const REMOVE_ASSERTION_FAILURE = `${prefix}/REMOVE_ASSERTION_FAILURE`;
 
 const SAVE_MEDIA_TO_ARBOR_REQUEST = `${prefix}/SAVE_MEDIA_TO_ARBOR_REQUEST`;
 const SAVE_MEDIA_TO_ARBOR_SUCCESS = `${prefix}/SAVE_MEDIA_TO_ARBOR_SUCCESS`;
@@ -56,19 +72,47 @@ const GET_TRANSACTION_STATUS_FAILURE = `${prefix}/GET_TRANSACTION_STATUS_FAILURE
 
 const RESET_TRANSACTION_STATUS = `${prefix}/RESET_TRANSACTION_STATUS`;
 
+const SET_TRANSACTION_HASH = `${prefix}/SET_TRANSACTION_HASH`;
+
+// Fix orgJson structure in old broken versions
+const fixJsonRequiredProps = json => ({
+  '@context': [
+    'https://www.w3.org/ns/did/v1',
+    'https://windingtree.com/ns/orgid/v1'
+  ],
+  ...json,
+  publicKey: [
+    ...(json.publicKey ? json.publicKey : [])
+  ],
+  service: [
+    ...(json.service ? json.service : [])
+  ],
+  trust: {
+    ...(json.trust ? json.trust : {}),
+    assertions: [
+      ...(json.trust && json.trust.assertions ? json.trust.assertions : [])
+    ]
+  }
+});
+
 const initialState = {
   isFetching: false,
   isFetched: false,
+  isSaved: false,
   orgidJson: {
-    "@context": "https://windingtree.com/ns/did/v1",
-    "id": idGenerator(),
-    "created": new Date().toJSON(),
-    "publicKey": [],
-    "service": [],
-    "trust": {}
+    '@context': [
+      'https://www.w3.org/ns/did/v1',
+      'https://windingtree.com/ns/orgid/v1'
+    ],
+    publicKey: [],
+    service: [],
+    trust: {
+      assertions: []
+    }
   },
   orgidUri: null,
   orgidHash: null,
+  transactionHash: null,
   pendingTransaction: false,
   successTransaction: false,
   error: null
@@ -79,8 +123,10 @@ const initialState = {
 export default function reducer( state = initialState, action) {
   const { type, payload, error } = action;
 
+  state.orgidJson = fixJsonRequiredProps(state.orgidJson);
   const statePublicKey = _.get(state.orgidJson, 'publicKey', []);
   const publicKey = statePublicKey.slice();
+  
   let orgidJsonUpdates;
 
   switch(type) {
@@ -91,6 +137,8 @@ export default function reducer( state = initialState, action) {
     case EXTEND_ORGID_JSON_REQUEST:
     case ADD_AGENT_KEY_REQUEST:
     case REMOVE_AGENT_KEY_REQUEST:
+    case ADD_ASSERTION_REQUEST:
+    case REMOVE_ASSERTION_REQUEST:
     case SAVE_MEDIA_TO_ARBOR_REQUEST:
     case SAVE_ORGID_JSON_TO_ARBOR_REQUEST:
     case SAVE_ORGID_JSON_URI_REQUEST:
@@ -110,34 +158,69 @@ export default function reducer( state = initialState, action) {
         successTransaction: false,
         error: null
       });
+    case SET_TRANSACTION_HASH:
+      return _.merge({}, state, {
+        transactionHash: payload
+      });
     case RESET_TRANSACTION_STATUS:
       return _.merge({}, state, {
+        transactionHash: null,
         pendingTransaction: false,
         successTransaction: false,
       });
     /////////////
     // SUCCESS //
     /////////////
+    // The initial organization is successful
     case REWRITE_ORGID_JSON_SUCCESS:
+      orgidJsonUpdates = payload;
+
+      // Checking for merge of different orgids
+      if(state.orgidJson.id && payload.id && payload.id !== state.orgidJson.id) {
+        orgidJsonUpdates = payload;
+      }
+      state.orgidJson = payload;
+
+      // Return the merged state
       return {
         isFetching: false,
         isFetched: true,
-        orgidJson: payload,
-        orgidHash: `0x${keccak256(JSON.stringify(payload, null, 2))}`,
+        orgidJson: orgidJsonUpdates,
+        orgidHash: Web3.utils.soliditySha3(JSON.stringify(orgidJsonUpdates, null, 2)),
         error: null
       };
+    
+    // The Organization JSON extension is successful
     case EXTEND_ORGID_JSON_SUCCESS:
+      // Update the content by merging the payload with the current JSON
       orgidJsonUpdates = Object.assign({}, state.orgidJson, {
         ...payload,
         updated: new Date().toJSON()
       });
+
+      console.log(`[IN EXTEND_ORGID_JSON_SUCCESS] ${JSON.stringify(state.orgidJson)} | ${JSON.stringify(payload)} => ${JSON.stringify(orgidJsonUpdates)}`);
+      
+      // Checking for merge of different orgids
+      if(state.orgidJson.id && payload.id && payload.id !== state.orgidJson.id) {
+        console.error(`[IN EXTEND_ORGID_JSON_SUCCESS] Attempting to merge different orgids, extension canceled.`);
+        orgidJsonUpdates = state.orgidJson;
+      }
+
+      // Checking for mixed organnization types
+      if(orgidJsonUpdates.organizationalUnit && orgidJsonUpdates.legalEntity) {
+        console.error(`[IN EXTEND_ORGID_JSON_SUCCESS] Organization created with mixed types, extension canceled.`);
+        orgidJsonUpdates = state.orgidJson;
+      }
+
+      // Merge the state
       return _.merge({}, state, {
         isFetching: false,
         isFetched: true,
         orgidJson: orgidJsonUpdates,
-        orgidHash: `0x${keccak256(JSON.stringify(orgidJsonUpdates, null, 2))}`,
+        orgidHash: Web3.utils.soliditySha3(JSON.stringify(orgidJsonUpdates, null, 2)),
         error: null
       });
+
     case ADD_AGENT_KEY_SUCCESS:
       publicKey.push(payload);
       const updatedJsonWithAgentKey = _.merge({}, state.orgidJson, {
@@ -149,7 +232,7 @@ export default function reducer( state = initialState, action) {
         isFetching: false,
         isFetched: true,
         orgidJson: updatedJsonWithAgentKey,
-        orgidHash: `0x${keccak256(JSON.stringify(updatedJsonWithAgentKey, null, 2))}`,
+        orgidHash: Web3.utils.soliditySha3(JSON.stringify(updatedJsonWithAgentKey, null, 2)),
         error: null
       });
     case REMOVE_AGENT_KEY_SUCCESS:
@@ -163,21 +246,56 @@ export default function reducer( state = initialState, action) {
         isFetching: false,
         isFetched: true,
         orgidJson: updatedJsonWithoutAgentKey,
-        orgidHash: `0x${keccak256(JSON.stringify(updatedJsonWithoutAgentKey, null, 2))}`,
+        orgidHash: Web3.utils.soliditySha3(JSON.stringify(updatedJsonWithoutAgentKey, null, 2)),
+        error: null
+      });
+    case ADD_ASSERTION_SUCCESS:
+      const updatedJsonWithAddedAssertion = {
+        ...state.orgidJson,
+        trust: {
+          ...state.orgidJson.trust,
+          assertions: Array.from(
+            new Set([
+              ...(state.orgidJson.trust.assertions || []),
+              ...[payload]
+            ])
+          )
+        }
+      };
+      return Object.assign({}, state, {
+        isFetching: false,
+        isFetched: true,
+        orgidJson: updatedJsonWithAddedAssertion,
+        orgidHash: Web3.utils.soliditySha3(JSON.stringify(updatedJsonWithAddedAssertion, null, 2)),
+        error: null
+      });
+    case REMOVE_ASSERTION_SUCCESS:
+      const updatedJsonWithRemovedAssertion = {
+        ...state.orgidJson,
+        trust: {
+          ...state.orgidJson.trust,
+          assertions: (state.orgidJson.trust.assertions || [])
+            .filter(a => JSON.stringify(a) !== JSON.stringify(payload))
+        }
+      };
+      return Object.assign({}, state, {
+        isFetching: false,
+        isFetched: true,
+        orgidJson: updatedJsonWithRemovedAssertion,
+        orgidHash: Web3.utils.soliditySha3(JSON.stringify(updatedJsonWithRemovedAssertion, null, 2)),
         error: null
       });
     case SAVE_MEDIA_TO_ARBOR_SUCCESS:
-      orgidJsonUpdates = Object.assign({}, state.orgidJson, {
+      orgidJsonUpdates = Object.assign({}, fixJsonRequiredProps(state.orgidJson), {
         ...state.orgidJson,
         updated: new Date().toJSON(),
         media: { logo: payload }
       });
-
       return Object.assign({}, state, {
         isFetching: false,
         isFetched: true,
         orgidJson: orgidJsonUpdates,
-        orgidHash: `0x${keccak256(JSON.stringify(orgidJsonUpdates, null, 2))}`,
+        orgidHash: Web3.utils.soliditySha3(JSON.stringify(orgidJsonUpdates, null, 2)),
         error: null
       });
     case SAVE_ORGID_JSON_TO_ARBOR_SUCCESS:
@@ -210,6 +328,8 @@ export default function reducer( state = initialState, action) {
     case REWRITE_ORGID_JSON_FAILURE:
     case EXTEND_ORGID_JSON_FAILURE:
     case ADD_AGENT_KEY_FAILURE:
+    case ADD_ASSERTION_FAILURE:
+    case REMOVE_ASSERTION_FAILURE:
     case SAVE_MEDIA_TO_ARBOR_FAILURE:
     case SAVE_ORGID_JSON_URI_FAILURE:
     case SAVE_ORGID_JSON_TO_ARBOR_FAILURE:
@@ -261,6 +381,16 @@ export const selectPendingState = createSelector(
 export const selectSuccessState = createSelector(
   stateSelector,
   wizard => wizard.successTransaction
+);
+
+export const selectError = createSelector(
+  stateSelector,
+  wizard => wizard.error
+);
+
+export const selectTransactionHash = createSelector(
+  stateSelector,
+  wizard => wizard.transactionHash
 );
 //endregion
 
@@ -352,6 +482,52 @@ function removeAgentKeySuccess(payload) {
 function removeAgentKeyFailure(error) {
   return {
     type: REMOVE_AGENT_KEY_FAILURE,
+    error
+  }
+}
+//endregion
+
+//region == [ACTIONS: addAssertion] =================================================================================
+export function addAssertion(payload) {
+  return {
+    type: ADD_ASSERTION_REQUEST,
+    payload
+  }
+}
+
+export function addAssertionSuccess(payload) {
+  return {
+    type: ADD_ASSERTION_SUCCESS,
+    payload
+  }
+}
+
+export function addAssertionFailure(error) {
+  return {
+    type: ADD_ASSERTION_FAILURE,
+    error
+  }
+}
+//endregion
+
+//region == [ACTIONS: removeAssertion] =================================================================================
+export function removeAssertion(payload) {
+  return {
+    type: REMOVE_ASSERTION_REQUEST,
+    payload
+  }
+}
+
+export function removeAssertionSuccess(payload) {
+  return {
+    type: REMOVE_ASSERTION_SUCCESS,
+    payload
+  }
+}
+
+export function removeAssertionFailure(error) {
+  return {
+    type: REMOVE_ASSERTION_FAILURE,
     error
   }
 }
@@ -517,6 +693,13 @@ function getTransactionStatusFailure(error) {
     error
   }
 }
+
+function setTransactionHash(payload) {
+  return {
+    type: SET_TRANSACTION_HASH,
+    payload
+  };
+}
 //endregion
 
 //region == [ACTIONS: resetTransactionStatus] ====================================================================================
@@ -542,7 +725,7 @@ function* rewriteOrgidJsonSaga({payload}) {
 function* extendOrgidJsonSaga({payload}) {
   try {
     const result = yield call((data) => data, payload);
-
+    //ValidateOrgidSchema(result);
     yield put(extendOrgidJsonSuccess(result));
   } catch(error) {
     yield put(extendOrgidJsonFailure(error));
@@ -566,6 +749,26 @@ function* removeAgentKeyFromOrgidJsonSaga({payload}) {
     yield put(removeAgentKeySuccess(result));
   } catch(error) {
     yield put(removeAgentKeyFailure(error));
+  }
+}
+
+function* addAssertionToOrgidJsonSaga({payload}) {
+  try {
+    const result = yield call((data) => data, payload);
+
+    yield put(addAssertionSuccess(result));
+  } catch(error) {
+    yield put(addAssertionFailure(error));
+  }
+}
+
+function* removeAssertionFromOrgidJsonSaga({payload}) {
+  try {
+    const result = yield call((data) => data, payload);
+
+    yield put(removeAssertionSuccess(result));
+  } catch(error) {
+    yield put(removeAssertionFailure(error));
   }
 }
 
@@ -606,7 +809,8 @@ function* saveOrgidUriSaga({payload}) {
 
 function* sendCreateLegalEntitySaga({payload}) {
   try {
-    const result = yield call(ApiSendCreateLegalEntity, payload);
+    const gasPrice = yield call(ApiGetGasPrice);
+    const result = yield call(ApiSendCreateLegalEntity, payload, gasPrice);
 
     yield put(getTransactionStatus(result));
     yield put(sendCreateLegalEntitySuccess(result));
@@ -617,7 +821,8 @@ function* sendCreateLegalEntitySaga({payload}) {
 
 function* sendCreateOrganizationalUnitSaga({payload}) {
   try {
-    const result = yield call(ApiSendCreateOrganizationalUnit, payload);
+    const gasPrice = yield call(ApiGetGasPrice);
+    const result = yield call(ApiSendCreateOrganizationalUnit, payload, gasPrice);
 
     yield put(getTransactionStatus(result));
     yield put(sendCreateOrganizationalUnitSuccess(result));
@@ -628,7 +833,8 @@ function* sendCreateOrganizationalUnitSaga({payload}) {
 
 function* sendChangeOrgidUriAndHashSaga({payload}) {
   try {
-    const result = yield call(ApiSendChangeOrgidUriAndHash, payload);
+    const gasPrice = yield call(ApiGetGasPrice);
+    const result = yield call(ApiSendChangeOrgidUriAndHash, payload, gasPrice);
 
     yield put(getTransactionStatus(result));
     yield put(sendChangeOrgidUriAndHashSuccess(result));
@@ -639,8 +845,10 @@ function* sendChangeOrgidUriAndHashSaga({payload}) {
 
 function* getTransactionStatusSaga({payload}) {
   try {
+    yield put(setTransactionHash(payload));
     const result = yield call(ApiGetTxStatus, payload);
-
+    sessionStorage.removeItem('profileId');
+    yield put(resetJoin());
     yield put(getTransactionStatusSuccess(result));
   } catch(error) {
     yield put(getTransactionStatusFailure(error));
@@ -653,6 +861,8 @@ export const saga = function* () {
     takeEvery(EXTEND_ORGID_JSON_REQUEST, extendOrgidJsonSaga),
     takeEvery(ADD_AGENT_KEY_REQUEST, addAgentKeyToOrgidJsonSaga),
     takeEvery(REMOVE_AGENT_KEY_REQUEST, removeAgentKeyFromOrgidJsonSaga),
+    takeEvery(ADD_ASSERTION_REQUEST, addAssertionToOrgidJsonSaga),
+    takeEvery(REMOVE_ASSERTION_REQUEST, removeAssertionFromOrgidJsonSaga),
     takeEvery(SAVE_MEDIA_TO_ARBOR_REQUEST, saveMediaToArborSaga),
     takeEvery(SAVE_ORGID_JSON_TO_ARBOR_REQUEST, saveOrgidJsonToArborSaga),
     takeEvery(SAVE_ORGID_JSON_URI_REQUEST, saveOrgidUriSaga),
@@ -679,53 +889,112 @@ function ApiPostOrgidJson(data) {
   return callApi(`json`, 'POST', { body: JSON.stringify(data),  headers: { 'Content-Type': 'application/json' } });
 }
 
-function ApiSendCreateLegalEntity(data) {
+function ApiSendCreateLegalEntity(data, gasPrice) {
   const orgidContract = getOrgidContract();
-  const { orgidUri, orgidHash, address, orgidJson } = data;
-  const orgidId = orgidJson.id.replace('did:orgid:', '');
+  const { orgidUri, address, solt, orgidJson } = data;
+
+  // %(
+  const hash = Web3.utils.soliditySha3(JSON.stringify(orgidJson, null, 2));
 
   return new Promise((resolve, reject) => {
-    orgidContract.createOrganization(
-      orgidId, orgidUri, orgidHash,
-      { from: address, gas: 500000, gasPrice: getGasPrice() },
-      (err, data) => { if(err) return reject(err); console.log('data', data); resolve(data); }
+    // Create the transaction
+    orgidContract.methods.createOrganization(
+      solt,
+      hash,
+      orgidUri,
+      '',
+      ''
+    )
+
+    // Send it to the network
+    .send(
+      // Options: only from address
+      { from: address, gasPrice },
+
+      // Callback
+      (error, transactionHash) => {
+        if(error) {
+          return reject(error);
+        }
+        console.log('transactionHash', transactionHash);
+        resolve(transactionHash); 
+      }
     );
   });
 }
 
-function ApiSendCreateOrganizationalUnit(data) {
+function ApiSendCreateOrganizationalUnit(data, gasPrice) {
   const orgidContract = getOrgidContract();
-  const { parent: { orgid: orgidParent }, orgidUri, orgidHash, address, orgidJson } = data;
-  const orgidId = orgidJson.id.replace('did:orgid:', '');
+  const { parent: { orgid: orgidParent }, orgidUri, orgidJson, address, solt } = data;
+  // const orgidId = orgidJson.id.replace('did:orgid:', '');
+
+  // %(
+  const hash = Web3.utils.soliditySha3(JSON.stringify(orgidJson, null, 2));
 
   return new Promise((resolve, reject) => {
-    orgidContract.createSubsidiary(
-      orgidParent, orgidId, address /*subsidiaryDirector*/, orgidUri, orgidHash,
-      { from: address, gas: 500000, gasPrice: getGasPrice() },
-      (err, data) => { if(err) return reject(err); resolve(data); }
+    // Create the transaction
+    orgidContract.methods.createUnit(
+      solt,// should be solt
+      orgidParent,
+      address,
+      hash,
+      orgidUri,
+      '',
+      ''
+    )
+    
+    // Send transaction to the network
+    .send(
+      // Options
+      { from: address, gasPrice },
+
+      // Callback
+      (error, transactionHash) => {
+        if(error) return reject(error);
+        resolve(transactionHash); 
+      }
     );
   });
 }
 
-function ApiSendChangeOrgidUriAndHash(data) {
+async function ApiSendChangeOrgidUriAndHash(data, gasPrice) {
   const orgidContract = getOrgidContract();
-  const { orgidUri, orgidHash, address, orgidJson } = data;
+  const { orgidUri, address, orgidJson } = data;
   const orgidId = orgidJson.id.replace('did:orgid:', '');
 
+  // %(
+  const hash = Web3.utils.soliditySha3(JSON.stringify(orgidJson, null, 2));
+
   return new Promise((resolve, reject) => {
-    orgidContract.changeOrgJsonUriAndHash(
-      orgidId, orgidUri, orgidHash,
-      { from: address, gas: 500000, gasPrice: getGasPrice() },
-      (err, data) => { if(err) return reject(err); console.log('data', data); resolve(data); }
+    orgidContract.methods.setOrgJson(
+      orgidId,
+      hash,
+      orgidUri,
+      '',
+      ''
+    )
+
+    .send(
+      // Options
+      { from: address, gasPrice },
+      
+      // Callback
+      (error, transactionHash) => {
+        if(error) {
+          return reject(error);
+        }
+        console.log('transactionHash', transactionHash);
+        resolve(transactionHash); 
+      }
     );
   });
 }
 
-function ApiGetTxStatus(transactionIn) {
+function ApiGetTxStatus(transactionHash) {
   return new Promise((resolve, reject) => {
     const web3 = getWeb3();
     let interval = setInterval(() => {
-      web3.eth.getTransactionReceipt(transactionIn, (err, data) => {
+      web3.eth.getTransactionReceipt(transactionHash, (err, data) => {
         if (err) {
           reject(err);
           return clearInterval(interval);
@@ -733,15 +1002,30 @@ function ApiGetTxStatus(transactionIn) {
           resolve(data);
           return clearInterval(interval);
         } else {
-          console.log(`...waiting for ... ${transactionIn}`)
+          console.log(`...waiting for ... ${transactionHash}`)
         }
       })
     }, 3000);
 
     setTimeout(() => {
       clearInterval(interval);
-    }, 60000);
+      reject(new Error(
+        `Transaction status not obtained during long time. 
+        You can get a transaction status on Etherscan. 
+        Transaction Hash: ${transactionHash}`
+      ));
+    }, 10 * 60 * 1000);// 10 min
   })
+}
+
+// Validate a JSON document according to scehma
+export function validateOrgidSchema(orgidJson) {
+  // Load the JSON schema validator
+  let validator = new Validator();
+
+  // Perform the validation
+  let validation = validator.validate(orgidJson, orgidSchema);
+  return validation;
 }
 
 //endregion

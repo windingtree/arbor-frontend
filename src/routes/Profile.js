@@ -4,6 +4,7 @@ import { Container, Typography, Button, List } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 //Components
 import OrgsListItem from '../components/OrgsListItem';
+import JoinOrganizationItem from '../components/JoinOrganizationItem';
 //Icons, images
 import EmptyListIllustration from '../assets/SvgComponents/empty-list-illustration.svg';
 //styles
@@ -11,6 +12,7 @@ import colors from '../styles/colors';
 import { connect } from "react-redux";
 import { fetchProfileOrganizations, isFetchedSelector, profileOrganizationsSelector} from "../ducks/fetchProfile";
 import { selectSignInAddress } from "../ducks/signIn";
+import { getJoinRequest, isJoinFetching, getJoinOrganizations } from '../ducks/join';
 
 const styles = makeStyles({
   rootContainer: {
@@ -63,17 +65,29 @@ const styles = makeStyles({
     fontWeight: 400,
     lineHeight: 1.45,
     color: colors.greyScale.common,
-  }
+  },
+  address: {
+    fontSize: '12px',
+    fontWeight: 400,
+    color: colors.greyScale.light,
+  },
 });
 
 function Profile(props) {
   const classes = styles();
-  const { organizations, address } = props;
-
+  const { organizations, address, fetchProfileOrganizations, getJoinRequest, 
+    isJoinFetching, joinOrganizations } = props;
+  
+  // TODO: fetch request for non-confirmed organizations
+  
   useEffect(() => {
-    props.fetchProfileOrganizations({owner: address});
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
+    const profileId = sessionStorage.getItem('profileId');
+    if (profileId) {
+      getJoinRequest(profileId);
+    }
+    fetchProfileOrganizations({owner: address});
+  }, [address, fetchProfileOrganizations, getJoinRequest]);
+  
   return (
     <Container className={classes.rootContainer}>
       <div className={classes.headingContainer}>
@@ -81,7 +95,7 @@ function Profile(props) {
           <Typography variant={'h2'} className={classes.title}>My organizations</Typography>
         </div>
         {
-          organizations.length !== 0 && (
+          (organizations.length !== 0 || Object.keys(joinOrganizations).length !== 0) && (
             <div>
               <Button onClick={() => history.push('/my-organizations/wizard', { type: 'legalEntity' })} className={classes.button}>
                 <Typography variant={'subtitle2'} className={classes.buttonLabel}>+ Create organization profile</Typography>
@@ -90,7 +104,16 @@ function Profile(props) {
           )
         }
       </div>
-      {organizations.length === 0 &&
+      <div>
+        {(!isJoinFetching && Object.keys(joinOrganizations).length !== 0) &&
+        <List>
+          {Object.keys(joinOrganizations).map(org => (
+             <JoinOrganizationItem key={org} legalName={joinOrganizations[org].legalEntity.legalName} />
+          ))}
+        </List>
+        }
+      </div>
+      {!isJoinFetching && organizations.length === 0 && Object.keys(joinOrganizations).length === 0 &&
       <div className={classes.emptyListContainer}>
         <div className={classes.emptyListContent}>
           <img src={EmptyListIllustration} alt={'illustration'}/>
@@ -118,6 +141,8 @@ function Profile(props) {
 
 const mapStateToProps = state => {
   return {
+    isJoinFetching: isJoinFetching(state),
+    joinOrganizations: getJoinOrganizations(state),
     organizations: profileOrganizationsSelector(state),
     isFetched: isFetchedSelector(state),
     address: selectSignInAddress(state)
@@ -125,7 +150,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-  fetchProfileOrganizations
+  fetchProfileOrganizations,
+  getJoinRequest
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);

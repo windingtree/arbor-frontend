@@ -1,6 +1,6 @@
 import React from "react";
 
-import {  Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { InputField, SelectField, JsonHostingField, DropzoneField } from "./Fields";
 
@@ -21,7 +21,7 @@ const styles = makeStyles({
 
 const Section = (props) => {
   const classes = styles();
-  let { handleChange, handleBlur, values, errors, touched, data: { name, fields } } = props;
+  let { handleChange, handleBlur, values, errors, touched, helperText, data: { name, fields } } = props;
   // console.log(`<Section name="${name}" fields="`, fields);
   const knownFields = {
     'input': InputField,
@@ -30,14 +30,17 @@ const Section = (props) => {
     'dropzone': DropzoneField
   };
 
-  fields = fields.map((item, index) => {
+  fields = fields.map((item, i) => {
+    const key = `${i}${item.name.replace(' ', '_')}`;
+    const index = key;
     if (item.type === 'dropzone') {
       return (
       <DropzoneField
-        key={index}
+        key={key}
         index={index}
         name={item.name}
         type={item.type}
+        autoComplete='none'
         orgidJsonPath={item.orgidJsonPath}
         helperText={item.helperText}
         description={item.description}
@@ -51,8 +54,20 @@ const Section = (props) => {
       )
     }
     if (knownFields[item.type]) {
-      // console.log(`<${item.type} name="${item.name}" `, item);
-      return knownFields[item.type]({...item, index, handleChange, handleBlur, values, errors, touched})
+      //console.log(`knownFields <${item.type} name="${item.name}" `, item, values);
+      //console.log('>>>', {...item, key, index, handleChange, handleBlur, values, errors, touched, helperText });
+      return knownFields[item.type]({
+        ...item,
+        ...{autoComplete: 'none'},
+        key,
+        index,
+        handleChange,
+        handleBlur,
+        values,
+        errors,
+        touched,
+        helperText 
+      });
     }
     return (
       <div key={index}>Field <pre>${item.name}</pre> has unknown type: <pre>{item.type}</pre></div>

@@ -1,5 +1,4 @@
 import { countries } from './countries';
-import validators from './validators'
 import { StepperGeneralIcon, StepperDetailsIcon, StepperHostingIcon, StepperMetaMaskIcon } from '../assets/SvgComponents';
 
 export const wizardConfig = [
@@ -30,28 +29,44 @@ export const wizardConfig = [
             type: 'input',
             name: 'Organization name',
             required: true,
-            orgidJsonPath: 'organizationalUnit.name'
+            orgidJsonPath: 'organizationalUnit.name',
+            validate: value => {
+              if (!value) {
+                return 'Required field';
+              }
+            }
           },
+          // {
+          //   type: 'select',
+          //   name: 'Legal form',
+          //   options: [
+          //     'private entrepreneur',
+          //     'private company limited by shares or Ltd. (UK, Ireland and the Commonwealth)',
+          //     'public limited company (UK, Ireland and the Commonwealth)',
+          //     'limited partnership',
+          //     'unlimited partnership',
+          //     'chartered company',
+          //     'statutory company',
+          //     'holding company',
+          //     'subsidiary company',
+          //     'one man company (sole proprietorship)',
+          //     'charitable incorporated organisation (UK)',
+          //     'non-governmental organization',
+          //   ],
+          //   required: true,
+          //   orgidJsonPath: 'organizationalUnit.legalType'
+          // },
           {
-            type: 'select',
+            type: 'input',
             name: 'Legal form',
-            options: [
-              'private entrepreneur',
-              'private company limited by shares or Ltd. (UK, Ireland and the Commonwealth)',
-              'public limited company (UK, Ireland and the Commonwealth)',
-              'limited partnership',
-              'unlimited partnership',
-              'chartered company',
-              'statutory company',
-              'holding company',
-              'subsidiary company',
-              'one man company (sole proprietorship)',
-              'charitable incorporated organisation (UK)',
-              'non-governmental organization',
-            ],
             required: true,
-            orgidJsonPath: 'organizationalUnit.legalType'
-          },
+            orgidJsonPath: 'organizationalUnit.legalType',
+            validate: value => {
+              if (!value) {
+                return 'Required field';
+              }
+            }
+          }
         ]
       },
       {
@@ -63,22 +78,45 @@ export const wizardConfig = [
             name: 'Country',
             options: countries,
             required: true,
-            orgidJsonPath: 'organizationalUnit.address.country'
+            orgidJsonPath: 'organizationalUnit.address.country',
+            validate: value => {
+              if (!value) {
+                return 'Required field';
+              }
+            }
           },
           {
             type: 'input',
             name: 'State or region',
-            orgidJsonPath: 'organizationalUnit.address.subdivision'
+            orgidJsonPath: 'organizationalUnit.address.subdivision',
+            required: true,
+            validate: value => {
+              if (!value) {
+                return 'Required field';
+              }
+            }
           },
           {
             type: 'input',
             name: 'City',
-            orgidJsonPath: 'organizationalUnit.address.locality'
+            orgidJsonPath: 'organizationalUnit.address.locality',
+            required: true,
+            validate: value => {
+              if (!value) {
+                return 'Required field';
+              }
+            }
           },
           {
             type: 'input',
             name: 'Street, building',
-            orgidJsonPath: 'organizationalUnit.address.street_address'
+            orgidJsonPath: 'organizationalUnit.address.streetAddress',
+            required: true,
+            validate: value => {
+              if (!value) {
+                return 'Required field';
+              }
+            }
           },
           {
             type: 'input',
@@ -88,8 +126,14 @@ export const wizardConfig = [
           {
             type: 'input',
             name: 'Postal code',
-            orgidJsonPath: 'organizationalUnit.address.postal_code'
-          },
+            orgidJsonPath: 'organizationalUnit.address.postalCode',
+            required: true,
+            validate: value => {
+              if (!value) {
+                return 'Required field';
+              }
+            }
+          }
         ]
       },
       {
@@ -100,21 +144,34 @@ export const wizardConfig = [
             type: 'input',
             subtype: 'phone',
             name: 'Phone',
-            orgidJsonPath: 'organizationalUnit.contacts[0].phone'
+            orgidJsonPath: 'organizationalUnit.contacts[0].phone',
+            validate: value => {
+              if (value && !value.trim().match(/^([+]{0,1})([0-9- ]+)$/)) {
+                return 'Wrong phone number format';
+              }
+            }
           },
           {
             type: 'input',
             subtype: 'website',
             name: 'Website',
             orgidJsonPath: 'organizationalUnit.contacts[0].website',
-            schema: validators.website
+            validate: value => {
+              if (value && !value.trim().match(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/)) {
+                return 'Wrong website URL';
+              }
+            }
           },
           {
             type: 'input',
             subtype: 'email',
             name: 'Email',
             orgidJsonPath: 'organizationalUnit.contacts[0].email',
-            schema: validators.email
+            validate: value => {
+              if (value && !value.trim().match(/^[\w.-]+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) {
+                return 'Wrong email format';
+              }
+            }
           }
         ]
       },
@@ -127,18 +184,21 @@ export const wizardConfig = [
             type: 'input',
             icon: 'facebook',
             orgidJsonPath: 'organizationalUnit.contacts[0].facebook',
+            validate: value => {}
           },
           {
             name: 'Twitter',
             type: 'input',
             icon: 'twitter',
             orgidJsonPath: 'organizationalUnit.contacts[0].twitter',
+            validate: value => {}
           },
           {
             name: 'Instagram',
             type: 'input',
             icon: 'instagram',
             orgidJsonPath: 'organizationalUnit.contacts[0].instagram',
+            validate: value => {}
           },
           {
             name: 'Logo',

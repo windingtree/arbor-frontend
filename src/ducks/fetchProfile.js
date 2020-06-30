@@ -3,6 +3,7 @@ import { createSelector } from 'reselect';
 import { all, takeEvery, call, put } from 'redux-saga/effects';
 import { callApi } from '../redux/api';
 import _ from 'lodash';
+import {ACCOUNT_CHANGE_NOTIF} from './signIn'
 
 /**
  * Constants
@@ -45,8 +46,16 @@ export default function reducer( state = initialState, action) {
 
       payload.data.forEach((org, i) => {
         if(org.parent) {
-          if(!payload.data[index[org.parent.orgid]].subs) payload.data[index[org.parent.orgid]].subs = [];
-          payload.data[index[org.parent.orgid]].subs.push(org);
+          
+          if(index[org.parent.orgid]) {
+
+            if (!payload.data[index[org.parent.orgid]].subs) {
+              payload.data[index[org.parent.orgid]].subs = [];
+            }
+            
+            payload.data[index[org.parent.orgid]].subs.push(org);
+          }
+          
           delete payload.data[i];
         }
       });
@@ -118,6 +127,7 @@ function fetchProfileOrganizationsFailure(error) {
 /**
  * Sagas
  * */
+// Saga to fetch the organizations from the profile
 function* fetchProfileOrganizationsSaga({payload}) {
   try {
     const result = yield call(ApiFetchProfileOrganizations, payload);
@@ -128,9 +138,16 @@ function* fetchProfileOrganizationsSaga({payload}) {
   }
 }
 
+// Saga to reload the profile on account change
+function* reloadProfileSaga({payload}) {
+  yield fetchProfileOrganizationsSaga({payload: {owner: payload}});
+}
+
+// Main saga listening to explicit requests and account changes
 export const saga = function* () {
   return yield all([
     takeEvery(FETCH_PROFILE_ORGANIZATIONS_REQUEST, fetchProfileOrganizationsSaga),
+    takeEvery(ACCOUNT_CHANGE_NOTIF, reloadProfileSaga),
   ])
 };
 

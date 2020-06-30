@@ -389,8 +389,8 @@ const styles = makeStyles({
 });
 
 const getAddressString = (addressObj) => {
-  const { country, subdivision, locality, street_address, premise, postal_code } = addressObj;
-  return _.isEmpty(addressObj) ? false : _.compact([street_address, premise, postal_code,  locality, subdivision,country]).join(', ')
+  const { country, subdivision, locality, streetAddress, premise, postalCode } = addressObj;
+  return _.isEmpty(addressObj) ? false : _.compact([streetAddress, premise, postalCode,  locality, subdivision,country]).join(', ')
 };
 
 function Info(props) {
@@ -468,7 +468,7 @@ function Info(props) {
                 logo ? (
                   <img className={classes.orgImage} src={logo} alt={`Organization Logo cannot be loaded. URI: ${logo}`}/>
                 ) : (
-                  <img className={classes.orgImage} src={setRandomDefaultImage(id, directory || 'hotel')} alt={`Organization from directory: ${directory}`}/>
+                  <img className={classes.orgImage} src={setRandomDefaultImage(id || '0xLOADING', directory || 'hotel')} alt={`Organization from directory: ${directory}`}/>
                 )
               }
             </div>
@@ -482,7 +482,7 @@ function Info(props) {
                 canManage || (
                   <div className={classes.publicTrustLevelWrapper}>
                     <Typography variant={'caption'} className={classes.itemTrustInfoTitle}
-                                style={{color: colors.greyScale.common}}>Trust level: </Typography>
+                                style={{color: colors.greyScale.common}}>Trust proofs: </Typography>
                     <TrustLevelIcon className={classes.iconTrustLevel}/>
                     <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{proofsQty}</Typography>
                   </div>
@@ -497,8 +497,11 @@ function Info(props) {
               <div>
                 <p className={classes.orgAddress}>
                   {addressString}<br />
-                  <a href={`https://www.google.com.ua/maps/search/${addressString}`}
-                     className={classes.mapLink}>show on the map</a>
+                  <a href={`https://www.openstreetmap.org/search?query=${addressString}`}
+                     className={classes.mapLink}
+                     rel="noopener noreferrer"
+                     target="_blank"
+                     >show on the map</a>
                 </p>
               </div>
               }
@@ -527,7 +530,7 @@ function Info(props) {
               <div className={classes.orgInfoFieldWrapper} style={{width: '100%'}}>
                 <Typography variant={'caption'} className={classes.orgInfoFieldTitle} noWrap>
                   {'Website: '}
-                  <a href={website()} target={'_blank'} className={classes.orgInfoField}>{contacts.website}</a>
+                  <a href={website()} target={'_blank'} className={classes.orgInfoField} rel="noopener noreferrer">{contacts.website}</a>
                   {isWebsiteProved &&
                   <TrustLevelIcon className={classes.iconTrustLevel} style={{verticalAlign: 'text-bottom'}}/>}
                 </Typography>
@@ -559,7 +562,7 @@ function Info(props) {
           {
             socials.map((social, index) => {
               return (
-                <a key={index.toString()} href={social.link} target={'_blank'} className={classes.socialLink}>
+                <a key={index.toString()} href={social.link} target={'_blank'} className={classes.socialLink} rel="noopener noreferrer">
                   <Hidden xsDown>
                     {icon(social.network)}
                   </Hidden>

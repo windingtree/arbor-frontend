@@ -189,7 +189,7 @@ function TrustWebsite() {
               <Button onClick={history.goBack}>
                 <Typography className={classes.buttonLabel}>
                   <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
-                  Back to all organizations
+                  Back to organization profile
                 </Typography>
               </Button>
             </div>
@@ -248,6 +248,7 @@ function TrustWebsite() {
                   <Typography className={classes.howListTexts}>Make this TXT file accessible via a URL: <br/><a
                     className={classes.link}
                     target={'_blank'}
+                    rel="noopener noreferrer"
                     href={website+'/org.id'}>{website+'/org.id'}</a></Typography>
                 </li>
 
@@ -289,6 +290,7 @@ function TrustWebsite() {
                   <Typography className={classes.howListTexts}>Make this TXT file accessible via a URL: <br/><a
                     className={classes.link}
                     target={'_blank'}
+                    rel="noopener noreferrer"
                     href={website}>{website}</a></Typography>
                 </li>
 

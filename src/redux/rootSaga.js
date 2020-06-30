@@ -4,7 +4,9 @@ import { saga as fetchSearchOrganizationsSaga } from '../ducks/fetchSearchResult
 import { saga as fetchOrganizationInfoSaga } from '../ducks/fetchOrganizationInfo';
 import { saga as fetchSignInSaga } from '../ducks/signIn';
 import { saga as wizardSaga } from '../ducks/wizard';
-import { saga as  lifDepositSaga} from '../ducks/lifDeposit';
+import { saga as lifDepositSaga} from '../ducks/lifDeposit';
+import { saga as backendStatus} from '../ducks/backendStatus';
+import { saga as joinSaga} from '../ducks/join';
 
 //Add all sagas here
 export default function* rootSaga() {
@@ -14,4 +16,6 @@ export default function* rootSaga() {
   yield spawn(fetchSignInSaga);
   yield spawn(wizardSaga);
   yield spawn(lifDepositSaga);
+  yield spawn(backendStatus);
+  yield spawn(joinSaga);
 }

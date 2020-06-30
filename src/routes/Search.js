@@ -28,7 +28,7 @@ import {countries} from '../utils/countries';
 const styles = makeStyles({
   searchHeaderWrapper: {
     backgroundColor: colors.greyScale.moreLighter,
-    width: '100%'
+    width: '100%',
   },
   searchHeaderWrapperNoResults: {
     height: '80vh',
@@ -44,7 +44,7 @@ const styles = makeStyles({
     position: 'relative',
     paddingTop: '60px',
     paddingBottom: '60px',
-    ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
+    ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
       paddingBottom: '0'
     },
   },
@@ -153,7 +153,8 @@ function Search(props) {
   const [lastSearchValue, setLastSearchValue] = useState('');
   const [directoryFilterValue, setDirectoryFilterValue] = useState('');
   const [countryFilterValue, setCountryFilterValue] = useState('');
-  const {items, meta: {page, per_page, total, pages}, isFetched, isFetching} = props;
+  const {items, meta: {page, per_page, total, pages}, isFetched, isFetching, 
+  fetchSearchOrganizations, fetchAllOrganizations} = props;
 
   const CardsList = () => {
     let OrgCards = items.map((item, index) => {
@@ -181,34 +182,79 @@ function Search(props) {
 
     if (searchValue === "" && !request) {
       await props.fetchAllOrganizations({page: selected + 1, per_page: per_page});
+      setLastSearchValue('');
     } else {
       await props.fetchSearchOrganizations(searchData);
-      setLastSearchValue(searchValue)
+      setLastSearchValue(searchValue);
     }
   };
 
   //handle search
   const searchTitle = () => {
-    if (!lastSearchValue || lastSearchValue === "") {
-      return 'Organization search'
-    } else if (total === 0 && isFetched) {
-      return `Sorry, we haven’t found anything related to "${lastSearchValue}"`
-    } else {
-      if (isFetching) return `Searching...`;
-      return `${total} search results for "${lastSearchValue}"`
+
+    let searchTitle;
+    // No Search initiated
+    if(!isFetched && !isFetching) {
+      searchTitle = 'Organization Search';
     }
+
+    // Search results
+    else if(isFetched) {
+      // Define the organization category
+      let orgDirectory = directoryFilterValue ? options.directories[directoryFilterValue] : 'Organizations';
+      
+      // Write directory in singular to be gramatically correct
+      if(total === 1) {
+        // `ies` -> `y`
+        if(orgDirectory.substring(orgDirectory.length-3, orgDirectory.length) === 'ies') {
+          orgDirectory = orgDirectory.substring(0, orgDirectory.length-3) + 'y';
+        }
+        
+        // Remove final `s`
+        else {
+          orgDirectory = orgDirectory.substring(0, orgDirectory.length -1);
+        }        
+      }
+      let orgCountry = countryFilterValue ? ` in ${options.countries[countryFilterValue]}` : '';
+
+      // Search completed without results
+      if(total === 0) {
+        if (lastSearchValue && lastSearchValue !== "") {
+          searchTitle = `Sorry, we haven’t found any ${orgDirectory} related to "${lastSearchValue}"${orgCountry}`;
+        } else {
+          searchTitle = `Sorry, we haven’t found any ${orgDirectory}${orgCountry}`;
+        }
+      }
+
+      // Search completed with results
+      else {
+        // Criteria where provided for the search
+        if (lastSearchValue && lastSearchValue !== "") {
+          searchTitle = `${total} ${orgDirectory} matching "${lastSearchValue}"${orgCountry}`;
+        }
+
+        // No criteria provided - eg main search page
+        else {
+          searchTitle = 'Organization Search';
+        }
+      }
+    }
+
+    // Search is ongoing
+    else if(isFetching) {
+      searchTitle = `Searching...`;
+    }
+
+    // Store search title in state
+    return(searchTitle);
   };
 
   const handleSearch = event => {
     setSearchValue(event.target.value);
   };
 
-  const handleSearchFromHome = () => {
-    setSearchValue(request);
-    setLastSearchValue(request);
-  };
-
   const fetchSearchResults = async () => {
+    // BUild data for the request
     const data = {
       directory: directoryFilterValue,
       country: countryFilterValue,
@@ -218,9 +264,11 @@ function Search(props) {
     };
 
     if (searchValue === "" && !request) {
-      await props.fetchAllOrganizations({page: page, per_page: per_page});
       if (data.directory !== '' || data.country !== '') {
         await props.fetchSearchOrganizations(data);
+        setForcePage(0);
+      } else {
+        await props.fetchAllOrganizations({page: page, per_page: per_page});
         setForcePage(0);
       }
     } else {
@@ -228,25 +276,24 @@ function Search(props) {
       setForcePage(0);
       setLastSearchValue(searchValue);
     }
+
   };
 
-
   useEffect(() => {
-    handleSearchFromHome();
+    setSearchValue(request);
+    setLastSearchValue(request);
     if (request && request !== "") {
-      props.fetchSearchOrganizations({name: request, page: page, per_page: per_page});
-    } else props.fetchAllOrganizations({page: page, per_page: per_page});
-  }, [request]); // eslint-disable-line react-hooks/exhaustive-deps
+      fetchSearchOrganizations({name: request, page: page, per_page: per_page});
+    } else fetchAllOrganizations({page: page, per_page: per_page});
+  }, [request, page, per_page, fetchSearchOrganizations, fetchAllOrganizations]);
 
   useEffect(() => {
     window.scrollTo(0, 0)
   }, []);
 
-  //handle clear search fields
-  const clearSearchFields = () => {
+  const handleFocus = () => {
+    // Delete the current search
     setSearchValue('');
-    setDirectoryFilterValue('');
-    setCountryFilterValue('');
   };
 
   //handle select fields
@@ -254,8 +301,8 @@ function Search(props) {
     directories: {
       'hotel': 'Hotels',
       'airline': 'Airlines',
-      'insurance': 'Insurance companies',
-      'ota': 'Travel agencies'
+      'insurance': 'Insurance Companies',
+      'ota': 'Travel Agencies'
     },
     countries
   };
@@ -270,7 +317,6 @@ function Search(props) {
     };
     await props.fetchSearchOrganizations(data);
     setForcePage(0);
-
     setDirectoryFilterValue(data.directory);
   };
 
@@ -284,7 +330,6 @@ function Search(props) {
     };
     await props.fetchSearchOrganizations(data);
     setForcePage(0);
-
     setCountryFilterValue(data.country);
   };
 
@@ -302,14 +347,14 @@ function Search(props) {
         <Container className={classes.searchHeader}>
           <div>
             <Typography variant={'h2'} className={classes.searchTitle}>
-              {searchTitle()}
+              { searchTitle() }
             </Typography>
             <div className={classes.searchForm}>
               <SearchComponent
                 searchValue={searchValue}
                 handleSearchValue={handleSearch}
                 fetchSearchResult={fetchSearchResults}
-                handleFocus={clearSearchFields}
+                handleFocus={handleFocus}
               />
             </div>
           </div>
@@ -319,75 +364,75 @@ function Search(props) {
           </div>
         </Container>
       </div>
-      {
-        total !== 0 ? (
-          <Container>
-            <div className={classes.filtersContainer}>
-              <Typography variant={'subtitle2'} className={classes.filtersContainerTitle}>
-                Filter organizations by
-              </Typography>
-              <div className={classes.filtersControllersWrapper}>
-                <div className={classes.filtersController}>
-                  <FormControl className={classes.selectFormControl}>
-                    <InputLabel>Directories</InputLabel>
-                    <Select
-                      value={directoryFilterValue}
-                      onChange={handleDirectoryFilterValueChange}
-                    >
-                      <MenuItem value={''}>All</MenuItem>
-                      {
-                        _.map(options.directories, (name, value) => {
-                          return (
-                            <MenuItem key={value.toString()} value={value}>{name}</MenuItem>
-                          )
-                        })
-                      }
-                    </Select>
-                  </FormControl>
-                </div>
-                <div className={classes.filtersController}>
-                  <FormControl className={classes.selectFormControl}>
-                    <InputLabel>Country</InputLabel>
-                    <Select
-                      value={countryFilterValue}
-                      onChange={handleCountryFilterValueChange}
-                    >
-                      <MenuItem value={''}>All</MenuItem>
-                      {
-                        _.map(options.countries, (name, value) => {
-                          return (
-                            <MenuItem key={value.toString()} value={value}>{name}</MenuItem>
-                          )
-                        })
-                      }
-                    </Select>
-                  </FormControl>
-                </div>
+        <Container>
+          <div className={classes.filtersContainer}>
+            <Typography variant={'subtitle2'} className={classes.filtersContainerTitle}>
+              Filter organizations by
+            </Typography>
+            <div className={classes.filtersControllersWrapper}>
+              <div className={classes.filtersController}>
+                <FormControl className={classes.selectFormControl}>
+                  <InputLabel>Directories</InputLabel>
+                  <Select
+                    value={directoryFilterValue}
+                    onChange={handleDirectoryFilterValueChange}
+                  >
+                    <MenuItem value={''}>All</MenuItem>
+                    {
+                      _.map(options.directories, (name, value) => {
+                        return (
+                          <MenuItem key={value.toString()} value={value}>{name}</MenuItem>
+                        )
+                      })
+                    }
+                  </Select>
+                </FormControl>
+              </div>
+              <div className={classes.filtersController}>
+                <FormControl className={classes.selectFormControl}>
+                  <InputLabel>Country</InputLabel>
+                  <Select
+                    value={countryFilterValue}
+                    onChange={handleCountryFilterValueChange}
+                  >
+                    <MenuItem value={''}>All</MenuItem>
+                    {
+                      _.map(options.countries, (name, value) => {
+                        return (
+                          <MenuItem key={value.toString()} value={value}>{name}</MenuItem>
+                        )
+                      })
+                    }
+                  </Select>
+                </FormControl>
               </div>
             </div>
-            <div className={classes.gridListWrapper}>
-              <CardsList/>
-              {
-                total > per_page ? (
-                  <div className={classes.paginationInfoContainer}>
-                    <div className={classes.totalSearchTitleContainer}>
-                      <Typography variant={'caption'} className={classes.totalSearchResultsTitle}>
-                        {renderResultsText()}</Typography>
+          </div>
+          {
+            total !== 0 ? (
+              <div className={classes.gridListWrapper}>
+                <CardsList/>
+                {
+                  total > per_page ? (
+                    <div className={classes.paginationInfoContainer}>
+                      <div className={classes.totalSearchTitleContainer}>
+                        <Typography variant={'caption'} className={classes.totalSearchResultsTitle}>
+                          {renderResultsText()}</Typography>
+                      </div>
+                      <div>
+                        <Pagination
+                          pageCount={pages}
+                          onPageChange={handlePageClick}
+                          forcePage={forcePage}
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <Pagination
-                        pageCount={pages}
-                        onPageChange={handlePageClick}
-                        forcePage={forcePage}
-                      />
-                    </div>
-                  </div>
-                ) : null
-              }
-            </div>
-          </Container>
-        ) : null
-      }
+                  ) : null
+                }
+              </div>
+            ) : null
+          }
+        </Container>
     </div>
   );
 }

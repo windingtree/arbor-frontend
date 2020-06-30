@@ -40,6 +40,7 @@ const styles = makeStyles({
 function SubOrganizations(props) {
   const classes = styles();
   const {organization: {orgid, name}, subs, canManage} = props;
+  console.log(`[IN SubOrganizations] ${JSON.stringify(props)}`);
 
   return (
     <div className={classes.subsWrapper}>

@@ -2,9 +2,9 @@
     "version": 2,
     "env": {
         "REACT_APP_LIF_DEPOSIT_AMOUNT": "1000",
-        "REACT_APP_API_URI": "https://api.arbor.fm/api/v1",
-        "REACT_APP_ORGID_PROXY_ADDRESS": "0xc8fD300bE7e4613bCa573ad820a6F1f0b915CfcA",
+        "REACT_APP_API_URI": "https://api.marketplace.windingtree.com/api/v1",
+        "REACT_APP_ORGID_PROXY_ADDRESS": "0x6434DEC2f4548C2aA9D88E8Ff821f387be3D7F0D",
         "REACT_APP_DIRECTORY_PROXY_ADDRESS": "0x68d9cB089a3e17be6F9De7a318BBCC55F4c899Bc",
-        "REACT_APP_ETHEREUM_CHAIN_ID": "3"
+        "REACT_APP_ETHEREUM_CHAIN_ID": "1"
     }
 }

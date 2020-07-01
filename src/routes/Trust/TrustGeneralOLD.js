@@ -296,7 +296,7 @@ function TrustGeneral() {
           you fill in your company profile.
         </Typography>
         <Typography className={classes.paragraph}>
-          At this point, other members of Arbor community see that there is a new company registered and wait for your
+          At this point, other members of Winding Tree Marketplace community see that there is a new company registered and wait for your
           information to be verified.
         </Typography>
       </Grid>
@@ -342,7 +342,7 @@ function TrustGeneral() {
       </Grid>
     },
     {
-      title: 'Submit your Líf deposit to protect Arbor registry against spam',
+      title: 'Submit your Líf deposit to protect Winding Tree Marketplace registry against spam',
       trustPoints: 4,
       icon: stepLifIcon,
       content: <Grid container>
@@ -529,7 +529,7 @@ function TrustGeneral() {
               How to achieve the ultimate trust level?
             </Typography>
             <Typography className={classes.paragraph}>
-              Arbor allows organizations all over the world to opt-in and verify themselves without involving a
+            Winding Tree Marketplace allows organizations all over the world to opt-in and verify themselves without involving a
               third-party
               intermediary.
             </Typography>
@@ -563,9 +563,9 @@ function TrustGeneral() {
                 credentials from certification authorities in different industries.
               </Typography>
               <Typography className={classes.paragraph}>
-                If you represent one of those certification authorities, you can offer Arbor community
+                If you represent one of those certification authorities, you can offer Winding Tree Marketplace community
                 an option to use your credentials on the platform. To do so, create your organization
-                profile on Arbor and start signing credentials you issue.
+                profile on Winding Tree Marketplace and start signing credentials you issue.
               </Typography>
             </Grid>
           </Grid>
@@ -576,7 +576,7 @@ function TrustGeneral() {
           <Grid container spacing={5} direction="row">
             <Grid xs={12} md={7} item>
               <Typography className={classes.registerTitle} variant={'h4'}>
-                Join Arbor today and find trusted partners for your business
+                Join Winding Tree Marketplace today and find trusted partners for your business
               </Typography>
             </Grid>
             <Grid xs={12} md={5} item>

@@ -283,7 +283,7 @@ const TrustLifStake = (props) => {
               <Typography className={classes.mainTitle} variant={'h1'}>Submit your Líf
                 deposit</Typography>
               <Typography className={classes.topText}>Líf deposit is a small amount of cryptocurrency that
-                is staked when you register your organization profile on Arbor. This action minimizes
+                is staked when you register your organization profile on Winding Tree Marketplace. This action minimizes
                 spam registrations and proves the seriousness of your intentions.</Typography>
               <div className={classes.line}/>
             </Grid>
@@ -323,7 +323,7 @@ const TrustLifStake = (props) => {
               <Typography variant={'h3'} className={classes.blockTitle}>
                 Participate in platform governance with Líf deposit
               </Typography>
-              <Typography className={classes.paragraph}>Líf deposit gives every member of Arbor community a possibility
+              <Typography className={classes.paragraph}>Líf deposit gives every member of Winding Tree Marketplace community a possibility
                 to vote for particular features and upgrades in a democratic way. Eligible members can decide on adding
                 and removing directories, introducing upgrades and new governance rules as well as managing Líf
                 deposits.

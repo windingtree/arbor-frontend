@@ -106,7 +106,7 @@ const Registration = () => {
               <Typography variant={'subtitle2'} className={classes.subtitle}>
                 To start off, you need to install MetaMask
                 — a browser extension that allows you to hold Ether and tokens as well as create and manage your
-                organization profile on Arbor. 
+                organization profile on Winding Tree Marketplace. 
               </Typography>
             </div>
             <div className={classes.buttonWrapper}>

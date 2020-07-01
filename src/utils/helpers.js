@@ -21,6 +21,7 @@ export const copyStrToClipboard = str => navigator.clipboard.writeText(str).then
 export const strCenterEllipsis = str => str ? `${str.substr(0, 4)}...${str.substr(-4, 4)}` : '0xUNDEFINED';
 
 export const setRandomDefaultImage = (orgid, directory) => {
+  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n', orgid, directory);
   let arrayOfDefaultImages = [];
   let index = 0;
   if (directory === 'hotel' || directory === 'legalEntity' || directory === 'ota' || directory === 'insurance') arrayOfDefaultImages.push(DefaultHotelImage1, DefaultHotelImage2, DefaultHotelImage3, DefaultHotelImage4, DefaultHotelImage5, DefaultHotelImage6, DefaultHotelImage7, DefaultHotelImage8, DefaultHotelImage9);

@@ -63,7 +63,8 @@ const styles = makeStyles({
     backgroundImage: colors.gradients.green,
     boxShadow: '0 2px 12px rgba(12, 64, 78, 0.1)',
     border: `1px solid ${colors.secondary.cyan}`,
-    borderRadius: '6px'
+    borderRadius: '6px',
+    cursor: 'pointer'
   },
   buttonLabel: {
     fontSize: '16px',
@@ -128,6 +129,7 @@ const ChainMistmatchInfo = (props) => {
 const SignInActionBox = (classes, props) => {
   // Define the chain ID state
   const [chainId, setChainId] = useState(0);
+  const [currentWeb3, setWeb3] = useState(getWeb3());
 
   // Callback when the chain changes
   const handleChainChange = (newChainId) => {
@@ -139,13 +141,17 @@ const SignInActionBox = (classes, props) => {
 
   // Update the Chain ID
   useEffect(() => {
-    getWeb3().eth.getChainId()
-    .then(handleChainChange);
-  });
+    const web3 = getWeb3();
+    if (web3 && web3.eth) {
+      setWeb3(web3);
+      getWeb3().eth.getChainId()
+      .then(handleChainChange);
+    }
+  }, [chainId]);
 
   // Check if we should disable login
   let chainMistmatch = (chainId !== 0 && chainId !== Number(CHAIN_ID));
-  let loginDisabled = (chainId === 0 || chainMistmatch);
+  // let loginDisabled = (chainId === 0 || chainMistmatch);
 
   return (
     <Box style={{width: '80%', margin: '0 auto'}}>
@@ -160,8 +166,8 @@ const SignInActionBox = (classes, props) => {
       </div>
       { chainMistmatch ? <ChainMistmatchInfo classes={classes} chainId={chainId}/> : null}
       <div className={classes.buttonWrapper}>
-        <Button onClick={props.fetchSignInRequest} className={classes.button} disabled={loginDisabled}>
-          <Typography variant={'caption'} className={classes.buttonLabel}>Sign in{ getWeb3().currentProvider.isMetaMask ? ' with Metamask': '' }</Typography>
+        <Button onClick={props.fetchSignInRequest} className={classes.button}>
+          <Typography variant={'caption'} className={classes.buttonLabel}>Sign in{ currentWeb3 && currentWeb3.currentProvider.isMetaMask ? ' with Metamask': '' }</Typography>
         </Button>
       </div>
     </Box>

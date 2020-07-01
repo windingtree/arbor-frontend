@@ -115,7 +115,7 @@ const ChainMistmatchInfo = (props) => {
   return(
     <div className={props.classes.subtitleWrapper}>
       <Typography variant={'subtitle2'} className={props.classes.danger}>
-        Arbor requires a connection to the <b>{chainName(CHAIN_ID)}</b>, 
+        Winding Tree Marketplace requires a connection to the <b>{chainName(CHAIN_ID)}</b>, 
         but you are connected to the <b>{chainName(props.chainId)}</b>.
         Please change the Network in your Wallet.
       </Typography>
@@ -155,7 +155,7 @@ const SignInActionBox = (classes, props) => {
       </div>
       <div className={classes.subtitleWrapper}>
         <Typography variant={'subtitle2'} className={classes.subtitle}>
-          MetaMask is a browser extension that allows you to hold Ether and tokens as well as create and manage your organization profile on Arbor.
+          MetaMask is a browser extension that allows you to hold Ether and tokens as well as create and manage your organization profile on Winding Tree Marketplace.
         </Typography>
       </div>
       { chainMistmatch ? <ChainMistmatchInfo classes={classes} chainId={chainId}/> : null}

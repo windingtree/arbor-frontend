@@ -117,7 +117,7 @@ function Organization (props) {
                   Submit your Líf deposit
                 </Typography>
                 <Typography className={classes.topSectionText}>
-                  Líf deposit is a small amount of cryptocurrency that is staked when you register your organization profile on Arbor. 
+                  Líf deposit is a small amount of cryptocurrency that is staked when you register your organization profile on Winding Tree Marketplace. 
                   This action minimizes spam registrations and proves your commitment to the cause.
                 </Typography>
                 <div style={{ marginTop: '30px'}}>

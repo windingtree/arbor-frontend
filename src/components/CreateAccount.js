@@ -30,7 +30,10 @@ export const styles = makeStyles({
   formContentWrapper: {
     position: 'relative',
     boxSizing: 'border-box',
-    padding: '80px 80px 60px'
+    padding: '80px 80px 60px 80px',
+    ['@media (max-width:600px)']: {
+      padding: '20px 10px 10px 20px',
+    }
   },
   formTitle: {
     fontSize: '32px',

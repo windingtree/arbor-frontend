@@ -165,24 +165,6 @@ export default function Footer(props) {
           <Grid container direction="column" item xs={12} md={2} className={classes.xsVisible}>
             <Typography variant={'h4'} className={classes.columnTitle}>Organizations</Typography>
             <Link to={'/search'} className={classes.navLink}>
-              <Typography variant={'h6'} className={classes.columnItem}>About Us</Typography>
-            </Link>
-            <Link to={'/my-organizations/wizard'} className={classes.navLink}>
-              <Typography variant={'h6'} className={classes.columnItem}>Documentation</Typography>
-            </Link>
-            <Link to={'/my-organizations/wizard'} className={classes.navLink}>
-              <Typography variant={'h6'} className={classes.columnItem}>FAQ</Typography>
-            </Link>
-          </Grid>
-
-          <Grid container direction="column" item xs={12} md={2} className={classes.xsVisible}>
-            <Typography variant={'h4'} className={classes.columnTitle}>Directories</Typography>
-
-            <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'airline' })}><Typography variant={'h6'} className={classes.columnItem}>Airlines</Typography></div>
-            <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'hotel' })} ><Typography variant={'h6'} className={classes.columnItem}>Hotels</Typography></div>
-            <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'ota' })} ><Typography variant={'h6'} className={classes.columnItem}>Travel agencies</Typography></div>
-            <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'insurance' })} ><Typography variant={'h6'} className={classes.columnItem}>Insurance</Typography></div>
-            <Link to={'/search'} className={classes.navLink}>
               <Typography variant={'h6'} className={classes.columnItem}>Search</Typography>
             </Link>
             <Link to={'/my-organizations/wizard'} className={classes.navLink}>
@@ -190,12 +172,16 @@ export default function Footer(props) {
             </Link>
           </Grid>
 
+          <Grid container direction="column" item xs={12} md={2} className={classes.xsVisible}>
+            <Typography variant={'h4'} className={classes.columnTitle}>Marketplaces</Typography>
+
+            <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'airline' })}><Typography variant={'h6'} className={classes.columnItem}>Airlines</Typography></div>
+            <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'hotel' })} ><Typography variant={'h6'} className={classes.columnItem}>Hotels</Typography></div>
+            <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'ota' })} ><Typography variant={'h6'} className={classes.columnItem}>Travel agencies</Typography></div>
+          </Grid>
+
           <Grid container direction="column" item xs={12} md={3} className={classes.xsVisible}>
-            <Typography variant={'h4'} className={classes.columnTitle}>Contacts</Typography>
-            <Typography variant={'h6'} className={classes.columnTitleNoBorder}>
-              <span>Gubelstrasse 11, 6300 Zug,</span>
-              <span>Switzerland</span>
-            </Typography>
+            <Typography variant={'h4'} className={classes.columnTitle}>Contact</Typography>
             <a href={'mailto:info@windingtree.com'} className={classes.navLink}>
               <Typography variant={'h6'} className={classes.columnItem}>info@windingtree.com</Typography>
             </a>

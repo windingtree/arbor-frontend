@@ -63,7 +63,8 @@ const styles = makeStyles({
     backgroundImage: colors.gradients.green,
     boxShadow: '0 2px 12px rgba(12, 64, 78, 0.1)',
     border: `1px solid ${colors.secondary.cyan}`,
-    borderRadius: '6px'
+    borderRadius: '6px',
+    cursor: 'pointer'
   },
   buttonLabel: {
     fontSize: '16px',
@@ -150,7 +151,7 @@ const SignInActionBox = (classes, props) => {
 
   // Check if we should disable login
   let chainMistmatch = (chainId !== 0 && chainId !== Number(CHAIN_ID));
-  let loginDisabled = (chainId === 0 || chainMistmatch);
+  // let loginDisabled = (chainId === 0 || chainMistmatch);
 
   return (
     <Box style={{width: '80%', margin: '0 auto'}}>
@@ -165,7 +166,7 @@ const SignInActionBox = (classes, props) => {
       </div>
       { chainMistmatch ? <ChainMistmatchInfo classes={classes} chainId={chainId}/> : null}
       <div className={classes.buttonWrapper}>
-        <Button onClick={props.fetchSignInRequest} className={classes.button} disabled={loginDisabled}>
+        <Button onClick={props.fetchSignInRequest} className={classes.button}>
           <Typography variant={'caption'} className={classes.buttonLabel}>Sign in{ currentWeb3 && currentWeb3.currentProvider.isMetaMask ? ' with Metamask': '' }</Typography>
         </Button>
       </div>

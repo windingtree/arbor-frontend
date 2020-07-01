@@ -131,7 +131,7 @@ function* fetchSignInSaga() {
     // Web3 connection
     let w3 = getWeb3();
     if(w3 === undefined) {
-      throw(new Error('No web3 detected'));
+      yield call(history.push, { pathname: '/authorization/register' });
     }
     let accounts = yield connect();
 

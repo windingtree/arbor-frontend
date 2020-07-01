@@ -636,7 +636,7 @@ function TrustGeneral() {
                 Submit your Líf deposit
               </Typography>
               <Typography className={classes.topSectionText}>
-                Líf deposit is a small amount of cryptocurrency that is staked when you register your organization profile on Arbor. 
+                Líf deposit is a small amount of cryptocurrency that is staked when you register your organization profile on Winding Tree Marketplace. 
                 This action minimizes spam registrations and proves your commitment to the cause.
               </Typography>
               <div className={classes.line}/>
@@ -717,9 +717,9 @@ function TrustGeneral() {
                 credentials from certification authorities in different industries.
               </Typography>
               <Typography className={classes.paragraph}>
-                If you represent one of those certification authorities, you can offer Arbor community
+                If you represent one of those certification authorities, you can offer Winding Tree Marketplace community
                 an option to use your credentials on the platform. To do so, create your organization
-                profile on Arbor and start signing credentials you issue.
+                profile on Winding Tree Marketplace and start signing credentials you issue.
               </Typography>
             </Grid>
           </Grid>
@@ -730,7 +730,7 @@ function TrustGeneral() {
           <Grid container spacing={5} direction="row">
             <Grid xs={12} md={7} item>
               <Typography className={classes.registerTitle} variant={'h4'}>
-                Join Arbor today and find trusted partners for your business
+                Join Winding Tree Marketplace today and find trusted partners for your business
               </Typography>
             </Grid>
             <Grid xs={12} md={5} item>

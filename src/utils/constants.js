@@ -1,5 +1,5 @@
 // Export main variables
-export const appName = `Arbor`;
+export const appName = `Winding Tree Marketplace`;
 export const LIF_DEPOSIT_AMOUNT = Number(process.env.REACT_APP_LIF_DEPOSIT_AMOUNT);
 export const API_URI = process.env.REACT_APP_API_URI;
 export const ORGID_PROXY_ADDRESS = process.env.REACT_APP_ORGID_PROXY_ADDRESS;

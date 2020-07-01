@@ -511,7 +511,7 @@ function Home(props) {
             </Typography>
               {/* <div className={classes.subtitleWrapper}> */}
               {/*   <Typography variant={'subtitle1'} className={classes.blockSubtitle}> */}
-              {/*     Arbor has created an efficient alternative to lengthy and expensive <Typography variant={'inherit'} noWrap>Know-Your-Business</Typography> (KYB) processes. */}
+              {/*     Winding Tree Marketplace has created an efficient alternative to lengthy and expensive <Typography variant={'inherit'} noWrap>Know-Your-Business</Typography> (KYB) processes. */}
               {/*     Search for verified organizations across various industries and get */}
               {/*     discovered by potential partners. */}
               {/*   </Typography> */}
@@ -541,7 +541,7 @@ function Home(props) {
 {/*                 We strongly believe that due diligence should not get in the way of your business' success. */}
 {/*                 With this in mind, we have created an open-source registry of trusted organizations that is */}
 {/*                 controlled by community and accessible to everyone. </Typography> */}
-{/*               <Typography variant={'subtitle2'} className={classes.blockSubtitle}>Arbor uses ORG.ID, an open */}
+{/*               <Typography variant={'subtitle2'} className={classes.blockSubtitle}>Winding Tree Marketplace uses ORG.ID, an open */}
 {/*                 source */}
 {/*                 standard for exchanging verified data about organizations. We have designed it to simplify */}
 {/*                 lengthy and costly KYB processes that impede many potential partnerships. */}
@@ -632,7 +632,7 @@ function Home(props) {
       {/*         <Typography variant={'h3'} className={classes.blockTitle}>We work with industry leaders */}
       {/*         </Typography> */}
       {/*         <Typography variant={'subtitle1'} className={classes.blockSubtitle}> */}
-      {/*           Large multinational companies join Arbor community to optimize their due diligence */}
+      {/*           Large multinational companies join Winding Tree Marketplace community to optimize their due diligence */}
       {/*           processes and get exposed to prospective clients.</Typography> */}
       {/*       </Grid> */}
       {/*       <Grid item xs={12} md={6} container spacing={2} > */}
@@ -690,7 +690,7 @@ function Home(props) {
               <div>
                 <Typography variant={'h3'} className={classes.blockTitle}>Use cases</Typography>
                 <Typography variant={'subtitle1'} className={classes.blockSubtitle}>Take a look how
-                  other businesses use Arbor to work with each other.</Typography>
+                  other businesses use Winding Tree Marketplace to work with each other.</Typography>
               </div>
               <div>
                 {renderUseCasesControllers()}
@@ -744,20 +744,20 @@ function Home(props) {
       {/*             Built by community for community */}
       {/*           </Typography> */}
       {/*           <Typography variant={'subtitle1'} className={classes.blockSubtitle}> */}
-      {/*             Arbor and its services are initiated by a non-profit foundation Winding Tree that */}
+      {/*             Winding Tree Marketplace and its services are initiated by a non-profit foundation Winding Tree that */}
       {/*             drives the development of open-source protocols. */}
       {/*           </Typography> */}
       {/*           <Typography variant={'subtitle1'} className={classes.blockSubtitle}> */}
-      {/*             All the processes and operations taking place on Arbor platform are based on */}
+      {/*             All the processes and operations taking place on Winding Tree Marketplace platform are based on */}
       {/*             Blockchain technology. It ensures full transparency and protects the members from */}
       {/*             any fraudulent activities. */}
       {/*           </Typography> */}
       {/*           <Typography variant={'subtitle1'} className={classes.blockSubtitle}> */}
-      {/*             Arbor is not controlled by any particular individual or company. This means your */}
+      {/*             Winding Tree Marketplace is not controlled by any particular individual or company. This means your */}
       {/*             data will never be sold to third parties and the service will remain non-commercial. */}
       {/*           </Typography> */}
       {/*           <Typography variant={'subtitle1'} className={classes.blockSubtitle}> */}
-      {/*             Organizations of any size and from any industry can voluntarily join Arbor community */}
+      {/*             Organizations of any size and from any industry can voluntarily join Winding Tree Marketplace community */}
       {/*             and get in contact with other members. */}
       {/*           </Typography> */}
       {/*         </Grid> */}

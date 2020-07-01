@@ -1,8 +1,8 @@
-# Public Keys Management on the Arbor
+# Public Keys Management on the Winding Tree Marketplace
 
 ## Creation of keys
 
-Currently, the Arbor supports keys of following types: secp256k1 and ETH (ECDSA)
+Currently, the Winding Tree Marketplace supports keys of following types: secp256k1 and ETH (ECDSA)
 
 ### Creation of `secp256k1` keypair using `openssl` cli
 
@@ -47,6 +47,6 @@ MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEmMd7WQHvvtyuso0uAE9GnJyvH6vWv6Xj+FgAz5ZLMsw3HNRK
 
   - Enter a `fragment` of your public key. Fragment it is a unique tag by which public key can be identified among other your keys. The `fragment` is one word contains textual symbols, numbers and underscore. White spaces are not allowed.
   - Enter a note. The `note` is a short description of the purposes of this public key.
-  - Save entered data. For ORG.JSON hosting can be chosen Arbor option or your own host.
-  - Update your ORG.ID by sending a transaction. After transaction will be mined your organization representation on the Arbor will be refreshed.
+  - Save entered data. For ORG.JSON hosting can be chosen Winding Tree Marketplace option or your own host.
+  - Update your ORG.ID by sending a transaction. After transaction will be mined your organization representation on the Winding Tree Marketplace will be refreshed.
 

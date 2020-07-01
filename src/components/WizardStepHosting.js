@@ -160,7 +160,7 @@ const WizardStepHosting = (props) => {
               <Typography variant={'subtitle2'} className={classes.formControlTitle}>Choose your preferred type of JSON hosting</Typography>
               <RadioGroup aria-label="hostingType" name="hostingType" value={values['hostingType']} onChange={handleChange}>
                 <div className={classes.formControlItem}>
-                  <FormControlLabel value="default-hosting" control={<Radio color='primary' />} label="Hosting with Arbor" className={classes.radioItem}/>
+                  <FormControlLabel value="default-hosting" control={<Radio color='primary' />} label="Hosting with Winding Tree Marketplace" className={classes.radioItem}/>
                   <div>
                     <LightTooltip
                       title={'We will store your organization \n information on our servers and back it \n up regularly.'}

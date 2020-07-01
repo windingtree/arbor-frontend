@@ -1,6 +1,6 @@
-# Arbor Front-End
+# Winding Tree Marketplace Front-End
 
-Arbor is an explorer for Winding Tree's [ORG.ID Protocol](https://github.com/windingtree/org.id).
+Winding Tree Marketplace is an explorer for Winding Tree's [ORG.ID Protocol](https://github.com/windingtree/org.id).
 It allows owners and directors of travel companies to create and administrate their organizations using a simple and intuitive user interface.
 
 This repository contains the user interface, which is deployed as a static React application.
@@ -46,12 +46,12 @@ Launches the test runner in the interactive watch mode.
 
 ### `yarn build`
 
-Builds Arbor in the `build` folder.<br />
+Builds Winding Tree Marketplace in the `build` folder.<br />
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
 The build is minified and the filenames include the hashes.<br />
 
 ## Zeit Deployment usage
-Arbor can be deployed on Zeit now.<br />
+Winding Tree Marketplace can be deployed on Zeit now.<br />
 There are three preloaded configurations inlcuded in this folder for `staging`, `ropsten` and `production` (mainnet). These configurations are picked-up by the `zeit_build.sh` script during the CI/CD flow to build the proper environment.
 

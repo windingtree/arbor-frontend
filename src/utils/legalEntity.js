@@ -217,7 +217,7 @@ export const wizardConfig = [
     name: 'Hosting',
     icon: StepperHostingIcon,
     longName: 'Hosting information',
-    description: 'Choose where to store your organization profile data: on Arbor servers or on a hosting of your choice.',
+    description: 'Choose where to store your organization profile data: on Winding Tree Marketplace servers or on a hosting of your choice.',
     sections: [
       {
         name: 'Choose type of JSON hosting',

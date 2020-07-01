@@ -128,6 +128,7 @@ const ChainMistmatchInfo = (props) => {
 const SignInActionBox = (classes, props) => {
   // Define the chain ID state
   const [chainId, setChainId] = useState(0);
+  const [currentWeb3, setWeb3] = useState(getWeb3());
 
   // Callback when the chain changes
   const handleChainChange = (newChainId) => {
@@ -139,9 +140,13 @@ const SignInActionBox = (classes, props) => {
 
   // Update the Chain ID
   useEffect(() => {
-    getWeb3().eth.getChainId()
-    .then(handleChainChange);
-  });
+    const web3 = getWeb3();
+    if (web3 && web3.eth) {
+      setWeb3(web3);
+      getWeb3().eth.getChainId()
+      .then(handleChainChange);
+    }
+  }, [chainId]);
 
   // Check if we should disable login
   let chainMistmatch = (chainId !== 0 && chainId !== Number(CHAIN_ID));
@@ -161,7 +166,7 @@ const SignInActionBox = (classes, props) => {
       { chainMistmatch ? <ChainMistmatchInfo classes={classes} chainId={chainId}/> : null}
       <div className={classes.buttonWrapper}>
         <Button onClick={props.fetchSignInRequest} className={classes.button} disabled={loginDisabled}>
-          <Typography variant={'caption'} className={classes.buttonLabel}>Sign in{ getWeb3().currentProvider.isMetaMask ? ' with Metamask': '' }</Typography>
+          <Typography variant={'caption'} className={classes.buttonLabel}>Sign in{ currentWeb3 && currentWeb3.currentProvider.isMetaMask ? ' with Metamask': '' }</Typography>
         </Button>
       </div>
     </Box>

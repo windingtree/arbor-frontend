@@ -54,12 +54,7 @@ export default {
           type: 'input',
           name: 'State or region',
           orgidJsonPath: 'legalEntity.registeredAddress.subdivision',
-          required: true,
-          validate: value => {
-            if (!value) {
-              return 'Required field';
-            }
-          }
+          required: false
         },
         {
           type: 'input',
@@ -74,7 +69,7 @@ export default {
         },
         {
           type: 'input',
-          name: 'Street',
+          name: 'Street address',
           required: true,
           orgidJsonPath: 'legalEntity.registeredAddress.streetAddress',
           validate: value => {
@@ -85,18 +80,7 @@ export default {
         },
         {
           type: 'input',
-          name: 'Building',
-          required: true,
-          orgidJsonPath: 'legalEntity.registeredAddress.building',
-          validate: value => {
-            if (!value) {
-              return 'Required field';
-            }
-          }
-        },
-        {
-          type: 'input',
-          name: 'Apartment',
+          name: 'Office or apartment',
           orgidJsonPath: 'legalEntity.registeredAddress.premise'
         },
         {
@@ -134,7 +118,8 @@ export default {
           orgidJsonPath: 'email',
           required: true,
           validate: value => {
-            if (value && !value.trim().match(/^[\w.-]+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) {
+            const regexp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            if (value && !regexp.test(value.trim().toLowerCase())) {
               return 'Wrong email format';
             }
           }
@@ -142,5 +127,5 @@ export default {
       ]
     },
   ],
-  cta: 'Create Organization'
+  cta: 'Create account'
 };

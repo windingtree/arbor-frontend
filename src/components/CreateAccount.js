@@ -194,11 +194,6 @@ const CreateAccount = props => {
                 )}
               </Formik>
             </div>
-            <div>
-              <Typography className={classes.formDescription}>
-                Creating an organization profile requires an Ethereum transaction. Make sure you have enough funds in your MetaMask account to cover the transaction fee.
-              </Typography>
-            </div>
           </div>
         </Container>
       </Container>

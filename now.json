@@ -9,7 +9,7 @@
     },
     "rewrites": [
         {
-            "source": "/upload/(.*)",
+            "source": "/uploads/(.*)",
             "destination": "https://api.marketplace.windingtree.com/uploads/$1"
         }
     ]

@@ -96,7 +96,8 @@ const styles = makeStyles({
 
 function Directory(props) {
   const classes = styles();
-  const { items, fetchSearchOrganizations, meta: { per_page, total, pages} }  = props;
+  const items = [];
+  const { fetchSearchOrganizations, meta: { per_page, total, pages} }  = props;
   const [forcePage, setForcePage] = useState(undefined);
   const [countryFilterValue, setCountryFilterValue] = useState('');
   const currentDirectory = props.match.params.directory;

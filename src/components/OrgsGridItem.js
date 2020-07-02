@@ -247,7 +247,7 @@ export default function OrgsGridItem(props) {
         {!error && isSub &&
         <div className={classes.itemMarksWrapper}>
           {directory &&
-          <Typography variant={'subtitle2'} className={classes.itemMark} style={{ backgroundColor: bgColorsForTypes[directory] }}>
+          <Typography variant={'subtitle2'} className={classes.itemMark} style={{ backgroundColor: '#98CCB0' }}>
             {directory === 'ota' ? 'Travel' : directory}
           </Typography>
           }
@@ -332,7 +332,7 @@ export default function OrgsGridItem(props) {
           </div>
         ) : (
           <CardContent className={classes.entitySubOrgsWrapper} style={{ marginBottom: '40px', }}>
-            <Typography variant={'subtitle2'} className={classes.entityTitle}>Does not include sub-organizations</Typography>
+            <Typography variant={'subtitle2'} className={classes.entityTitle}>Does not include organizational units</Typography>
           </CardContent>
         ) : null
       }

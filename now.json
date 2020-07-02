@@ -10,7 +10,7 @@
     "rewrites": [
         {
             "source": "/upload/(.*)",
-            "destination": "https://api.marketplace.windingtree.com/upload/s$1"
+            "destination": "https://api.marketplace.windingtree.com/uploads/$1"
         }
     ]
 }

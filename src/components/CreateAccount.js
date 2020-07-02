@@ -19,20 +19,27 @@ export const styles = makeStyles({
   },
   mainContent: {
     paddingTop: '40px',
-    paddingBottom: '160px'
+    paddingBottom: '160px',
+    ['@media (max-width: 540px)']: { // eslint-disable-line no-useless-computed-key
+      backgroundColor: colors.primary.white
+    }
   },
   formContainer: {
     border: `1px solid ${colors.greyScale.lighter}`,
     borderRadius: '8px',
     boxShadow: ' 0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
     backgroundColor: colors.primary.white,
+    ['@media (max-width: 540px)']: { // eslint-disable-line no-useless-computed-key
+      boxShadow: 'none',
+      border: 'none'
+    }
   },
   formContentWrapper: {
     position: 'relative',
     boxSizing: 'border-box',
     padding: '80px 80px 60px 80px',
-    ['@media (max-width:600px)']: {
-      padding: '20px 10px 10px 20px',
+    ['@media (max-width: 540px)']: { // eslint-disable-line no-useless-computed-key
+      padding: '30px 0',
     }
   },
   formTitle: {

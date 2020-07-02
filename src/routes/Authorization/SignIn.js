@@ -15,14 +15,30 @@ import colors from '../../styles/colors';
 const styles = makeStyles({
   container: {
     position: 'relative',
-    padding: '74px 0 60px 0'
+    padding: '74px 0 60px 0',
+    ['@media (max-width: 540px)']: { // eslint-disable-line no-useless-computed-key
+      padding: '30px 0 60px 0',
+    }
+  },
+  mainContent: {
+    ['@media (max-width: 540px)']: { // eslint-disable-line no-useless-computed-key
+      flexDirection: 'column'
+    }
   },
   itemContainer: {
-    width: '50%'
+    width: '50%',
+    ['@media (max-width: 540px)']: { // eslint-disable-line no-useless-computed-key
+      width: '100%'
+    }
   },
   illustration: {
     width: '100%',
-    height: '100%'
+    height: '100%',
+    ['@media (max-width: 540px)']: { // eslint-disable-line no-useless-computed-key
+      width: '80%',
+      height: 'auto',
+      marginBottom: '30px',
+    }
   },
   screenTitleWrapper: {
     position: 'relative',
@@ -202,7 +218,7 @@ const SignIn = (props) => {
 
   return (
     <Container className={classes.container}>
-      <Grid container justify={'space-between'} alignItems={'center'}>
+      <Grid container justify={'space-between'} className={classes.mainContent}>
         <Grid item className={classes.itemContainer}>
           <img src={LoginIllustration} alt={'Login illustration'} className={classes.illustration}/>
         </Grid>

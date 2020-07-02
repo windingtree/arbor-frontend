@@ -1,10 +1,9 @@
 import React from 'react';
 import history from '../redux/history';
-import {Link as RouterLink} from 'react-router-dom';
+// import {Link as RouterLink} from 'react-router-dom';
 import {makeStyles} from '@material-ui/core/styles';
 import {Container, Grid, Typography, Button} from '@material-ui/core';
 
-import Logo from '../assets/SvgComponents/Logo';
 import Illustration from '../assets/SvgComponents/404-illustration.svg';
 
 import colors from '../styles/colors';
@@ -14,7 +13,7 @@ const styles = makeStyles({
     position: 'relative',
     minHeight: '100vh',
     height: '100%',
-    backgroundColor: colors.secondary.yellowLight,
+    backgroundColor: colors.secondary.white,
   },
   gridContainer: {
     ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
@@ -79,11 +78,6 @@ export default function NotFound() {
   return (
     <div className={classes.container}>
       <Container>
-        <div className={classes.logoContainer}>
-          <RouterLink to={'/'}>
-            <Logo viewBox={'0 0 90 32'} className={classes.logo}/>
-          </RouterLink>
-        </div>
         <Grid className={classes.gridContainer} container justify={'center'} alignItems={'center'}>
           <Grid item xs={12} md={6}>
             <Typography variant={'h1'} className={classes.title}>Oops...Something went wrong</Typography>

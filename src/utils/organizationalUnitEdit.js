@@ -1,7 +1,7 @@
 import {countries} from './countries';
 // import _ from 'lodash';
 // import validators from './validators';
-import { entityTypes } from './constants';
+// import { entityTypes } from './constants';
 
 export const config = [
   {
@@ -41,10 +41,21 @@ export const config = [
                 }
               }
             },
+            // {
+            //   type: 'select',
+            //   name: 'Legal form',
+            //   options: entityTypes,
+            //   required: true,
+            //   orgidJsonPath: 'organizationalUnit.legalType',
+            //   validate: value => {
+            //     if (!value) {
+            //       return 'Required field';
+            //     }
+            //   }
+            // },
             {
-              type: 'select',
+              type: 'input',
               name: 'Legal form',
-              options: entityTypes,
               required: true,
               orgidJsonPath: 'organizationalUnit.legalType',
               validate: value => {
@@ -52,7 +63,7 @@ export const config = [
                   return 'Required field';
                 }
               }
-            },
+            }
           ]
         },
         {

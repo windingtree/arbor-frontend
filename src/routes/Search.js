@@ -429,6 +429,9 @@ function Search(props) {
                     </div>
                   ) : null
                 }
+                {total <= per_page &&
+                  <div className={classes.paginationInfoContainer}>&nbsp;</div>
+                }
               </div>
             ) : null
           }

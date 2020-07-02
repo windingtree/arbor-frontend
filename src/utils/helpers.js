@@ -20,12 +20,60 @@ import DefaultAirlineImage6 from '../assets/images/default-image-airline-6.svg';
 export const copyStrToClipboard = str => navigator.clipboard.writeText(str).then(resolve => resolve);
 export const strCenterEllipsis = str => str ? `${str.substr(0, 4)}...${str.substr(-4, 4)}` : '0xUNDEFINED';
 
+export const getRandomInt = (min, max) => {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
 export const setRandomDefaultImage = (orgid, directory) => {
   console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n', orgid, directory);
   let arrayOfDefaultImages = [];
   let index = 0;
-  if (directory === 'hotel' || directory === 'legalEntity' || directory === 'ota' || directory === 'insurance') arrayOfDefaultImages.push(DefaultHotelImage1, DefaultHotelImage2, DefaultHotelImage3, DefaultHotelImage4, DefaultHotelImage5, DefaultHotelImage6, DefaultHotelImage7, DefaultHotelImage8, DefaultHotelImage9);
-  if (directory === 'airline') arrayOfDefaultImages.push(DefaultAirlineImage1, DefaultAirlineImage2, DefaultAirlineImage3, DefaultAirlineImage4, DefaultAirlineImage5, DefaultAirlineImage6);
+  const mainSet = [
+    'hotel',
+    'legalEntity',
+    'ota',
+    'insurance'
+  ];
+  const airlineSet = [
+    'airline'
+  ];
+  if (mainSet.includes(directory)) {
+    arrayOfDefaultImages.push(
+      DefaultHotelImage1,
+      DefaultHotelImage2,
+      DefaultHotelImage3,
+      DefaultHotelImage4,
+      DefaultHotelImage5,
+      DefaultHotelImage6,
+      DefaultHotelImage7,
+      DefaultHotelImage8,
+      DefaultHotelImage9
+    );
+  } else if (airlineSet.includes(directory)) {
+    arrayOfDefaultImages.push(
+      DefaultAirlineImage1,
+      DefaultAirlineImage2,
+      DefaultAirlineImage3,
+      DefaultAirlineImage4,
+      DefaultAirlineImage5,
+      DefaultAirlineImage6
+    );
+  } else {
+    // @todo create specific set of images for organizations with unknown type
+    arrayOfDefaultImages.push(
+      DefaultHotelImage1,
+      DefaultHotelImage2,
+      DefaultHotelImage3,
+      DefaultHotelImage4,
+      DefaultHotelImage5,
+      DefaultHotelImage6,
+      DefaultHotelImage7,
+      DefaultHotelImage8,
+      DefaultHotelImage9
+    );
+  }
   try {
     let lastCharFromOrgid = orgid.toString().slice(-1);
     index = parseInt(`0x${lastCharFromOrgid}`);

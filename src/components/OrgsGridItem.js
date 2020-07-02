@@ -210,12 +210,12 @@ const styles = makeStyles({
   },
 });
 
-const bgColorsForTypes = {
-  'hotel': colors.secondary.green,
-  'airline': colors.secondary.yellow,
-  'ota': colors.secondary.pink,
-  'insurance': colors.secondary.intenseGreen,
-};
+// const bgColorsForTypes = {
+//   'hotel': colors.secondary.green,
+//   'airline': colors.secondary.yellow,
+//   'ota': colors.secondary.pink,
+//   'insurance': colors.secondary.intenseGreen,
+// };
 
 export default function OrgsGridItem(props) {
   const classes = styles();
@@ -247,7 +247,7 @@ export default function OrgsGridItem(props) {
         {!error && isSub &&
         <div className={classes.itemMarksWrapper}>
           {directory &&
-          <Typography variant={'subtitle2'} className={classes.itemMark} style={{ backgroundColor: '#98CCB0' }}>
+          <Typography variant={'subtitle2'} className={classes.itemMark} style={{ backgroundColor: colors.secondary.green }}>
             {directory === 'ota' ? 'Travel' : directory}
           </Typography>
           }

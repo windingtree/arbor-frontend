@@ -1,7 +1,7 @@
 import {countries} from './countries';
 // import _ from 'lodash';
 // import validators from './validators';
-import { entityTypes } from './constants';
+// import { entityTypes } from './constants';
 
 export const config = [
   {

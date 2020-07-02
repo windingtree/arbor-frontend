@@ -41,10 +41,21 @@ export const config = [
                 }
               }
             },
+            // {
+            //   type: 'select',
+            //   name: 'Legal form',
+            //   options: entityTypes,
+            //   required: true,
+            //   orgidJsonPath: 'organizationalUnit.legalType',
+            //   validate: value => {
+            //     if (!value) {
+            //       return 'Required field';
+            //     }
+            //   }
+            // },
             {
-              type: 'select',
+              type: 'input',
               name: 'Legal form',
-              options: entityTypes,
               required: true,
               orgidJsonPath: 'organizationalUnit.legalType',
               validate: value => {
@@ -52,7 +63,7 @@ export const config = [
                   return 'Required field';
                 }
               }
-            },
+            }
           ]
         },
         {

@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import { Container, Typography, Button } from '@material-ui/core';
+import { getWeb3 } from "../web3/w3"
 
 import history from '../redux/history';
 import colors from '../styles/colors';
 
 export const styles = makeStyles(theme => ({
   mainContainer: {
-    padding: '100px 0'
+    padding: '80px 0 '
   },
   pageTitle: {
     fontSize: '40px',
@@ -44,7 +45,7 @@ export const styles = makeStyles(theme => ({
 }));
 
 const EmailSent = props => {
-  const profileId = history.location.state.profileId;
+  const profileId = history.location && history.location.state ? history.location.state.profileId : '';
   const classes = styles();
   const userEmail = sessionStorage.getItem('email');
 
@@ -53,7 +54,12 @@ const EmailSent = props => {
   }, []);
 
   const handleSignInRedirect = () => {
-    history.push(`/my-organizations?=profileId=${profileId}`);
+    const web3 = getWeb3();
+    if (web3) {
+      history.push(`/my-organizations?=profileId=${profileId}`);
+    } else {
+      history.push(`/metamask-required`);
+    }    
   };
 
   return (

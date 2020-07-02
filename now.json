@@ -6,5 +6,11 @@
         "REACT_APP_ORGID_PROXY_ADDRESS": "0x6434DEC2f4548C2aA9D88E8Ff821f387be3D7F0D",
         "REACT_APP_DIRECTORY_PROXY_ADDRESS": "0x68d9cB089a3e17be6F9De7a318BBCC55F4c899Bc",
         "REACT_APP_ETHEREUM_CHAIN_ID": "1"
-    }
+    },
+    "rewrites": [
+        {
+            "source": "/upload/(.*)",
+            "destination": "https://api.marketplace.windingtree.com/upload/$1"
+        }
+    ]
 }

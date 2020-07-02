@@ -182,7 +182,7 @@ const SignInActionBox = (classes, props) => {
       </div>
       { chainMistmatch ? <ChainMistmatchInfo classes={classes} chainId={chainId}/> : null}
       <div className={classes.buttonWrapper}>
-        <Button onClick={props.fetchSignInRequest} className={classes.button}>
+        <Button onClick={props.fetchSignInRequest} className={classes.button} disabled={chainMistmatch}>
           <Typography variant={'caption'} className={classes.buttonLabel}>Sign in{ currentWeb3 && currentWeb3.currentProvider.isMetaMask ? ' with Metamask': '' }</Typography>
         </Button>
       </div>

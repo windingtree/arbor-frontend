@@ -148,7 +148,7 @@ function* startBackendConnectionStatusPollingSaga () {
 
 export const saga = function*() {
     return yield all([
-        // takeLatest('persist/REHYDRATE', init), // Start polling on App start
+        takeLatest('persist/REHYDRATE', init), // Start polling on App start
         takeEvery(BACKEND_STATUS_REQUEST, startBackendConnectionStatusPollingSaga)
     ]);
 };

@@ -1,10 +1,14 @@
 import Web3 from 'web3';
+import MetaMaskOnboarding from '@metamask/onboarding'
+
 import { 
   ORGID_ABI,
   ORGID_PROXY_ADDRESS,
   LIF_TOKEN_ABI,
   LIF_TOKEN_PROXY_ADDRESS,
 } from "../utils/constants";
+
+const onboarding = new MetaMaskOnboarding();
 
 var cachedWeb3;
 var orgidContract;
@@ -75,32 +79,33 @@ export const onAccountsChanged = (callback) => {
 /* https://eips.ethereum.org/EIPS/eip-1193 */
 /*******************************************/
 export const connect = () => {
-  return new Promise((resolve, reject) => {
+  return onboarding.startOnboarding();
+  // return new Promise((resolve, reject) => {
 
-    // Check if there is support for EIP-1193
-    if(window.ethereum.request !== undefined) {
-      window.ethereum.request({
-        method: 'wallet_registerOnboarding',
-      })
-      .then(accounts => resolve(accounts))
-      .catch(err => {
-        // EIP 1193 userRejectedRequest error
-        if (err.code === 4001) { 
-          console.log('Please connect to MetaMask.')
-        } else {
-          console.error(err);
-        }
-        reject(err);
-      });
-    }
+  //   // Check if there is support for EIP-1193
+  //   if(window.ethereum.request !== undefined) {
+  //     window.ethereum.request({
+  //       method: 'wallet_registerOnboarding',
+  //     })
+  //     .then(accounts => resolve(accounts))
+  //     .catch(err => {
+  //       // EIP 1193 userRejectedRequest error
+  //       if (err.code === 4001) { 
+  //         console.log('Please connect to MetaMask.')
+  //       } else {
+  //         console.error(err);
+  //       }
+  //       reject(err);
+  //     });
+  //   }
 
-    // No support for EIP-1193, fallback to ethereum.enable()
-    else {
-      window.ethereum.enable()
-      .then(accounts => resolve(accounts))
-      .catch(err => reject(err));
-    }
-  });
+  //   // No support for EIP-1193, fallback to ethereum.enable()
+  //   else {
+  //     window.ethereum.enable()
+  //     .then(accounts => resolve(accounts))
+  //     .catch(err => reject(err));
+  //   }
+  // });
 };
 
 // get the Gas Price

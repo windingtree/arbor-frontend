@@ -143,6 +143,9 @@ const styles = makeStyles({
     lineHeight: 1.42,
     color: colors.greyScale.dark
   },
+  emptyResults: {
+    minHeight: '383px'
+  }
 });
 
 function Search(props) {
@@ -342,8 +345,7 @@ function Search(props) {
 
   return (
     <div>
-      <div
-        className={total === 0 ? [classes.searchHeaderWrapper, classes.searchHeaderWrapperNoResults].join(' ') : classes.searchHeaderWrapper}>
+      <div className={classes.searchHeaderWrapper}>
         <Container className={classes.searchHeader}>
           <div>
             <Typography variant={'h2'} className={classes.searchTitle}>
@@ -408,32 +410,35 @@ function Search(props) {
               </div>
             </div>
           </div>
-          {
-            total !== 0 ? (
-              <div className={classes.gridListWrapper}>
-                <CardsList/>
-                {
-                  total > per_page ? (
-                    <div className={classes.paginationInfoContainer}>
-                      <div className={classes.totalSearchTitleContainer}>
-                        <Typography variant={'caption'} className={classes.totalSearchResultsTitle}>
-                          {renderResultsText()}</Typography>
-                      </div>
-                      <div>
-                        <Pagination
-                          pageCount={pages}
-                          onPageChange={handlePageClick}
-                          forcePage={forcePage}
-                        />
-                      </div>
+          {total !== 0 &&
+            <div className={classes.gridListWrapper}>
+              <CardsList/>
+              {
+                total > per_page ? (
+                  <div className={classes.paginationInfoContainer}>
+                    <div className={classes.totalSearchTitleContainer}>
+                      <Typography variant={'caption'} className={classes.totalSearchResultsTitle}>
+                        {renderResultsText()}</Typography>
                     </div>
-                  ) : null
-                }
-                {total <= per_page &&
-                  <div className={classes.paginationInfoContainer}>&nbsp;</div>
-                }
-              </div>
-            ) : null
+                    <div>
+                      <Pagination
+                        pageCount={pages}
+                        onPageChange={handlePageClick}
+                        forcePage={forcePage}
+                      />
+                    </div>
+                  </div>
+                ) : null
+              }
+              {total <= per_page &&
+                <div className={classes.paginationInfoContainer}>&nbsp;</div>
+              }
+            </div>
+          }
+          {total === 0 &&
+            <div className={classes.emptyResults}>
+              <div className={classes.paginationInfoContainer}>&nbsp;</div>
+            </div>
           }
         </Container>
     </div>

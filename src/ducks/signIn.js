@@ -130,7 +130,6 @@ function* fetchSignInSaga() {
   try {
     // Web3 connection
     let w3 = getWeb3();
-    console.log('!!!', w3);
     if(w3 === undefined) {
       yield call(history.push, { pathname: '/authorization/register' });
     }

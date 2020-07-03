@@ -26,6 +26,7 @@ import Profile from './Profile';
 import CreateAccount from '../components/CreateAccount';
 import ConfirmAccount from '../components/ConfirmAccount';
 import EmailSent from '../components/EmailSent';
+import MetamaskRequired from '../components/MetamaskRequired';
 
 class RootRouter extends Component {
   render() {
@@ -114,8 +115,14 @@ class RootRouter extends Component {
             path='/email-sent'
             component={EmailSent}
           />
-          <Route
-            path='/404' component={NotFound}/>
+          <DefaultRoute
+            isAuthenticated={isAuthenticated}
+            path='/metamask-required'
+            component={MetamaskRequired}
+          />
+          <DefaultRoute
+            path='/404'
+            component={NotFound}/>
           <Route>
             <Redirect to='/404' />
           </Route>

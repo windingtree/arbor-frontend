@@ -74,34 +74,34 @@ function Pagination(props) {
 
   return (
     <ReactPaginate
-      previousLabel={(
-        <ArrowLeftIcon
-          viewBox={'0 0 12 12'}
-          className={classes.paginationIcon}
-        />
-      )}
-      nextLabel={(
-        <ArrowLeftIcon
-          viewBox={'0 0 12 12'}
-          className={[classes.paginationIcon, classes.paginationIconRight].join(' ')}
-        />
-      )}
-      disabledClassName={classes.disabled}
-      breakLabel={'...'}
-      breakClassName={classes.paginationBreak}
-      pageCount={pageCount}
-      marginPagesDisplayed={2}
-      initialPage={0}
-      forcePage={forcePage}
-      pageRangeDisplayed={4}
-      onPageChange={onPageChange}
-      containerClassName={classes.pagination}
-      pageClassName={classes.paginationItem}
-      pageLinkClassName={classes.paginationLink}
-      previousLinkClassName={classes.paginationLink}
-      nextLinkClassName={classes.paginationLink}
-      activeClassName={classes.paginationActive}
-    />
+        previousLabel={(
+          <ArrowLeftIcon
+            viewBox={'0 0 12 12'}
+            className={classes.paginationIcon}
+          />
+        )}
+        nextLabel={(
+          <ArrowLeftIcon
+            viewBox={'0 0 12 12'}
+            className={[classes.paginationIcon, classes.paginationIconRight].join(' ')}
+          />
+        )}
+        disabledClassName={classes.disabled}
+        breakLabel={'...'}
+        breakClassName={classes.paginationBreak}
+        pageCount={pageCount}
+        marginPagesDisplayed={2}
+        initialPage={0}
+        forcePage={forcePage}
+        pageRangeDisplayed={4}
+        onPageChange={onPageChange}
+        containerClassName={classes.pagination}
+        pageClassName={classes.paginationItem}
+        pageLinkClassName={classes.paginationLink}
+        previousLinkClassName={classes.paginationLink}
+        nextLinkClassName={classes.paginationLink}
+        activeClassName={classes.paginationActive}
+    />    
   )
 }
 

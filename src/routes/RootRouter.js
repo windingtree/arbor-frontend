@@ -120,8 +120,9 @@ class RootRouter extends Component {
             path='/metamask-required'
             component={MetamaskRequired}
           />
-          <Route
-            path='/404' component={NotFound}/>
+          <DefaultRoute
+            path='/404'
+            component={NotFound}/>
           <Route>
             <Redirect to='/404' />
           </Route>

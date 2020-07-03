@@ -126,14 +126,16 @@ const accountChange = () => new Promise(resolve => {
  * Sagas
  * */
 // Sign-in saga
-function* fetchSignInSaga() {
+function* fetchSignInSaga(accounts) {
   try {
-    // Web3 connection
-    let w3 = getWeb3();
-    if(w3 === undefined) {
-      yield call(history.push, { pathname: '/authorization/register' });
-    }
-    let accounts = yield connect();
+    // // Web3 connection
+    // let w3 = getWeb3();
+    // if(w3 === undefined) {
+    //   yield call(history.push, { pathname: '/authorization/register' });
+    // }
+    // let accounts = yield connect();
+
+    console.log('!!!!!!', accounts);
 
     // Connexion Success
     yield put(fetchSignInSuccess(accounts[0]));

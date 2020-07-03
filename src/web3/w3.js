@@ -46,7 +46,7 @@ export const onChainChanged = (callback) => {
   let w3 = getWeb3();
   if(w3 && w3.currentProvider.on !== undefined) {
     // Legacy Method
-    w3.currentProvider.on('networkChanged', callback);
+    // w3.currentProvider.on('networkChanged', callback);
     
     // EIP 1193 Method
     w3.currentProvider.on('chainChanged', (chainIdHex) => {
@@ -79,7 +79,9 @@ export const connect = () => {
 
     // Check if there is support for EIP-1193
     if(window.ethereum.request !== undefined) {
-      window.ethereum.request('eth_requestAccounts')
+      window.ethereum.request({
+        method: 'wallet_registerOnboarding',
+      })
       .then(accounts => resolve(accounts))
       .catch(err => {
         // EIP 1193 userRejectedRequest error

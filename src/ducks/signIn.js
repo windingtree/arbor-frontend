@@ -126,7 +126,7 @@ const accountChange = () => new Promise(resolve => {
  * Sagas
  * */
 // Sign-in saga
-function* fetchSignInSaga(accounts) {
+function* fetchSignInSaga({ payload }) {
   try {
     // // Web3 connection
     // let w3 = getWeb3();
@@ -135,10 +135,10 @@ function* fetchSignInSaga(accounts) {
     // }
     // let accounts = yield connect();
 
-    console.log('!!!!!!', accounts);
+    console.log('!!!!!!', payload);
 
     // Connexion Success
-    yield put(fetchSignInSuccess(accounts[0]));
+    yield put(fetchSignInSuccess(payload[0]));
 
     // Move to My Organizations
     yield call(history.push, { pathname: '/my-organizations' });

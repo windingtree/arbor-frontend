@@ -160,7 +160,7 @@ const SignInActionBox = (classes, props) => {
     const web3 = getWeb3();
     if (web3 && web3.eth) {
       setWeb3(web3);
-      getWeb3().eth.getChainId()
+      web3.eth.getChainId()
       .then(handleChainChange);
     }
   }, [chainId]);

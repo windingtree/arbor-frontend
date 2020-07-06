@@ -6,6 +6,7 @@ import {Container, Grid, Typography, Button, Hidden, Collapse, Card} from '@mate
 import {makeStyles} from '@material-ui/core/styles';
 import { fadeIn } from 'react-animations';
 import Radium, { StyleRoot } from 'radium';
+import MetaMaskOnboarding from '@metamask/onboarding';
 
 import {
   getBackendConnectionStatus
@@ -21,7 +22,7 @@ import HotelIcon from '../assets/SvgComponents/hotel-icon.svg';
 import PaperIcon from '../assets/SvgComponents/paper-icon.svg';
 import TravelIcon from '../assets/SvgComponents/travel-icon.svg';
 import InfoIcon from '../components/icons/IconInfo';
-import {getWeb3} from '../web3/w3';
+// import {getWeb3} from '../web3/w3';
 
 import colors from '../styles/colors';
 
@@ -256,12 +257,12 @@ const animation = {
 const Header = (props) => {
   const classes = styles();
   const [isOpen, toggleOpen] = useState(false);
+  const [isJoin, setIsJoin] = useState(history.location.pathname === '/join');
   const { isAuthenticated, connectionStatus } = props;
 
   // Redirect users depending on Web3 presence or not
   const handleSignInRedirect = () => {
-    let w3 = getWeb3();
-    if(w3 !== undefined) {
+    if(MetaMaskOnboarding.isMetaMaskInstalled()) {
       history.push('/authorization/signin');
     }
     else {
@@ -306,6 +307,11 @@ const Header = (props) => {
     )
   };
 
+  const handleLogoClick = () => {
+    history.push('/');
+    setIsJoin(false);
+  };
+
   const mobileMenuContent = () => {
     const directoriesNavLinks = directoriesContent.map((item, index) => {
       return (
@@ -341,11 +347,11 @@ const Header = (props) => {
         <Container>
           <Grid container justify={'space-between'} alignItems={'center'} className={classes.headerContent}>
             <Grid item lg={2} sm={4} xs={2}>
-              <button onClick={() => history.push('/')} className={classes.logoButton}>
+              <button onClick={() => handleLogoClick()} className={classes.logoButton}>
                 <Logo viewBox={'0 0 90 32'} className={classes.logo} primary={colors.greyScale.darkBg}/>
               </button>
             </Grid>
-            {history.location.pathname !== '/join' &&
+            {!isJoin &&
               <Hidden smDown>
                 <Grid item lg={isAuthenticated ? 6 : 4} sm={4} xs={6} container justify={'space-between'} className={classes.navigationContainer}>
                   <div className={classes.navLinksContainer}>
@@ -423,7 +429,7 @@ const Header = (props) => {
                 </Grid>
               </Hidden>
             }
-            {history.location.pathname !== '/join' &&
+            {!isJoin &&
               <div className={classes.mobileMenuButtonContainer}>
                 <Button onClick={handleMobileMenuOpenState} className={classes.mobileMenuButton}>
                   <MenuIcon icon={isOpen ? MobileMenuIconClose : MobileMenuIcon}/>
@@ -450,7 +456,7 @@ const Header = (props) => {
           }
         </Container>
       </div>
-      {history.location.pathname !== '/join' &&
+      {!isJoin &&
         <Collapse in={isOpen} className={classes.mobileMenu}>
           <Container>
             {mobileMenuContent()}

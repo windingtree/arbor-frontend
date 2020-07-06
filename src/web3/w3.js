@@ -56,6 +56,9 @@ export const onChainChanged = (callback) => {
     w3.currentProvider.on('chainChanged', (chainIdHex) => {
       callback(parseInt(chainIdHex, 16));
     });
+    w3.currentProvider.on('chainIdChanged', (chainIdHex) => {
+      callback(parseInt(chainIdHex, 16));
+    });
   }
   else {
     console.log('No network event change callbacks');

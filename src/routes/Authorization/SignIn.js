@@ -145,9 +145,10 @@ const ChainMistmatchInfo = (props) => {
 
 // A Box for the Sign-in Action
 const SignInActionBox = (classes, props) => {
+  const { fetchSignInRequest } = props;
   // Define the chain ID state
   const [chainId, setChainId] = useState(0);
-  const [currentWeb3, setWeb3] = useState(getWeb3());
+  // const [currentWeb3, setWeb3] = useState(getWeb3());
 
   // Callback when the chain changes
   const handleChainChange = (newChainId) => {
@@ -155,13 +156,15 @@ const SignInActionBox = (classes, props) => {
   };
 
   // Register to Web3 provider chain change events
-  onChainChanged(handleChainChange);
+  useEffect(() => {
+    onChainChanged(handleChainChange);
+  }, [fetchSignInRequest]);
 
   // Update the Chain ID
   useEffect(() => {
     const web3 = getWeb3();
     if (web3 && web3.eth) {
-      setWeb3(web3);
+      // setWeb3(web3);
       web3.eth.getChainId()
       .then(handleChainChange);
     }

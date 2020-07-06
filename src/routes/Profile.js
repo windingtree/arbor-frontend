@@ -78,8 +78,6 @@ function Profile(props) {
   const { organizations, address, fetchProfileOrganizations, getJoinRequest, 
     isJoinFetching, joinOrganizations } = props;
   
-  // TODO: fetch request for non-confirmed organizations
-  
   useEffect(() => {
     const profileId = sessionStorage.getItem('profileId');
     if (profileId) {

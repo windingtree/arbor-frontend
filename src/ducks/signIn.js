@@ -1,6 +1,6 @@
 import { appName } from '../utils/constants';
 import history from '../redux/history';
-import {getWeb3, connect, onAccountsChanged} from '../web3/w3';
+import {onAccountsChanged} from '../web3/w3';// getWeb3, connect, 
 import { createSelector } from 'reselect';
 import { all, call, put, takeLatest } from 'redux-saga/effects';
 /**
@@ -135,7 +135,7 @@ function* fetchSignInSaga({ payload }) {
     // }
     // let accounts = yield connect();
 
-    console.log('!!!!!!', payload);
+    // console.log('!!!!!!', payload);
 
     // Connexion Success
     yield put(fetchSignInSuccess(payload[0]));

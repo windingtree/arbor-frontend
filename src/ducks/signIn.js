@@ -1,6 +1,6 @@
 import { appName } from '../utils/constants';
 import history from '../redux/history';
-import {getWeb3, connect, onAccountsChanged} from '../web3/w3';
+import {onAccountsChanged} from '../web3/w3';// getWeb3, connect, 
 import { createSelector } from 'reselect';
 import { all, call, put, takeLatest } from 'redux-saga/effects';
 /**
@@ -126,17 +126,19 @@ const accountChange = () => new Promise(resolve => {
  * Sagas
  * */
 // Sign-in saga
-function* fetchSignInSaga() {
+function* fetchSignInSaga({ payload }) {
   try {
-    // Web3 connection
-    let w3 = getWeb3();
-    if(w3 === undefined) {
-      yield call(history.push, { pathname: '/authorization/register' });
-    }
-    let accounts = yield connect();
+    // // Web3 connection
+    // let w3 = getWeb3();
+    // if(w3 === undefined) {
+    //   yield call(history.push, { pathname: '/authorization/register' });
+    // }
+    // let accounts = yield connect();
+
+    // console.log('!!!!!!', payload);
 
     // Connexion Success
-    yield put(fetchSignInSuccess(accounts[0]));
+    yield put(fetchSignInSuccess(payload[0]));
 
     // Move to My Organizations
     yield call(history.push, { pathname: '/my-organizations' });

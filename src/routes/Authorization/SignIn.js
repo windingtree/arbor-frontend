@@ -6,7 +6,9 @@ import { fetchSignInRequest } from '../../ducks/signIn';
 import {Container, Grid, Typography, Box, Button} from '@material-ui/core';
 import {makeStyles} from '@material-ui/styles';
 import {MAINTENANCE, CHAIN_ID} from "../../utils/constants";
-import {getWeb3, onChainChanged} from "../../web3/w3"
+import {getWeb3, onChainChanged} from "../../web3/w3";
+
+import OnboardingButton from '../../components/MetamaskOnboarding';
 
 import LoginIllustration from '../../assets/SvgComponents/login-illustration.svg';
 
@@ -80,14 +82,14 @@ const styles = makeStyles({
     boxShadow: '0 2px 12px rgba(12, 64, 78, 0.1)',
     border: `1px solid ${colors.secondary.cyan}`,
     borderRadius: '6px',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    padding: '10px 20px'
   },
   buttonLabel: {
     fontSize: '16px',
     fontWeight: 600,
     color: colors.primary.white,
-    textTransform: 'none',
-    padding: '10px 20px'
+    textTransform: 'none'
   }
 });
 
@@ -160,7 +162,7 @@ const SignInActionBox = (classes, props) => {
     const web3 = getWeb3();
     if (web3 && web3.eth) {
       setWeb3(web3);
-      getWeb3().eth.getChainId()
+      web3.eth.getChainId()
       .then(handleChainChange);
     }
   }, [chainId]);
@@ -182,9 +184,10 @@ const SignInActionBox = (classes, props) => {
       </div>
       { chainMistmatch ? <ChainMistmatchInfo classes={classes} chainId={chainId}/> : null}
       <div className={classes.buttonWrapper}>
-        <Button onClick={props.fetchSignInRequest} className={classes.button} disabled={chainMistmatch}>
+        <OnboardingButton className={classes.button} buttonLabel={classes.buttonLabel}  disabled={chainMistmatch} />
+        {/* <Button onClick={props.fetchSignInRequest} className={classes.button} disabled={chainMistmatch}>
           <Typography variant={'caption'} className={classes.buttonLabel}>Sign in{ currentWeb3 && currentWeb3.currentProvider.isMetaMask ? ' with Metamask': '' }</Typography>
-        </Button>
+        </Button> */}
       </div>
     </Box>
   );

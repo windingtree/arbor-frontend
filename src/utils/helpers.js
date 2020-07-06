@@ -27,7 +27,7 @@ export const getRandomInt = (min, max) => {
 };
 
 export const setRandomDefaultImage = (orgid, directory) => {
-  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n', orgid, directory);
+  // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n', orgid, directory);
   let arrayOfDefaultImages = [];
   let index = 0;
   const mainSet = [

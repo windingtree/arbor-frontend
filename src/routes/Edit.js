@@ -101,6 +101,10 @@ const styles = makeStyles({
     border: `1px solid ${colors.primary.accent}`,
     borderRadius: '6px',
     padding: '6px 20px',
+    '&:disabled': {
+      opacity: '0.5',
+      cursor: 'none'
+    }
   },
   editStatusButton: {
     height: '44px',
@@ -492,7 +496,7 @@ const Edit = (props) => {
                     </div>
                   </Grid>
                   <Grid item sm={3} className={classes.editButtonContainer}>
-                    <Button type="submit" disabled={isSubmitting} className={classes.editButton}>
+                    <Button type="submit" disabled={isSubmitting || Object.keys(touched).length === 0} className={classes.editButton}>
                       <Typography variant={'caption'} className={classes.editButtonLabel}>{'Save and Update'}</Typography>
                     </Button>
                   </Grid>

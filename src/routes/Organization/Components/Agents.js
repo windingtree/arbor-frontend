@@ -136,7 +136,11 @@ const styles = makeStyles({
     backgroundImage: colors.gradients.orange,
     boxShadow: '0px 2px 12px rgba(12, 64, 78, 0.1)',
     textTransform: 'none',
-    padding: '6px 20px'
+    padding: '6px 20px',
+    '&:disabled': {
+      opacity: '0.5',
+      cursor: 'none'
+    }
   },
   dialogButtonLabel: {
     fontSize: '16px',
@@ -421,7 +425,7 @@ function Agents(props) {
                       />
                     </div>
                     <div className={classes.dialogButtonWrapper}>
-                      <Button type={'submit'} disabled={isSubmitting} className={classes.dialogButton}>
+                      <Button type={'submit'} disabled={isSubmitting || Object.keys(touched).length === 0} className={classes.dialogButton}>
                         <Typography variant={'caption'} className={classes.dialogButtonLabel}>
                           Save Agent Key
                         </Typography>

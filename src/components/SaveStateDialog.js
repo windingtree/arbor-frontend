@@ -50,7 +50,11 @@ const styles = makeStyles({
         border: `1px solid ${colors.primary.accent}`,
         borderRadius: '8px',
         backgroundImage: colors.gradients.orange,
-        textTransform: 'capitalize'
+        textTransform: 'capitalize',
+        '&:disabled': {
+            opacity: '0.5',
+            cursor: 'none'
+        }
     },
     buttonLabel: {
         fontSize: '16px',
@@ -130,7 +134,7 @@ const SaveStateDialog = props => {
                     {isTransactionSuccess &&
                         <div className={classes.subtitleWrapper}>
                             <Typography className={classes.success}>
-                                Organization status has been successfully toggled
+                                Organization status has been successfully updated
                             </Typography>
                             <div className={classes.buttonWrapper}>
                                 <Grid container alignItems="center">

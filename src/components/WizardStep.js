@@ -51,7 +51,11 @@ export const styles = makeStyles({
     border: `1px solid ${colors.primary.accent}`,
     borderRadius: '8px',
     backgroundImage: colors.gradients.orange,
-    textTransform: 'capitalize'
+    textTransform: 'capitalize',
+    '&:disabled': {
+      opacity: '0.5',
+      cursor: 'none'
+    }
   },
   buttonLabel: {
     fontSize: '16px',
@@ -250,7 +254,7 @@ const WizardStep = (props) => {
             }
 
             <div className={classes.buttonWrapper}>
-              <Button type="submit" disabled={isSubmitting} className={classes.button}>
+              <Button type="submit" disabled={isSubmitting || Object.keys(touched).length === 0} className={classes.button}>
                 <Typography variant={'caption'} className={classes.buttonLabel}>{cta}</Typography>
               </Button>
             </div>

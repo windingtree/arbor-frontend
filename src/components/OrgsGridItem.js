@@ -208,6 +208,9 @@ const styles = makeStyles({
     color: colors.primary.white,
     padding: '2px 4px',
   },
+  statusDisabled: {
+    color: `${colors.primary.accent} !important`
+  }
 });
 
 // const bgColorsForTypes = {
@@ -220,7 +223,7 @@ const styles = makeStyles({
 export default function OrgsGridItem(props) {
   const classes = styles();
   const { organization, canManage, error } = props;
-  const { orgid, parent, logo, proofsQty, name, subs, subsidiaries, directory } = organization;
+  const { orgid, parent, logo, proofsQty, name, subs, subsidiaries, directory, state } = organization;
   const subOrganizations = _.isEmpty(subs) ? subsidiaries : subs;
   const isSub = !_.isEmpty(parent);
 
@@ -276,6 +279,13 @@ export default function OrgsGridItem(props) {
               {name}
             </Ellipsis>
           </div>
+          {!state &&
+            <div className={classes.itemNameWrapper} style={{ color: error ? colors.primary.accent : colors.greyScale.darkest }}>
+              <Typography variant={'subtitle2'} className={classes.entityTitle}>
+                Active status: <span className={classes.statusDisabled}>Disabled</span>
+              </Typography>
+            </div>
+          }
         </Link>
         {error &&
         <div className={classes.errorMessageWrapper}>

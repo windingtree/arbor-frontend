@@ -113,6 +113,10 @@ function ApiFetchBackendConnectionStatus() {
  */
 
 function* init () {
+    if (process.env.NODE_ENV === 'development') {
+        return;
+    };
+    
     try {
         yield put(startBackendStatusPolling());
     } catch (error) {

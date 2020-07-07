@@ -39,16 +39,21 @@ export default function reducer( state = initialState, action) {
         error: null
       });
     case FETCH_PROFILE_ORGANIZATIONS_SUCCESS:
-      const index = [];
-      window['payload_orgin'] = JSON.parse(JSON.stringify(payload));
+      // window['payload_orgin'] = JSON.parse(JSON.stringify(payload));
 
-      payload.data.forEach(({ orgid }, i) => { index[orgid] = i });
+      const index = payload.data.reduce(
+        (a, { orgid }, i) => {
+          a[orgid] = i;
+          return a;
+        },
+        {}
+      );
 
       payload.data.forEach((org, i) => {
-        if(org.parent) {
+        if (org.parent) {
           
-          if(index[org.parent.orgid]) {
-
+          if (index[org.parent.orgid] !== undefined) {
+            
             if (!payload.data[index[org.parent.orgid]].subs) {
               payload.data[index[org.parent.orgid]].subs = [];
             }
@@ -162,5 +167,5 @@ function ApiFetchProfileOrganizations(data) {
   delete data['per_page'];
   const otherParams = _.map(data, (value, param) => `${param}=${value}`).join('&');
 
-  return callApi(`orgids/?page[number]=${page}&page[size]=${per_page}&${otherParams}`);
+  return callApi(`orgids/?all=true&page[number]=${page}&page[size]=${per_page}&${otherParams}`);
 }

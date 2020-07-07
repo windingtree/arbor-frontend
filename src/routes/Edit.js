@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import history from '../redux/history';
 import _ from 'lodash';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { connect } from "react-redux";
 import {
   Container,
@@ -10,7 +10,8 @@ import {
   Tabs,
   Tab,
   Button,
-  CircularProgress
+  CircularProgress,
+  Switch
 } from "@material-ui/core";
 import { Formik } from "formik";
 
@@ -31,8 +32,11 @@ import {
   saveOrgidUri,
   saveOrgidJsonToArbor,
   resetTransactionStatus
-} from "../ducks/wizard";
+} from '../ducks/wizard';
 
+import { selectItem } from '../ducks/fetchOrganizationInfo';
+
+import SaveStateDialog from '../components/SaveStateDialog';
 import { Section, WizardStepMetaMask, WizardStepHosting } from "../components";
 import ArrowLeftIcon from "../assets/SvgComponents/ArrowLeftIcon";
 import DialogComponent from '../components/Dialog';
@@ -97,6 +101,19 @@ const styles = makeStyles({
     border: `1px solid ${colors.primary.accent}`,
     borderRadius: '6px',
     padding: '6px 20px',
+    '&:disabled': {
+      opacity: '0.5',
+      cursor: 'none'
+    }
+  },
+  editStatusButton: {
+    height: '44px',
+    textTransform: 'none',
+    backgroundImage: colors.gradients.orange,
+    border: `1px solid ${colors.primary.accent}`,
+    borderRadius: '6px',
+    padding: '6px 20px',
+    marginTop: '20px'
   },
   editButtonLabel: {
     fontSize: '16px',
@@ -191,8 +208,30 @@ const styles = makeStyles({
   },
   progress: {
     marginLeft: '20px'
+  },
+  sectionTitle: {
+    fontSize: '16px',
+    fontWeight: 500,
+    lineHeight: 1.45,
+    color: colors.greyScale.darkest,
+    paddingTop: '32px',
+    paddingBottom: '16px',
   }
 });
+
+const OrgSwitch = withStyles({
+  switchBase: {
+    color: '#e1f4e9',
+    '&$checked': {
+      color: 'rgb(152,204,176)',
+    },
+    // '&$checked + $track': {
+    //   backgroundColor: '#d1ffe6',
+    // },
+  },
+  checked: {},
+  track: {},
+})(Switch);
 
 const TabPanel = (props) => {
   const {children, value, index, ...other} = props;
@@ -213,8 +252,10 @@ const TabPanel = (props) => {
 const Edit = (props) => {
   const orgid = history.location.pathname.split('/')[2];
   const classes = styles();
-  const { pendingTransaction, successTransaction, rewriteOrgidJson, resetTransactionStatus } = props;
+  const { orgInfo, pendingTransaction, successTransaction, rewriteOrgidJson, resetTransactionStatus } = props;
+  const [activeStatus, setAciveStatus] = useState(orgInfo.state);
   const [isModalOpen, toggleModalOpenState] = useState(false);
+  const [isStateModalOpen, setStateModalOpen] = useState(false);
   const [value, setValue] = useState(0);
   const [activeStep, setActiveStep] = useState(1);
   const wizardType = _.get(history, 'location.state.type', 'legalEntity');
@@ -225,6 +266,10 @@ const Edit = (props) => {
   useEffect(() => {
     window.scrollTo(0, 0)
   }, []);
+
+  useEffect(() => {
+    setAciveStatus(orgInfo.state);
+  }, [orgInfo]);
 
   useEffect(() => {
     if(orgid) {
@@ -263,6 +308,14 @@ const Edit = (props) => {
 
   const handleNext = () => {
     setActiveStep(prevActiveStep => prevActiveStep + 1);
+  };
+
+  const hadleSaveActiveStatus = () => {
+    setStateModalOpen(true);
+  };
+
+  const handleCLoseStatusModal = () => {
+    setStateModalOpen(false);
   };
 
   const setDialog = () => {
@@ -443,7 +496,7 @@ const Edit = (props) => {
                     </div>
                   </Grid>
                   <Grid item sm={3} className={classes.editButtonContainer}>
-                    <Button type="submit" disabled={isSubmitting} className={classes.editButton}>
+                    <Button type="submit" disabled={isSubmitting || Object.keys(touched).length === 0} className={classes.editButton}>
                       <Typography variant={'caption'} className={classes.editButtonLabel}>{'Save and Update'}</Typography>
                     </Button>
                   </Grid>
@@ -454,10 +507,12 @@ const Edit = (props) => {
                 <Tabs
                   value={value}
                   onChange={handleChangeTab}
+                  variant='fullWidth'
                   indicatorColor='primary'
                   textColor="primary"
                 >
                   {_.map(editConfig, (tab, index) => <Tab key={index} label={tab.name}/>)}
+                  <Tab key={'statusTab'} label={'Active status'}/>
                 </Tabs>
               </Container>
               {_.map(editConfig, (tab, index) => (
@@ -504,7 +559,46 @@ const Edit = (props) => {
                   </Container>
                 </TabPanel>
               ))}
+              <TabPanel key={'statusTab'} value={value} index={editConfig.length}>
+                <Container>
+                  <Typography className={classes.sectionTitle}>Organization status</Typography>
+                  <Grid container spacing={5} alignItems="center">
+                    <Grid item>
+                      <OrgSwitch
+                        checked={activeStatus}
+                        onChange={(_, value) => {
+                          setAciveStatus(value);
+                        }}
+                        name="activeStatus"
+                        color="primary"
+                      />
+                    </Grid>
+                    <Grid item>
+                      <Typography>
+                        {activeStatus ? 'Enabled' : 'Disabled'}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                  {activeStatus !== orgInfo.state &&
+                    <Grid container>
+                      <Button
+                        onClick={() => hadleSaveActiveStatus(activeStatus)}
+                        disabled={false}
+                        className={classes.editStatusButton}
+                      >
+                        <Typography variant={'caption'} className={classes.editButtonLabel}>
+                          {'Save Status'}
+                        </Typography>
+                      </Button>
+                    </Grid>
+                  }                  
+                </Container>                
+              </TabPanel>
               {setDialog()}
+              <SaveStateDialog
+                isModalOpen={isStateModalOpen}
+                handleCloseModal={() => handleCLoseStatusModal()}
+              />
             </form>
           )}
         </Formik>
@@ -519,7 +613,8 @@ const mapStateToProps = state => {
     successTransaction: selectSuccessState(state),
     orgidJson: selectWizardOrgidJson(state),
     orgidUri: selectWizardOrgidUri(state),
-    address: selectSignInAddress(state)
+    address: selectSignInAddress(state),
+    orgInfo: selectItem(state)
   }
 };
 

@@ -217,7 +217,11 @@ const styles = makeStyles({
     backgroundImage: colors.gradients.orange,
     boxShadow: '0 2px 12px rgba(12, 64, 78, 0.1)',
     border: `1px solid ${colors.primary.accent}`,
-    borderRadius: '8px'
+    borderRadius: '8px',
+    '&:disabled': {
+      opacity: '0.5',
+      cursor: 'none'
+    }
   },
   buttonVerifyTitle: {
     fontWeight: 600,
@@ -609,7 +613,7 @@ function TrustSocial(props) {
                                     onBlur={handleBlur}
                                     helperText={errors.link && touched.link ? errors.link : 'Open your post in a new window and copy the link from the address bar'}
                                   />
-                                  <Button type="submit" disabled={isSubmitting} className={classes.buttonVerify}>
+                                  <Button type="submit" disabled={isSubmitting || Object.keys(touched).length === 0} className={classes.buttonVerify}>
                                     <Typography variant={'caption'} className={classes.buttonVerifyTitle}>{`Verify ${props.socials[activeSocial].type}`}</Typography>
                                   </Button>
                                 </form>

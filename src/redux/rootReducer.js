@@ -7,6 +7,7 @@ import extendWizard, { moduleName as wizardModule } from '../ducks/wizard';
 import fetchLifDeposit, { moduleName as depositModule } from '../ducks/lifDeposit';
 import backendStatus, { moduleName as backendStatusModule } from '../ducks/backendStatus';
 import joinOrganisations, {moduleName as joinOrganisationsModule} from '../ducks/join';
+import orgActiveStatus, {moduleName as orgActiveStatusModule} from '../ducks/orgActiveStatus';
 
 //Add all reducers here
 export default combineReducers({
@@ -17,5 +18,6 @@ export default combineReducers({
   [wizardModule]: extendWizard,
   [depositModule]: fetchLifDeposit,
   [backendStatusModule]: backendStatus,
-  [joinOrganisationsModule]: joinOrganisations
+  [joinOrganisationsModule]: joinOrganisations,
+  [orgActiveStatusModule]: orgActiveStatus
 });

@@ -40,7 +40,7 @@ const WizardStep = (props) => {
   // The Wizard Step React component
   return (
     <form onSubmit={handleSubmit}>
-      <div  key={index}>
+      <div key={index}>
         <Typography variant={'h3'} className={inheritClasses.stepTitle}>
           {stepTitle && `Step ${index+1}. `}
           {action === 'edit' ? 'Submit transaction fee' : longName}

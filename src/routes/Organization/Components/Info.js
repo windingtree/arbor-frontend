@@ -385,6 +385,9 @@ const styles = makeStyles({
     backgroundColor: colors.primary.white,
     borderRadius: '8px',
     padding: '20px 0'
+  },
+  statusDisabled: {
+    color: colors.primary.accent
   }
 });
 
@@ -492,6 +495,13 @@ function Info(props) {
             <div className={classes.orgNameWrapper}>
               <Typography variant={'h6'} className={classes.orgName} noWrap>{name}</Typography>
             </div>
+            {!organization.state &&
+              <div className={classes.orgNameWrapper}>
+                <Typography variant={'h6'} className={classes.orgAddress} noWrap>
+                  Active Status: <span className={classes.statusDisabled}>Disabled</span>
+                </Typography>
+              </div>
+            }
             <div className={classes.orgAddressWrapper}>
               {addressString &&
               <div>

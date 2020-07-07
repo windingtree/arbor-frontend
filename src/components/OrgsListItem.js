@@ -157,6 +157,9 @@ const styles = makeStyles({
     height: '100%',
     width: '264px',
     background: 'linear-gradient(to right, rgba(255,255,255,0), white)',
+  },
+  stateDisabled: {
+    color: colors.primary.accent
   }
 });
 
@@ -240,6 +243,11 @@ export default function OrgsListItem(props) {
                     className={classes.icon}
                   />
                   <Typography variant={'caption'} className={classes.trustLevelValue}>{proofsQty}</Typography>
+                </div>
+                <div>
+                {!organization.state &&
+                  <Typography variant={'caption'} className={classes.label}>Active status: <span className={classes.stateDisabled}>Disabled</span></Typography>
+                }
                 </div>
                 <div className={classes.addSubOrgButtonWrapper}>
                   <Button

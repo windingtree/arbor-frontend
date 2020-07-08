@@ -49,7 +49,7 @@ const LightTooltip = withStyles({
 
 export default function CopyIdComponent(props) {
   const classes = styles();
-  const { leftElement, id, fontWeight, fontSize, color } = props;
+  const { leftElement, id, fontWeight, fontSize, color, width, title } = props;
 
   const [open, setOpen] = useState(false);
 
@@ -66,7 +66,7 @@ export default function CopyIdComponent(props) {
     return copyStrToClipboard(str)
   }
 
-  const hiddenId = strCenterEllipsis(id);
+  const hiddenId = strCenterEllipsis(id, width);
 
   return (
     <div className={classes.idInfo}>
@@ -86,7 +86,7 @@ export default function CopyIdComponent(props) {
             disableFocusListener
             disableHoverListener
             disableTouchListener
-            title={'ID copied to clipboard'}
+            title={title || 'ID copied to clipboard'}
             placement={'top-start'}
           >
             <Button

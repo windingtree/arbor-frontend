@@ -378,8 +378,13 @@ function Services(props) {
     setActiveStep(prevActiveStep => prevActiveStep + 1);
   };
 
+  const handleAdd = () => {
+    setAgentIndexToRemove(null);
+    handleOpenModal();
+  };
+
   const handleDeleteAgent = async (agentIndex) => {
-    await setAgentIndexToRemove(agentIndex);
+    setAgentIndexToRemove(agentIndex);
     handleOpenModal();
   };
 
@@ -437,7 +442,7 @@ function Services(props) {
             <Typography variant={'inherit'} className={classes.agentTitle}>Services</Typography>
           </div>
           <div className={classes.buttonWrapper}>
-            <Button onClick={handleOpenModal} className={classes.button}>
+            <Button onClick={() => handleAdd()} className={classes.button}>
               <Typography variant={'inherit'}>+ Add Service</Typography>
             </Button>
             {addAgentKeyDialog()}

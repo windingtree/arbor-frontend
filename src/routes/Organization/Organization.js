@@ -16,6 +16,7 @@ import Services from "./Components/Services";
 import Info from "./Components/Info";
 import SubOrganizations from './Components/SubOrganizations';
 import ProofsList from '../../components/ProofsList';
+import SimardAccounts from './Components/SimardAccounts'
 // import SaveButton from '../../components/buttons/Save';
 // import { makeStyles } from '@material-ui/core/styles';
 // import trustLifDeposit from '../../assets/SvgComponents/trust-lif-deposit.svg';
@@ -115,6 +116,11 @@ function Organization (props) {
           orgid={id}
           owner={owner}
           services={services}
+        />
+      }
+      {canManage &&
+        <SimardAccounts
+          orgid={id}
         />
       }
       {/* {canManage &&

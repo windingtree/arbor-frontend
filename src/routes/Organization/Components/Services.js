@@ -456,7 +456,7 @@ function Services(props) {
                                 id={service.serviceEndpoint}
                                 leftElement={(<VpnKeyIcon className={classes.keyIcon}/>)}
                                 fontSize={'14px'}
-                                width={24}
+                                width={18}
                                 title='Service URI copied to clipboard'
                                 color={colors.greyScale.dark}
                               />

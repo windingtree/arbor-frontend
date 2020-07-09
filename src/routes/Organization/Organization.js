@@ -12,6 +12,7 @@ import {
 import history from '../../redux/history';
 import TopNavigation from "./Components/TopNavigation";
 import Agents from "./Components/Agents";
+import Services from "./Components/Services";
 import Info from "./Components/Info";
 import SubOrganizations from './Components/SubOrganizations';
 import ProofsList from '../../components/ProofsList';
@@ -55,6 +56,7 @@ function Organization (props) {
   const { organization, subs, assertions, fetchOrganizationSubsInfo, fetchOrganizationInfo } = props;
   const subsidiaries = _.get(organization, 'subsidiaries', []);
   const agents = _.get(organization, 'jsonContent.publicKey', []);
+  const services = _.get(organization, 'jsonContent.service', []);
   const {
     owner,
     isLifProved,
@@ -106,6 +108,13 @@ function Organization (props) {
           orgid={id}
           owner={owner}
           agents={agents}
+        />
+      }
+      {canManage && 
+        <Services
+          orgid={id}
+          owner={owner}
+          services={services}
         />
       }
       {/* {canManage &&

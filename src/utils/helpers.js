@@ -18,7 +18,11 @@ import DefaultAirlineImage6 from '../assets/images/default-image-airline-6.svg';
 //import { ORGID_ABI, ORGID_PROXY_ADDRESS, LIF_TOKEN_ABI, LIF_TOKEN_PROXY_ADDRESS } from "./constants";
 
 export const copyStrToClipboard = str => navigator.clipboard.writeText(str).then(resolve => resolve);
-export const strCenterEllipsis = str => str ? `${str.substr(0, 4)}...${str.substr(-4, 4)}` : '0xUNDEFINED';
+export const strCenterEllipsis = (str, width = 4) => str
+  ? str.length > ((width * 2) + 3)
+    ? `${str.substr(0, width)}...${str.substr(-width, width)}`
+    : str
+  : 'UNDEFINED';
 
 export const getRandomInt = (min, max) => {
   min = Math.ceil(min);

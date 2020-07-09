@@ -34,6 +34,14 @@ const REMOVE_AGENT_KEY_REQUEST = `${prefix}/REMOVE_AGENT_KEY_REQUEST`;
 const REMOVE_AGENT_KEY_SUCCESS = `${prefix}/REMOVE_AGENT_KEY_SUCCESS`;
 const REMOVE_AGENT_KEY_FAILURE = `${prefix}/REMOVE_AGENT_KEY_FAILURE`;
 
+const ADD_SERVICE_REQUEST = `${prefix}/ADD_SERVICE_REQUEST`;
+const ADD_SERVICE_SUCCESS = `${prefix}/ADD_SERVICE_SUCCESS`;
+const ADD_SERVICE_FAILURE = `${prefix}/ADD_SERVICE_FAILURE`;
+
+const REMOVE_SERVICE_REQUEST = `${prefix}/REMOVE_SERVICE_REQUEST`;
+const REMOVE_SERVICE_SUCCESS = `${prefix}/REMOVE_SERVICE_SUCCESS`;
+const REMOVE_SERVICE_FAILURE = `${prefix}/REMOVE_SERVICE_FAILURE`;
+
 const ADD_ASSERTION_REQUEST = `${prefix}/ADD_ASSERTION_REQUEST`;
 const ADD_ASSERTION_SUCCESS = `${prefix}/ADD_ASSERTION_SUCCESS`;
 const ADD_ASSERTION_FAILURE = `${prefix}/ADD_ASSERTION_FAILURE`;
@@ -125,7 +133,9 @@ export default function reducer( state = initialState, action) {
 
   state.orgidJson = fixJsonRequiredProps(state.orgidJson);
   const statePublicKey = _.get(state.orgidJson, 'publicKey', []);
+  const stateService = _.get(state.orgidJson, 'service', []);
   const publicKey = statePublicKey.slice();
+  const service = stateService.slice();
   
   let orgidJsonUpdates;
 
@@ -137,6 +147,8 @@ export default function reducer( state = initialState, action) {
     case EXTEND_ORGID_JSON_REQUEST:
     case ADD_AGENT_KEY_REQUEST:
     case REMOVE_AGENT_KEY_REQUEST:
+    case ADD_SERVICE_REQUEST:
+    case REMOVE_SERVICE_REQUEST:
     case ADD_ASSERTION_REQUEST:
     case REMOVE_ASSERTION_REQUEST:
     case SAVE_MEDIA_TO_ARBOR_REQUEST:
@@ -235,6 +247,7 @@ export default function reducer( state = initialState, action) {
         orgidHash: Web3.utils.soliditySha3(JSON.stringify(updatedJsonWithAgentKey, null, 2)),
         error: null
       });
+
     case REMOVE_AGENT_KEY_SUCCESS:
       publicKey.splice(payload, 1);
       const updatedJsonWithoutAgentKey = Object.assign({}, state.orgidJson, {
@@ -249,6 +262,37 @@ export default function reducer( state = initialState, action) {
         orgidHash: Web3.utils.soliditySha3(JSON.stringify(updatedJsonWithoutAgentKey, null, 2)),
         error: null
       });
+    
+    case ADD_SERVICE_SUCCESS:
+      service.push(payload);
+      const updatedJsonWithService = _.merge({}, state.orgidJson, {
+        ...state.orgidJson,
+        service
+      });
+
+      return Object.assign({}, state, {
+        isFetching: false,
+        isFetched: true,
+        orgidJson: updatedJsonWithService,
+        orgidHash: Web3.utils.soliditySha3(JSON.stringify(updatedJsonWithService, null, 2)),
+        error: null
+        });
+
+    case REMOVE_SERVICE_SUCCESS:
+      service.splice(payload, 1);
+      const updatedJsonWithoutService = Object.assign({}, state.orgidJson, {
+        ...state.orgidJson,
+        service
+      });
+
+      return Object.assign({}, state, {
+        isFetching: false,
+        isFetched: true,
+        orgidJson: updatedJsonWithoutService,
+        orgidHash: Web3.utils.soliditySha3(JSON.stringify(updatedJsonWithoutService, null, 2)),
+        error: null
+      });
+
     case ADD_ASSERTION_SUCCESS:
       const updatedJsonWithAddedAssertion = {
         ...state.orgidJson,
@@ -328,6 +372,9 @@ export default function reducer( state = initialState, action) {
     case REWRITE_ORGID_JSON_FAILURE:
     case EXTEND_ORGID_JSON_FAILURE:
     case ADD_AGENT_KEY_FAILURE:
+    case REMOVE_AGENT_KEY_FAILURE:
+    case ADD_SERVICE_FAILURE:
+    case REMOVE_SERVICE_FAILURE:
     case ADD_ASSERTION_FAILURE:
     case REMOVE_ASSERTION_FAILURE:
     case SAVE_MEDIA_TO_ARBOR_FAILURE:
@@ -482,6 +529,52 @@ function removeAgentKeySuccess(payload) {
 function removeAgentKeyFailure(error) {
   return {
     type: REMOVE_AGENT_KEY_FAILURE,
+    error
+  }
+}
+//endregion
+
+//region == [ACTIONS: addService] =================================================================================
+export function addService(payload) {
+  return {
+    type: ADD_SERVICE_REQUEST,
+    payload
+  }
+}
+
+function addServiceSuccess(payload) {
+  return {
+    type: ADD_SERVICE_SUCCESS,
+    payload
+  }
+}
+
+function addServiceFailure(error) {
+  return {
+    type: ADD_SERVICE_FAILURE,
+    error
+  }
+}
+//endregion
+
+//region == [ACTIONS: removeService] =================================================================================
+export function removeService(payload) {
+  return {
+    type: REMOVE_SERVICE_REQUEST,
+    payload
+  }
+}
+
+function removeServiceSuccess(payload) {
+  return {
+    type: REMOVE_SERVICE_SUCCESS,
+    payload
+  }
+}
+
+function removeServiceFailure(error) {
+  return {
+    type: REMOVE_SERVICE_FAILURE,
     error
   }
 }
@@ -752,6 +845,26 @@ function* removeAgentKeyFromOrgidJsonSaga({payload}) {
   }
 }
 
+function* addServiceToOrgidJsonSaga({payload}) {
+  try {
+    const result = yield call((data) => data, payload);
+
+    yield put(addServiceSuccess(result));
+  } catch(error) {
+    yield put(addServiceFailure(error));
+  }
+}
+
+function* removeServiceFromOrgidJsonSaga({payload}) {
+  try {
+    const result = yield call((data) => data, payload);
+
+    yield put(removeServiceSuccess(result));
+  } catch(error) {
+    yield put(removeServiceFailure(error));
+  }
+}
+
 function* addAssertionToOrgidJsonSaga({payload}) {
   try {
     const result = yield call((data) => data, payload);
@@ -861,6 +974,8 @@ export const saga = function* () {
     takeEvery(EXTEND_ORGID_JSON_REQUEST, extendOrgidJsonSaga),
     takeEvery(ADD_AGENT_KEY_REQUEST, addAgentKeyToOrgidJsonSaga),
     takeEvery(REMOVE_AGENT_KEY_REQUEST, removeAgentKeyFromOrgidJsonSaga),
+    takeEvery(ADD_SERVICE_REQUEST, addServiceToOrgidJsonSaga),
+    takeEvery(REMOVE_SERVICE_REQUEST, removeServiceFromOrgidJsonSaga),
     takeEvery(ADD_ASSERTION_REQUEST, addAssertionToOrgidJsonSaga),
     takeEvery(REMOVE_ASSERTION_REQUEST, removeAssertionFromOrgidJsonSaga),
     takeEvery(SAVE_MEDIA_TO_ARBOR_REQUEST, saveMediaToArborSaga),

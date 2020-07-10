@@ -9,7 +9,7 @@ export const CHAIN_ID = process.env.REACT_APP_ETHEREUM_CHAIN_ID;
 export const MAINTENANCE = process.env.REACT_APP_MAINTENANCE ? JSON.parse(process.env.REACT_APP_MAINTENANCE): undefined;
 export const SIMARD_URL = process.env.REACT_APP_SIMARD_URL;
 export const SIMARD_DID = process.env.REACT_APP_SIMARD_DID;
-export const SIMARD_EXPIRATION = process.env.REACT_APP_SIMARD_EXPIRATION;
+export const SIMARD_EXPIRATION = Number(process.env.REACT_APP_SIMARD_EXPIRATION);
 
 export const entityTypes = [
   'private entrepreneur',

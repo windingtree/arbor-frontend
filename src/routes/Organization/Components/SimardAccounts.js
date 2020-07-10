@@ -387,6 +387,10 @@ const SimardAccounts = props => {
           const accounts = await getSimardAccounts(authToken);
           setIsFetching(false);
           setAccounts(accounts);
+        } else {
+          setErrorMessage(
+            'A signature will be requested to manage accounts on behalf of your organization'
+          );
         } 
       } catch (error) {
         setIsFetching(false);
@@ -510,12 +514,12 @@ const SimardAccounts = props => {
       <div className={classes.header}>
         <div className={classes.headerTitle}>
           <Typography variant={'inherit'}>
-            Simard accounts
+            Simard Pay Bank Accounts
           </Typography>
         </div>
         <div className={classes.headerSubtitle}>
           <Typography variant={'inherit'}>
-            Review your accounts on the Simard
+            Review your bank accounts configured on Simard Pay
           </Typography>
         </div>
       </div>

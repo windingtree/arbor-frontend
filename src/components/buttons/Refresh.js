@@ -17,7 +17,10 @@ const useStyles = makeStyles({
         fontStyle: 'normal',
         fontWeight: 500,
         fontSize: '14px',
-        lineHeight: '14px'
+        lineHeight: '14px',
+        '&:disabled': {
+            opacity: '0.5'
+        }
     },
     icon: {}
 });

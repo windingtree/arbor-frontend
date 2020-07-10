@@ -6,9 +6,9 @@
         "REACT_APP_ORGID_PROXY_ADDRESS": "0x6434DEC2f4548C2aA9D88E8Ff821f387be3D7F0D",
         "REACT_APP_DIRECTORY_PROXY_ADDRESS": "0x68d9cB089a3e17be6F9De7a318BBCC55F4c899Bc",
         "REACT_APP_ETHEREUM_CHAIN_ID": "1",
-        "REACT_APP_SIMARD_URL": "https://production.api.simard.io/api/v1",
-        "REACT_APP_SIMARD_DID": "did:orgid:0x07493f25bb5610951bd8b3b10fcd271abc69e45817d170d1dcb60076ee699b1a",
-        "REACT_APP_SIMARD_EXPIRATION": 900
+        "REACT_APP_SIMARD_URL": "https://api.marketplace.windingtree.com/simard/api/v1",
+        "REACT_APP_SIMARD_DID": "did:orgid:0xb5cd9c2be7774d1729e21d6534f9c0a0e9a40bd6c7259896cf55db9962ced5b4",
+        "REACT_APP_SIMARD_EXPIRATION": 86400
     },
     "rewrites": [
         {

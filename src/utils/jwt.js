@@ -26,7 +26,7 @@ export const createToken = (web3, options) => new Promise((resolve, reject) => {
     scope: scope
   };
 
-  console.log('@@@', payload);
+  // console.log('@@@', payload);
 
   // Prepare content to sign
   const sHeader = JSON.stringify(header);

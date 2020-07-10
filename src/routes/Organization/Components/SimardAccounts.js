@@ -6,10 +6,15 @@ import {
   Container,
   Grid,
   Button,
-  Typography
+  Typography,
+  TextField,
+  CircularProgress
 } from "@material-ui/core";
 import colors from "../../../styles/colors";
 import RefershButton from '../../../components/buttons/Refresh';
+import DialogComponent from '../../../components/Dialog';
+import SelectField from '../../../components/Fields/SelectField';
+import { Formik } from 'formik';
 import { getWeb3 } from '../../../web3/w3';
 import { createToken } from '../../../utils/jwt';
 import {
@@ -24,7 +29,8 @@ import {
 
 const styles = makeStyles({
   error: {
-    color: colors.primary.accent
+    color: colors.primary.accent,
+    marginTop: '10px'
   },
   content: {
     marginBottom: '60px'
@@ -56,7 +62,9 @@ const styles = makeStyles({
   },
   buttonWrapper: {
     width: '100%',
-    margin: '20px 0'
+    margin: '20px 0',
+    display: 'flex',
+    justifyContent: 'center'
   },
   button: {
     width: '100%',
@@ -68,7 +76,10 @@ const styles = makeStyles({
     boxShadow: '0px 0px 20px rgba(189, 191, 203, 0.25), 0px 0px 2px rgba(188, 194, 211, 0.25)',
     backgroundColor: colors.primary.white,
     borderRadius: '8px',
-    padding: '20px 0'
+    padding: '20px 0',
+    '&:disabled': {
+      opacity: '0.5'
+    }
   },
   buttonFetch: {
     background: 'linear-gradient(180deg, #99D7C5 -25%, #3A9492 103.57%)',
@@ -83,7 +94,10 @@ const styles = makeStyles({
     fontStyle: 'normal',
     fontWeight: 500,
     fontSize: '14px',
-    lineHeight: '14px'
+    lineHeight: '14px',
+    '&:disabled': {
+      opacity: '0.5'
+    }
   },
   deleteButton: {
     fontSize: '14px',
@@ -91,23 +105,250 @@ const styles = makeStyles({
     lineHeight: 1.3,
     float: 'right',
     color: colors.secondary.peach,
-    textTransform: 'none'
+    textTransform: 'none',
+    '&:disabled': {
+      opacity: '0.5'
+    }
+  },
+  dialogContent: {
+    width: '440px'
+  },
+  dialogTitleWrapper: {
+    marginBottom: '20px'
+  },
+  dialogTitle: {
+    fontSize: '32px',
+    fontWeight: 500,
+    textAlign: 'start',
+    color: colors.greyScale.darkest
+  },
+  inputFieldWrapper: {
+    position: 'relative',
+    marginBottom: '28px',
+    '&:last-child': {
+      marginBottom: '0'
+    }
+  },
+  dialogButtonWrapper: {
+    display: 'table',
+    paddingTop: '10px',
+    margin: '0 auto'
+  },
+  dialogButton: {
+    height: '44px',
+    border: `1px solid ${colors.primary.accent}`,
+    borderRadius: '8px',
+    backgroundImage: colors.gradients.orange,
+    boxShadow: '0px 2px 12px rgba(12, 64, 78, 0.1)',
+    textTransform: 'none',
+    padding: '6px 20px',
+    '&:disabled': {
+      opacity: '0.5',
+      cursor: 'none'
+    }
+  },
+  dialogButtonLabel: {
+    fontSize: '16px',
+    fontWeight: 600,
+    lineHeight: 1.24,
+    color: colors.primary.white
+  },
+  editAccount: {
+    '&:hover': {
+      cursor: 'pointer',
+      textDecoration: 'underline'
+    }
   }
 });
 
-const callSimard = async (authToken) => {
-  const result = await fetch(
-    `${SIMARD_URL}/accounts`,
+const callSimard = async (authToken, path, method, body) => new Promise((resolve, reject) => {
+  fetch(
+    path,
     {
-      method: 'GET',
+      method,
       mode: 'cors',
+      cache: 'no-cache',
       headers: {
-        'Authorization': `Bearer ${authToken}`
-      }
+        'Authorization': `Bearer ${authToken}`,
+        ...(
+          body
+            ? {
+              'Content-Type': 'application/json'
+            }
+            : {}
+        )
+      },
+      ...(
+        body
+          ? { body: JSON.stringify(body) }
+          : {}
+      )
     }
+  )
+  .then(async response => ({
+    isOk: response.ok,
+    status: response.status,
+    json: await response.json()
+  }))
+  .then(({ isOk, status, json }) => {
+    if (!isOk) {
+      const message = json.message
+        ? json.message.split('|')[0]
+        : 'Unknown error'
+      const error = new Error(message);
+      error.status = status;
+      return reject(error);
+    }
+
+    resolve(json);
+  })
+  .catch(reject);
+});
+
+const getSimardAccounts = async authToken => {
+  const accounts = await callSimard(
+    authToken,
+    `${SIMARD_URL}/accounts`,
+    'GET'
   );
 
-  console.log(result);
+  return Object.entries(accounts).map(record => ({
+    accountId: record[0],
+    ...record[1]
+  }));
+}
+
+const createSimardAccount = (authToken, { currency, iban }) => callSimard(
+  authToken,
+  `${SIMARD_URL}/accounts`,
+  'POST',
+  {
+    currency,
+    iban
+  }
+);
+
+const updateSimardAccount = (authToken, { accountId, currency, iban }) => callSimard(
+  authToken,
+  `${SIMARD_URL}/accounts/${accountId}`,
+  'POST',
+  {
+    currency,
+    iban
+  }
+);
+
+const removeSimardAccount = (authToken, accountId) => callSimard(
+  authToken,
+  `${SIMARD_URL}/accounts/${accountId}`,
+  'DELETE'
+);
+
+const AccountDialog = props => {
+  const classes = styles();
+  const { handleClose, isOpen, onAction, forUpdate } = props;
+  const allowedCurrencies = ['EUR', 'USD', 'NOK', 'GBP', 'SEK', 'CAD'];
+
+  return (
+    <DialogComponent
+      handleClose={handleClose}
+      isOpen={isOpen}
+      children={(
+        <div className={classes.dialogContent}>
+          <div className={classes.dialogTitleWrapper}>
+            <Typography
+              variant={'caption'}
+              className={classes.dialogTitle}>
+                {forUpdate ? 'Edit Account' : 'Add Account'}
+            </Typography>
+          </div>
+          <Formik
+            initialValues={forUpdate || { currency: '', iban: '' }}
+            validate={values => {
+              const errors = {};
+
+              Object.keys(values).forEach(
+                key => {
+                  const value = values[key];
+                  switch (key) {
+                    case 'currency':
+                        if (!allowedCurrencies.includes(value)) {
+                            errors[key] = 'Please enter an allowed currency code';
+                        }
+                        break;
+                    case 'iban':
+                      if (!value.match(/^([A-Z]{2}[ -]?[0-9]{2})(?=(?:[ -]?[A-Z0-9]){9,30}$)((?:[ -]?[A-Z0-9]{3,5}){2,7})([ -]?[A-Z0-9]{1,3})?$/)) {
+                        errors[key] = `IBAN addres has wrong format`;
+                        break;
+                      }
+                      break;
+                    default:
+                  }
+                }
+              );
+
+              return errors;
+            }}
+            onSubmit={values => {
+              onAction(values);
+            }}
+          >
+            {({
+              values,
+              errors,
+              touched,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              isSubmitting
+            }) => (
+              <form onSubmit={handleSubmit}>
+                <div className={classes.inputFieldWrapper}>
+                  <SelectField
+                    name={'currency'}
+                    variant={'filled'}
+                    label={'Select a currency'}
+                    fullWidth
+                    required
+                    options={allowedCurrencies}
+                    values={values.currency}
+                    handleChange={handleChange}
+                    handleBlur={handleBlur}
+                    helperText={errors.currency && touched.currency ? errors.currency : null}
+                  />
+                </div>
+                <div className={classes.inputFieldWrapper}>
+                  <TextField
+                    name={'iban'}
+                    autoComplete={'none'}
+                    variant={'filled'}
+                    label={'Enter IBAN address'}
+                    fullWidth
+                    required
+                    error={errors.iban && touched.iban}
+                    value={values.iban}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    helperText={errors.iban && touched.iban ? errors.iban : null}                        
+                  />
+                </div>
+                <div className={classes.dialogButtonWrapper}>
+                  <Button
+                    type={'submit'}
+                    disabled={forUpdate ? false : isSubmitting || Object.keys(touched).length === 0}
+                    className={classes.dialogButton}>
+                    <Typography variant={'caption'} className={classes.dialogButtonLabel}>
+                      {forUpdate ? 'Save' : 'Create'}
+                    </Typography>
+                  </Button>
+                </div>
+              </form>
+            )}
+          </Formik>
+        </div>
+      )}
+    />
+  );
 };
 
 const SimardAccounts = props => {
@@ -117,9 +358,24 @@ const SimardAccounts = props => {
   const [authToken, setAuthToken] = useState(
     sessionStorage.getItem(sessionKey)
   );
+  const [error, setErrorMessage] = useState();
+  const [isFetching, setIsFetching] = useState(false);
   const [accounts, setAccounts] = useState();
-  const [error, setError] = useState();
   const [sessionTimeout, setSessionTimeout] = useState();
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const [forUpdate, setForUpdate] = useState();
+
+  const resetAuthToken = sessionKey => {
+    sessionStorage.removeItem(sessionKey)
+    setAuthToken(null);
+  };
+
+  const setError = error => {
+    if (error && error.status && error.status === 403) {
+      resetAuthToken(sessionKey);
+    }
+    setErrorMessage(error ? error.message : null);
+  };
 
   useEffect(() => {
     const fetchAccounts = async authToken => {
@@ -127,50 +383,127 @@ const SimardAccounts = props => {
 
       try {
         if (authToken) {
-          const accounts = await callSimard(authToken);
+          setIsFetching(true);
+          const accounts = await getSimardAccounts(authToken);
+          setIsFetching(false);
           setAccounts(accounts);
         } 
       } catch (error) {
-        setError(error.message);
+        setIsFetching(false);
+        setError(error);
       }
     };
     fetchAccounts(authToken);
   }, [orgid, authToken]);// eslint-disable-line
+
+  const checkAuthToken = async () => {
+    if (!authToken) {
+      clearTimeout(sessionTimeout);
+      const token = await createToken(
+        getWeb3(),
+        {
+          algorithm: 'ETH',
+          expiration: SIMARD_EXPIRATION,
+          issuerDidValue: `did:orgid:${orgid}`,
+          audienceDidValue: SIMARD_DID,
+          scope: '',
+          from: address
+        }
+      );
+      sessionStorage.setItem(sessionKey, token);
+      setSessionTimeout(setTimeout(
+        () => resetAuthToken(sessionKey),
+        SIMARD_EXPIRATION * 1000
+      ));
+      setAuthToken(token);
+    }
+  };
+
+  const handleDialogClose = () => {
+    setForUpdate(null);
+    setDialogOpen(false);
+  };
 
   const handleFetchAccounts = async () => {
     setError(null);
 
     try {
       if (!authToken) {
-        clearTimeout(sessionTimeout);
-        const token = await createToken(
-          getWeb3(),
-          {
-            algorithm: 'ETH',
-            expiration: SIMARD_EXPIRATION,
-            issuerDidValue: `did:orgid:${orgid}`,
-            audienceDidValue: SIMARD_DID,
-            scope: '',
-            from: address
-          }
-        );
-        sessionStorage.setItem(sessionKey, token);
-        setSessionTimeout(setTimeout(
-          () => sessionStorage.removeItem(sessionKey),
-          SIMARD_EXPIRATION * 1000
-        ));
-        setAuthToken(token);
+        await checkAuthToken();
         return;
       } else {
-        const accounts = await callSimard(authToken);
+        setIsFetching(true);
+        const accounts = await getSimardAccounts(authToken);
+        setIsFetching(false);
         setAccounts(accounts);
       }
     } catch (error) {
-      setError(error.message);
+      setIsFetching(false);
+      setError(error);
     }
   };
 
-  const handleDelete = () => {};
+  const handleStartCreate = () => {
+    setForUpdate(null);
+    setDialogOpen(true);
+  };
+
+  const handleStartEdit = account => {
+    setForUpdate(account);
+    setDialogOpen(true);
+  };
+
+  const handleUpdate = async ({ currency, iban }) => {
+    try {
+      setError(null);
+      setDialogOpen(false);
+
+      await checkAuthToken();
+      setIsFetching(true);
+      await updateSimardAccount(authToken, {
+        accountId: forUpdate.accountId,
+        currency,
+        iban
+      });
+      setForUpdate(null);
+      setIsFetching(false);
+      handleFetchAccounts();
+    } catch (error) {
+      setIsFetching(false);
+      setError(error);
+    }
+  };
+
+  const handleCreate = async ({ currency, iban }) => {
+    try {
+      setError(null);
+      setDialogOpen(false);
+
+      await checkAuthToken();
+      setIsFetching(true);
+      await createSimardAccount(authToken, { currency, iban });
+      setIsFetching(false);
+      handleFetchAccounts();
+    } catch (error) {
+      setIsFetching(false);
+      setError(error);
+    }
+  };
+
+  const handleDelete = async account => {
+    try {
+      setError(null);
+
+      await checkAuthToken();
+      setIsFetching(true);
+      await removeSimardAccount(authToken, account.accountId);
+      setIsFetching(false);
+      handleFetchAccounts();
+    } catch (error) {
+      setIsFetching(false);
+      setError(error);
+    }
+  };
 
   return (
     <Container className={classes.content}>
@@ -191,15 +524,25 @@ const SimardAccounts = props => {
           <Typography variant={'inherit'}>Accounts</Typography>
         </div>
         <div className={classes.buttonWrapper}>
-          <Button onClick={() => {}} className={classes.button}>
-            <Typography variant={'inherit'}>+ Add Account</Typography>
-          </Button>
+          {isFetching &&
+            <CircularProgress />
+          }
+          {!isFetching &&
+            <Button
+              onClick={() => handleStartCreate()}
+              className={classes.button}
+              disabled={isFetching}
+            >
+              <Typography variant={'inherit'}>+ Add Account</Typography>
+            </Button>
+          }
         </div>
         <div>
           {(!authToken || !accounts) &&
             <div>
               <RefershButton
                 onClick={() => handleFetchAccounts()}
+                disabled={isFetching}
               >
                 Fetch Accounts
               </RefershButton>
@@ -208,32 +551,56 @@ const SimardAccounts = props => {
           {(accounts && Array.isArray(accounts)) &&
             <div>
               <ul>
-                {accounts.map((a, index) => (
-                  <Grid container justify={'space-between'} alignItems={'center'}>
-                    <Grid item xs={4}>
-                      <Typography>{a.currency}</Typography>
+                {accounts.map((account, index) => (
+                  <li key={index}>
+                    <Grid container justify={'space-between'} alignItems={'center'}>
+                      <Grid item xs={4}>
+                        <Typography
+                          onClick={() => handleStartEdit(account)}
+                          title='Edit Account'
+                          className={classes.editAccount}
+                        >{account.currency}</Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography
+                          onClick={() => handleStartEdit(account)}
+                          title='Edit Account'
+                          className={classes.editAccount}
+                        >{account.iban}</Typography>
+                      </Grid>
+                      <Grid item xs={2}>
+                        <Button
+                          onClick={() => handleDelete(account)}
+                          className={classes.deleteButton}
+                          disabled={isFetching}
+                        >
+                          <Typography variant={'inherit'}>Delete Account</Typography>
+                        </Button>
+                      </Grid>
                     </Grid>
-                    <Grid item xs={6}>
-                      <Typography>{a.iban}</Typography>
-                    </Grid>
-                    <Grid item xs={2}>
-                      <Button
-                        onClick={() => handleDelete(index)}
-                        className={classes.deleteButton}
-                      >
-                        <Typography variant={'inherit'}>Delete Account</Typography>
-                      </Button>
-                    </Grid>
-                  </Grid>
+                  </li>
                 ))}
+                {(accounts.length === 0) &&
+                  <Typography variant={'inherit'}>You do not have any accounts</Typography>
+                }
               </ul>
             </div>
           }
         </div>
-        <div>
-          <Typography className={classes.error}>{error}</Typography>
-        </div>
+        {error &&
+          <div>
+            <Typography className={classes.error}>{error}</Typography>
+          </div>
+        }        
       </div>
+      <AccountDialog
+        forUpdate={forUpdate}
+        isOpen={isDialogOpen}
+        handleClose={() => handleDialogClose()}
+        onAction={values => forUpdate
+          ? handleUpdate(values)
+          : handleCreate(values)}
+      />
     </Container>
   );
 };

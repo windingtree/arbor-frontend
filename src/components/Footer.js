@@ -173,7 +173,7 @@ export default function Footer(props) {
           </Grid>
 
           <Grid container direction="column" item xs={12} md={2} className={classes.xsVisible}>
-            <Typography variant={'h4'} className={classes.columnTitle}>Marketplaces</Typography>
+            <Typography variant={'h4'} className={classes.columnTitle}>Directories</Typography>
 
             <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'airline' })}><Typography variant={'h6'} className={classes.columnItem}>Airlines</Typography></div>
             <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'hotel' })} ><Typography variant={'h6'} className={classes.columnItem}>Hotels</Typography></div>
@@ -182,8 +182,8 @@ export default function Footer(props) {
 
           <Grid container direction="column" item xs={12} md={3} className={classes.xsVisible}>
             <Typography variant={'h4'} className={classes.columnTitle}>Contact</Typography>
-            <a href={'mailto:info@windingtree.com'} className={classes.navLink}>
-              <Typography variant={'h6'} className={classes.columnItem}>info@windingtree.com</Typography>
+            <a href={'mailto:hello@windingtree.com'} className={classes.navLink}>
+              <Typography variant={'h6'} className={classes.columnItem}>hello@windingtree.com</Typography>
             </a>
           </Grid>
         </Grid>

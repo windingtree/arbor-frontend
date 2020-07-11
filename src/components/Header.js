@@ -419,7 +419,7 @@ const Header = (props) => {
                             style={{marginLeft: '20px'}}
                           >
                             <Typography variant={'subtitle2'} noWrap className={classes.buttonTitle}>
-                              Sign up / Sign in
+                              Sign Up
                             </Typography>
                           </Button>
                         </div>

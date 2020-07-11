@@ -107,7 +107,7 @@ export const config = [
             },
             {
               type: 'input',
-              name: 'Apartment or office',
+              name: 'Office',
               orgidJsonPath: 'legalEntity.registeredAddress.premise',
               required: false,
               validate: value => {}

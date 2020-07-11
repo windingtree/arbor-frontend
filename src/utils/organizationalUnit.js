@@ -120,7 +120,7 @@ export const wizardConfig = [
           },
           {
             type: 'input',
-            name: 'Apartment or office',
+            name: 'Office',
             orgidJsonPath: 'organizationalUnit.address.premise'
           },
           {

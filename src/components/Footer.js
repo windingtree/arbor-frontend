@@ -163,12 +163,12 @@ export default function Footer(props) {
               </button>
           </Grid>
           <Grid container direction="column" item xs={12} md={2} className={classes.xsVisible}>
-            <Typography variant={'h4'} className={classes.columnTitle}>Organizations</Typography>
+            <Typography variant={'h4'} className={classes.columnTitle}>Marketplace</Typography>
             <Link to={'/search'} className={classes.navLink}>
               <Typography variant={'h6'} className={classes.columnItem}>Search</Typography>
             </Link>
             <Link to={'/my-organizations/wizard'} className={classes.navLink}>
-              <Typography variant={'h6'} className={classes.columnItem}>Create organization</Typography>
+              <Typography variant={'h6'} className={classes.columnItem}>Create account</Typography>
             </Link>
           </Grid>
 
@@ -192,11 +192,6 @@ export default function Footer(props) {
         <Container>
           <Grid container justify={'space-between'} alignItems={'center'} className={classes.legalInfo}>
             <Grid item container justify={'space-between'} alignItems={'center'} className={classes.copyrightInfoWrapper}>
-              <Grid item>
-                <Typography variant={'caption'} className={classes.legalInfoLabel}>
-                  © 2020 Winding Tree
-                </Typography>
-              </Grid>
               <Grid item>
                 <Link to={'/tos'} className={classes.navLink}>
                   <Typography variant={'caption'} className={classes.legalInfoLabel}>Terms of

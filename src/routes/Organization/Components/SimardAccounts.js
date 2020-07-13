@@ -542,7 +542,7 @@ const SimardAccounts = props => {
           }
         </div>
         <div>
-          {(!authToken || !accounts) &&
+          {!authToken &&
             <div>
               <RefershButton
                 onClick={() => handleFetchAccounts()}

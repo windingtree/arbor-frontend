@@ -420,6 +420,7 @@ const SimardAccounts = props => {
         SIMARD_EXPIRATION * 1000
       ));
       setAuthToken(token);
+      return token;
     }
   };
 
@@ -429,18 +430,19 @@ const SimardAccounts = props => {
   };
 
   const handleFetchAccounts = async () => {
+    let accounts;
+    let token = authToken;
     setError(null);
 
     try {
       if (!authToken) {
-        await checkAuthToken();
-        return;
-      } else {
-        setIsFetching(true);
-        const accounts = await getSimardAccounts(authToken);
-        setIsFetching(false);
-        setAccounts(accounts);
+        token = await checkAuthToken();
       }
+
+      setIsFetching(true);
+      accounts = await getSimardAccounts(token);
+      setIsFetching(false);
+      setAccounts(accounts);
     } catch (error) {
       setIsFetching(false);
       setError(error);

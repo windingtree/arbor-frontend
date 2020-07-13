@@ -548,7 +548,7 @@ const SimardAccounts = props => {
                 onClick={() => handleFetchAccounts()}
                 disabled={isFetching}
               >
-                Authenticate with Simard Pay
+                Connect to Simard Pay
               </RefershButton>
             </div>
           }

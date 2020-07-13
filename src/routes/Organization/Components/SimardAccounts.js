@@ -535,7 +535,7 @@ const SimardAccounts = props => {
             <Button
               onClick={() => handleStartCreate()}
               className={classes.button}
-              disabled={isFetching}
+              disabled={!authToken || isFetching}
             >
               <Typography variant={'inherit'}>+ Add Account</Typography>
             </Button>
@@ -548,7 +548,7 @@ const SimardAccounts = props => {
                 onClick={() => handleFetchAccounts()}
                 disabled={isFetching}
               >
-                Fetch Accounts
+                Authenticate with Simard Pay
               </RefershButton>
             </div>
           }

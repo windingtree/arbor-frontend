@@ -80,7 +80,7 @@ export default {
         },
         {
           type: 'input',
-          name: 'Office or apartment',
+          name: 'Office',
           orgidJsonPath: 'legalEntity.registeredAddress.premise'
         },
         {

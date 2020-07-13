@@ -429,7 +429,7 @@ const Edit = (props) => {
             []
           )
       : [];
-    console.log('@@@', validators);
+    // console.log('@@@', validators);
     validators.forEach(v => {
       const value = _.get(values, v.orgidJsonPath, undefined);
       if (v.validate) {

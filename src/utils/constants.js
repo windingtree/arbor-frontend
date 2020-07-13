@@ -7,6 +7,9 @@ export const DIRECTORY_PROXY_ADDRESS = process.env.REACT_APP_DIRECTORY_PROXY_ADD
 export const LIF_TOKEN_PROXY_ADDRESS = process.env.REACT_APP_LIF_TOKEN_PROXY_ADDRESS;
 export const CHAIN_ID = process.env.REACT_APP_ETHEREUM_CHAIN_ID;
 export const MAINTENANCE = process.env.REACT_APP_MAINTENANCE ? JSON.parse(process.env.REACT_APP_MAINTENANCE): undefined;
+export const SIMARD_URL = process.env.REACT_APP_SIMARD_URL;
+export const SIMARD_DID = process.env.REACT_APP_SIMARD_DID;
+export const SIMARD_EXPIRATION = Number(process.env.REACT_APP_SIMARD_EXPIRATION);
 
 export const entityTypes = [
   'private entrepreneur',
@@ -1029,6 +1032,7 @@ export const LIF_TOKEN_ABI = [{
 }];
 
 // For in-browser debug purposes.
+window.SIMARD_URL = SIMARD_URL;
 window.ORGID_PROXY_ADDRESS = ORGID_PROXY_ADDRESS;
 window.ORGID_ABI = ORGID_ABI;
 window.LIF_TOKEN_PROXY_ADDRESS = LIF_TOKEN_PROXY_ADDRESS;

@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { connect } from 'react-redux';
 import {
   extendOrgidJson,
-  addAgentKey,
-  removeAgentKey,
+  addService,
+  removeService,
   resetTransactionStatus,
   selectPendingState,
   selectSuccessState
@@ -18,25 +18,17 @@ import {
   Grid,
   Typography,
   TextField,
-  Tooltip,
-  ClickAwayListener,
-  InputAdornment,
-  CircularProgress,
-  withStyles,
-  Link
+  CircularProgress
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import colors from "../../../styles/colors";
 
-import { copyStrToClipboard } from '../../../utils/helpers';
 import { wizardConfig } from '../../../utils/legalEntity';
 
 import { WizardStepHosting, WizardStepMetaMask } from '../../../components';
 import DialogComponent from '../../../components/Dialog';
 import CopyIdComponent from "../../../components/CopyIdComponent";
 import VpnKeyIcon from "@material-ui/icons/VpnKey";
-import CopyIcon from '../../../assets/SvgComponents/CopyIcon';
-import SelectField from '../../../components/Fields/SelectField';
 
 const styles = makeStyles({
   buttonWrapper: {
@@ -63,22 +55,25 @@ const styles = makeStyles({
     padding: '20px 0'
   },
   // agent
-  agentsContent: {
+  servicesContent: {
     position: 'relative',
     fontWeight: 400,
     fontSize: '14px',
     color: colors.greyScale.dark,
     padding: '40px 0'
   },
-  agentsTitleWrapper: {
+  servicesTitleWrapper: {
     fontSize: '24px',
     fontWeight: 500,
     color: colors.greyScale.darkest,
     marginBottom: '20px'
   },
-  agentsSubtitle: {
+  servicesSubtitle: {
     fontSize: '16px',
     lineHeight: 1.4
+  },
+  servicesInfoWrapper: {
+    marginTop: '20px'
   },
   ownerInfoWrapper: {
     margin: '30px 0'
@@ -164,36 +159,23 @@ const styles = makeStyles({
   }
 });
 
-const LightTooltip = withStyles({
-  tooltip: {
-    maxWidth: '240px',
-    backgroundColor: colors.primary.white,
-    boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
-    color: colors.greyScale.common,
-    fontSize: '12px',
-    fontWeight: 400,
-    padding: '12px',
-    boxSizing: 'border-box'
-  }
-})(Tooltip);
-
-function Agents(props) {
+function Services(props) {
   const classes = styles();
   const [isModalOpen, toggleModalOpenState] = useState(false);
-  const [isTooltipOpen, setTooltipOpen] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
-  const [agentIndexToRemove, setAgentIndexToRemove] = useState(null);
+  const [serviceIndexToRemove, setAgentIndexToRemove] = useState(null);
   const {
     orgid,
-    owner,
-    agents = [],
+    services = [],
     pendingTransaction,
     successTransaction,
     fetchOrganizationInfo,
-    resetTransactionStatus
+    resetTransactionStatus,
+    addService,
+    removeService
   } = props;
 
-  const fragments = agents.reduce(
+  const fragments = services.reduce(
     (a, v) => {
       const fragment = v.id.split('#')[1];
       if (fragment) {
@@ -210,19 +192,6 @@ function Agents(props) {
     setActiveStep(0);
   }, [isModalOpen, orgid, fetchOrganizationInfo, resetTransactionStatus]);
 
-  const handleTooltipClose = () => {
-    setTooltipOpen(false);
-  };
-
-  const handleTooltipOpen = () => {
-    setTooltipOpen(true);
-  };
-
-  function copyIdWithFeedback(str) {
-    handleTooltipOpen();
-    return copyStrToClipboard(str)
-  }
-
   const handleOpenModal = () => {
     toggleModalOpenState(true);
   };
@@ -236,7 +205,7 @@ function Agents(props) {
     const { type } = content;
 
     const deleteAgent = () => {
-      props.removeAgentKey(agentIndexToRemove);
+      removeService(serviceIndexToRemove);
       handleNext();
     };
 
@@ -245,19 +214,18 @@ function Agents(props) {
       case 'step_metamask': return <WizardStepMetaMask data={content} action={'edit'} handleNext={handleNext} key={stepIndex} index={stepIndex} stepTitle={false}/>;
       default: return (
         <>
-          <Typography variant={'caption'} className={classes.dialogTitle}>{ agentIndexToRemove !== null ? 'Remove' : 'Add' } agent key</Typography>
+          <Typography
+            variant={'caption'}
+            className={classes.dialogTitle}>
+                { serviceIndexToRemove !== null ? 'Remove' : 'Add' } Service
+          </Typography>
           <div className={classes.dialogSubtitleWrapper}>
-            <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>{ agentIndexToRemove !== null ? 'To remove an agent' : 'To add an agent, enter its key and  write a comment, then' } confirm the transaction in MetaMask. </Typography>
             <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>
-            More details about agents keys management process can be found&nbsp; 
-            <Link
-              target='_blank'
-              href={'https://github.com/windingtree/arbor-frontend/blob/develop/docs/keys.md'}
-            >here</Link>
+                { serviceIndexToRemove !== null ? 'To remove a service' : 'To add a service, enter its properties and write a description, then' } confirm the transaction in MetaMask.
             </Typography>
           </div>
           {
-            agentIndexToRemove !== null ? (
+            serviceIndexToRemove !== null ? (
               <div className={classes.dialogButtonWrapper}>
                 <Button className={classes.dialogButton} onClick={deleteAgent}>
                   <Typography variant={'caption'} className={classes.dialogButtonLabel}>
@@ -267,7 +235,7 @@ function Agents(props) {
               </div>
             ) : (
               <Formik
-                initialValues={{ type: '', fragment: '', key: '', note: '' }}
+                initialValues={{ type: '', fragment: '', serviceEndpoint: '', description: '' }}
                 validate={values => {
                   const errors = {};
 
@@ -276,43 +244,32 @@ function Agents(props) {
                       const value = values[key];
                       switch (key) {
                         case 'type':
-                          if (!value) {
-                            errors[key] = 'You must choose a public key type';
-                          }
-                          break;
-                        case 'key':
-                          if (!values['type']) {
-                            errors[key] = 'Unable to validate key format. You must choose a public key type also';
+                            if (!value) {
+                                errors[key] = 'You must enter a type of service';
+                            }
                             break;
-                          }
-                          if (values['type'] === 'ETH' && !value.match(/^0x[a-fA-F0-9]{40}$/)) {
-                            errors[key] = `Public key has wrong format of type "${values['type']}"`;
-                            break;
-                          }
-                          if (values['type'] === 'X25519' && !value.match(/^M[a-zA-Z0-9/]+=$/)) {
-                            errors[key] = `Public key has wrong format of type "${values['type']}"`;
-                            break;
-                          }
-                          if (values['type'] === 'secp256k1' && !value.match(/^MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAE[a-zA-Z0-9+/]{86}==$/)) {
-                            errors[key] = `Public key has wrong format of type "${values['type']}"`;
-                            break;
-                          }
-                          break;
                         case 'fragment':
-                          if (!value) {
-                            errors[key] = 'You must define a public key fragment (unique tag)';
-                            break;
-                          }
-                          if (fragments.includes(value)) {
-                            errors[key] = 'This fragment is already in use';
-                            break;
-                          }
-                          if (!value.match(/^[a-zA-Z0-9_]+$/)) {
-                            errors[key] = 'There are only letters, numbers and underscore can be used in fragment';
+                            if (!value) {
+                                errors[key] = 'You must enter a fragment (unique tag)';
+                                break;
+                            }
+                            if (fragments.includes(value)) {
+                                errors[key] = 'This fragment is already in use';
+                                break;
+                            }
+                            if (!value.match(/^[a-zA-Z0-9_]+$/)) {
+                                errors[key] = 'There are only letters, numbers and underscore can be used in fragment';
+                                break;
+                            }
+                        break;
+                        case 'serviceEndpoint':
+                          if (!value.match(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/)) {
+                            errors[key] = `Service endpoint has wrong URI format}"`;
                             break;
                           }
                           break;
-                        case 'note':
+                        
+                        case 'description':
                           break;
                         default:
                       }
@@ -322,12 +279,11 @@ function Agents(props) {
                   return errors;
                 }}
                 onSubmit={values => {
-                  props.addAgentKey({
-                    id: `${orgid}#${values.fragment}`,
+                  addService({
+                    id: `did:orgid:${orgid}#${values.fragment}`,
                     type: values.type,
-                    controller: `did:orgid:${orgid}`,
-                    publicKeyPem: values.key,
-                    note: values.note
+                    serviceEndpoint: values.serviceEndpoint,
+                    description: values.description
                   });
                   handleNext();
                 }}
@@ -343,95 +299,68 @@ function Agents(props) {
                   }) => (
                   <form onSubmit={handleSubmit}>
                     <div className={classes.inputFieldWrapper}>
-                      <SelectField
-                        name={'type'}
-                        variant={'filled'}
-                        label={'Select a public key type'}
-                        fullWidth
-                        required
-                        options={['X25519','secp256k1','ETH']}
-                        values={values.type}
-                        handleChange={handleChange}
-                        handleBlur={handleBlur}
-                        helperText={errors.type && touched.type ? errors.type : null}
-                      />
+                        <TextField
+                            name={'type'}
+                            autoComplete={'none'}
+                            variant={'filled'}
+                            label={'Enter service type'}
+                            fullWidth
+                            required
+                            error={errors.type && touched.type}
+                            values={values.type}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            helperText={errors.type && touched.type ? errors.type : null}                        
+                        />
                     </div>
                     <div className={classes.inputFieldWrapper}>
-                      <TextField
-                        name={'key'}
-                        autoComplete={'none'}
-                        variant={'filled'}
-                        label={'Enter an Agent Key'}
-                        fullWidth
-                        required
-                        error={errors.key && touched.key}
-                        values={values.key}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        helperText={errors.key && touched.key ? errors.key : null}
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position={'end'}>
-                              <ClickAwayListener
-                                onClickAway={handleTooltipClose}
-                              >
-                                <div>
-                                  <LightTooltip
-                                    PopperProps={{
-                                      disablePortal: true,
-                                    }}
-                                    onClose={handleTooltipClose}
-                                    open={isTooltipOpen}
-                                    disableFocusListener
-                                    disableHoverListener
-                                    disableTouchListener
-                                    title={'Key copied to clipboard'}
-                                    placement={'top'}
-                                  >
-                                    <Button onClick={() => copyIdWithFeedback(values.key)} className={classes.inputCopyKeyButton}>
-                                      <CopyIcon viewBox={'0 0 16 16'} className={classes.iconCopy}/>
-                                    </Button>
-                                  </LightTooltip>
-                                </div>
-                              </ClickAwayListener>
-                            </InputAdornment>
-                          )
-                        }}
-                      />
+                        <TextField
+                            name={'fragment'}
+                            autoComplete={'none'}
+                            variant={'filled'}
+                            label={'Enter a service fragment (unique tag)'}
+                            fullWidth
+                            required
+                            error={errors.fragment && touched.fragment}
+                            values={values.fragment}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            helperText={errors.fragment && touched.fragment ? errors.fragment : null}
+                        />
                     </div>
                     <div className={classes.inputFieldWrapper}>
-                      <TextField
-                        name={'fragment'}
-                        autoComplete={'none'}
-                        variant={'filled'}
-                        label={'Enter a public key fragment (unique tag)'}
-                        fullWidth
-                        required
-                        error={errors.fragment && touched.fragment}
-                        values={values.fragment}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        helperText={errors.fragment && touched.fragment ? errors.fragment : null}
-                      />
+                        <TextField
+                            name={'serviceEndpoint'}
+                            autoComplete={'none'}
+                            variant={'filled'}
+                            label={'Service endpoint URI'}
+                            fullWidth
+                            required
+                            error={errors.serviceEndpoint && touched.serviceEndpoint}
+                            values={values.serviceEndpoint}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            helperText={errors.serviceEndpoint && touched.serviceEndpoint ? errors.serviceEndpoint : null}
+                        />
                     </div>
                     <div className={classes.inputFieldWrapper}>
-                      <TextField
-                        name={'note'}
-                        autoComplete={'none'}
-                        variant={'filled'}
-                        label={'Write a comment for this agent'}
-                        fullWidth
-                        error={errors.note && touched.note}
-                        values={values.note}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        helperText={errors.note && touched.note ? errors.note : null}
-                      />
+                        <TextField
+                            name={'description'}
+                            autoComplete={'none'}
+                            variant={'filled'}
+                            label={'Description of the service'}
+                            fullWidth
+                            error={errors.description && touched.description}
+                            values={values.description}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            helperText={errors.description && touched.description ? errors.description : null}
+                        />
                     </div>
                     <div className={classes.dialogButtonWrapper}>
                       <Button type={'submit'} disabled={isSubmitting || Object.keys(touched).length === 0} className={classes.dialogButton}>
                         <Typography variant={'caption'} className={classes.dialogButtonLabel}>
-                          Save Agent Key
+                          Save Service
                         </Typography>
                       </Button>
                     </div>
@@ -480,14 +409,11 @@ function Agents(props) {
                 dialogStepsContent(activeStep)
               ) : (
                 <>
-                  <Typography variant={'caption'} className={classes.dialogTitle}>Agent successfully { agentIndexToRemove !== null ? 'removed' : 'created' }</Typography>
-                  <div className={classes.dialogSubtitleWrapper}>
-                    <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>{ agentIndexToRemove !== null ? 'Now that agent has no' : 'Your new agent now has the' } rights to act on behalf of your organization. You can add more agents or delete agent keys.</Typography>
-                  </div>
+                  <Typography variant={'caption'} className={classes.dialogTitle}>Service successfully { serviceIndexToRemove !== null ? 'removed' : 'added' }</Typography>
                   <div className={classes.dialogButtonWrapper}>
                     <Button onClick={handleCloseModal} className={classes.dialogButton}>
                       <Typography variant={'caption'} className={classes.dialogButtonLabel}>
-                        Manage your agents
+                        Manage your services
                       </Typography>
                     </Button>
                   </div>
@@ -502,59 +428,50 @@ function Agents(props) {
 
   return (
     <Container>
-      <div className={classes.agentsContent}>
-        <div className={classes.agentsTitleWrapper}>
-          <Typography variant={'inherit'}>Owner and agent management</Typography>
+      <div className={classes.servicesContent}>
+        <div className={classes.servicesTitleWrapper}>
+          <Typography variant={'inherit'}>Services management</Typography>
         </div>
         <div>
-          <Typography variant={'inherit'} className={classes.agentsSubtitle}>
-            Assign agents that could act as your representatives. Add public keys of your employees (or devices) that
-            will be able to sign and encrypt communication on behalf of your organization.</Typography>
+          <Typography variant={'inherit'} className={classes.servicesSubtitle}>
+            Add public API services that can be used for communication with your organization.
+          </Typography>
         </div>
-        <div className={classes.ownerInfoWrapper}>
-          <Typography variant={'inherit'} className={classes.agentTitle}>Owner</Typography>
-          <div className={classes.ownerInfo}>
-            <CopyIdComponent
-              id={owner || '0xLOADING'}
-              leftElement={(<VpnKeyIcon className={classes.keyIcon}/>)}
-              fontSize={'14px'}
-              color={colors.greyScale.dark}
-            />
-          </div>
-        </div>
-        <div className={classes.agentsListContainer}>
-          <div className={classes.agentInfoWrapper}>
-            <Typography variant={'inherit'} className={classes.agentTitle}>Agents</Typography>
+        <div className={classes.servicesListContainer}>
+          <div className={classes.servicesInfoWrapper}>
+            <Typography variant={'inherit'} className={classes.agentTitle}>Services</Typography>
           </div>
           <div className={classes.buttonWrapper}>
             <Button onClick={() => handleAdd()} className={classes.button}>
-              <Typography variant={'inherit'}>+ Add agent key</Typography>
+              <Typography variant={'inherit'}>+ Add Service</Typography>
             </Button>
             {addAgentKeyDialog()}
           </div>
           {
-            agents.length !== 0 ? (
+            services.length !== 0 ? (
               <div>
                 <ul>
                   {
-                    agents.map((agent, index) => {
+                    services.map((service, index) => {
                       return (
                         <li key={index.toString()} className={classes.agentItemWrapper}>
                           <Grid container justify={'space-between'} alignItems={'center'}>
-                            <Grid item xs={2}>
+                            <Grid item xs={4}>
                               <CopyIdComponent
-                                id={agent.publicKeyPem}
+                                id={service.serviceEndpoint}
                                 leftElement={(<VpnKeyIcon className={classes.keyIcon}/>)}
                                 fontSize={'14px'}
+                                width={18}
+                                title='Service URI copied to clipboard'
                                 color={colors.greyScale.dark}
                               />
                             </Grid>
-                            <Grid item xs={8}>
-                              <Typography>{agent.note}</Typography>
+                            <Grid item xs={6}>
+                              <Typography>{service.description || service.type}</Typography>
                             </Grid>
                             <Grid item xs={2}>
                               <Button onClick={() => handleDeleteAgent(index)} className={classes.deleteAgentButton}>
-                                <Typography variant={'inherit'}>Delete agent key</Typography>
+                                <Typography variant={'inherit'}>Delete Service</Typography>
                               </Button>
                             </Grid>
                           </Grid>
@@ -566,7 +483,7 @@ function Agents(props) {
               </div>
             ) : (
               <div>
-                <Typography>You have no agents</Typography>
+                <Typography>You have no services</Typography>
               </div>
             )
           }
@@ -585,10 +502,10 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
   extendOrgidJson,
-  addAgentKey,
-  removeAgentKey,
+  addService,
+  removeService,
   resetTransactionStatus,
   fetchOrganizationInfo
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Agents);
+export default connect(mapStateToProps, mapDispatchToProps)(Services);

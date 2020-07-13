@@ -22,7 +22,7 @@ import iconInfo from '../assets/SvgComponents/info.svg';
 
 const useStyles = makeStyles({
     container : {
-        marginBottom: 80
+        marginBottom: 120
     },
     title: {
         display: 'block',
@@ -32,7 +32,7 @@ const useStyles = makeStyles({
         fontSize: '24px',
         lineHeight: '28px',
         color: '#42424F',
-        marginBottom: '64px',
+        marginBottom: '20px',
         marginTop: '20px',
         textDecoration: 'none',
         cursor: 'auto',

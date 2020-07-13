@@ -560,7 +560,7 @@ const SimardAccounts = props => {
                 onClick={() => handleFetchAccounts()}
                 disabled={isFetching}
               >
-                Fetch accounts
+                Fetching accounts
               </RefershButton>
             </div>
           }

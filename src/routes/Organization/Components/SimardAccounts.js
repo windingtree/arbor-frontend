@@ -552,6 +552,16 @@ const SimardAccounts = props => {
               </RefershButton>
             </div>
           }
+          {(authToken && !accounts) &&
+            <div>
+              <RefershButton
+                onClick={() => handleFetchAccounts()}
+                disabled={isFetching}
+              >
+                Fetch accounts
+              </RefershButton>
+            </div>
+          }
           {(accounts && Array.isArray(accounts)) &&
             <div>
               <ul>

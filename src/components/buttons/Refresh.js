@@ -9,7 +9,7 @@ const useStyles = makeStyles({
         boxShadow: '0px 2px 12px rgba(12, 64, 78, 0.1)',
         borderRadius: 6,
         color: 'white',
-        width: 111,
+        // width: 111,
         height: 40,
         textTransform: 'none',
         padding: '12px 20px',
@@ -17,7 +17,10 @@ const useStyles = makeStyles({
         fontStyle: 'normal',
         fontWeight: 500,
         fontSize: '14px',
-        lineHeight: '14px'
+        lineHeight: '14px',
+        '&:disabled': {
+            opacity: '0.5'
+        }
     },
     icon: {}
 });

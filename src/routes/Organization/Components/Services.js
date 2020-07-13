@@ -218,7 +218,7 @@ function Services(props) {
             variant={'caption'}
             className={classes.dialogTitle}>
                 { serviceIndexToRemove !== null ? 'Remove' : 'Add' } Service
-            </Typography>
+          </Typography>
           <div className={classes.dialogSubtitleWrapper}>
             <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>
                 { serviceIndexToRemove !== null ? 'To remove a service' : 'To add a service, enter its properties and write a description, then' } confirm the transaction in MetaMask.

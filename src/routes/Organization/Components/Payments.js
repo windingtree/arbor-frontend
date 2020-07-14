@@ -31,7 +31,7 @@ import {
 import SelectField from '../../../components/Fields/SelectField';
 import DialogComponent from '../../../components/Dialog';
 import CopyIdComponent from "../../../components/CopyIdComponent";
-import VpnKeyIcon from "@material-ui/icons/VpnKey";
+// import VpnKeyIcon from "@material-ui/icons/VpnKey";
 
 const styles = makeStyles({
   buttonWrapper: {
@@ -159,6 +159,9 @@ const styles = makeStyles({
   progressWrapper: {
     display: 'table',
     margin: '0 auto'
+  },
+  upperCase: {
+    textTransform: 'uppercase'
   }
 });
 
@@ -179,9 +182,11 @@ const Payments = props => {
   } = props;
 
   useEffect(() => {
-    fetchOrganizationInfo({ id: orgid });
-    resetTransactionStatus();
-    setActiveStep(0);
+    setTimeout(() => {
+      fetchOrganizationInfo({ id: orgid });
+      resetTransactionStatus();
+      setActiveStep(0);
+    }, 1000);
   }, [isModalOpen, orgid, fetchOrganizationInfo, resetTransactionStatus]);
 
   const handleOpenModal = () => {
@@ -229,11 +234,11 @@ const Payments = props => {
           <Typography
             variant={'caption'}
             className={classes.dialogTitle}>
-                { paymentIndexToRemove !== null ? 'Remove' : 'Add' } Service
+              { paymentIndexToRemove !== null ? 'Remove' : 'Add' } Payment record
           </Typography>
           <div className={classes.dialogSubtitleWrapper}>
             <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>
-                { paymentIndexToRemove !== null ? 'To remove a service' : 'To add a service, enter its properties and write a description, then' } confirm the transaction in MetaMask.
+              { paymentIndexToRemove !== null ? 'To remove payment record' : 'To add payment record, enter its properties and write a description, then' } confirm the transaction in MetaMask.
             </Typography>
           </div>
           {
@@ -247,7 +252,14 @@ const Payments = props => {
               </div>
             ) : (
               <Formik
-                initialValues={{ type: '', currency: '', bank: '', description: '' }}
+                initialValues={{
+                  type: '',
+                  currency: '',
+                  address: '',
+                  swift: '',
+                  iban: '',
+                  description: ''
+                }}
                 validate={values => {
                   const errors = {};
                   let currency = [];
@@ -267,22 +279,25 @@ const Payments = props => {
                           break;
                         
                         case 'currency':
-                          currency = value.split(' ').map(c => c.toLowerCase());
+                          currency = value.trim().split(' ').map(c => c.toLowerCase());
                           if ((currency.includes('btc') || currency.includes('bch')) &&
                               currency.includes('eth')) {
                             errors[key] = 'You cannot mix BTC and ETH currencies in one record';
                             break;
                           }
                           matching = currency
-                            .map(c => String(c).match(/^[a-zA-Z]{3,}$/))
+                            .map(c => String(c).match(/^[a-zA-Z]{2,}$/))
                             .filter(c => !c);
                           if (matching.length > 0) {
-                            errors[key] = 'Field "currency" contains wrong values';
+                            errors[key] = 'Wrong currency name';
                             break;
                           }
                           break;
 
                         case 'address':
+                          if (values['type'] !== 'crypto') {
+                            break;
+                          }
                           matching = values['currency'].match(/btc|bch/ig);
                           if (matching && !value.match(/^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,39}$/)) {
                             errors[key] = `Bitcoin address has wrong format`;
@@ -297,7 +312,7 @@ const Payments = props => {
                           if (values['type'] !== 'bank') {
                             break;
                           }
-                          if (!value.match(/^[a-zA-Z]{4}[a-zA-Z]{2}[a-zA-Z0-9]{2}[XXX0-9]{0,3}$/)) {
+                          if (!value.match(/^[a-zA-Z]{4}[ -]{0,1}[a-zA-Z]{2}[ -]{0,1}[a-zA-Z0-9]{2}[ -]{0,1}[XXX0-9]{0,3}$/)) {
                             errors[key] = `Swift address has wrong format`;
                             break;
                           }
@@ -330,24 +345,24 @@ const Payments = props => {
                       payment = {
                         type: values.type,
                         currency: values.currency.split(' ').map(c => c.toLowerCase().trim()),
-                        address: values.address,
-                        description: values.description
+                        address: values.address.trim(),
+                        description: values.description.trim()
                       };
                       break;
                     case 'bank':
                       payment = {
                         type: values.type,
                         currency: values.currency.split(' ').map(c => c.toLowerCase().trim()),
-                        swift: values.swift,
-                        iban: values.iban,
-                        description: values.description
+                        swift: values.swift.trim(),
+                        iban: values.iban.trim(),
+                        description: values.description.trim()
                       };
                       break;
                     case 'simard':
                       payment = {
                         type: values.type,
                         currency: values.currency.split(' ').map(c => c.toLowerCase().trim()),
-                        description: values.description
+                        description: values.description.trim()
                       };
                       break;
                     default:
@@ -450,18 +465,18 @@ const Payments = props => {
                       </Fragment>                      
                     }
                     <div className={classes.inputFieldWrapper}>
-                        <TextField
-                            name={'description'}
-                            autoComplete={'none'}
-                            variant={'filled'}
-                            label={'Description of the service'}
-                            fullWidth
-                            error={errors.description && touched.description}
-                            values={values.description}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            helperText={errors.description && touched.description ? errors.description : null}
-                        />
+                      <TextField
+                          name={'description'}
+                          autoComplete={'none'}
+                          variant={'filled'}
+                          label={'Description of the service'}
+                          fullWidth
+                          error={errors.description && touched.description}
+                          values={values.description}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          helperText={errors.description && touched.description ? errors.description : null}
+                      />
                     </div>
                     <div className={classes.dialogButtonWrapper}>
                       <Button type={'submit'} disabled={isSubmitting || Object.keys(touched).length === 0} className={classes.dialogButton}>
@@ -526,20 +541,20 @@ const Payments = props => {
     <Container>
       <div className={classes.servicesContent}>
         <div className={classes.servicesTitleWrapper}>
-          <Typography variant={'inherit'}>Services management</Typography>
+          <Typography variant={'inherit'}>Payment records management</Typography>
         </div>
         <div>
           <Typography variant={'inherit'} className={classes.servicesSubtitle}>
-            Add public API services that can be used for communication with your organization.
+            Add payment information that can be used for communication with your organization.
           </Typography>
         </div>
         <div className={classes.servicesListContainer}>
           <div className={classes.servicesInfoWrapper}>
-            <Typography variant={'inherit'} className={classes.agentTitle}>Services</Typography>
+            <Typography variant={'inherit'} className={classes.agentTitle}>Payments</Typography>
           </div>
           <div className={classes.buttonWrapper}>
             <Button onClick={() => handleAdd()} className={classes.button}>
-              <Typography variant={'inherit'}>+ Add Service</Typography>
+              <Typography variant={'inherit'}>+ Add record</Typography>
             </Button>
             {addPaymentDialog()}
           </div>
@@ -553,16 +568,16 @@ const Payments = props => {
                         <li key={index.toString()} className={classes.agentItemWrapper}>
                           <Grid container justify={'space-between'} alignItems={'center'}>
                             <Grid item xs={1}>
-                              <Typography>{payment.type}</Typography>
+                              <Typography className={classes.upperCase}>{payment.type}</Typography>
                             </Grid>
-                            <Grid item xs={2}>
-                              <Typography>{payment.currency.join(' ')}</Typography>
+                            <Grid item xs={1}>
+                              <Typography className={classes.upperCase}>{payment.currency.join(', ')}</Typography>
                             </Grid>
                             {payment.type === 'crypto' &&
-                              <Grid item xs={2}>
+                              <Grid item xs={3}>
                                 <CopyIdComponent
                                   id={payment.address}
-                                  leftElement={(<VpnKeyIcon className={classes.keyIcon}/>)}
+                                  leftElement={(<Fragment/>)}
                                   fontSize={'14px'}
                                   width={18}
                                   title='Address copied to clipboard'
@@ -571,33 +586,37 @@ const Payments = props => {
                               </Grid>
                             }
                             {payment.type === 'bank' &&
-                              <Grid item xs={2}>
-                                <Grid container justifyDirection={'column'} alignItems={'center'}>
-                                  <Grid>
-                                    <CopyIdComponent
-                                      id={payment.swift}
-                                      leftElement={(<VpnKeyIcon className={classes.keyIcon}/>)}
-                                      fontSize={'14px'}
-                                      width={18}
-                                      title='SWIFT address copied to clipboard'
-                                      color={colors.greyScale.dark}
-                                    />
-                                  </Grid>
-                                  <Grid item>
-                                    <CopyIdComponent
-                                      id={payment.iban}
-                                      leftElement={(<VpnKeyIcon className={classes.keyIcon}/>)}
-                                      fontSize={'14px'}
-                                      width={18}
-                                      title='IBAN address copied to clipboard'
-                                      color={colors.greyScale.dark}
-                                    />
-                                  </Grid>
+                              <Grid item xs={3}>
+                                <Grid container alignItems={'center'}>
+                                  {(payment.swift && payment.swift !== '') &&
+                                    <Grid>
+                                      <CopyIdComponent
+                                        id={payment.swift}
+                                        leftElement={(<Typography variant='inherit'>SWIFT: </Typography>)}
+                                        fontSize={'14px'}
+                                        width={18}
+                                        title='SWIFT address copied to clipboard'
+                                        color={colors.greyScale.dark}
+                                      />
+                                    </Grid>
+                                  }
+                                  {(payment.iban && payment.iban !== '') &&
+                                    <Grid>
+                                      <CopyIdComponent
+                                        id={payment.iban}
+                                        leftElement={((<Typography variant='inherit'>IBAN: </Typography>))}
+                                        fontSize={'14px'}
+                                        width={18}
+                                        title='IBAN address copied to clipboard'
+                                        color={colors.greyScale.dark}
+                                      />
+                                    </Grid>
+                                  }
                                 </Grid>
                               </Grid>
                             }
                             {payment.type === 'simard' &&
-                              <Grid item xs={2}>
+                              <Grid item xs={3}>
                                 <Typography>simard</Typography>
                               </Grid>
                             }
@@ -609,7 +628,7 @@ const Payments = props => {
                                 onClick={() => handleDelete(index)}
                                 className={classes.deleteAgentButton}
                               >
-                                <Typography variant={'inherit'}>Delete</Typography>
+                                <Typography variant={'inherit'} noWrap>Delete record</Typography>
                               </Button>
                             </Grid>
                           </Grid>

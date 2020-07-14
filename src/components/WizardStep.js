@@ -80,6 +80,12 @@ export const styles = makeStyles({
       fontWeight: 500
     }
   },
+  errorWrapper: {
+    margin: '12px 0 0 0'
+  },
+  error: {
+    color: colors.primary.accent
+  }
 });
 
 const WizardStep = (props) => {

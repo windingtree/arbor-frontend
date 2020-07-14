@@ -8,7 +8,9 @@ import {
   selectWizardOrgidUri,
   sendChangeOrgidUriAndHashRequest,
   sendCreateLegalEntityRequest,
-  sendCreateOrganizationalUnitRequest
+  sendCreateOrganizationalUnitRequest,
+  selectPendingState,
+  selectError
 } from '../ducks/wizard';
 import { selectSignInAddress } from '../ducks/signIn';
 import { styles } from './WizardStep';
@@ -17,20 +19,27 @@ import { styles } from './WizardStep';
 const WizardStep = (props) => {
   // Gather context
   const inheritClasses = styles();
-  const { index, orgidJson, orgidHash, orgidUri, address, parent, solt,
+  const {
+    index, orgidJson, orgidHash, orgidUri, address, parent, solt,
     data: { longName, description, cta }, 
-    action, stepTitle = true } = props;
+    action, stepTitle = true,
+    sendChangeOrgidUriAndHashRequest,
+    sendCreateLegalEntityRequest,
+    sendCreateOrganizationalUnitRequest,
+    pendingTransaction,
+    error
+  } = props;
   // console.log(`props: ${JSON.stringify(props)}`);
 
   // Define the submit function
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (action === 'edit') {
-      props.sendChangeOrgidUriAndHashRequest({orgidUri, orgidHash, address, orgidJson});
+      sendChangeOrgidUriAndHashRequest({orgidUri, orgidHash, address, orgidJson});
     } else if(typeof orgidJson.legalEntity === 'object') {
-      props.sendCreateLegalEntityRequest({orgidJson, orgidHash, orgidUri, address, solt});
+      sendCreateLegalEntityRequest({orgidJson, orgidHash, orgidUri, address, solt});
     } else if (typeof orgidJson.organizationalUnit === 'object' && parent.orgid) {
-      props.sendCreateOrganizationalUnitRequest({orgidJson, orgidHash, orgidUri, address, parent, solt});
+      sendCreateOrganizationalUnitRequest({orgidJson, orgidHash, orgidUri, address, parent, solt});
     } else {
       console.error('Something going wrong with MetaMask request', {orgidJson, orgidHash, orgidUri, address, solt, parent});
       console.log(typeof orgidJson.legalEntity, typeof orgidJson.organizationalUnit, parent.orgid);
@@ -54,10 +63,26 @@ const WizardStep = (props) => {
           </Typography>
         </div>
         <div className={inheritClasses.buttonWrapper}>
-          <Button type="submit" className={inheritClasses.button}>
-            <Typography variant={'caption'} className={inheritClasses.buttonLabel}>{action === 'edit' ? 'Confirm' : cta}</Typography>
+          <Button
+            type="submit"
+            className={inheritClasses.button}
+            disabled={pendingTransaction}
+          >
+            <Typography
+              variant={'caption'}
+              className={inheritClasses.buttonLabel}
+            >
+              {action === 'edit' ? 'Confirm' : cta}
+            </Typography>
           </Button>
         </div>
+        {error &&
+          <div className={inheritClasses.errorWrapper}>
+            <Typography className={inheritClasses.error}>
+              {error.message ? error.message : 'Unknown error'}
+            </Typography>
+          </div>
+        }
       </div>
     </form>
   )
@@ -68,7 +93,9 @@ const mapStateToProps = state => {
     orgidJson: selectWizardOrgidJson(state),
     orgidHash: selectWizardOrgidHash(state),
     orgidUri: selectWizardOrgidUri(state),
-    address: selectSignInAddress(state)
+    address: selectSignInAddress(state),
+    pendingTransaction: selectPendingState(state),
+    error: selectError(state)
   }
 };
 

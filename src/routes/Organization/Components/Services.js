@@ -299,63 +299,63 @@ function Services(props) {
                   }) => (
                   <form onSubmit={handleSubmit}>
                     <div className={classes.inputFieldWrapper}>
-                        <TextField
-                            name={'type'}
-                            autoComplete={'none'}
-                            variant={'filled'}
-                            label={'Enter service type'}
-                            fullWidth
-                            required
-                            error={errors.type && touched.type}
-                            values={values.type}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            helperText={errors.type && touched.type ? errors.type : null}                        
-                        />
+                      <TextField
+                          name={'type'}
+                          autoComplete={'none'}
+                          variant={'filled'}
+                          label={'Enter service type'}
+                          fullWidth
+                          required
+                          error={errors.type && touched.type}
+                          value={values.type}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          helperText={errors.type && touched.type ? errors.type : null}                        
+                      />
                     </div>
                     <div className={classes.inputFieldWrapper}>
-                        <TextField
-                            name={'fragment'}
-                            autoComplete={'none'}
-                            variant={'filled'}
-                            label={'Enter a service fragment (unique tag)'}
-                            fullWidth
-                            required
-                            error={errors.fragment && touched.fragment}
-                            values={values.fragment}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            helperText={errors.fragment && touched.fragment ? errors.fragment : null}
-                        />
+                      <TextField
+                          name={'fragment'}
+                          autoComplete={'none'}
+                          variant={'filled'}
+                          label={'Enter a service fragment (unique tag)'}
+                          fullWidth
+                          required
+                          error={errors.fragment && touched.fragment}
+                          value={values.fragment}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          helperText={errors.fragment && touched.fragment ? errors.fragment : null}
+                      />
                     </div>
                     <div className={classes.inputFieldWrapper}>
-                        <TextField
-                            name={'serviceEndpoint'}
-                            autoComplete={'none'}
-                            variant={'filled'}
-                            label={'Service endpoint URI'}
-                            fullWidth
-                            required
-                            error={errors.serviceEndpoint && touched.serviceEndpoint}
-                            values={values.serviceEndpoint}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            helperText={errors.serviceEndpoint && touched.serviceEndpoint ? errors.serviceEndpoint : null}
-                        />
+                      <TextField
+                          name={'serviceEndpoint'}
+                          autoComplete={'none'}
+                          variant={'filled'}
+                          label={'Service endpoint URI'}
+                          fullWidth
+                          required
+                          error={errors.serviceEndpoint && touched.serviceEndpoint}
+                          value={values.serviceEndpoint}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          helperText={errors.serviceEndpoint && touched.serviceEndpoint ? errors.serviceEndpoint : null}
+                      />
                     </div>
                     <div className={classes.inputFieldWrapper}>
-                        <TextField
-                            name={'description'}
-                            autoComplete={'none'}
-                            variant={'filled'}
-                            label={'Description of the service'}
-                            fullWidth
-                            error={errors.description && touched.description}
-                            values={values.description}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            helperText={errors.description && touched.description ? errors.description : null}
-                        />
+                      <TextField
+                          name={'description'}
+                          autoComplete={'none'}
+                          variant={'filled'}
+                          label={'Description of the service'}
+                          fullWidth
+                          error={errors.description && touched.description}
+                          value={values.description}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          helperText={errors.description && touched.description ? errors.description : null}
+                      />
                     </div>
                     <div className={classes.dialogButtonWrapper}>
                       <Button type={'submit'} disabled={isSubmitting || Object.keys(touched).length === 0} className={classes.dialogButton}>

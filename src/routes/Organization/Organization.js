@@ -13,6 +13,7 @@ import history from '../../redux/history';
 import TopNavigation from "./Components/TopNavigation";
 import Agents from "./Components/Agents";
 import Services from "./Components/Services";
+import Payments from "./Components/Payments";
 import Info from "./Components/Info";
 import SubOrganizations from './Components/SubOrganizations';
 import ProofsList from '../../components/ProofsList';
@@ -58,6 +59,7 @@ function Organization (props) {
   const subsidiaries = _.get(organization, 'subsidiaries', []);
   const agents = _.get(organization, 'jsonContent.publicKey', []);
   const services = _.get(organization, 'jsonContent.service', []);
+  const payments = _.get(organization, 'jsonContent.payment', []);
   const {
     owner,
     isLifProved,
@@ -121,6 +123,13 @@ function Organization (props) {
       {canManage &&
         <SimardAccounts
           orgid={id}
+        />
+      }
+      {canManage && 
+        <Payments
+          orgid={id}
+          owner={owner}
+          payments={payments}
         />
       }
       {/* {canManage &&

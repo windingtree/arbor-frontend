@@ -116,6 +116,10 @@ const styles = makeStyles({
   dialogTitleWrapper: {
     marginBottom: '20px'
   },
+  dialogTitleWrapperCenter: {
+    marginBottom: '20px',
+    textAlign: 'center'
+  },
   dialogTitle: {
     fontSize: '32px',
     fontWeight: 500,
@@ -147,6 +151,19 @@ const styles = makeStyles({
       cursor: 'none'
     }
   },
+  dialogCancelButton: {
+    height: '44px',
+    border: `1px solid #3A9492`,
+    borderRadius: '8px',
+    background: 'linear-gradient(180deg, #99D7C5 -25%, #3A9492 103.57%)',
+    boxShadow: '0px 2px 12px rgba(12, 64, 78, 0.1)',
+    textTransform: 'none',
+    padding: '6px 20px',
+    '&:disabled': {
+      opacity: '0.5',
+      cursor: 'none'
+    }
+  },
   dialogButtonLabel: {
     fontSize: '16px',
     fontWeight: 600,
@@ -158,6 +175,9 @@ const styles = makeStyles({
       cursor: 'pointer',
       textDecoration: 'underline'
     }
+  },
+  confirmationButtonsWrapper: {
+    marginTop: '20px'
   }
 });
 
@@ -243,6 +263,59 @@ const removeSimardAccount = (authToken, accountId) => callSimard(
   `${SIMARD_URL}/accounts/${accountId}`,
   'DELETE'
 );
+
+const DeleteAccountDialog = props => {
+  const classes = styles();
+  const { handleClose, isOpen, onDelete } = props;
+  
+  return (
+    <DialogComponent
+      handleClose={handleClose}
+      isOpen={isOpen}
+      children={(
+        <div className={classes.dialogContent}>
+          <div className={classes.dialogTitleWrapperCenter}>
+            <Typography
+              variant={'caption'}
+              className={classes.dialogTitle}>
+                Confirm account deletion
+            </Typography>            
+          </div>
+          <div className={classes.confirmationButtonsWrapper}>
+            <Grid container justify={'space-between'} alignItems={'center'}>
+              <Grid item xs={6}>
+                <div className={classes.dialogButtonWrapper}>
+                  <Button
+                    onClick={() => handleClose()}
+                    title='Cancel'
+                    className={classes.dialogCancelButton}
+                  >
+                    <Typography variant={'caption'} className={classes.dialogButtonLabel}>
+                      Cancel
+                    </Typography>
+                  </Button>
+                </div>
+              </Grid>
+              <Grid item xs={6}>
+                <div className={classes.dialogButtonWrapper}>
+                  <Button
+                    onClick={() => onDelete()}
+                    title='Cancel'
+                    className={classes.dialogButton}
+                  >
+                    <Typography variant={'caption'} className={classes.dialogButtonLabel}>
+                    Delete
+                    </Typography>
+                  </Button>
+                </div>
+              </Grid>
+            </Grid>
+          </div>
+        </div>
+      )}
+    />
+  );
+};
 
 const AccountDialog = props => {
   const classes = styles();
@@ -364,6 +437,8 @@ const SimardAccounts = props => {
   const [sessionTimeout, setSessionTimeout] = useState();
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [forUpdate, setForUpdate] = useState();
+  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [accountToDelete, setAccountToDelete] = useState(null);
 
   const resetAuthToken = sessionKey => {
     sessionStorage.removeItem(sessionKey)
@@ -496,9 +571,20 @@ const SimardAccounts = props => {
     }
   };
 
+  const handleDeleteDialogClose = () => {
+    setAccountToDelete(null);
+    setDeleteDialogOpen(false);
+  };
+
+  const handleDeleteStart = account => {
+    setAccountToDelete(account);
+    setDeleteDialogOpen(true);
+  };
+
   const handleDelete = async account => {
     try {
       setError(null);
+      setDeleteDialogOpen(false);
 
       await checkAuthToken();
       setIsFetching(true);
@@ -586,7 +672,7 @@ const SimardAccounts = props => {
                       </Grid>
                       <Grid item xs={2}>
                         <Button
-                          onClick={() => handleDelete(account)}
+                          onClick={() => handleDeleteStart(account)}
                           className={classes.deleteButton}
                           disabled={isFetching}
                         >
@@ -616,6 +702,11 @@ const SimardAccounts = props => {
         onAction={values => forUpdate
           ? handleUpdate(values)
           : handleCreate(values)}
+      />
+      <DeleteAccountDialog 
+        isOpen={isDeleteDialogOpen}
+        handleClose={() => handleDeleteDialogClose()}
+        onDelete={() => handleDelete(accountToDelete)}
       />
     </Container>
   );

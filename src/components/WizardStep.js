@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {connect} from "react-redux";
 import {makeStyles} from '@material-ui/core/styles';
 import {Typography, Button} from '@material-ui/core';
@@ -6,12 +6,18 @@ import {Typography, Button} from '@material-ui/core';
 import {Formik} from 'formik';
 import _ from 'lodash';
 
-import DialogComponent from './Dialog';
-import {extendOrgidJson, selectWizardOrgidJson} from '../ducks/wizard'; //validateOrgidSchema
+// import DialogComponent from './Dialog';
+import { extendOrgidJson, selectWizardOrgidJson } from '../ducks/wizard'; //validateOrgidSchema
+import { selectSignInAddress } from '../ducks/signIn';
 import {Section} from './index';
 import ArrowLeftIcon from '../assets/SvgComponents/ArrowLeftIcon';
 
 import colors from '../styles/colors';
+
+import {
+  COINSWITCH_LABEL,
+  COINSWITCH_URL
+} from '../utils/constants';
 
 export const styles = makeStyles({
   stepTitle: {
@@ -84,46 +90,52 @@ export const styles = makeStyles({
 
 const WizardStep = (props) => {
   const profileId = sessionStorage.getItem('profileId');
-  const [isModalOpen, toggleModalOpenState] = useState(false);
+  // const [isModalOpen, toggleModalOpenState] = useState(false);
   const classes = styles();
 
   const {index, extendOrgidJson, data: {longName, description, sections, cta}, 
-    handleNext, orgidJson, joinOrganizations} = props;
+    handleNext, orgidJson, joinOrganizations, address} = props;
+
   // Modal to provide more details on how to obtain Ether
-  const renderModal = () => {
-    return (
-      <DialogComponent
-        handleClose={handleCloseModal}
-        isOpen={isModalOpen}
-        children={(
-          <div className={classes.dialogContent}>
-            <Typography className={classes.modalTitle}>Learn how to obtain Ether</Typography>
-            <Typography className={classes.paragraph}>Ether is Ethereum’s native cryptocurrency, the second most established
-              and popular cryptocurrency after Bitcoin.</Typography>
-            <Typography className={classes.paragraph}>It is common to obtain Ether through online exchange platforms that
-              operate in your country and accept your preferred currency. Reputable exchange platforms have strict KYC
-              processes and will ask you to share your personal data.</Typography>
-            <Typography className={classes.paragraph}>MetaMask is linked with two exchanges, <b>Wyre</b> and <b>Coinswitch</b>, so you can purchase Ether directly from your account.</Typography>
-            <Typography className={classes.paragraph}>It is also possible to buy Ether from crypto
-              ATMs or through Peer-to-Peer options like <b>LocalCryptos</b>, <b>Hodl Hodl</b> or similar services. The latter can be
-              private or centralized and offer a wide selection of buying and selling options, from in-person meetings to
-              online gift cards, wire or PayPal transfers.</Typography>
-            <Typography className={classes.paragraph}>Finally, there are fintech apps like <b>Uphold</b>, <b>Revolut</b> and other
-              services that allow users buy, sell and transfer cryptocurrencies as well as trade for a broad spectrum of
-              fiat currencies.
-            </Typography>
-          </div>
-        )}
-      />
-    );
-  };
+  // const renderModal = () => {
+  //   return (
+  //     <DialogComponent
+  //       handleClose={handleCloseModal}
+  //       isOpen={isModalOpen}
+  //       children={(
+  //         <div className={classes.dialogContent}>
+  //           <Typography className={classes.modalTitle}>Learn how to obtain Ether</Typography>
+  //           <Typography className={classes.paragraph}>Ether is Ethereum’s native cryptocurrency, the second most established
+  //             and popular cryptocurrency after Bitcoin.</Typography>
+  //           <Typography className={classes.paragraph}>It is common to obtain Ether through online exchange platforms that
+  //             operate in your country and accept your preferred currency. Reputable exchange platforms have strict KYC
+  //             processes and will ask you to share your personal data.</Typography>
+  //           <Typography className={classes.paragraph}>MetaMask is linked with two exchanges, <b>Wyre</b> and <b>Coinswitch</b>, so you can purchase Ether directly from your account.</Typography>
+  //           <Typography className={classes.paragraph}>It is also possible to buy Ether from crypto
+  //             ATMs or through Peer-to-Peer options like <b>LocalCryptos</b>, <b>Hodl Hodl</b> or similar services. The latter can be
+  //             private or centralized and offer a wide selection of buying and selling options, from in-person meetings to
+  //             online gift cards, wire or PayPal transfers.</Typography>
+  //           <Typography className={classes.paragraph}>Finally, there are fintech apps like <b>Uphold</b>, <b>Revolut</b> and other
+  //             services that allow users buy, sell and transfer cryptocurrencies as well as trade for a broad spectrum of
+  //             fiat currencies.
+  //           </Typography>
+  //         </div>
+  //       )}
+  //     />
+  //   );
+  // };
 
-  const handleOpenModal = () => {
-    toggleModalOpenState(true);
-  };
+  // const handleOpenModal = () => {
+  //   toggleModalOpenState(true);
+  // };
 
-  const handleCloseModal = () => {
-    toggleModalOpenState(false)
+  // const handleCloseModal = () => {
+  //   toggleModalOpenState(false)
+  // };
+
+  const handleOpenCoinswitch = () => {
+    const url = String(COINSWITCH_URL).replace('[ADDRESS]', address);
+    window.open(url, '_blank');
   };
 
   // Validate the form
@@ -204,10 +216,10 @@ const WizardStep = (props) => {
       {
         longName !== 'Details' ? (
           <div>
-            <div onClick={handleOpenModal} className={classes.link}>
-              Learn how to obtain Ether <ArrowLeftIcon viewBox={'0 0 12 12'} className={classes.linkIcon}/>
+            <div onClick={handleOpenCoinswitch} className={classes.link}>
+              {COINSWITCH_LABEL} <ArrowLeftIcon viewBox={'0 0 12 12'} className={classes.linkIcon}/>
             </div>
-            {renderModal()}
+            {/* {renderModal()} */}
           </div>
         ) : null
       }
@@ -268,7 +280,8 @@ const WizardStep = (props) => {
 const mapStateToProps = state => {
   return {
     joinOrganizations: state.join.joinOrganizations,
-    orgidJson: selectWizardOrgidJson(state)
+    orgidJson: selectWizardOrgidJson(state),
+    address: selectSignInAddress(state)
   }
 };
 

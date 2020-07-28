@@ -134,9 +134,7 @@ const ChainMistmatchInfo = (props) => {
   return(
     <div className={props.classes.subtitleWrapper}>
       <Typography variant={'subtitle2'} className={props.classes.danger}>
-        Winding Tree Marketplace requires a connection to the <b>{chainName(CHAIN_ID)}</b>, 
-        but you are connected to the <b>{chainName(props.chainId)}</b>.
-        Please change the Network in your Wallet.
+        This is a test environment that requires you to be connected to  <strong>{chainName(CHAIN_ID)}</strong> instead of <strong>{chainName(props.chainId)}</strong>. Please change the network in MetaMask.
       </Typography>
     </div>
   );
@@ -177,21 +175,21 @@ const SignInActionBox = (classes, props) => {
   return (
     <Box style={{width: '80%', margin: '0 auto'}}>
       <div className={classes.screenTitleWrapper}>
-        <Typography variant={'h1'} className={classes.screenTitle}>Step in</Typography>
+        <Typography variant={'h1'} className={classes.screenTitle}>Sign In</Typography>
           <div className={classes.line}/>
       </div>
       <div className={classes.subtitleWrapper}>
         <Typography variant={'subtitle2'} className={classes.subtitle}>
-          MetaMask is a browser extension that allows you to hold Ether and tokens as well as create and manage your organization profile on Winding Tree Marketplace.
+          MetaMask is a browser extension that allows you to interact with Ethereum blockchain. <a href="https://windingtree.com/faq">Why I need this?</a>
         </Typography>
       </div>
       { chainMistmatch ? <ChainMistmatchInfo classes={classes} chainId={chainId}/> : null}
-      <div className={classes.buttonWrapper}>
+      { !chainMistmatch ? <div className={classes.buttonWrapper}>
         <OnboardingButton className={classes.button} buttonLabel={classes.buttonLabel}  disabled={chainMistmatch} />
         {/* <Button onClick={props.fetchSignInRequest} className={classes.button} disabled={chainMistmatch}>
           <Typography variant={'caption'} className={classes.buttonLabel}>Sign in{ currentWeb3 && currentWeb3.currentProvider.isMetaMask ? ' with Metamask': '' }</Typography>
         </Button> */}
-      </div>
+      </div> : null }
     </Box>
   );
 };
@@ -201,7 +199,7 @@ const SignInBox = (classes, props) => {
   if(MAINTENANCE && MAINTENANCE.active) {
     return MaintenanceBox(classes);
   }
-  
+
   // No maintenance
   else {
     return SignInActionBox(classes, props);
@@ -217,7 +215,7 @@ const SignIn = (props) => {
     if(isInstalled) {
       setTimeout(() => setUploaded(true), 2000);
       if(isUploaded) {
-        alert('If you have already installed MetaMask - please,  reload this page')
+        alert('Reload page after you have MetaMask installed')
       }
     }
   });

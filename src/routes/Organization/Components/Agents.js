@@ -323,7 +323,7 @@ function Agents(props) {
                 }}
                 onSubmit={values => {
                   props.addAgentKey({
-                    id: `${orgid}#${values.fragment}`,
+                    id: `did:orgid:${orgid}#${values.fragment}`,
                     type: values.type,
                     controller: `did:orgid:${orgid}`,
                     publicKeyPem: values.key,

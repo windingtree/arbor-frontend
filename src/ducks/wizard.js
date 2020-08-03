@@ -42,6 +42,14 @@ const REMOVE_SERVICE_REQUEST = `${prefix}/REMOVE_SERVICE_REQUEST`;
 const REMOVE_SERVICE_SUCCESS = `${prefix}/REMOVE_SERVICE_SUCCESS`;
 const REMOVE_SERVICE_FAILURE = `${prefix}/REMOVE_SERVICE_FAILURE`;
 
+const ADD_PAYMENT_REQUEST = `${prefix}/ADD_PAYMENT_REQUEST`;
+const ADD_PAYMENT_SUCCESS = `${prefix}/ADD_PAYMENT_SUCCESS`;
+const ADD_PAYMENT_FAILURE = `${prefix}/ADD_PAYMENT_FAILURE`;
+
+const REMOVE_PAYMENT_REQUEST = `${prefix}/REMOVE_PAYMENT_REQUEST`;
+const REMOVE_PAYMENT_SUCCESS = `${prefix}/REMOVE_PAYMENT_SUCCESS`;
+const REMOVE_PAYMENT_FAILURE = `${prefix}/REMOVE_PAYMENT_FAILURE`;
+
 const ADD_ASSERTION_REQUEST = `${prefix}/ADD_ASSERTION_REQUEST`;
 const ADD_ASSERTION_SUCCESS = `${prefix}/ADD_ASSERTION_SUCCESS`;
 const ADD_ASSERTION_FAILURE = `${prefix}/ADD_ASSERTION_FAILURE`;
@@ -134,8 +142,10 @@ export default function reducer( state = initialState, action) {
   state.orgidJson = fixJsonRequiredProps(state.orgidJson);
   const statePublicKey = _.get(state.orgidJson, 'publicKey', []);
   const stateService = _.get(state.orgidJson, 'service', []);
+  const statePayment = _.get(state.orgidJson, 'payment', []);
   const publicKey = statePublicKey.slice();
   const service = stateService.slice();
+  const payment = statePayment.slice();
   
   let orgidJsonUpdates;
 
@@ -149,6 +159,8 @@ export default function reducer( state = initialState, action) {
     case REMOVE_AGENT_KEY_REQUEST:
     case ADD_SERVICE_REQUEST:
     case REMOVE_SERVICE_REQUEST:
+    case ADD_PAYMENT_REQUEST:
+    case REMOVE_PAYMENT_REQUEST:
     case ADD_ASSERTION_REQUEST:
     case REMOVE_ASSERTION_REQUEST:
     case SAVE_MEDIA_TO_ARBOR_REQUEST:
@@ -293,6 +305,36 @@ export default function reducer( state = initialState, action) {
         error: null
       });
 
+    case ADD_PAYMENT_SUCCESS:
+      payment.push(payload);
+      const updatedJsonWithPayment = _.merge({}, state.orgidJson, {
+        ...state.orgidJson,
+        payment
+      });
+
+      return Object.assign({}, state, {
+        isFetching: false,
+        isFetched: true,
+        orgidJson: updatedJsonWithPayment,
+        orgidHash: Web3.utils.soliditySha3(JSON.stringify(updatedJsonWithPayment, null, 2)),
+        error: null
+        });
+
+    case REMOVE_PAYMENT_SUCCESS:
+      payment.splice(payload, 1);
+      const updatedJsonWithoutPayment = Object.assign({}, state.orgidJson, {
+        ...state.orgidJson,
+        payment
+      });
+
+      return Object.assign({}, state, {
+        isFetching: false,
+        isFetched: true,
+        orgidJson: updatedJsonWithoutPayment,
+        orgidHash: Web3.utils.soliditySha3(JSON.stringify(updatedJsonWithoutPayment, null, 2)),
+        error: null
+      });
+
     case ADD_ASSERTION_SUCCESS:
       const updatedJsonWithAddedAssertion = {
         ...state.orgidJson,
@@ -375,6 +417,8 @@ export default function reducer( state = initialState, action) {
     case REMOVE_AGENT_KEY_FAILURE:
     case ADD_SERVICE_FAILURE:
     case REMOVE_SERVICE_FAILURE:
+    case ADD_PAYMENT_FAILURE:
+    case REMOVE_PAYMENT_FAILURE:
     case ADD_ASSERTION_FAILURE:
     case REMOVE_ASSERTION_FAILURE:
     case SAVE_MEDIA_TO_ARBOR_FAILURE:
@@ -575,6 +619,52 @@ function removeServiceSuccess(payload) {
 function removeServiceFailure(error) {
   return {
     type: REMOVE_SERVICE_FAILURE,
+    error
+  }
+}
+//endregion
+
+//region == [ACTIONS: addPayment] =================================================================================
+export function addPayment(payload) {
+  return {
+    type: ADD_PAYMENT_REQUEST,
+    payload
+  }
+}
+
+function addPaymentSuccess(payload) {
+  return {
+    type: ADD_PAYMENT_SUCCESS,
+    payload
+  }
+}
+
+function addPaymentFailure(error) {
+  return {
+    type: ADD_PAYMENT_FAILURE,
+    error
+  }
+}
+//endregion
+
+//region == [ACTIONS: removePayment] =================================================================================
+export function removePayment(payload) {
+  return {
+    type: REMOVE_PAYMENT_REQUEST,
+    payload
+  }
+}
+
+function removePaymentSuccess(payload) {
+  return {
+    type: REMOVE_PAYMENT_SUCCESS,
+    payload
+  }
+}
+
+function removePaymentFailure(error) {
+  return {
+    type: REMOVE_PAYMENT_FAILURE,
     error
   }
 }
@@ -865,6 +955,26 @@ function* removeServiceFromOrgidJsonSaga({payload}) {
   }
 }
 
+function* addPaymentToOrgidJsonSaga({payload}) {
+  try {
+    const result = yield call((data) => data, payload);
+
+    yield put(addPaymentSuccess(result));
+  } catch(error) {
+    yield put(addPaymentFailure(error));
+  }
+}
+
+function* removePaymentFromOrgidJsonSaga({payload}) {
+  try {
+    const result = yield call((data) => data, payload);
+
+    yield put(removePaymentSuccess(result));
+  } catch(error) {
+    yield put(removePaymentFailure(error));
+  }
+}
+
 function* addAssertionToOrgidJsonSaga({payload}) {
   try {
     const result = yield call((data) => data, payload);
@@ -976,6 +1086,8 @@ export const saga = function* () {
     takeEvery(REMOVE_AGENT_KEY_REQUEST, removeAgentKeyFromOrgidJsonSaga),
     takeEvery(ADD_SERVICE_REQUEST, addServiceToOrgidJsonSaga),
     takeEvery(REMOVE_SERVICE_REQUEST, removeServiceFromOrgidJsonSaga),
+    takeEvery(ADD_PAYMENT_REQUEST, addPaymentToOrgidJsonSaga),
+    takeEvery(REMOVE_PAYMENT_REQUEST, removePaymentFromOrgidJsonSaga),
     takeEvery(ADD_ASSERTION_REQUEST, addAssertionToOrgidJsonSaga),
     takeEvery(REMOVE_ASSERTION_REQUEST, removeAssertionFromOrgidJsonSaga),
     takeEvery(SAVE_MEDIA_TO_ARBOR_REQUEST, saveMediaToArborSaga),
@@ -1114,7 +1226,9 @@ function ApiGetTxStatus(transactionHash) {
           reject(err);
           return clearInterval(interval);
         } else if (data) {
-          resolve(data);
+          setTimeout(() => {
+            resolve(data);
+          }, 1500);
           return clearInterval(interval);
         } else {
           console.log(`...waiting for ... ${transactionHash}`)

@@ -72,11 +72,10 @@ const proofsTemplate = [
     {
         id: 'd1',
         type: 'domain',
-        title: 'Prove your website',
-        pubTitle: 'Proof not submitted yet',
+        title: 'Connect company website',
+        pubTitle: 'Not connected',
         notes: [
-            'Copy your ORG.ID and save this Id to the file or publication somewhere under the domain.',
-            'Add a link to this file or publication as proof.',
+            'Please upload this file to the root directory of your company website.',
             '>[ORGID]'
         ],
         icon: 'globe'
@@ -85,11 +84,12 @@ const proofsTemplate = [
         id: 's1',
         type: 'social',
         subtype: 'facebook',
-        title: 'Prove your Facebook account',
-        pubTitle: 'Proof not submitted yet',
+        title: 'Connect company Facebook account',
+        pubTitle: 'Not connected',
         notes: [
-            'To prove that a Facebook account is yours copy this exactrly as it appears and create a post in your Facebook',
-            '>Verifying my ORG.ID identifier: [ORGID]'
+            'Connect your company\'s Facebook account by creating a post with the following text',
+            '>Winding Tree Marketplace account: [ORGID]',
+            'Once you have created the post, paste a link to it below'
         ],
         icon: 'facebook'
     },
@@ -121,11 +121,12 @@ const proofsTemplate = [
         id: 's4',
         type: 'social',
         subtype: 'linkedin',
-        title: 'Prove your LinkedIn account',
-        pubTitle: 'Proof not submitted yet',
+        title: 'Connect company LinkedIn account',
+        pubTitle: 'Not connected',
         notes: [
-            'To prove that a LinkedIn account is yours copy this exactrly as it appears and create a post in your LinkedIn',
-            '>Verifying my ORG.ID identifier: [ORGID]'
+            'Connect your company LinkedIn account by creating a post with the following text',
+            '>Winding Tree Marketplace account: [ORGID]',
+            'Paste the link to the post below'
         ],
         icon: 'linkedin'
     }
@@ -144,7 +145,7 @@ const extractAssertion = (type, socialType, assertions = []) => {
 
 // Create base template for displaing of the poofs list
 const createTemplate = orgid => orgid
-    ? JSON.parse(JSON.stringify(proofsTemplate)) 
+    ? JSON.parse(JSON.stringify(proofsTemplate))
         .map(
             p => {
                 p.deployed = false;
@@ -156,7 +157,7 @@ const createTemplate = orgid => orgid
         )
     : [];
 
-// Extend basic proofs list template with information of actual assertions, 
+// Extend basic proofs list template with information of actual assertions,
 // verifications and local changes
 const applyExtensions = (
     proofsListTemplate,
@@ -302,7 +303,7 @@ const ProofsList = props => {
                     className={classes.infoIcon}
                     src={iconInfo}
                     alt={'Info'}
-                />    
+                />
             </Box>
             <Box className={classes.proofsBlock}>
                 {/* <LifDepositValue canManage={canManage} /> */}
@@ -352,7 +353,7 @@ const ProofsList = props => {
                         </>
                     }
                 </Box>
-            }                
+            }
         </Container>
     );
 };
@@ -360,7 +361,7 @@ const ProofsList = props => {
 const mapStateToProps = state => {
     return {}
   };
-  
+
 const mapDispatchToProps = {
     fetchOrganizationInfo,
     fetchOrganizationInfoWithRefresh,

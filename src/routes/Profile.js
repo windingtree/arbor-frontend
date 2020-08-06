@@ -75,9 +75,9 @@ const styles = makeStyles({
 
 function Profile(props) {
   const classes = styles();
-  const { organizations, address, fetchProfileOrganizations, getJoinRequest, 
+  const { organizations, address, fetchProfileOrganizations, getJoinRequest,
     isJoinFetching, joinOrganizations } = props;
-  
+
   useEffect(() => {
     const profileId = sessionStorage.getItem('profileId');
     if (profileId) {
@@ -85,18 +85,18 @@ function Profile(props) {
     }
     fetchProfileOrganizations({owner: address});
   }, [address, fetchProfileOrganizations, getJoinRequest]);
-  
+
   return (
     <Container className={classes.rootContainer}>
       <div className={classes.headingContainer}>
         <div className={classes.titleWrapper}>
-          <Typography variant={'h2'} className={classes.title}>My organizations</Typography>
+          <Typography variant={'h2'} className={classes.title}>My Companies</Typography>
         </div>
         {
           (organizations.length !== 0 || Object.keys(joinOrganizations).length !== 0) && (
             <div>
               <Button onClick={() => history.push('/my-organizations/wizard', { type: 'legalEntity' })} className={classes.button}>
-                <Typography variant={'subtitle2'} className={classes.buttonLabel}>+ Create organization profile</Typography>
+                <Typography variant={'subtitle2'} className={classes.buttonLabel}>Register New Company</Typography>
               </Button>
             </div>
           )
@@ -115,13 +115,9 @@ function Profile(props) {
       <div className={classes.emptyListContainer}>
         <div className={classes.emptyListContent}>
           <img src={EmptyListIllustration} alt={'illustration'}/>
-          <div className={classes.emptyListTitleWrapper}>
-            <Typography variant={'subtitle2'} className={classes.emptyListTitle}>You don’t have any organizations yet.
-              Let’s create one!</Typography>
-          </div>
           <Button onClick={() => history.push('/my-organizations/wizard', {type: 'legalEntity'})}
                   className={classes.button}>
-            <Typography variant={'subtitle2'} className={classes.buttonLabel}>+ Create organization profile</Typography>
+            <Typography variant={'subtitle2'} className={classes.buttonLabel}>Create Company Account</Typography>
           </Button>
         </div>
       </div>

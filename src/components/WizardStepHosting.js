@@ -157,13 +157,12 @@ const WizardStepHosting = (props) => {
           <form onSubmit={handleSubmit}>
 
             <FormControl component="fieldset" className={classes.formControlGroup}>
-              <Typography variant={'subtitle2'} className={classes.formControlTitle}>Choose your preferred type of JSON hosting</Typography>
               <RadioGroup aria-label="hostingType" name="hostingType" value={values['hostingType']} onChange={handleChange}>
                 <div className={classes.formControlItem}>
-                  <FormControlLabel value="default-hosting" control={<Radio color='primary' />} label="Hosting with Winding Tree Marketplace" className={classes.radioItem}/>
+                  <FormControlLabel value="default-hosting" control={<Radio color='primary' />} label="Winding Tree Marketplace" className={classes.radioItem}/>
                   <div>
                     <LightTooltip
-                      title={'We will store your organization \n information on our servers and back it \n up regularly.'}
+                      title={'We will store your data \n on our servers and back it up \n regularly.'}
                       placement={'right-start'}
                     >
                       <button className={classes.tooltipRef}>
@@ -173,10 +172,10 @@ const WizardStepHosting = (props) => {
                   </div>
                 </div>
                 <div className={classes.formControlItem}>
-                  <FormControlLabel value="self-hosting" control={<Radio color='primary' />} label="Self-hosting option" className={classes.radioItem}/>
+                  <FormControlLabel value="self-hosting" control={<Radio color='primary' />} label="Your server" className={classes.radioItem}/>
                   <div>
                     <LightTooltip
-                      title={'You choose where to store your \n organization information and provide \n us with a link. You may use private \n cloud storages or even file sharing \n services as long as the link remains \n permanently accessible. '}
+                      title={'You choose where to store your \n data and give us a link to it. \n You may use any cloud storage \n or even a file sharing \n service, as long as the link remains \n  accessible. '}
                       placement={'right-start'}
                     >
                       <button className={classes.tooltipRef}>
@@ -193,19 +192,19 @@ const WizardStepHosting = (props) => {
                 <div>
                   <div className={classes.selfHostingSubtitleWrapper}>
                     <Typography variant={'subtitle2'} className={classes.selfHostingSubtitle}>
-                      If you want to have full control over your data, you may choose to host ORG.JSON on your own server.
+                      Great job! We encourage our users to retain full control of their data.
                     </Typography>
                   </div>
                   <div className={classes.selfHostingSubtitleWrapper}>
                     <Typography variant={'subtitle2'} className={classes.selfHostingSubtitle}>
-                      Once you download the ORG.JSON file, upload it to your server and enter URL in the respective field below.
+                      Please download the JSON file with your profile and store it somewhere, where it would be publicly accessible. Then paste the resulting URL below.
                     </Typography>
                   </div>
                   <br />
                   <div className={classes.selfHostingLinkWrapper}>
                     <a href={data} download="ORG.ID.json" className={classes.selfHostingLink}>
                       <img src={DownloadIcon} alt={'download'} className={classes.selfHostingLinkIcon}/>
-                      Download ORG.JSON
+                      Download Data
                     </a>
                   </div>
                   <br />

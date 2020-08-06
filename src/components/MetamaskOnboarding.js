@@ -65,15 +65,15 @@ const OnboardingButton = ({ className, buttonLabel, fetchSignInRequest }) => {
         {accounts.length > 0 &&
             <button className={className} onClick={() => fetchSignInRequest(accounts)}>
                 <Typography variant={'caption'} className={buttonLabel}>
-                    Sign in
-                </Typography>      
+                    Sign In
+                </Typography>
             </button>
         }
         {(!accounts || accounts.length === 0) &&
             <button className={className} disabled={isDisabled} onClick={onClick}>
                 <Typography variant={'caption'} className={buttonLabel}>
                     {buttonText}
-                </Typography>      
+                </Typography>
             </button>
         }
       </>

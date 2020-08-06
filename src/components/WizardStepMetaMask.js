@@ -21,7 +21,7 @@ const WizardStep = (props) => {
   const inheritClasses = styles();
   const {
     index, orgidJson, orgidHash, orgidUri, address, parent, solt,
-    data: { longName, description, cta }, 
+    data: { longName, description, cta },
     action, stepTitle = true,
     sendChangeOrgidUriAndHashRequest,
     sendCreateLegalEntityRequest,
@@ -52,14 +52,11 @@ const WizardStep = (props) => {
       <div key={index}>
         <Typography variant={'h3'} className={inheritClasses.stepTitle}>
           {stepTitle && `Step ${index+1}. `}
-          {action === 'edit' ? 'Submit transaction fee' : longName}
+          {action === 'edit' ? 'Saving to blockchain...' : longName}
         </Typography>
         <div className={inheritClasses.subtitleWrapper}>
           <Typography variant={'subtitle1'} className={inheritClasses.subtitle}>
-            { action === 'edit' ? 'You need to submit an Ethereum transaction to pay the miners’ fee for every profile update or verification.' : description}
-          </Typography>
-          <Typography  className={inheritClasses.subtitle}>
-            You can adjust the fee using gas fee's "edit" feature, which is available in Metamask popup window.
+            { action === 'edit' ? 'In order to save your company data, a blockchain transaction is required. Please confirm it in MetaMask.' : description}
           </Typography>
         </div>
         <div className={inheritClasses.buttonWrapper}>
@@ -72,7 +69,7 @@ const WizardStep = (props) => {
               variant={'caption'}
               className={inheritClasses.buttonLabel}
             >
-              {action === 'edit' ? 'Confirm' : cta}
+              {action === 'edit' ? 'Generate Transaction' : cta}
             </Typography>
           </Button>
         </div>

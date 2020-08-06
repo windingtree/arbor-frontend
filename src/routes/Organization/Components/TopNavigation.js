@@ -188,7 +188,7 @@ function TopNavigation(props) {
               <Button onClick={() => history.push(`/organization/${id}`, {id})}>
                 <Typography variant={'caption'} className={classes.buttonLabel}>
                   <EyeIcon viewBox={'0 0 16 12'} className={[classes.itemActionButtonIcon, classes.eyeIcon].join(' ')}/>
-                  Public organization view
+                  Public view
                 </Typography>
               </Button> {/*View*/}
 
@@ -198,7 +198,7 @@ function TopNavigation(props) {
                 <Typography variant={'caption'} className={classes.buttonLabel}>
                   <EditIcon viewBox={'0 0 14 14 '}
                             className={[classes.itemActionButtonIcon, classes.editIcon].join(' ')}/>
-                  Edit organization profile
+                  Edit company profile
                 </Typography>
               </Button> {/*Edit*/}
             </div>
@@ -209,15 +209,7 @@ function TopNavigation(props) {
         canManage && (
           <div className={classes.itemTrustInfoContainer}>
             <div className={classes.itemTrustInfoBase}>
-              <LightTooltip
-                title={'The number of verified trust proofs.'}
-                placement={'top-start'}
-              >
-                <button className={classes.tooltipRef}>
-                  <InfoIcon viewBox={'0 0 16 16'} className={classes.infoIcon}/>
-                </button>
-              </LightTooltip>
-              <Typography variant={'caption'} className={classes.itemTrustInfoTitle}>Trust proofs: </Typography>
+              <Typography variant={'caption'} className={classes.itemTrustInfoTitle}>Trust </Typography>
               <TrustLevelIcon className={classes.iconTrustLevel}/>
               <Typography variant={'caption'} className={classes.trustLevelValue}>{!!proofsQty ? proofsQty : '0'}</Typography>
             </div>
@@ -226,7 +218,7 @@ function TopNavigation(props) {
                 onClick={scrollToRef}
                 className={classes.goTrust}
               >
-                Gain trust proofs
+                Get Verified
               </Button>
             </div>
           </div>

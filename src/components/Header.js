@@ -382,15 +382,6 @@ const Header = (props) => {
                       isAuthenticated ? (
                         <div className={`${classes.xsHidden} ${classes.authenticatedBlock} `}>
                           <NavLink
-                            to={'/trust'}
-                            className={classes.navLink}
-                            activeClassName={classes.activeNavLink}
-                          >
-                            <Typography variant={'caption'} className={classes.linkTitle} noWrap>
-                              Verification methods
-                            </Typography>
-                          </NavLink>
-                          <NavLink
                             to={'/my-organizations'}
                             className={classes.navLinkMyOrgs}
                             activeClassName={classes.activeNavLink}
@@ -407,7 +398,7 @@ const Header = (props) => {
                               className={classes.navIcon}
                             />
                             <Typography variant={'caption'} className={classes.linkTitle} noWrap>
-                              My organizations
+                              My Companies
                             </Typography>
                           </NavLink>
                         </div>

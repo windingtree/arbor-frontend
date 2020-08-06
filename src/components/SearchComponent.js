@@ -73,7 +73,7 @@ export default function SearchComponent(props) {
                 )
               }}
               fullWidth
-              value={searchValue}
+              value={searchValue || ''}
               onChange={handleSearchValue}
               onFocus={handleFocus}
               onKeyPress={(event) => {

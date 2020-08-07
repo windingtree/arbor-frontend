@@ -123,7 +123,7 @@ export const wizardConfig = [
         ]
       },
       {
-        name: 'Contact information',
+        name: 'Contact Information',
         type: 'section',
         fields: [
           {
@@ -162,7 +162,7 @@ export const wizardConfig = [
         ]
       },
       {
-        name: 'Social media accounts',
+        name: 'Social Media',
         type: 'section',
         fields: [
           {
@@ -185,13 +185,19 @@ export const wizardConfig = [
             icon: 'instagram',
             orgidJsonPath: 'legalEntity.contacts[0].instagram',
             validate: value => {}
-          },
+          }
+        ]
+      },
+      {
+        name: 'Company Logo',
+        type: 'section',
+        fields: [
           {
             name: 'Logo',
             type: 'dropzone',
             description: 'Add a logo or any image that represents your organization. It will help you stand out in search results.',
             orgidJsonPath: 'media.logo',
-            helperText: 'Recommended dimensions: 908х400 (minimal: 454x200)\nFormat: JPG, PNG'
+            helperText: 'Recommended dimensions: 908х400 (at least 454x200) Format: JPG, PNG, SVG'
           }
         ]
       }

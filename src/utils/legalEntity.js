@@ -7,7 +7,7 @@ export const wizardConfig = [
     name: 'General',
     icon: StepperGeneralIcon,
     longName: 'General information',
-    description: 'Creating an organization profile requires an Ethereum transaction. Make sure you have enough funds in your MetaMask account to cover the transaction fee.',
+    description: 'Creating a company profile requires an Ethereum transaction. Make sure you have enough funds in your MetaMask account to cover the transaction fee.',
     sections: [
       {
         name: 'General information',
@@ -216,8 +216,8 @@ export const wizardConfig = [
     type: 'step_hosting',
     name: 'Hosting',
     icon: StepperHostingIcon,
-    longName: 'Hosting information',
-    description: 'Choose where to store your organization profile data: on Winding Tree Marketplace servers or on a hosting of your choice.',
+    longName: 'Choose Data Store',
+    description: 'Please choose where to store your data',
     sections: [
       {
         name: 'Choose type of JSON hosting',

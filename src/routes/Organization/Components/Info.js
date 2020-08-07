@@ -25,7 +25,7 @@ import {makeStyles} from "@material-ui/core/styles";
 const styles = makeStyles({
   itemMainInfo: {
     position: 'relative',
-    paddingBottom: '58px'
+    paddingBottom: '20px'
   },
   itemTrustInfoTitle: {
     fontSize: '14px',
@@ -568,30 +568,32 @@ function Info(props) {
         </Grid>
 
         {/* SOCIAL NETWORK LINKS ====================================================================================*/}
-        <div className={classes.socialInline}>
-          {
-            socials.map((social, index) => {
-              return (
-                <a key={index.toString()} href={social.link} target={'_blank'} className={classes.socialLink} rel="noopener noreferrer">
-                  <Hidden xsDown>
-                    {icon(social.network)}
-                  </Hidden>
-                  <Hidden smUp>
-                    <div className={classes.mobileSocialWrapper}>
+        { socials.length > 0 && (
+          <div className={classes.socialInline}>
+            {
+              socials.map((social, index) => {
+                return (
+                  <a key={index.toString()} href={social.link} target={'_blank'} className={classes.socialLink} rel="noopener noreferrer">
+                    <Hidden xsDown>
                       {icon(social.network)}
-                      {social.verified &&
-                      <TrustLevelIcon
-                        className={[classes.iconTrustLevel, classes.iconVerify, classes.mobileIconVerify].join(' ')}/>}
-                    </div>
-                  </Hidden>
-                  <Typography variant={'caption'} className={classes.socialTitle}>{social.network}</Typography>
-                  {social.verified &&
-                  <TrustLevelIcon className={[classes.iconTrustLevel, classes.iconVerify].join(' ')}/>}
-                </a>
-              )
-            })
-          }
-        </div>
+                    </Hidden>
+                    <Hidden smUp>
+                      <div className={classes.mobileSocialWrapper}>
+                        {icon(social.network)}
+                        {social.verified &&
+                        <TrustLevelIcon
+                          className={[classes.iconTrustLevel, classes.iconVerify, classes.mobileIconVerify].join(' ')}/>}
+                      </div>
+                    </Hidden>
+                    <Typography variant={'caption'} className={classes.socialTitle}>{social.network}</Typography>
+                    {social.verified &&
+                    <TrustLevelIcon className={[classes.iconTrustLevel, classes.iconVerify].join(' ')}/>}
+                  </a>
+                )
+              })
+            }
+          </div>
+        )}
         {canManage && isSub && (description || longDescription) && (
           <Fade in={!isOpen}>
             <div className={classes.toggleOpenDetailsButtonContainer}>

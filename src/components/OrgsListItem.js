@@ -237,7 +237,7 @@ export default function OrgsListItem(props) {
             ) : (
               <Grid item container alignItems={'flex-end'} justify={'space-between'} direction={'column'}>
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                  <Typography variant={'caption'} className={classes.label}>Trust proofs: </Typography>
+                  <Typography variant={'caption'} className={classes.label}>Trust</Typography>
                   <TrustLevelIcon
                     viewBox={'0 0 16 16'}
                     className={classes.icon}
@@ -254,7 +254,7 @@ export default function OrgsListItem(props) {
                     onClick={() => history.push('/my-organizations/wizard', { type: 'organizationalUnit', parent: { orgid: id, name } })}
                     className={classes.addSubOrgButton}
                   >
-                    <Typography variant={'caption'} className={classes.buttonTitle} noWrap>+ Add sub-organization</Typography>
+                    <Typography variant={'caption'} className={classes.buttonTitle} noWrap>Add Business Unit</Typography>
                   </Button>
                 </div>
               </Grid>

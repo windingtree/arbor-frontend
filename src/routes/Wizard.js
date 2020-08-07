@@ -3,13 +3,13 @@ import { connect } from "react-redux";
 import _ from 'lodash';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import {
-  Container, 
-  Button, 
-  Typography, 
-  Stepper, 
-  StepConnector, 
-  Step, 
-  StepLabel, 
+  Container,
+  Button,
+  Typography,
+  Stepper,
+  StepConnector,
+  Step,
+  StepLabel,
   Grid,
   CircularProgress
 } from "@material-ui/core";
@@ -217,7 +217,7 @@ const WizardGeneral = (props) => {
 
   useEffect(() => {
     const idSolt = generateSolt();
-    setSolt(idSolt); 
+    setSolt(idSolt);
     rewriteOrgidJson({
       id: createIdWithSolt(address, idSolt),
       created: new Date().toJSON(),
@@ -237,10 +237,10 @@ const WizardGeneral = (props) => {
 
     switch (type) {
       // One of the initial steps
-      case 'step': 
+      case 'step':
         return (
-          <WizardStep 
-            data={content} 
+          <WizardStep
+            data={content}
             action={action}
             handleNext={handleNext}
             key={stepIndex}
@@ -248,7 +248,7 @@ const WizardGeneral = (props) => {
         );
 
       // Hosting step
-      case 'step_hosting': 
+      case 'step_hosting':
         return (
           <WizardStepHosting
             data={content}
@@ -257,9 +257,9 @@ const WizardGeneral = (props) => {
             key={stepIndex}
             index={stepIndex}/>
         );
-      
+
       // Transaction sending step
-      case 'step_metamask': 
+      case 'step_metamask':
         return (
           <WizardStepMetaMask
             data={content}
@@ -271,7 +271,7 @@ const WizardGeneral = (props) => {
             solt={solt}
           />
         );
-      
+
       // Default Step - Should not happen
       default: return (
         <div key={stepIndex}>Step <pre>${content.name}</pre> has unknown type: <pre>{content.type}</pre></div>
@@ -314,7 +314,7 @@ const WizardGeneral = (props) => {
               <Typography variant={'caption'} className={classes.buttonLabel}>
                 <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
                 {
-                  activeStep === 0 ? 'Back to all organizations' : 'Back to previous step'
+                  activeStep === 0 ? 'My Companies' : 'Previous Step'
                 }
               </Typography>
             </Button>
@@ -333,7 +333,7 @@ const WizardGeneral = (props) => {
                       <Typography variant={'h3'} className={classes.pendingTitle}>Almost there!</Typography>
                     </Grid>
                     <Grid item>
-                      <CircularProgress 
+                      <CircularProgress
                         className={classes.progress}
                         variant='indeterminate'
                         size={20}
@@ -374,7 +374,7 @@ const WizardGeneral = (props) => {
                 <div>
                   <Typography variant={'h2'} className={classes.formTitle}>
                     {
-                      `${actionLabel} ${wizardType === 'legalEntity' ? 'an organization' : 'a sub-organization'} profile`
+                      `${actionLabel} ${wizardType === 'legalEntity' ? 'Company Account' : 'a sub-organization'}`
                     }
                   </Typography>
                   {

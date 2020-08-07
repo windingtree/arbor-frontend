@@ -106,14 +106,14 @@ function Organization (props) {
           <SubOrganizations organization={organization} subs={subs} canManage={canManage} />
         </div>
       }
-      {canManage && 
+      {canManage &&
         <Agents
           orgid={id}
           owner={owner}
           agents={agents}
         />
       }
-      {canManage && 
+      {canManage &&
         <Services
           orgid={id}
           owner={owner}
@@ -141,7 +141,7 @@ function Organization (props) {
                   Submit your Líf deposit
                 </Typography>
                 <Typography className={classes.topSectionText}>
-                  Líf deposit is a small amount of cryptocurrency that is staked when you register your organization profile on Winding Tree Marketplace. 
+                  Líf deposit is a small amount of cryptocurrency that is staked when you register your organization profile on Winding Tree Marketplace.
                   This action minimizes spam registrations and proves your commitment to the cause.
                 </Typography>
                 <div style={{ marginTop: '30px'}}>
@@ -153,7 +153,7 @@ function Organization (props) {
                     })}>
                     Submit Líf
                   </SaveButton>
-                </div>              
+                </div>
               </Grid>
               <Grid item xs={6}>
                 <img src={trustLifDeposit} alt={'Lif Deposit'} />
@@ -165,7 +165,7 @@ function Organization (props) {
       <div ref={proofsRef} />
       <ProofsList
         canManage={canManage}
-        title='Trust proofs'
+        title='Get Verified'
         orgid={id}
         assertions={assertions}
         verifications={verifications}

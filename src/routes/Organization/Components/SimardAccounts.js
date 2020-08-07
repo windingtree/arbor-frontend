@@ -267,7 +267,7 @@ const removeSimardAccount = (authToken, accountId) => callSimard(
 const DeleteAccountDialog = props => {
   const classes = styles();
   const { handleClose, isOpen, onDelete } = props;
-  
+
   return (
     <DialogComponent
       handleClose={handleClose}
@@ -279,7 +279,7 @@ const DeleteAccountDialog = props => {
               variant={'caption'}
               className={classes.dialogTitle}>
                 Confirm account deletion
-            </Typography>            
+            </Typography>
           </div>
           <div className={classes.confirmationButtonsWrapper}>
             <Grid container justify={'space-between'} alignItems={'center'}>
@@ -402,7 +402,7 @@ const AccountDialog = props => {
                     value={values.iban}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    helperText={errors.iban && touched.iban ? errors.iban : null}                        
+                    helperText={errors.iban && touched.iban ? errors.iban : null}
                   />
                 </div>
                 <div className={classes.dialogButtonWrapper}>
@@ -466,7 +466,7 @@ const SimardAccounts = props => {
           setErrorMessage(
             'A signature will be requested to manage accounts on behalf of your organization'
           );
-        } 
+        }
       } catch (error) {
         setIsFetching(false);
         setError(error);
@@ -602,14 +602,17 @@ const SimardAccounts = props => {
       <div className={classes.header}>
         <div className={classes.headerTitle}>
           <Typography variant={'inherit'}>
-            Simard Pay Bank Accounts
+            Bank Accounts
           </Typography>
         </div>
         <div className={classes.headerSubtitle}>
           <Typography variant={'inherit'}>
-            Review your bank accounts configured on Simard Pay
+            Connect to Simard Pay to manage bank accounts for receiving and sending payments.
           </Typography>
         </div>
+
+
+
       </div>
       <div className={classes.accounts}>
         <div className={classes.accountsTitle}>
@@ -630,16 +633,18 @@ const SimardAccounts = props => {
           }
         </div>
         <div>
-          {!authToken &&
-            <div>
-              <RefershButton
-                onClick={() => handleFetchAccounts()}
-                disabled={isFetching}
-              >
-                Connect to Simard Pay
-              </RefershButton>
-            </div>
-          }
+        {!authToken &&
+          <div>
+            <RefershButton
+              onClick={() => handleFetchAccounts()}
+              disabled={isFetching}
+            >
+              Connect to Simard Pay
+            </RefershButton>
+          </div>
+        }
+        </div>
+        <div>
           {(authToken && !accounts) &&
             <div>
               <RefershButton
@@ -693,7 +698,7 @@ const SimardAccounts = props => {
           <div>
             <Typography className={classes.error}>{error}</Typography>
           </div>
-        }        
+        }
       </div>
       <AccountDialog
         forUpdate={forUpdate}
@@ -703,7 +708,7 @@ const SimardAccounts = props => {
           ? handleUpdate(values)
           : handleCreate(values)}
       />
-      <DeleteAccountDialog 
+      <DeleteAccountDialog
         isOpen={isDeleteDialogOpen}
         handleClose={() => handleDeleteDialogClose()}
         onDelete={() => handleDelete(accountToDelete)}

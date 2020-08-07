@@ -99,7 +99,7 @@ const WizardStep = (props) => {
   // const [isModalOpen, toggleModalOpenState] = useState(false);
   const classes = styles();
 
-  const {index, extendOrgidJson, data: {longName, description, sections, cta}, 
+  const {index, extendOrgidJson, data: {longName, description, sections, cta},
     handleNext, orgidJson, joinOrganizations, address} = props;
 
   // Modal to provide more details on how to obtain Ether
@@ -164,7 +164,7 @@ const WizardStep = (props) => {
             []
           )
       : [];
-    
+
     validators.forEach(v => {
       const value = _.get(values, v.orgidJsonPath, undefined);
       if (v.validate) {
@@ -174,23 +174,23 @@ const WizardStep = (props) => {
         }
       }
     });
-    
+
     // Return errors
     console.log('ERRORS', errors)
     return errors;
   };
 
   const deepMerge = (target, source) => {
-  
+
     for (const key of Object.keys(source)) {
-      
+
       if (source[key].constructor === Object && target[key]) {
         Object.assign(source[key], deepMerge(target[key], source[key]));
       } else {
         target[key] = source[key];
       }
     }
-  
+
     return Object.assign(target || {}, source);
   };
 
@@ -201,7 +201,7 @@ const WizardStep = (props) => {
       const email = clonProfile.email;
       delete clonProfile.email;
       const values = deepMerge(clonJson, clonProfile);
-      values.legalEntity.contacts = values.legalEntity.contacts ? values.legalEntity.contacts : [];      
+      values.legalEntity.contacts = values.legalEntity.contacts ? values.legalEntity.contacts : [];
       if (values.legalEntity.contacts.length === 0) {
         values.legalEntity.contacts.push({ email });
       } else {
@@ -212,7 +212,7 @@ const WizardStep = (props) => {
       return orgidJson
     }
   }
-  
+
   return (
     <div key={index}>
       <Typography variant={'h3'} className={classes.stepTitle}>Step {index + 1}. {longName}</Typography>
@@ -256,7 +256,7 @@ const WizardStep = (props) => {
                 : sections.map((section, index) => {
                   //console.log(`<Section key="${index}" name="${section.name}" ... />`);
                   //console.log(`[In WizardStep] Loading section ${section.name} and index ${index} with values: ${JSON.stringify(values)}`);
-                  
+
                   return (
                     <Section
                       key={index}

@@ -115,8 +115,7 @@ function Profile(props) {
       <div className={classes.emptyListContainer}>
         <div className={classes.emptyListContent}>
           <img src={EmptyListIllustration} alt={'illustration'}/>
-          <Button onClick={() => history.push('/my-organizations/wizard', {type: 'legalEntity'})}
-                  className={classes.button}>
+          <Button onClick={() => history.push('/my-organizations/wizard', {type: 'legalEntity'})} className={classes.button}>
             <Typography variant={'subtitle2'} className={classes.buttonLabel}>Create Company Account</Typography>
           </Button>
         </div>

@@ -374,12 +374,12 @@ const WizardGeneral = (props) => {
                 <div>
                   <Typography variant={'h2'} className={classes.formTitle}>
                     {
-                      `${actionLabel} ${wizardType === 'legalEntity' ? 'Company Account' : 'a sub-organization'}`
+                      `${actionLabel} ${wizardType === 'legalEntity' ? 'Company Account' : 'Business Unit'}`
                     }
                   </Typography>
                   {
                     wizardType !== 'legalEntity' ? (
-                      <Typography variant={'caption'} className={classes.formSubtitle}>Operated by: {parent.name}</Typography>
+                      <Typography variant={'caption'} className={classes.formSubtitle}>Operated by {parent.name}</Typography>
                     ) : null
                   }
                 </div>

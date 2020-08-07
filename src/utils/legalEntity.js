@@ -4,45 +4,31 @@ import { StepperGeneralIcon, StepperHostingIcon, StepperMetaMaskIcon } from '../
 export const wizardConfig = [
   {
     type: 'step',
-    name: 'General',
+    name: 'Company',
     icon: StepperGeneralIcon,
-    longName: 'General information',
-    description: 'Creating a company profile requires an Ethereum transaction. Make sure you have enough funds in your MetaMask account to cover the transaction fee.',
+    longName: 'Company Information',
+    description: 'Please note that the final third step of creating a company account is to save a fingerprint of company data on the blockchain, which requires an Ethereum transaction. Please make sure you have enough funds in your MetaMask account to cover the transaction fee.',
     sections: [
       {
-        name: 'General information',
+        name: 'Company Information',
         type: 'section',
         fields: [
-          // {
-          //   type: 'select',
-          //   name: 'Legal entity type',
-          //   options: [
-          //     'private entrepreneur',
-          //     'private company limited by shares or Ltd. (UK, Ireland and the Commonwealth)',
-          //     'public limited company (UK, Ireland and the Commonwealth)',
-          //     'limited partnership',
-          //     'unlimited partnership',
-          //     'chartered company',
-          //     'statutory company',
-          //     'holding company',
-          //     'subsidiary company',
-          //     'one man company (sole proprietorship)',
-          //     'charitable incorporated organisation (UK)',
-          //     'non-governmental organization',
-          //   ],
-          //   required: true,
-          //   orgidJsonPath: 'legalEntity.legalType'
-          // },
           {
-            type: 'input',
+            type: 'select',
             name: 'Legal entity type',
+            options: [
+              'Cooperative',
+              'Corporation',
+              'Individual Entrepreneur (Sole Trader)',
+              'Limited Liability Company',
+              'NGO',
+              'Nonprofit',
+              'Partnership',
+              'Sole Proprietorship',
+              'Trust'
+            ],
             required: true,
-            orgidJsonPath: 'legalEntity.legalType',
-            validate: value => {
-              if (!value) {
-                return 'Required field';
-              }
-            }
+            orgidJsonPath: 'legalEntity.legalType'
           },
           {
             type: 'input',
@@ -57,7 +43,7 @@ export const wizardConfig = [
           },
           {
             type: 'input',
-            name: 'Registration number',
+            name: 'Company number in local business registry',
             required: true,
             helperText: 'Number of your organization in the country-specific business registry',
             orgidJsonPath: 'legalEntity.legalIdentifier',
@@ -70,7 +56,7 @@ export const wizardConfig = [
         ]
       },
       {
-        name: 'Address of your organization',
+        name: 'Registration Address',
         type: 'section',
         fields: [
           {

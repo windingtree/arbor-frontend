@@ -1,27 +1,29 @@
 import { appName } from '../utils/constants';
 import history from '../redux/history';
-import {onAccountsChanged} from '../web3/w3';// getWeb3, connect, 
 import { createSelector } from 'reselect';
-import { all, call, put, takeLatest } from 'redux-saga/effects';
+import { all, call, put, takeLatest, delay } from 'redux-saga/effects';
+
 /**
  * Constants
- * */
+ */
 export const moduleName = 'signIn';
 const prefix = `${appName}/${moduleName}`;
 const FETCH_SIGN_IN_REQUEST = `${prefix}/FETCH_SIGN_IN_REQUEST`;
 const FETCH_SIGN_IN_SUCCESS = `${prefix}/FETCH_SIGN_IN_SUCCESS`;
 const FETCH_SIGN_IN_FAILURE = `${prefix}/FETCH_SIGN_IN_FAILURE`;
-export const ACCOUNT_CHANGE_NOTIF = `${prefix}/ACCOUNT_CHANGE_NOTIF`;
+const FETCH_LOGOUT_REQUEST = `${prefix}/FETCH_LOGOUT_REQUEST`;
+export const ACCOUNT_CHANGE = `${prefix}/ACCOUNT_CHANGE`;
 
 const initialState = {
   isFetching: false,
   isFetched: false,
+  web3: null,
   address: false,
   isAuthenticated: false,
   error: null
 };
 
-/***
+/**
  * Reducer
  */
 export default function reducer( state = initialState, action ) {
@@ -39,7 +41,8 @@ export default function reducer( state = initialState, action ) {
       return Object.assign({}, state, {
         isFetching: false,
         isFetched: true,
-        address: payload,
+        web3: payload.web3,
+        address: payload.address,
         isAuthenticated: true,
         error: null
       });
@@ -50,7 +53,16 @@ export default function reducer( state = initialState, action ) {
         isAuthenticated: false,
         error: error
       });
-    case ACCOUNT_CHANGE_NOTIF:
+    case FETCH_LOGOUT_REQUEST:
+      return Object.assign({}, state, {
+        isFetching: false,
+        isFetched: false,
+        web3: null,
+        address: false,
+        isAuthenticated: false,
+        error: null
+      });
+    case ACCOUNT_CHANGE:
       return Object.assign({}, state, {
         isFetching: false,
         isFetched: true,
@@ -66,7 +78,7 @@ export default function reducer( state = initialState, action ) {
 
 /**
  * Selectors
- * */
+ */
 const stateSelector = state => state[moduleName];
 
 export const selectSignInStatus = createSelector(
@@ -84,12 +96,31 @@ export const selectSignInAddress = createSelector(
   signIn => signIn.address
 );
 
+export const selectWeb3 = createSelector(
+  stateSelector,
+  signIn => signIn.web3
+);
+
 /**
  * Actions
- * */
+ */
 export function fetchSignInRequest(payload) {
   return {
     type: FETCH_SIGN_IN_REQUEST,
+    payload
+  }
+}
+
+export function logOutRequest(payload) {
+  return {
+    type: FETCH_LOGOUT_REQUEST,
+    payload
+  }
+}
+
+export function accountChangeRequest(payload) {
+  return {
+    type: ACCOUNT_CHANGE,
     payload
   }
 }
@@ -108,18 +139,9 @@ function fetchSignInFailure(error) {
   }
 }
 
-function accountChangeRequest(payload) {
-  return {
-    type: ACCOUNT_CHANGE_NOTIF,
-    payload
-  }
-}
-
 // Promise for account change
-const accountChange = () => new Promise(resolve => {
-  onAccountsChanged(accounts => {
-    resolve(accounts);
-  });
+const accountChange = web3 => new Promise(resolve => {
+  web3.currentProvider.on('accountsChanged', resolve);
 });
 
 /**
@@ -128,32 +150,29 @@ const accountChange = () => new Promise(resolve => {
 // Sign-in saga
 function* fetchSignInSaga({ payload }) {
   try {
-    // // Web3 connection
-    // let w3 = getWeb3();
-    // if(w3 === undefined) {
-    //   yield call(history.push, { pathname: '/authorization/register' });
-    // }
-    // let accounts = yield connect();
-
-    // console.log('!!!!!!', payload);
-
-    // Connexion Success
-    yield put(fetchSignInSuccess(payload[0]));
+    // Connection Success
+    yield put(fetchSignInSuccess(payload));
 
     // Move to My Organizations
     yield call(history.push, { pathname: '/my-organizations' });
 
     // Only wait for account changes
-    while(true) {
-      let accounts = yield accountChange();
-      yield put(accountChangeRequest(accounts[0]));
+    while (true) {
+      const web3 = payload.web3;
+
+      if(web3 && web3.currentProvider.on !== undefined) {
+        // EIP 1193 Method
+        let accounts = yield accountChange(web3);
+        yield put(accountChangeRequest(accounts[0]));
+      }
+
+      delay(1000);
     }
 
   } catch (error) {
-    // Connexion Failure
+    // Connection Failure
     yield put(fetchSignInFailure(error));
-    yield call(alert, 'Please, install MetaMask plugin at your browser extensions store and return to us');
-    yield call(history.push, { pathname: '/authorization/register' });
+    yield call(history.push, { pathname: '/authorization' });
   }
 }
 

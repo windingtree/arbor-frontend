@@ -1,9 +1,13 @@
 import { createSelector } from 'reselect';
 import { all, call, put, takeEvery, select } from 'redux-saga/effects';
 import { appName, LIF_DEPOSIT_AMOUNT, ORGID_PROXY_ADDRESS } from '../utils/constants';
-import { getOrgidContract, getLifTokenContract, getCurrentBlockNumber, getWeb3 } from '../web3/w3'
-import { ApiGetGasPrice } from './utils/ethereum';
-import { selectSignInAddress } from "./signIn";
+import {
+  ApiGetGasPrice,
+  getOrgidContract,
+  getLifTokenContract,
+  getCurrentBlockNumber,
+} from './utils/ethereum';
+import { selectSignInAddress, selectWeb3 } from "./signIn";
 
 // region == [CONSTANTS] ===============================================
 export const moduleName = 'deposit';
@@ -288,34 +292,35 @@ function requestFaucetFailure(error) {
 function* enrichLifDataSaga({payload}) {
   console.log('enrichLifDataSaga', payload);
   try {
-    const {orgid} = payload;
+    const { orgid } = payload;
     console.log('[.]', 'enrichLifDataSaga');
     const userAddress = yield select(selectSignInAddress);
+    const web3 = yield select(selectWeb3);
     console.log('userAddress', userAddress);
     // lifTokenBalance
-    console.log('>>>', 'yield call(ApiGetLifTokenBalance, userAddress)');
+    console.log('>>>', 'yield call(ApiGetLifTokenBalance, web3, userAddress)');
     let lifTokenBalance;
     let lifTokenAllowanceAmountForOrgId;
 
     if (userAddress) {
-      lifTokenBalance = yield call(ApiGetLifTokenBalance, userAddress);
+      lifTokenBalance = yield call(ApiGetLifTokenBalance, web3, userAddress);
       console.log('balance', lifTokenBalance);
       // lifTokenAllowanceAmountForOrgId
-      console.log('>>>', 'yield call(lifTokenAllowanceAmountForOrgId, userAddress)');
-      lifTokenAllowanceAmountForOrgId = yield call(ApiGetLifTokenAllowanceAmountForOrgId, userAddress);
+      console.log('>>>', 'yield call(lifTokenAllowanceAmountForOrgId, web3, userAddress)');
+      lifTokenAllowanceAmountForOrgId = yield call(ApiGetLifTokenAllowanceAmountForOrgId, web3, userAddress);
     }
-    
+
     // OrgIdLifTokenDepositedAmount
-    let orgIdLifDepositAmount = yield call(ApiGetOrgIdLifTokenDepositedAmount, orgid);
+    let orgIdLifDepositAmount = yield call(ApiGetOrgIdLifTokenDepositedAmount, web3, orgid);
     // lifTokenWithdrawDelay
     // OrgIdLifTokenWithdrawalRequest
     const {
       exist,
       value,
       withdrawTime,
-    } = yield call(ApiGetOrgIdLifTokenWithdrawalRequest, orgid);
+    } = yield call(ApiGetOrgIdLifTokenWithdrawalRequest, web3, orgid);
 
-    const currentBlockNumber = yield call(ApiGetCurrentBlockNumber);
+    const currentBlockNumber = yield call(ApiGetCurrentBlockNumber, web3);
 
     yield put(enrichLifDataSuccess({
       lifTokenBalance: Number(lifTokenBalance),
@@ -335,9 +340,10 @@ function* allowDepositSaga({payload})  {
   console.log('allowDepositSaga', payload);
   try {
     const userAddress = yield select(selectSignInAddress);
-    const gasPrice = yield call(ApiGetGasPrice);
+    const web3 = yield select(selectWeb3);
+    const gasPrice = yield call(ApiGetGasPrice, web3);
 
-    const isSuccess = yield call(ApiIncreaseAllowance, userAddress, gasPrice);
+    const isSuccess = yield call(ApiIncreaseAllowance, web3, userAddress, gasPrice);
     if(!isSuccess) throw 'Unable allow deposit'; // eslint-disable-line  no-throw-literal
     yield put(allowDepositSuccess({}));
     yield put(enrichLifData(payload));
@@ -350,10 +356,11 @@ function* makeDepositSaga({payload}) {
   console.log('makeDepositSaga', payload);
   try {
     const userAddress = yield select(selectSignInAddress);
+    const web3 = yield select(selectWeb3);
     const { orgid } = payload;
-    const gasPrice = yield call(ApiGetGasPrice);
+    const gasPrice = yield call(ApiGetGasPrice, web3);
 
-    yield call(ApiAddDeposit, userAddress, orgid, gasPrice);
+    yield call(ApiAddDeposit, web3, userAddress, orgid, gasPrice);
     yield put(makeDepositSuccess({}));
     yield put(enrichLifData(payload));
   } catch(error) {
@@ -365,10 +372,11 @@ function* requestWithdrawalSaga({payload}) {
   console.log('requestWithdrawalSaga', payload);
   try {
     const userAddress = yield select(selectSignInAddress);
+    const web3 = yield select(selectWeb3);
     const { orgid } = payload;
-    const gasPrice = yield call(ApiGetGasPrice);
+    const gasPrice = yield call(ApiGetGasPrice, web3);
 
-    yield call(ApiPostWithdrawalRequest, userAddress, orgid, gasPrice);
+    yield call(ApiPostWithdrawalRequest, web3, userAddress, orgid, gasPrice);
     yield put(requestWithdrawalSuccess({}));
     yield put(enrichLifData(payload));
   } catch(error) {
@@ -380,10 +388,11 @@ function* withdrawDepositSaga({payload}) {
   console.log('withdrawDepositSaga', payload);
   try {
     const userAddress = yield select(selectSignInAddress);
+    const web3 = yield select(selectWeb3);
     const { orgid } = payload;
-    const gasPrice = yield call(ApiGetGasPrice);
+    const gasPrice = yield call(ApiGetGasPrice, web3);
 
-    yield call(ApiPostWithdrawDeposit, userAddress, orgid, gasPrice);
+    yield call(ApiPostWithdrawDeposit, web3, userAddress, orgid, gasPrice);
     yield put(withdrawalSuccess({}));
     yield put(enrichLifData(payload));
   } catch(error) {
@@ -395,16 +404,17 @@ function* requestFaucetSaga({payload}) {
   console.log('requestFaucetSaga', payload);
   try {
     const userAddress = yield select(selectSignInAddress);
-    const isAllowed = yield call(ApiCheckFaucetBalance, userAddress);
+    const web3 = yield select(selectWeb3);
+    const isAllowed = yield call(ApiCheckFaucetBalance, web3, userAddress);
 
     if (!isAllowed) {
       yield put(requestFaucetFailure(new Error('You have reached your faucet limit')));
       return;
     }
 
-    const gasPrice = yield call(ApiGetGasPrice);
+    const gasPrice = yield call(ApiGetGasPrice, web3);
 
-    yield call(ApiRequestFaucet, userAddress, gasPrice);
+    yield call(ApiRequestFaucet, web3, userAddress, gasPrice);
     yield put(requestFaucetSuccess({}));
     yield put(enrichLifData(payload));
   } catch(error) {
@@ -426,10 +436,9 @@ export const saga = function*() {
 
 // region == [API] =====================================================
 // Get the LIF Token Balance of user
-function ApiGetLifTokenBalance(userAddress) {
+const ApiGetLifTokenBalance = (web3, userAddress) => {
   console.log('[.]', 'ApiGetLifTokenBalance');
-  let lifContract = getLifTokenContract();
-  let web3 = getWeb3();
+  let lifContract = getLifTokenContract(web3);
 
   return new Promise((resolve, reject) => {
     lifContract.methods.balanceOf(userAddress)
@@ -438,15 +447,13 @@ function ApiGetLifTokenBalance(userAddress) {
       resolve(web3.utils.fromWei(balance));
     })
     .catch(error => reject(error));
-    
   });
 }
 
 // Get the LIF Spending allowance for the user (ERC20 function)
-function ApiGetLifTokenAllowanceAmountForOrgId(_owner, _spender = ORGID_PROXY_ADDRESS) {
+const ApiGetLifTokenAllowanceAmountForOrgId = (web3, _owner, _spender = ORGID_PROXY_ADDRESS) => {
   console.log('[.]', 'ApiGetLifTokenAllowanceAmountForOrgId');
-  let lifContract = getLifTokenContract();
-  let web3 = getWeb3();
+  let lifContract = getLifTokenContract(web3);
 
   return new Promise((resolve, reject) => {
       lifContract.methods.allowance(_owner, _spender)
@@ -460,10 +467,9 @@ function ApiGetLifTokenAllowanceAmountForOrgId(_owner, _spender = ORGID_PROXY_AD
 }
 
 // Get the LIF Deposit amount for the Org.ID
-function ApiGetOrgIdLifTokenDepositedAmount(orgId) {
+const ApiGetOrgIdLifTokenDepositedAmount = (web3, orgId) => {
   console.log('[.]', 'ApiGetOrgIdLifTokenDepositedAmount', orgId);
-  let orgidContract = getOrgidContract();
-  let web3 = getWeb3();
+  let orgidContract = getOrgidContract(web3);
 
   return new Promise((resolve, reject) => {
     orgidContract.methods.getOrganization(orgId)
@@ -477,10 +483,9 @@ function ApiGetOrgIdLifTokenDepositedAmount(orgId) {
 }
 
 // Check if a withdrawal request exists
-function ApiGetOrgIdLifTokenWithdrawalRequest(orgid) {
+const ApiGetOrgIdLifTokenWithdrawalRequest = (web3, orgid) => {
   console.log('[.]', 'ApiGetOrgIdLifTokenWithdrawalRequest');
-  let orgidContract = getOrgidContract();
-  let web3 = getWeb3();
+  let orgidContract = getOrgidContract(web3);
 
   return new Promise((resolve, reject) => {
     orgidContract.methods.getWithdrawalRequest(orgid)
@@ -495,17 +500,13 @@ function ApiGetOrgIdLifTokenWithdrawalRequest(orgid) {
     })
     .catch(error => reject(error));
   });
-
 }
 
-function ApiGetCurrentBlockNumber() {
-  return getCurrentBlockNumber()
-}
+const ApiGetCurrentBlockNumber = web3 => getCurrentBlockNumber(web3);
 
 // Increase the allowance to be spent by ORG.ID contract - ERC20 function
-function ApiIncreaseAllowance(userAddress, gasPrice) {
-  const lifContract = getLifTokenContract();
-  let web3 = getWeb3();
+const ApiIncreaseAllowance = (web3, userAddress, gasPrice) => {
+  const lifContract = getLifTokenContract(web3);
   let allowedTokens = web3.utils.toWei(String(LIF_DEPOSIT_AMOUNT));
 
   return new Promise((resolve, reject) => {
@@ -527,9 +528,9 @@ function ApiIncreaseAllowance(userAddress, gasPrice) {
 }
 
 // Request funds from the Faucet (Ropsten only)
-function ApiRequestFaucet(userAddress, gasPrice) {
+const ApiRequestFaucet = (web3, userAddress, gasPrice) => {
   //const lifContract = getLifFaucetContract();
-  const lifContract = getLifTokenContract();
+  const lifContract = getLifTokenContract(web3);
 
   return new Promise((resolve, reject) => {
     lifContract.methods.faucetLif()
@@ -546,8 +547,8 @@ function ApiRequestFaucet(userAddress, gasPrice) {
   });
 }
 
-async function ApiCheckFaucetBalance(userAddress) {
-  const lifContract = getLifTokenContract();
+const ApiCheckFaucetBalance = async (web3, userAddress) => {
+  const lifContract = getLifTokenContract(web3);
   const MAX_LIF_FAUCET = await lifContract
     .methods.MAX_LIF_FAUCET()
     .call();
@@ -558,12 +559,10 @@ async function ApiCheckFaucetBalance(userAddress) {
 }
 
 // Add a deposit on the contract
-function ApiAddDeposit(userAddress, orgid, gasPrice) {
-  const orgidContract = getOrgidContract();
-  let web3 = getWeb3();
+const ApiAddDeposit = (web3, userAddress, orgid, gasPrice) => {
+  const orgidContract = getOrgidContract(web3);
 
   return new Promise((resolve, reject) => {
-
     orgidContract.methods.addDeposit(
       orgid,
       web3.utils.toWei(String(LIF_DEPOSIT_AMOUNT))
@@ -578,14 +577,12 @@ function ApiAddDeposit(userAddress, orgid, gasPrice) {
     .on('error', (error, receipt) => {
       reject({error, receipt});
     });
-
   });
 }
 
-// Create a withdrwal request
-function ApiPostWithdrawalRequest(userAddress, orgid, gasPrice) {
-  const orgidContract = getOrgidContract();
-  let web3 = getWeb3();
+// Create a withdrawal request
+const ApiPostWithdrawalRequest = (web3, userAddress, orgid, gasPrice) => {
+  const orgidContract = getOrgidContract(web3);
   console.log('[..]', 'Post Withdrawal request');
 
   return new Promise((resolve, reject) => {
@@ -606,8 +603,8 @@ function ApiPostWithdrawalRequest(userAddress, orgid, gasPrice) {
   });
 }
 
-function ApiPostWithdrawDeposit(userAddress, orgid, gasPrice) {
-  const orgidContract = getOrgidContract();
+const ApiPostWithdrawDeposit = (web3, userAddress, orgid, gasPrice) => {
+  const orgidContract = getOrgidContract(web3);
   console.log('[..]', 'Post Withdraw deposit');
 
   return new Promise((resolve, reject) => {
@@ -626,4 +623,3 @@ function ApiPostWithdrawDeposit(userAddress, orgid, gasPrice) {
     });
   });
 }
-// endregion

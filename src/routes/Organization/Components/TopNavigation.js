@@ -1,24 +1,24 @@
 import React from "react";
 import _ from 'lodash';
 
-import {makeStyles, withStyles} from '@material-ui/core/styles';
-import {Box, Button, Container, Hidden, Tooltip, Typography} from "@material-ui/core";
+import { makeStyles } from '@material-ui/core/styles';
+import { Box, Button, Container, Hidden, Typography } from "@material-ui/core";
 import history from "../../../redux/history";
-import {ArrowLeftIcon, EyeIcon, EditIcon, InfoIcon, TrustLevelIcon } from '../../../assets/SvgComponents';
+import { ArrowLeftIcon, EyeIcon, EditIcon, TrustLevelIcon } from '../../../assets/SvgComponents';
 import colors from '../../../styles/colors';
 
-const LightTooltip = withStyles({
-  tooltip: {
-    maxWidth: '240px',
-    backgroundColor: colors.primary.white,
-    boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
-    color: colors.greyScale.common,
-    fontSize: '12px',
-    fontWeight: 400,
-    padding: '12px',
-    boxSizing: 'border-box'
-  }
-})(Tooltip);
+// const LightTooltip = withStyles({
+//   tooltip: {
+//     maxWidth: '240px',
+//     backgroundColor: colors.primary.white,
+//     boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
+//     color: colors.greyScale.common,
+//     fontSize: '12px',
+//     fontWeight: 400,
+//     padding: '12px',
+//     boxSizing: 'border-box'
+//   }
+// })(Tooltip);
 
 const styles = makeStyles({
   itemTrustInfoContainer: {

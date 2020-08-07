@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import history from '../../redux/history';
-import {connect} from 'react-redux';
-import { fetchSignInRequest } from '../../ducks/signIn';
-import {Container, Grid, Typography, Box, Button} from '@material-ui/core';
-import {makeStyles} from '@material-ui/styles';
-import {MAINTENANCE, CHAIN_ID} from "../../utils/constants";
-import {getWeb3, onChainChanged} from "../../web3/w3";
+import { connect } from 'react-redux';
+// import { fetchSignInRequest } from '../../ducks/signIn';
+import { Container, Grid, Typography, Box, Button } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+import { MAINTENANCE, CHAIN_ID } from "../../utils/constants";
+// import { getWeb3, onChainChanged } from "../../web3/w3";
+import { selectWeb3 } from '../../ducks/signIn';
 
-import OnboardingButton from '../../components/MetamaskOnboarding';
+import MetamaskOnboarding from '../../components/MetamaskOnboarding';
+import PortisOnboarding from '../../components/PortisOnboarding';
 
 import LoginIllustration from '../../assets/SvgComponents/login-illustration.svg';
-
 import colors from '../../styles/colors';
 
 const styles = makeStyles({
@@ -114,7 +115,7 @@ const MaintenanceBox = (classes) => {
 }
 
 // A Warning displayed when chain mistmatches
-const ChainMistmatchInfo = (props) => {
+const ChainMismatchInfo = (props) => {
   let chains = {
     1: 'Ethereum Mainnet',
     2: 'Morden Test network',
@@ -143,10 +144,9 @@ const ChainMistmatchInfo = (props) => {
 
 // A Box for the Sign-in Action
 const SignInActionBox = (classes, props) => {
-  const { fetchSignInRequest } = props;
+  const { web3 } = props;
   // Define the chain ID state
   const [chainId, setChainId] = useState(0);
-  // const [currentWeb3, setWeb3] = useState(getWeb3());
 
   // Callback when the chain changes
   const handleChainChange = (newChainId) => {
@@ -155,41 +155,54 @@ const SignInActionBox = (classes, props) => {
 
   // Register to Web3 provider chain change events
   useEffect(() => {
-    onChainChanged(handleChainChange);
-  }, [fetchSignInRequest]);
+    if (web3 && web3.currentProvider.on !== undefined) {
+      // EIP 1193 Method
+      web3.currentProvider.on('chainChanged', (chainIdHex) => {
+        handleChainChange(parseInt(chainIdHex, 16));
+      });
+      web3.currentProvider.on('chainIdChanged', (chainIdHex) => {
+        handleChainChange(parseInt(chainIdHex, 16));
+      });
+    }
+  }, [web3]);
 
   // Update the Chain ID
   useEffect(() => {
-    const web3 = getWeb3();
     if (web3 && web3.eth) {
       // setWeb3(web3);
       web3.eth.getChainId()
       .then(handleChainChange);
     }
-  }, [chainId]);
+  }, [web3, chainId]);
 
   // Check if we should disable login
-  let chainMistmatch = (chainId !== 0 && chainId !== Number(CHAIN_ID));
-  // let loginDisabled = (chainId === 0 || chainMistmatch);
+  let chainMismatch = (chainId !== 0 && chainId !== Number(CHAIN_ID));
+  // let loginDisabled = (chainId === 0 || chainMismatch);
 
   return (
     <Box style={{width: '80%', margin: '0 auto'}}>
       <div className={classes.screenTitleWrapper}>
-        <Typography variant={'h1'} className={classes.screenTitle}>Sign In</Typography>
+        <Typography variant={'h1'} className={classes.screenTitle}>Connect a Wallet</Typography>
           <div className={classes.line}/>
       </div>
       <div className={classes.subtitleWrapper}>
         <Typography variant={'subtitle2'} className={classes.subtitle}>
-          MetaMask is a browser extension that allows you to interact with Ethereum blockchain. <a href="https://windingtree.com/faq">Why I need this?</a>
+          [Text about wallet connection]
         </Typography>
       </div>
-      { chainMistmatch ? <ChainMistmatchInfo classes={classes} chainId={chainId}/> : null}
-      { !chainMistmatch ? <div className={classes.buttonWrapper}>
-        <OnboardingButton className={classes.button} buttonLabel={classes.buttonLabel}  disabled={chainMistmatch} />
-        {/* <Button onClick={props.fetchSignInRequest} className={classes.button} disabled={chainMistmatch}>
-          <Typography variant={'caption'} className={classes.buttonLabel}>Sign in{ currentWeb3 && currentWeb3.currentProvider.isMetaMask ? ' with Metamask': '' }</Typography>
-        </Button> */}
-      </div> : null }
+      { chainMismatch
+        ? <ChainMismatchInfo classes={classes} chainId={chainId}/>
+        : null
+      }
+      { !chainMismatch
+        ? <div className={classes.buttonWrapper}>
+            <MetamaskOnboarding className={classes.button} buttonLabel={classes.buttonLabel}  disabled={chainMismatch} />
+          </div>
+        : null
+      }
+      <div className={classes.buttonWrapper}>
+        <PortisOnboarding className={classes.button} buttonLabel={classes.buttonLabel} />
+      </div>
     </Box>
   );
 };
@@ -234,8 +247,10 @@ const SignIn = (props) => {
 )
 };
 
-const mapDispatchToProps = {
-  fetchSignInRequest
-};
+const mapStateToProps = state => ({
+  web3: selectWeb3(state)
+});
 
-export default connect(null, mapDispatchToProps)(SignIn);
+const mapDispatchToProps = {};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignIn);

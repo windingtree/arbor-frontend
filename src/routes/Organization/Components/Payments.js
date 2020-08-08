@@ -234,19 +234,14 @@ const Payments = props => {
           <Typography
             variant={'caption'}
             className={classes.dialogTitle}>
-              { paymentIndexToRemove !== null ? 'Remove' : 'Add' } Payment record
+              { paymentIndexToRemove !== null ? 'Remove' : 'Add' } Payment Option
           </Typography>
-          <div className={classes.dialogSubtitleWrapper}>
-            <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>
-              { paymentIndexToRemove !== null ? 'To remove payment record' : 'To add payment record, enter its properties and write a description, then' } confirm the transaction in MetaMask.
-            </Typography>
-          </div>
           {
             paymentIndexToRemove !== null ? (
               <div className={classes.dialogButtonWrapper}>
                 <Button className={classes.dialogButton} onClick={deletePayment}>
                   <Typography variant={'caption'} className={classes.dialogButtonLabel}>
-                    Save Changes
+                    Remove
                   </Typography>
                 </Button>
               </div>
@@ -277,7 +272,7 @@ const Payments = props => {
                             errors[key] = 'Field "type" has wrong value';
                           }
                           break;
-                        
+
                         case 'currency':
                           currency = value.trim().split(' ').map(c => c.toLowerCase());
                           if ((currency.includes('btc') || currency.includes('bch')) &&
@@ -307,7 +302,7 @@ const Payments = props => {
                             break;
                           }
                           break;
-                        
+
                         case 'swift':
                           if (values['type'] !== 'bank') {
                             break;
@@ -318,7 +313,7 @@ const Payments = props => {
                           }
                           break;
 
-                        case 'iban': 
+                        case 'iban':
                           if (values['type'] !== 'bank') {
                             break;
                           }
@@ -327,7 +322,7 @@ const Payments = props => {
                             break;
                           }
                           break;
-                        
+
                         case 'description':
                           break;
 
@@ -388,7 +383,7 @@ const Payments = props => {
                       <SelectField
                         name={'type'}
                         variant={'filled'}
-                        label={'Select payment type'}
+                        label={'Payment type'}
                         fullWidth
                         required
                         options={allowedPaymentTypes}
@@ -403,14 +398,14 @@ const Payments = props => {
                           name={'currency'}
                           autoComplete={'none'}
                           variant={'filled'}
-                          label={'Enter currencies separated by white-space'}
+                          label={'Accepted currencies (e.g. "USD GBP EUR")'}
                           fullWidth
                           required
                           error={errors.currency && touched.currency}
                           value={values.currency}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          helperText={errors.currency && touched.currency ? errors.currency : null}                        
+                          helperText={errors.currency && touched.currency ? errors.currency : null}
                       />
                     </div>
                     {values.type === 'crypto' &&
@@ -462,14 +457,14 @@ const Payments = props => {
                             helperText={errors.iban && touched.iban ? errors.iban : null}
                           />
                         </div>
-                      </Fragment>                      
+                      </Fragment>
                     }
                     <div className={classes.inputFieldWrapper}>
                       <TextField
                           name={'description'}
                           autoComplete={'none'}
                           variant={'filled'}
-                          label={'Description of the service'}
+                          label={'Optional note'}
                           fullWidth
                           error={errors.description && touched.description}
                           values={values.description}
@@ -503,18 +498,18 @@ const Payments = props => {
         children={(
           <div className={classes.dialogContent}>
             {
-              !!pendingTransaction 
+              !!pendingTransaction
               ? (
                 <div className={classes.progressWrapper}>
                   <Typography variant={'caption'} className={classes.dialogTitle}>
-                    Wait for the transaction be mined
+                    Transaction pending...
                   </Typography>
                   <div className={classes.dialogSubtitleWrapper}>
                     <CircularProgress/>
                   </div>
                 </div>
               )
-              : !successTransaction 
+              : !successTransaction
                 ? dialogStepsContent(activeStep)
                 : (
                   <Fragment>
@@ -524,7 +519,7 @@ const Payments = props => {
                     <div className={classes.dialogButtonWrapper}>
                       <Button onClick={handleCloseModal} className={classes.dialogButton}>
                         <Typography variant={'caption'} className={classes.dialogButtonLabel}>
-                          Manage your payment records
+                          Close
                         </Typography>
                       </Button>
                     </div>
@@ -541,25 +536,22 @@ const Payments = props => {
     <Container>
       <div className={classes.servicesContent}>
         <div className={classes.servicesTitleWrapper}>
-          <Typography variant={'inherit'}>Payment records management</Typography>
+          <Typography variant={'inherit'}>Payment Options</Typography>
         </div>
         <div>
           <Typography variant={'inherit'} className={classes.servicesSubtitle}>
-            Add payment information that can be used for communication with your organization.
+            If you would like to accept payments on Winding Tree, you may specify one or several payment options.
           </Typography>
         </div>
         <div className={classes.servicesListContainer}>
-          <div className={classes.servicesInfoWrapper}>
-            <Typography variant={'inherit'} className={classes.agentTitle}>Payments</Typography>
-          </div>
           <div className={classes.buttonWrapper}>
             <Button onClick={() => handleAdd()} className={classes.button}>
-              <Typography variant={'inherit'}>+ Add record</Typography>
+              <Typography variant={'inherit'}>Add Payment Option</Typography>
             </Button>
             {addPaymentDialog()}
           </div>
           {
-            payments.length !== 0 ? (
+            payments.length !== 0 && (
               <div>
                 <ul>
                   {
@@ -637,10 +629,6 @@ const Payments = props => {
                     })
                   }
                 </ul>
-              </div>
-            ) : (
-              <div>
-                <Typography>You have no payment records</Typography>
               </div>
             )
           }

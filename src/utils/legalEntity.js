@@ -230,10 +230,10 @@ export const wizardConfig = [
   },
   {
     type: 'step_metamask',
-    name: 'Confirmation',
+    name: 'Blockchain',
     icon: StepperMetaMaskIcon,
-    longName: 'Сonfirmation',
-    description: 'Once you click on the button below, you will get redirected to your MetaMask account. Submit a transaction fee to create your organization profile.',
-    cta: 'Create profile'
+    longName: 'Save to Blockchain',
+    description: 'Almost done! You are about to save a fingerprint of your company data on Ethereum blockchain. Once you click the button below, a MetaMask window with transaction details will open.',
+    cta: 'Save'
   }
 ];

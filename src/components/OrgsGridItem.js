@@ -314,7 +314,7 @@ export default function OrgsGridItem(props) {
           subOrganizations && subOrganizations.length !== 0
         ) ? (
           <div className={classes.entitySubOrgsWrapper}>
-            <Typography variant={'subtitle2'} className={classes.entityTitle}>Includes {subOrganizations.length} sub-organization{subOrganizations.length === 1 ? '' : 's'}:</Typography>
+            <Typography variant={'subtitle2'} className={classes.entityTitle}>{subOrganizations.length} business unit{subOrganizations.length === 1 ? '' : 's'}</Typography>
             <Grid container spacing={1} justify="flex-start" alignItems="center" className={classes.entitySubOrgsList}>
               {
                 subOrganizations.map((item, index) => {
@@ -340,11 +340,7 @@ export default function OrgsGridItem(props) {
               <div className={classes.entitySubOrgOverflowOpacity}/>
             </Grid>
           </div>
-        ) : (
-          <CardContent className={classes.entitySubOrgsWrapper} style={{ marginBottom: '40px', }}>
-            <Typography variant={'subtitle2'} className={classes.entityTitle}>Does not include organizational units</Typography>
-          </CardContent>
-        ) : null
+        ) : null : null
       }
       {error &&
       <div className={classes.errorInfoWrapper}>
@@ -375,7 +371,7 @@ OrgsGridItem.defaultProps = {
   error: false
   // error: {
   //   expiresAt: '2h : 20m : 05s',
-  //   message: 'Something went wrong and your sub-organization was not created. We will save your input for a few hours.',
+  //   message: 'Business unit was not created due to an unexpected error.',
   // }
 };
 */

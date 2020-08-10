@@ -13,7 +13,7 @@ import colors from '../../styles/colors';
 
 const styles = makeStyles({
   tabsContainer: {
-    marginTop: '40px'
+    marginTop: '10px'
   },
   dropzoneContentTitleWrapper: {
     margin: '20px 0 32px 0'
@@ -164,7 +164,7 @@ function Previews(props) {
       </div>
       <div className={classes.previewButtonWrapper}>
         <Button onClick={handleDeletePreview} className={classes.previewButton}>
-          <Typography variant={'caption'} className={classes.previewButtonLabel} noWrap>Remove photo</Typography>
+          <Typography variant={'caption'} className={classes.previewButtonLabel} noWrap>Remove image</Typography>
         </Button>
       </div>
     </div>

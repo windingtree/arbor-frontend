@@ -45,22 +45,6 @@ const styles = makeStyles({
     color: colors.primary.white,
     paddingBottom: '20px',
   },
-  columnItem: {
-    cursor: 'pointer',
-    display: 'inline-block',
-    fontSize: '14px',
-    fontWeight: 400,
-    padding: '2px 0',
-    borderBottomColor: colors.primary.white,
-    color: colors.primary.white,
-    borderBottomStyle: 'solid',
-    borderBottomWidth: '1px',
-    transition: 'border-bottom-color .3s ease',
-    '&:hover': {
-      color: colors.secondary.intenseGreen,
-      borderBottomColor: colors.secondary.intenseGreen,
-    }
-  },
   columnTitleNoBorder: {
     fontSize: '14px',
     fontWeight: 400,
@@ -72,10 +56,10 @@ const styles = makeStyles({
     }
   },
   navLink: {
-    position: 'relative',
+    color: '#fff',
+    display: 'inline-block',
     cursor: 'pointer',
-    textDecoration: 'none',
-    padding: '8px 0'
+    padding: '5px 0'
   },
   logoButton: {
     backgroundColor: 'transparent',
@@ -164,27 +148,22 @@ export default function Footer(props) {
           </Grid>
           <Grid container direction="column" item xs={12} md={2} className={classes.xsVisible}>
             <Typography variant={'h4'} className={classes.columnTitle}>Marketplace</Typography>
-            <Link to={'/search'} className={classes.navLink}>
-              <Typography variant={'h6'} className={classes.columnItem}>Search</Typography>
-            </Link>
-            <Link to={'/my-organizations/wizard'} className={classes.navLink}>
-              <Typography variant={'h6'} className={classes.columnItem}>Create account</Typography>
-            </Link>
+
+            <Link to={'/search'} className={classes.navLink}>Search</Link>
+            <Link to={'/my-organizations/wizard'} className={classes.navLink}>Create account</Link>
           </Grid>
 
           <Grid container direction="column" item xs={12} md={2} className={classes.xsVisible}>
             <Typography variant={'h4'} className={classes.columnTitle}>Directories</Typography>
 
-            <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'airline' })}><Typography variant={'h6'} className={classes.columnItem}>Airlines</Typography></div>
-            <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'hotel' })} ><Typography variant={'h6'} className={classes.columnItem}>Hotels</Typography></div>
-            <div className={classes.navLink} onClick={() => history.push('/directories', { dirType: 'ota' })} ><Typography variant={'h6'} className={classes.columnItem}>Travel agencies</Typography></div>
+            <Link to={'/directories/airline'} className={classes.navLink}>Airlines</Link>
+            <Link to={'/directories/hotel'} className={classes.navLink}>Hotels</Link>
+            <Link to={'/directories/ota'} className={classes.navLink}>Travel Agencies</Link>
           </Grid>
 
           <Grid container direction="column" item xs={12} md={3} className={classes.xsVisible}>
             <Typography variant={'h4'} className={classes.columnTitle}>Contact</Typography>
-            <a href={'mailto:hello@windingtree.com'} className={classes.navLink}>
-              <Typography variant={'h6'} className={classes.columnItem}>hello@windingtree.com</Typography>
-            </a>
+            <a href={'mailto:hi@windingtree.com'} className={classes.navLink}>hi@windingtree.com</a>
           </Grid>
         </Grid>
       </Container>

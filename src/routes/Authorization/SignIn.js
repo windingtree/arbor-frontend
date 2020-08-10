@@ -2,12 +2,9 @@ import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import history from '../../redux/history';
 import { connect } from 'react-redux';
-// import { fetchSignInRequest } from '../../ducks/signIn';
 import { Container, Grid, Typography, Box, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { MAINTENANCE, CHAIN_ID } from "../../utils/constants";
-// import { getWeb3, onChainChanged } from "../../web3/w3";
-import { selectWeb3 } from '../../ducks/signIn';
 
 import MetamaskOnboarding from '../../components/MetamaskOnboarding';
 import PortisOnboarding from '../../components/PortisOnboarding';
@@ -144,40 +141,43 @@ const ChainMismatchInfo = (props) => {
 
 // A Box for the Sign-in Action
 const SignInActionBox = (classes, props) => {
-  const { web3 } = props;
   // Define the chain ID state
   const [chainId, setChainId] = useState(0);
 
-  // Callback when the chain changes
-  const handleChainChange = (newChainId) => {
-    setChainId(newChainId);
-  };
-
-  // Register to Web3 provider chain change events
-  useEffect(() => {
-    if (web3 && web3.currentProvider.on !== undefined) {
-      // EIP 1193 Method
-      web3.currentProvider.on('chainChanged', (chainIdHex) => {
-        handleChainChange(parseInt(chainIdHex, 16));
-      });
-      web3.currentProvider.on('chainIdChanged', (chainIdHex) => {
-        handleChainChange(parseInt(chainIdHex, 16));
-      });
-    }
-  }, [web3]);
-
   // Update the Chain ID
   useEffect(() => {
-    if (web3 && web3.eth) {
-      // setWeb3(web3);
-      web3.eth.getChainId()
-      .then(handleChainChange);
+    const web3 = window.web3;
+
+    const onChainChange = chainId => {
+      setChainId(parseInt(chainId, 16));
+    };
+
+    const handleChainId = async () => {
+
+      if (typeof window.ethereum !== 'undefined') {
+        const chainId = window.ethereum.chainId;
+        onChainChange(chainId);
+        if (web3 && web3.currentProvider) {
+          web3.currentProvider.on('chainChanged', onChainChange);
+        }
+      }
+    };
+
+    try {
+      handleChainId();
+
+      return () => {
+        if (web3 && web3.currentProvider) {
+          web3.currentProvider.off('chainChanged', onChainChange);
+        }
+      }
+    } catch (error) {
+      console.log(error);
     }
-  }, [web3, chainId]);
+  }, [chainId]);
 
   // Check if we should disable login
   let chainMismatch = (chainId !== 0 && chainId !== Number(CHAIN_ID));
-  // let loginDisabled = (chainId === 0 || chainMismatch);
 
   return (
     <Box style={{width: '80%', margin: '0 auto'}}>
@@ -247,9 +247,7 @@ const SignIn = (props) => {
 )
 };
 
-const mapStateToProps = state => ({
-  web3: selectWeb3(state)
-});
+const mapStateToProps = state => ({});
 
 const mapDispatchToProps = {};
 

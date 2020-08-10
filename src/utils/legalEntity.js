@@ -4,45 +4,31 @@ import { StepperGeneralIcon, StepperHostingIcon, StepperMetaMaskIcon } from '../
 export const wizardConfig = [
   {
     type: 'step',
-    name: 'General',
+    name: 'Company',
     icon: StepperGeneralIcon,
-    longName: 'General information',
-    description: 'Creating a company profile requires an Ethereum transaction. Make sure you have enough funds in your MetaMask account to cover the transaction fee.',
+    longName: 'Company Information',
+    description: 'Please note that the final third step of creating a company account is to save a fingerprint of company data on the blockchain, which requires an Ethereum transaction. Please make sure you have enough funds in your MetaMask account to cover the transaction fee.',
     sections: [
       {
-        name: 'General information',
+        name: 'Company Information',
         type: 'section',
         fields: [
-          // {
-          //   type: 'select',
-          //   name: 'Legal entity type',
-          //   options: [
-          //     'private entrepreneur',
-          //     'private company limited by shares or Ltd. (UK, Ireland and the Commonwealth)',
-          //     'public limited company (UK, Ireland and the Commonwealth)',
-          //     'limited partnership',
-          //     'unlimited partnership',
-          //     'chartered company',
-          //     'statutory company',
-          //     'holding company',
-          //     'subsidiary company',
-          //     'one man company (sole proprietorship)',
-          //     'charitable incorporated organisation (UK)',
-          //     'non-governmental organization',
-          //   ],
-          //   required: true,
-          //   orgidJsonPath: 'legalEntity.legalType'
-          // },
           {
-            type: 'input',
+            type: 'select',
             name: 'Legal entity type',
+            options: [
+              'Cooperative',
+              'Corporation',
+              'Individual Entrepreneur (Sole Trader)',
+              'Limited Liability Company',
+              'NGO',
+              'Nonprofit',
+              'Partnership',
+              'Sole Proprietorship',
+              'Trust'
+            ],
             required: true,
-            orgidJsonPath: 'legalEntity.legalType',
-            validate: value => {
-              if (!value) {
-                return 'Required field';
-              }
-            }
+            orgidJsonPath: 'legalEntity.legalType'
           },
           {
             type: 'input',
@@ -57,7 +43,7 @@ export const wizardConfig = [
           },
           {
             type: 'input',
-            name: 'Registration number',
+            name: 'Company number in local business registry',
             required: true,
             helperText: 'Number of your organization in the country-specific business registry',
             orgidJsonPath: 'legalEntity.legalIdentifier',
@@ -70,7 +56,7 @@ export const wizardConfig = [
         ]
       },
       {
-        name: 'Address of your organization',
+        name: 'Registration Address',
         type: 'section',
         fields: [
           {
@@ -137,7 +123,7 @@ export const wizardConfig = [
         ]
       },
       {
-        name: 'Contact information',
+        name: 'Contact Information',
         type: 'section',
         fields: [
           {
@@ -176,7 +162,7 @@ export const wizardConfig = [
         ]
       },
       {
-        name: 'Social media accounts',
+        name: 'Social Media',
         type: 'section',
         fields: [
           {
@@ -199,13 +185,19 @@ export const wizardConfig = [
             icon: 'instagram',
             orgidJsonPath: 'legalEntity.contacts[0].instagram',
             validate: value => {}
-          },
+          }
+        ]
+      },
+      {
+        name: 'Company Logo',
+        type: 'section',
+        fields: [
           {
             name: 'Logo',
             type: 'dropzone',
             description: 'Add a logo or any image that represents your organization. It will help you stand out in search results.',
             orgidJsonPath: 'media.logo',
-            helperText: 'Recommended dimensions: 908х400 (minimal: 454x200)\nFormat: JPG, PNG'
+            helperText: 'Recommended dimensions: 908х400 (at least 454x200) Format: JPG, PNG, SVG'
           }
         ]
       }
@@ -238,10 +230,10 @@ export const wizardConfig = [
   },
   {
     type: 'step_metamask',
-    name: 'Confirmation',
+    name: 'Blockchain',
     icon: StepperMetaMaskIcon,
-    longName: 'Сonfirmation',
-    description: 'Once you click on the button below, you will get redirected to your MetaMask account. Submit a transaction fee to create your organization profile.',
-    cta: 'Create profile'
+    longName: 'Save to Blockchain',
+    description: 'Almost done! You are about to save a fingerprint of your company data on Ethereum blockchain. Once you click the button below, a MetaMask window with transaction details will open.',
+    cta: 'Save'
   }
 ];

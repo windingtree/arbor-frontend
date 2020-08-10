@@ -4,30 +4,18 @@ import { StepperGeneralIcon, StepperDetailsIcon, StepperHostingIcon, StepperMeta
 export const wizardConfig = [
   {
     type: 'step',
-    name: 'General',
+    name: 'Unit Info',
     icon: StepperGeneralIcon,
-    longName: 'General information',
-    description: 'Creating an organization profile requires an Ethereum transaction. Make sure you have enough funds in your MetaMask account to cover the transaction fee.',
+    longName: 'Unit Information',
+    description: 'A business or organizational unit can be anything: a department within your company (legal, accounting, etc.), a business operated by it (Acme Anvils Main St.), etc. An Ethereum transaction will be required to create a business unit.',
     sections: [
       {
-        name: 'General information',
+        name: 'Basics',
         type: 'section',
         fields: [
           {
-            type: 'select',
-            name: 'Directory',
-            options: {
-              'hotel': 'Hotel',
-              'airline': 'Airline',
-              'insurance': 'Insurance',
-              'ota': 'Travel agencies'
-            },
-            required: true,
-            orgidJsonPath: 'organizationalUnit.type'
-          },
-          {
             type: 'input',
-            name: 'Organization name',
+            name: 'Unit name',
             required: true,
             orgidJsonPath: 'organizationalUnit.name',
             validate: value => {
@@ -36,87 +24,58 @@ export const wizardConfig = [
               }
             }
           },
-          // {
-          //   type: 'select',
-          //   name: 'Legal form',
-          //   options: [
-          //     'private entrepreneur',
-          //     'private company limited by shares or Ltd. (UK, Ireland and the Commonwealth)',
-          //     'public limited company (UK, Ireland and the Commonwealth)',
-          //     'limited partnership',
-          //     'unlimited partnership',
-          //     'chartered company',
-          //     'statutory company',
-          //     'holding company',
-          //     'subsidiary company',
-          //     'one man company (sole proprietorship)',
-          //     'charitable incorporated organisation (UK)',
-          //     'non-governmental organization',
-          //   ],
-          //   required: true,
-          //   orgidJsonPath: 'organizationalUnit.legalType'
-          // },
           {
             type: 'input',
-            name: 'Legal form',
+            name: 'Unit type (comma-separated list of tags, e.g. hotel, boutique, luxury)',
             required: true,
-            orgidJsonPath: 'organizationalUnit.legalType',
+            orgidJsonPath: 'organizationalUnit.type',
             validate: value => {
               if (!value) {
                 return 'Required field';
               }
             }
+          },
+          {
+            type: 'input',
+            name: 'Unit description (limit 255 symbols)',
+            orgidJsonPath: 'organizationalUnit.description',
+            validate: value => {
+              if (value && value.length > 255) {
+                return 'Description is too long';
+              }
+            }
+          },
+          {
+            type: 'input',
+            name: 'Long description',
+            orgidJsonPath: 'organizationalUnit.longDescription'
           }
         ]
       },
       {
-        name: 'Address of your organization',
+        name: 'Address (optional)',
         type: 'section',
         fields: [
           {
             type: 'select',
             name: 'Country',
             options: countries,
-            required: true,
-            orgidJsonPath: 'organizationalUnit.address.country',
-            validate: value => {
-              if (!value) {
-                return 'Required field';
-              }
-            }
+            orgidJsonPath: 'organizationalUnit.address.country'
           },
           {
             type: 'input',
             name: 'State or region',
-            orgidJsonPath: 'organizationalUnit.address.subdivision',
-            required: true,
-            validate: value => {
-              if (!value) {
-                return 'Required field';
-              }
-            }
+            orgidJsonPath: 'organizationalUnit.address.subdivision'
           },
           {
             type: 'input',
             name: 'City',
-            orgidJsonPath: 'organizationalUnit.address.locality',
-            required: true,
-            validate: value => {
-              if (!value) {
-                return 'Required field';
-              }
-            }
+            orgidJsonPath: 'organizationalUnit.address.locality'
           },
           {
             type: 'input',
             name: 'Street, building',
-            orgidJsonPath: 'organizationalUnit.address.streetAddress',
-            required: true,
-            validate: value => {
-              if (!value) {
-                return 'Required field';
-              }
-            }
+            orgidJsonPath: 'organizationalUnit.address.streetAddress'
           },
           {
             type: 'input',
@@ -126,13 +85,7 @@ export const wizardConfig = [
           {
             type: 'input',
             name: 'Postal code',
-            orgidJsonPath: 'organizationalUnit.address.postalCode',
-            required: true,
-            validate: value => {
-              if (!value) {
-                return 'Required field';
-              }
-            }
+            orgidJsonPath: 'organizationalUnit.address.postalCode'
           }
         ]
       },
@@ -176,7 +129,7 @@ export const wizardConfig = [
         ]
       },
       {
-        name: 'Social media accounts',
+        name: 'Social media',
         type: 'section',
         fields: [
           {
@@ -204,34 +157,8 @@ export const wizardConfig = [
             name: 'Logo',
             type: 'dropzone',
             orgidJsonPath: 'media.logo',
-            description: 'Add a logo or any image that represents your organization. It will help you stand out in search results.',
+            description: '',
             helperText: 'Recommended dimensions: 908х400 (minimal: 454x200)\nFormat: JPG, PNG'
-          }
-        ]
-      }
-    ],
-    cta: 'Next'
-  },
-  {
-    type: 'step',
-    name: 'Details',
-    icon: StepperDetailsIcon,
-    longName: 'Details',
-    description: 'You can tell us a bit more about your sub-organization or skip this step.',
-    sections: [
-      {
-        name: 'General information',
-        type: 'section',
-        fields: [
-          {
-            type: 'input',
-            name: 'Title',
-            orgidJsonPath: 'organizationalUnit.details.title'
-          },
-          {
-            type: 'input',
-            name: 'Organization details',
-            orgidJsonPath: 'organizationalUnit.details.details'
           }
         ]
       }
@@ -264,10 +191,10 @@ export const wizardConfig = [
   },
   {
     type: 'step_metamask',
-    name: 'Confirmation',
+    name: 'Blockchain',
     icon: StepperMetaMaskIcon,
-    longName: 'Confirmation',
-    description: 'Once you click on the button below, you will get redirected to your MetaMask account. Submit a transaction fee to create your organization profile.',
-    cta: 'Create profile'
+    longName: 'Save to Blockchain',
+    description: 'Almost done! You are about to save a fingerprint of your business unit data on Ethereum blockchain. Once you click the button below, a MetaMask window with transaction details will open.',
+    cta: 'Save'
   }
 ];

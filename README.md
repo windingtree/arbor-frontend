@@ -1,6 +1,6 @@
 # Winding Tree Marketplace Front-End
 
-Winding Tree Marketplace is an explorer for Winding Tree's [ORG.ID Protocol](https://github.com/windingtree/org.id).
+Winding Tree Marketplace is an explorer for Winding Tree's [ORGiD Protocol](https://github.com/windingtree/org.id).
 It allows owners and directors of travel companies to create and administrate their organizations using a simple and intuitive user interface.
 
 This repository contains the user interface, which is deployed as a static React application.

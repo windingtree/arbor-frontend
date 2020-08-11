@@ -351,7 +351,7 @@ const AccountDialog = props => {
                         break;
                     case 'iban':
                       if (!value.match(/^([A-Z]{2}[ -]?[0-9]{2})(?=(?:[ -]?[A-Z0-9]){9,30}$)((?:[ -]?[A-Z0-9]{3,5}){2,7})([ -]?[A-Z0-9]{1,3})?$/)) {
-                        errors[key] = `IBAN addres has wrong format`;
+                        errors[key] = `IBAN address has wrong format`;
                         break;
                       }
                       break;

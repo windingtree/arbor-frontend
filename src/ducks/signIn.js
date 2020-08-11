@@ -178,9 +178,7 @@ export const subscribePortisEventChannel = portis => {
       emitter(logOutRequest());
       emitter(END)
     });
-    portis.onActiveWalletChanged(address => emitter(accountChangeRequest({
-      address
-    })));
+    portis.onActiveWalletChanged(address => emitter(accountChangeRequest(address)));
 
     return () => {};
   });
@@ -193,9 +191,7 @@ export const subscribeMetamaskEventChannel = web3 => {
         emitter(logOutRequest());
         emitter(END);
       } else {
-        emitter(accountChangeRequest({
-          address: accounts[0]
-        }));
+        emitter(accountChangeRequest(accounts[0]));
       }
     };
     const handleChainChange = () => {

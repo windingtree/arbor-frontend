@@ -12,10 +12,10 @@ case "$NOW_GITHUB_COMMIT_REF" in
 develop)  echo "Building $NOW_GITHUB_COMMIT_REF"
     yarn build:staging
     ;;
-staging)  echo "Building $NOW_GITHUB_COMMIT_REF"
-    yarn build:staging
-    ;;
 master)  echo "Building $NOW_GITHUB_COMMIT_REF"
+    yarn build:production
+    ;;
+preview)  echo "Building $NOW_GITHUB_COMMIT_REF"
     yarn build:production
     ;;
 *) echo "No build configured for this branch. Assuming staging"

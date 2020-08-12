@@ -15,7 +15,6 @@ import RefershButton from '../../../components/buttons/Refresh';
 import DialogComponent from '../../../components/Dialog';
 import SelectField from '../../../components/Fields/SelectField';
 import { Formik } from 'formik';
-import { getWeb3 } from '../../../web3/w3';
 import { createToken } from '../../../utils/jwt';
 import {
   SIMARD_URL,
@@ -24,7 +23,8 @@ import {
 } from '../../../utils/constants';
 
 import {
-  selectSignInAddress
+  selectSignInAddress,
+  selectWeb3
 } from '../../../ducks/signIn';
 
 const styles = makeStyles({
@@ -351,7 +351,7 @@ const AccountDialog = props => {
                         break;
                     case 'iban':
                       if (!value.match(/^([A-Z]{2}[ -]?[0-9]{2})(?=(?:[ -]?[A-Z0-9]){9,30}$)((?:[ -]?[A-Z0-9]{3,5}){2,7})([ -]?[A-Z0-9]{1,3})?$/)) {
-                        errors[key] = `IBAN addres has wrong format`;
+                        errors[key] = `IBAN address has wrong format`;
                         break;
                       }
                       break;
@@ -426,7 +426,7 @@ const AccountDialog = props => {
 
 const SimardAccounts = props => {
   const classes = styles();
-  const { orgid, address } = props;
+  const { orgid, address, web3 } = props;
   const sessionKey = `${orgid}:token`;
   const [authToken, setAuthToken] = useState(
     sessionStorage.getItem(sessionKey)
@@ -479,7 +479,7 @@ const SimardAccounts = props => {
     if (!authToken) {
       clearTimeout(sessionTimeout);
       const token = await createToken(
-        getWeb3(),
+        web3,
         {
           algorithm: 'ETH',
           expiration: SIMARD_EXPIRATION,
@@ -719,7 +719,8 @@ const SimardAccounts = props => {
 
 const mapStateToProps = state => {
   return {
-    address: selectSignInAddress(state)
+    address: selectSignInAddress(state),
+    web3: selectWeb3(state)
   }
 };
 

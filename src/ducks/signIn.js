@@ -1,27 +1,40 @@
-import { appName } from '../utils/constants';
+import Portis from '@portis/web3';
+import Web3 from 'web3';
+import {
+  appName,
+  PORTIS_ID,
+  PORTIS_DEFAULT_NETWORK
+} from '../utils/constants';
 import history from '../redux/history';
-import {onAccountsChanged} from '../web3/w3';// getWeb3, connect, 
 import { createSelector } from 'reselect';
-import { all, call, put, takeLatest } from 'redux-saga/effects';
+import { all, call, put, takeLatest, select, take } from 'redux-saga/effects';
+import { eventChannel, END } from 'redux-saga';
+
+let portis;
+
 /**
  * Constants
- * */
+ */
 export const moduleName = 'signIn';
 const prefix = `${appName}/${moduleName}`;
 const FETCH_SIGN_IN_REQUEST = `${prefix}/FETCH_SIGN_IN_REQUEST`;
 const FETCH_SIGN_IN_SUCCESS = `${prefix}/FETCH_SIGN_IN_SUCCESS`;
 const FETCH_SIGN_IN_FAILURE = `${prefix}/FETCH_SIGN_IN_FAILURE`;
-export const ACCOUNT_CHANGE_NOTIF = `${prefix}/ACCOUNT_CHANGE_NOTIF`;
+const FETCH_LOGOUT_REQUEST = `${prefix}/FETCH_LOGOUT_REQUEST`;
+const OPEN_PORTIS_WALLET = `${prefix}/OPEN_PORTIS_WALLET`;
+export const ACCOUNT_CHANGE = `${prefix}/ACCOUNT_CHANGE`;
 
 const initialState = {
   isFetching: false,
   isFetched: false,
+  provider: null,
+  web3: null,
   address: false,
   isAuthenticated: false,
   error: null
 };
 
-/***
+/**
  * Reducer
  */
 export default function reducer( state = initialState, action ) {
@@ -39,7 +52,9 @@ export default function reducer( state = initialState, action ) {
       return Object.assign({}, state, {
         isFetching: false,
         isFetched: true,
-        address: payload,
+        provider: payload.provider,
+        web3: payload.web3,
+        address: payload.address,
         isAuthenticated: true,
         error: null
       });
@@ -50,7 +65,17 @@ export default function reducer( state = initialState, action ) {
         isAuthenticated: false,
         error: error
       });
-    case ACCOUNT_CHANGE_NOTIF:
+    case FETCH_LOGOUT_REQUEST:
+      return Object.assign({}, state, {
+        isFetching: false,
+        isFetched: false,
+        provider: null,
+        web3: null,
+        address: false,
+        isAuthenticated: false,
+        error: null
+      });
+    case ACCOUNT_CHANGE:
       return Object.assign({}, state, {
         isFetching: false,
         isFetched: true,
@@ -66,7 +91,7 @@ export default function reducer( state = initialState, action ) {
 
 /**
  * Selectors
- * */
+ */
 const stateSelector = state => state[moduleName];
 
 export const selectSignInStatus = createSelector(
@@ -84,12 +109,35 @@ export const selectSignInAddress = createSelector(
   signIn => signIn.address
 );
 
+export const selectWeb3 = createSelector(
+  stateSelector,
+  signIn => signIn.web3
+);
+
+export const selectProvider = createSelector(
+  stateSelector,
+  signIn => signIn.provider
+);
+
 /**
  * Actions
- * */
+ */
 export function fetchSignInRequest(payload) {
   return {
     type: FETCH_SIGN_IN_REQUEST,
+    payload
+  }
+}
+
+export function logOutRequest() {
+  return {
+    type: FETCH_LOGOUT_REQUEST
+  }
+}
+
+export function accountChangeRequest(payload) {
+  return {
+    type: ACCOUNT_CHANGE,
     payload
   }
 }
@@ -108,52 +156,117 @@ function fetchSignInFailure(error) {
   }
 }
 
-function accountChangeRequest(payload) {
+export function openPortis() {
   return {
-    type: ACCOUNT_CHANGE_NOTIF,
-    payload
+    type: OPEN_PORTIS_WALLET
   }
 }
 
-// Promise for account change
-const accountChange = () => new Promise(resolve => {
-  onAccountsChanged(accounts => {
-    resolve(accounts);
+/**
+ * Event Channels
+ */
+
+export const subscribePortisEventChannel = portis => {
+  return eventChannel(emitter => {
+    portis.onError(error => emitter(fetchSignInFailure(error)));
+    portis.onLogin(address => emitter(fetchSignInRequest({
+      web3: new Web3(portis.provider),
+      address,
+      provider: 'portis'
+    })));
+    portis.onLogout(() => {
+      emitter(logOutRequest());
+      emitter(END)
+    });
+    portis.onActiveWalletChanged(address => emitter(accountChangeRequest(address)));
+
+    return () => {};
   });
-});
+};
+
+export const subscribeMetamaskEventChannel = web3 => {
+  return eventChannel(emitter => {
+    const handleNewAccounts = accounts => {
+      if (accounts.length === 0) {
+        emitter(logOutRequest());
+        emitter(END);
+      } else {
+        emitter(accountChangeRequest(accounts[0]));
+      }
+    };
+    const handleChainChange = () => {
+      emitter(logOutRequest());
+    };
+
+    window.ethereum.on('accountsChanged', handleNewAccounts);
+    web3.currentProvider.on('chainChanged', handleChainChange);
+
+    return () => {
+      window.ethereum.off('accountsChanged', handleNewAccounts);
+      web3.currentProvider.off('chainChanged', handleChainChange);
+    };
+  });
+};
+
+const openPortisPopUp = async () => {
+  portis.showPortis();
+};
 
 /**
  * Sagas
- * */
+ */
+
+function* subscribePortisSaga(portis) {
+  const portisEvents = yield call(subscribePortisEventChannel, portis);
+  yield openPortisPopUp();
+
+  while (true) {
+    const eventAction = yield take(portisEvents);
+    yield put(eventAction);
+  }
+}
+
+function* subscribeMetamaskSaga(web3) {
+  const metamaskEvents = yield call(subscribeMetamaskEventChannel, web3);
+
+  while (true) {
+    const eventAction = yield take(metamaskEvents);
+    yield put(eventAction);
+  }
+}
+
+function* openPortisSaga() {
+  const provider = yield select(selectProvider);
+
+  if (provider !== 'portis') {
+    portis = new Portis(PORTIS_ID, PORTIS_DEFAULT_NETWORK);
+    yield subscribePortisSaga(portis);
+  } else {
+    yield openPortisPopUp();
+  }
+}
+
+function* startOnSignInSagas() {
+  const provider = yield select(selectProvider);
+  const web3 = yield select(selectWeb3);
+
+  if (provider === 'metamask') {
+    yield subscribeMetamaskSaga(web3);
+  }
+}
+
 // Sign-in saga
 function* fetchSignInSaga({ payload }) {
   try {
-    // // Web3 connection
-    // let w3 = getWeb3();
-    // if(w3 === undefined) {
-    //   yield call(history.push, { pathname: '/authorization/register' });
-    // }
-    // let accounts = yield connect();
-
-    // console.log('!!!!!!', payload);
-
-    // Connexion Success
-    yield put(fetchSignInSuccess(payload[0]));
+    // Connection Success
+    yield put(fetchSignInSuccess(payload));
 
     // Move to My Organizations
     yield call(history.push, { pathname: '/my-organizations' });
-
-    // Only wait for account changes
-    while(true) {
-      let accounts = yield accountChange();
-      yield put(accountChangeRequest(accounts[0]));
-    }
-
   } catch (error) {
-    // Connexion Failure
+    // Connection Failure
     yield put(fetchSignInFailure(error));
-    yield call(alert, 'Please, install MetaMask plugin at your browser extensions store and return to us');
-    yield call(history.push, { pathname: '/authorization/register' });
+    yield call(history.push, { pathname: '/authorization' });
   }
 }
 
@@ -162,5 +275,7 @@ function* fetchSignInSaga({ payload }) {
 export const saga = function*() {
   yield all([
     takeLatest(FETCH_SIGN_IN_REQUEST, fetchSignInSaga),
+    takeLatest(OPEN_PORTIS_WALLET, openPortisSaga),
+    takeLatest(FETCH_SIGN_IN_SUCCESS, startOnSignInSagas)
   ]);
 };

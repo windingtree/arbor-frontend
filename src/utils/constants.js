@@ -12,6 +12,8 @@ export const SIMARD_DID = process.env.REACT_APP_SIMARD_DID;
 export const SIMARD_EXPIRATION = Number(process.env.REACT_APP_SIMARD_EXPIRATION);
 export const COINSWITCH_LABEL = process.env.REACT_APP_COINSWITCH_LABEL;
 export const COINSWITCH_URL = process.env.REACT_APP_COINSWITCH_URL;
+export const PORTIS_ID = process.env.REACT_APP_PORTIS_ID;
+export const PORTIS_DEFAULT_NETWORK = process.env.REACT_APP_PORTIS_DEFAULT_NETWORK;
 
 export const entityTypes = [
   'private entrepreneur',

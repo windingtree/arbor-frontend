@@ -262,12 +262,7 @@ const Header = (props) => {
 
   // Redirect users depending on Web3 presence or not
   const handleSignInRedirect = () => {
-    if(MetaMaskOnboarding.isMetaMaskInstalled()) {
-      history.push('/authorization/signin');
-    }
-    else {
-      history.push('/authorization/register')
-    }
+    history.push('/authorization/signin');
   };
 
   let directoriesContent = [

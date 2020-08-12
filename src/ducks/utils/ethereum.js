@@ -1,50 +1,30 @@
-import { getWeb3 } from '../../web3/w3';
+import {
+  ORGID_ABI,
+  ORGID_PROXY_ADDRESS,
+  LIF_TOKEN_ABI,
+  LIF_TOKEN_PROXY_ADDRESS
+} from '../../utils/constants';
 
 const setTimeoutPromise = timeout => new Promise(resolve => setTimeout(resolve, timeout));
 
-// Get current block number
-// const getCurrentBlockNumber = async web3 => {
-//   let counter = 0;
-//   let blockNumber;
+// get the current block number
+export const getCurrentBlockNumber = async web3 => {
+  return new Promise((resolve, reject) => {
+    web3.eth.getBlockNumber((err, data) => {
+      if(err) return reject(err);
+      resolve(data);
+    });
+  });
+};
 
-//   const blockNumberRequest = () => new Promise(resolve => {
-//       const blockNumberTimeout = setTimeout(() => resolve(null), 2000);
+// Get the ORG.ID contract
+export const getOrgidContract = web3 => new web3.eth.Contract(ORGID_ABI, ORGID_PROXY_ADDRESS);
 
-//       try {
-//           web3.eth.getBlockNumber((error, result) => {
-//               clearTimeout(blockNumberTimeout);
-
-//               if (error) {
-//                   return resolve();
-//               }
-
-//               resolve(result);
-//           });
-//       } catch (error) {
-//           // ignore errors due because of we will be doing retries
-//           resolve(null);
-//       }
-//   });
-
-//   do {
-//       if (counter === 10) {
-//           throw new Error('Unable to fetch blockNumber: retries limit has been reached');
-//       }
-
-//       blockNumber = await blockNumberRequest();
-      
-//       if (typeof blockNumber !== 'number') {
-//           await setTimeoutPromise(1000 + 1000 * parseInt(counter / 3));
-//       }
-
-//       counter++;
-//   } while (typeof blockNumber !== 'number');
-
-//   return blockNumber;
-// };
+// Get the LIF Token contract
+export const getLifTokenContract = web3 => new web3.eth.Contract(LIF_TOKEN_ABI, LIF_TOKEN_PROXY_ADDRESS);
 
 // Get block
-const getBlock = async (web3, typeOrNumber) => {
+export const getBlock = async (web3, typeOrNumber) => {
   let counter = 0;
   let block;
 
@@ -75,7 +55,7 @@ const getBlock = async (web3, typeOrNumber) => {
     }
 
     block = await blockRequest();
-    
+
     if (!block) {
         await setTimeoutPromise(1000 + 1000 * parseInt(counter / 3));
     }
@@ -87,8 +67,7 @@ const getBlock = async (web3, typeOrNumber) => {
 };
 
 // Calculate average gas price value based on the latest block transactions
-export const ApiGetGasPrice = async () => {
-  let web3 = getWeb3();
+export const ApiGetGasPrice = async web3 => {
   const block = await getBlock(web3, 'latest');
   const transactions = await Promise.all(block.transactions.map(tx => web3.eth.getTransaction(tx)));
   const sum = transactions.reduce(
@@ -98,6 +77,5 @@ export const ApiGetGasPrice = async () => {
     },
     0
   );
-  console.log('@@@@@@@@@@@', sum, transactions, transactions.length);
   return web3.utils.toWei(Math.ceil(parseInt(sum / transactions.length)).toString(), 'gwei');
 }

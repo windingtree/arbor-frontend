@@ -1,15 +1,15 @@
 import React from 'react';
-import {connect} from "react-redux";
-import {makeStyles} from '@material-ui/core/styles';
-import {Typography, Button} from '@material-ui/core';
+import { connect } from "react-redux";
+import { makeStyles } from '@material-ui/core/styles';
+import { Typography, Button } from '@material-ui/core';
 
-import {Formik} from 'formik';
+import { Formik } from 'formik';
 import _ from 'lodash';
 
 // import DialogComponent from './Dialog';
 import { extendOrgidJson, selectWizardOrgidJson } from '../ducks/wizard'; //validateOrgidSchema
 import { selectSignInAddress } from '../ducks/signIn';
-import {Section} from './index';
+import { Section } from './index';
 import ArrowLeftIcon from '../assets/SvgComponents/ArrowLeftIcon';
 
 import colors from '../styles/colors';
@@ -272,7 +272,7 @@ const WizardStep = (props) => {
             }
 
             <div className={classes.buttonWrapper}>
-              <Button type="submit" disabled={isSubmitting || Object.keys(touched).length === 0} className={classes.button}>
+              <Button type="submit" disabled={isSubmitting || Object.keys(errors).length > 0} className={classes.button}>
                 <Typography variant={'caption'} className={classes.buttonLabel}>{cta}</Typography>
               </Button>
             </div>

@@ -231,10 +231,16 @@ export default function reducer(state = initialState, action) {
         orgidJsonUpdates = state.orgidJson;
       }
 
-      // Checking for mixed organnization types
+      // Checking for mixed organization types
       if (orgidJsonUpdates.organizationalUnit && orgidJsonUpdates.legalEntity) {
         console.error(`[IN EXTEND_ORGID_JSON_SUCCESS] Organization created with mixed types, extension canceled.`);
         orgidJsonUpdates = state.orgidJson;
+      }
+
+      if (orgidJsonUpdates.organizationalUnit && orgidJsonUpdates.organizationalUnit.type) {
+        if (!Array.isArray(orgidJsonUpdates.organizationalUnit.type)) {
+          orgidJsonUpdates.organizationalUnit.type = orgidJsonUpdates.organizationalUnit.type.split(',').map(v => v.trim());
+        }
       }
 
       // Merge the state
@@ -1154,6 +1160,7 @@ export const saga = function* () {
 //endregion
 
 //region == [API] ======================================================================================================
+const createUniqueFileName = name => `${Math.random().toString(36).substr(2, 9)}${name.match(/\.[a-zA-Z0-9]+$/i)[0] || ''}`;
 const ApiPostMedia = (data) => {
   const {
     address,
@@ -1161,7 +1168,7 @@ const ApiPostMedia = (data) => {
     file
   } = data;
   const fd = new FormData();
-  fd.append('media', file, file.name);
+  fd.append('media', file, createUniqueFileName(file.name));
   fd.append('address', address);
   fd.append('id', id);
 

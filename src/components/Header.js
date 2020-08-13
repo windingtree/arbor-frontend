@@ -6,7 +6,7 @@ import {Container, Grid, Typography, Button, Hidden, Collapse, Card} from '@mate
 import {makeStyles} from '@material-ui/core/styles';
 import { fadeIn } from 'react-animations';
 import Radium, { StyleRoot } from 'radium';
-import MetaMaskOnboarding from '@metamask/onboarding';
+// import MetaMaskOnboarding from '@metamask/onboarding';
 
 import {
   getBackendConnectionStatus

@@ -2,15 +2,54 @@ import Web3 from 'web3';
 import MetaMaskOnboarding from '@metamask/onboarding';
 import React, { useEffect, useState, useRef } from 'react';
 import { connect } from 'react-redux';
-import { Button, Typography } from '@material-ui/core';
-import { fetchSignInRequest } from '../ducks/signIn';
+import { Button, Typography, CircularProgress } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+import { fetchSignInRequest, selectSignInStatus } from '../ducks/signIn';
+
+import metamaskIcon from '../assets/images/metamask.png';
 
 const ONBOARD_TEXT = 'Install MetaMask';
 const CONNECT_TEXT = 'Connect MetaMask';
-// const CONNECTED_TEXT = 'Connected to MetaMask';
 
-const OnboardingButton = ({ className, buttonLabel, fetchSignInRequest }) => {
+const styles = makeStyles({
+  buttonLabel: {
+    fontSize: '16px',
+    fontWeight: 600,
+    color: '#2E2E31',
+    textTransform: 'none'
+  },
+  walletButton: {
+    width: '308px',
+    height: '72px',
+    border: '1px solid #F6851B',
+    borderRadius: '8px',
+    backgroundColor: 'white',
+    marginBottom: '20px',
+    ['@media (max-width: 540px)']: { // eslint-disable-line no-useless-computed-key
+      width: '256px',
+    }
+  },
+  walletButtonLabel: {
+    fontSize: '16px',
+    fontWeight: 600,
+    textTransform: 'none',
+    color: '#2E2E31'
+  },
+  walletSpinner: {
+    marginLeft: '10px',
+    ['@media (max-width: 540px)']: { // eslint-disable-line no-useless-computed-key
+      position: 'absolute',
+      marginLeft: '-45%',
+      marginTop: '20px'
+    }
+  }
+});
+
+const OnboardingButton = props => {
+  const { fetchSignInRequest, loggedIn } = props;
+  const classes = styles();
   const [buttonText, setButtonText] = useState(ONBOARD_TEXT);
+  const [loginStarted, setLoginStart] = useState(false);
   const onboarding = useRef();
 
   useEffect(() => {
@@ -29,6 +68,8 @@ const OnboardingButton = ({ className, buttonLabel, fetchSignInRequest }) => {
 
   const onClick = () => {
     if (MetaMaskOnboarding.isMetaMaskInstalled()) {
+      setLoginStart(true);
+
       const connectMethod = window.ethereum.request
         ? window.ethereum.request({ method: 'eth_requestAccounts' })
         : window.ethereum.enable();
@@ -61,17 +102,29 @@ const OnboardingButton = ({ className, buttonLabel, fetchSignInRequest }) => {
     }
   };
 
+  const isMetamaskConnecting = !loggedIn && loginStarted;
+
   return (
-    <Button className={className} onClick={onClick}>
-      <Typography variant={'caption'} className={buttonLabel}>
-          {buttonText}
-      </Typography>
-    </Button>
+    <>
+      <Button className={classes.walletButton} onClick={onClick}>
+        <img src={metamaskIcon} alt='MetaMask Wallet' />
+        <Typography variant={'caption'} className={classes.buttonLabel}>
+            {buttonText}
+        </Typography>
+      </Button>
+      {isMetamaskConnecting &&
+        <CircularProgress size='30px' className={classes.walletSpinner} />
+      }
+    </>
   );
 }
+
+const mapStateToProps = state => ({
+  loggedIn: selectSignInStatus(state)
+});
 
 const mapDispatchToProps = {
   fetchSignInRequest
 };
 
-export default connect(null, mapDispatchToProps)(OnboardingButton);
+export default connect(mapStateToProps, mapDispatchToProps)(OnboardingButton);

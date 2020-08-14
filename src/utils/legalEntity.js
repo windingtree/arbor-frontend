@@ -7,7 +7,7 @@ export const wizardConfig = [
     name: 'Company',
     icon: StepperGeneralIcon,
     longName: 'Company Information',
-    description: 'Please note that the final third step of creating a company account is to save a fingerprint of company data on the blockchain, which requires an Ethereum transaction. Please make sure you have enough funds in your MetaMask account to cover the transaction fee.',
+    description: 'Please note that the final third step of creating a company account is to save a fingerprint of company data on the blockchain, which requires an Ethereum transaction. Please make sure you have enough funds in your wallet to cover the transaction fee.',
     sections: [
       {
         name: 'Company Information',
@@ -238,7 +238,7 @@ export const wizardConfig = [
     name: 'Blockchain',
     icon: StepperMetaMaskIcon,
     longName: 'Save to Blockchain',
-    description: 'Almost done! You are about to save a fingerprint of your company data on Ethereum blockchain. Once you click the button below, a MetaMask window with transaction details will open.',
+    description: 'Almost done! You are about to save a fingerprint of your company data on Ethereum blockchain. Once you click the button below, your wallet window with transaction details will open.',
     cta: 'Save'
   }
 ];

@@ -199,7 +199,7 @@ export const wizardConfig = [
     name: 'Blockchain',
     icon: StepperMetaMaskIcon,
     longName: 'Save to Blockchain',
-    description: 'Almost done! You are about to save a fingerprint of your business unit data on Ethereum blockchain. Once you click the button below, a MetaMask window with transaction details will open.',
+    description: 'Almost done! You are about to save a fingerprint of your business unit data on Ethereum blockchain. Once you click the button below, your wallet window with transaction details will open.',
     cta: 'Save'
   }
 ];

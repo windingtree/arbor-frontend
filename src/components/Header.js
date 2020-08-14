@@ -6,7 +6,7 @@ import {Container, Grid, Typography, Button, Hidden, Collapse, Card} from '@mate
 import {makeStyles} from '@material-ui/core/styles';
 import { fadeIn } from 'react-animations';
 import Radium, { StyleRoot } from 'radium';
-// import MetaMaskOnboarding from '@metamask/onboarding';
+import Address from '../routes/Authorization/Address';
 
 import {
   getBackendConnectionStatus
@@ -202,6 +202,15 @@ const styles = makeStyles({
       marginTop: '30px'
     }
   },
+  mobileAddressLinkWrapper: {
+    marginTop: '10px',
+    marginBottom: '30px',
+    marginLeft: '-4px',
+    '&:last-child': {
+      marginBottom: '0',
+      marginTop: '30px'
+    }
+  },
   mobileNavLink: {
     textDecoration: 'none'
   },
@@ -321,6 +330,9 @@ const Header = (props) => {
 
     return (
       <div className={classes.mobileMenuContent}>
+        <div className={classes.mobileAddressLinkWrapper}>
+          <Address />
+        </div>
         <div className={classes.mobileNavLinkWrapper}>
           <Link to={'/directories'} className={classes.mobileNavLink} onClick={handleMobileMenuOpenState}>
             <Typography variant={'caption'} className={classes.mobileNavLinkLabel}>Directories</Typography>
@@ -351,6 +363,7 @@ const Header = (props) => {
                 <Grid item lg={isAuthenticated ? 6 : 4} sm={4} xs={6} container justify={'space-between'} className={classes.navigationContainer}>
                   <div className={classes.navLinksContainer}>
                     <div className={classes.navLinksDirectoriesSearch}>
+                      <Address />
                       <NavLink
                         to="/directories"
                         className={classes.navLink}

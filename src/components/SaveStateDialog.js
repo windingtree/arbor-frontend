@@ -105,7 +105,7 @@ const SaveStateDialog = props => {
                                 You need to submit an Ethereum transaction to pay the miners’ fee for every profile update or verification.
                             </Typography>
                             <Typography  className={classes.subtitle}>
-                                You can adjust the fee using gas fee's "edit" feature, which is available in Metamask popup window.
+                                You can adjust the fee using gas fee's "edit" feature, which is available in your wallet popup window.
                             </Typography>
                             <div className={classes.buttonWrapper}>
                                 <Grid container alignItems="center">
@@ -120,7 +120,7 @@ const SaveStateDialog = props => {
                                     </Grid>
                                     <Grid item>&nbsp;&nbsp;
                                     {(isFetching || isTransactionPending) &&
-                                        <CircularProgress 
+                                        <CircularProgress
                                             variant='indeterminate'
                                             size={30}
                                             thickness={4}
@@ -129,7 +129,7 @@ const SaveStateDialog = props => {
                                     </Grid>
                                 </Grid>
                             </div>
-                        </div>   
+                        </div>
                     }
                     {isTransactionSuccess &&
                         <div className={classes.subtitleWrapper}>
@@ -174,10 +174,10 @@ const mapStateToProps = state => {
         error: getError(state)
     }
 };
-  
+
 const mapDispatchToProps = {
     saveActiveStatus,
     resetActiveStatusTransaction
 };
-  
+
 export default connect(mapStateToProps, mapDispatchToProps)(SaveStateDialog);

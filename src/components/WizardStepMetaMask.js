@@ -41,7 +41,7 @@ const WizardStep = (props) => {
     } else if (typeof orgidJson.organizationalUnit === 'object' && parent.orgid) {
       sendCreateOrganizationalUnitRequest({orgidJson, orgidHash, orgidUri, address, parent, solt});
     } else {
-      console.error('Something going wrong with MetaMask request', {orgidJson, orgidHash, orgidUri, address, solt, parent});
+      console.error('Something going wrong with request', {orgidJson, orgidHash, orgidUri, address, solt, parent});
       console.log(typeof orgidJson.legalEntity, typeof orgidJson.organizationalUnit, parent.orgid);
     }
   };
@@ -56,7 +56,7 @@ const WizardStep = (props) => {
         </Typography>
         <div className={inheritClasses.subtitleWrapper}>
           <Typography variant={'subtitle1'} className={inheritClasses.subtitle}>
-            { action === 'edit' ? 'In order to save your company data, a blockchain transaction is required. Please confirm it in MetaMask.' : description}
+            { action === 'edit' ? 'In order to save your company data, a blockchain transaction is required. Please confirm it in your wallet.' : description}
           </Typography>
         </div>
         <div className={inheritClasses.buttonWrapper}>

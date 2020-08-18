@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from "react-redux";
 import { Button, Typography } from '@material-ui/core';
 
@@ -29,11 +29,19 @@ const WizardStep = (props) => {
     pendingTransaction,
     error
   } = props;
-  // console.log(`props: ${JSON.stringify(props)}`);
+  const [started, setStarted] = useState(false);
+
+  useEffect(() => {
+    if (error) {
+      setStarted(false);
+    }
+  }, [error]);
 
   // Define the submit function
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setStarted(true);
+
     if (action === 'edit') {
       sendChangeOrgidUriAndHashRequest({orgidUri, orgidHash, address, orgidJson});
     } else if(typeof orgidJson.legalEntity === 'object') {
@@ -41,7 +49,8 @@ const WizardStep = (props) => {
     } else if (typeof orgidJson.organizationalUnit === 'object' && parent.orgid) {
       sendCreateOrganizationalUnitRequest({orgidJson, orgidHash, orgidUri, address, parent, solt});
     } else {
-      console.error('Something going wrong with MetaMask request', {orgidJson, orgidHash, orgidUri, address, solt, parent});
+      setStarted(false);
+      console.error('Something going wrong with request', {orgidJson, orgidHash, orgidUri, address, solt, parent});
       console.log(typeof orgidJson.legalEntity, typeof orgidJson.organizationalUnit, parent.orgid);
     }
   };
@@ -56,14 +65,14 @@ const WizardStep = (props) => {
         </Typography>
         <div className={inheritClasses.subtitleWrapper}>
           <Typography variant={'subtitle1'} className={inheritClasses.subtitle}>
-            { action === 'edit' ? 'In order to save your company data, a blockchain transaction is required. Please confirm it in MetaMask.' : description}
+            { action === 'edit' ? 'In order to save your company data, a blockchain transaction is required. Please confirm it in your wallet.' : description}
           </Typography>
         </div>
         <div className={inheritClasses.buttonWrapper}>
           <Button
             type="submit"
             className={inheritClasses.button}
-            disabled={pendingTransaction}
+            disabled={pendingTransaction || started}
           >
             <Typography
               variant={'caption'}

@@ -7,7 +7,7 @@ export const wizardConfig = [
     name: 'Company',
     icon: StepperGeneralIcon,
     longName: 'Company Information',
-    description: 'Please note that the final third step of creating a company account is to save a fingerprint of company data on the blockchain, which requires an Ethereum transaction. Please make sure you have enough funds in your MetaMask account to cover the transaction fee.',
+    description: 'Please note that the final third step of creating a company account is to save a fingerprint of company data on the blockchain, which requires an Ethereum transaction. Please make sure you have enough funds in your wallet to cover the transaction fee.',
     sections: [
       {
         name: 'Company Information',
@@ -143,7 +143,7 @@ export const wizardConfig = [
             name: 'Website',
             orgidJsonPath: 'legalEntity.contacts[0].website',
             validate: value => {
-              if (value && !value.trim().match(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/)) {
+              if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
                 return 'Wrong website URL';
               }
             }
@@ -197,7 +197,12 @@ export const wizardConfig = [
             type: 'dropzone',
             description: 'Add a logo or any image that represents your organization. It will help you stand out in search results.',
             orgidJsonPath: 'media.logo',
-            helperText: 'Recommended dimensions: 908х400 (at least 454x200) Format: JPG, PNG, SVG'
+            helperText: 'Recommended dimensions: 908х400 (at least 454x200) Format: JPG, PNG, SVG',
+            validate: value => {
+              if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+                return 'Media URI contains forbidden symbols';
+              }
+            }
           }
         ]
       }
@@ -233,7 +238,7 @@ export const wizardConfig = [
     name: 'Blockchain',
     icon: StepperMetaMaskIcon,
     longName: 'Save to Blockchain',
-    description: 'Almost done! You are about to save a fingerprint of your company data on Ethereum blockchain. Once you click the button below, a MetaMask window with transaction details will open.',
+    description: 'Almost done! You are about to save a fingerprint of your company data on Ethereum blockchain. Once you click the button below, your wallet window with transaction details will open.',
     cta: 'Save'
   }
 ];

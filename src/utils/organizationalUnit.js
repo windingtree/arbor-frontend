@@ -1,5 +1,5 @@
 import { countries } from './countries';
-import { StepperGeneralIcon, StepperDetailsIcon, StepperHostingIcon, StepperMetaMaskIcon } from '../assets/SvgComponents';
+import { StepperGeneralIcon, StepperHostingIcon, StepperMetaMaskIcon } from '../assets/SvgComponents';
 
 export const wizardConfig = [
   {
@@ -110,7 +110,7 @@ export const wizardConfig = [
             name: 'Website',
             orgidJsonPath: 'organizationalUnit.contacts[0].website',
             validate: value => {
-              if (value && !value.trim().match(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/)) {
+              if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
                 return 'Wrong website URL';
               }
             }
@@ -158,7 +158,12 @@ export const wizardConfig = [
             type: 'dropzone',
             orgidJsonPath: 'media.logo',
             description: '',
-            helperText: 'Recommended dimensions: 908х400 (minimal: 454x200)\nFormat: JPG, PNG'
+            helperText: 'Recommended dimensions: 908х400 (minimal: 454x200)\nFormat: JPG, PNG',
+            validate: value => {
+              if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+                return 'Media URI contains forbidden symbols';
+              }
+            }
           }
         ]
       }
@@ -194,7 +199,7 @@ export const wizardConfig = [
     name: 'Blockchain',
     icon: StepperMetaMaskIcon,
     longName: 'Save to Blockchain',
-    description: 'Almost done! You are about to save a fingerprint of your business unit data on Ethereum blockchain. Once you click the button below, a MetaMask window with transaction details will open.',
+    description: 'Almost done! You are about to save a fingerprint of your business unit data on Ethereum blockchain. Once you click the button below, your wallet window with transaction details will open.',
     cta: 'Save'
   }
 ];

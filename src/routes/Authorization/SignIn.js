@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import _ from 'lodash';
-import history from '../../redux/history';
+// import _ from 'lodash';
+// import history from '../../redux/history';
 import { connect } from 'react-redux';
 import { Container, Grid, Typography, Box, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
@@ -9,7 +9,7 @@ import { MAINTENANCE, CHAIN_ID } from "../../utils/constants";
 import MetamaskOnboarding from '../../components/MetamaskOnboarding';
 import PortisOnboarding from '../../components/PortisOnboarding';
 
-import LoginIllustration from '../../assets/SvgComponents/login-illustration.svg';
+import LoginIllustration from '../../assets/SvgComponents/connectWallet.svg';
 import colors from '../../styles/colors';
 
 const styles = makeStyles({
@@ -73,7 +73,7 @@ const styles = makeStyles({
     color: colors.primary.accent
   },
   buttonWrapper: {
-    marginTop: '68px'
+    marginTop: '50px'
   },
   button: {
     backgroundImage: colors.gradients.green,
@@ -88,6 +88,9 @@ const styles = makeStyles({
     fontWeight: 600,
     color: colors.primary.white,
     textTransform: 'none'
+  },
+  walletSpinner: {
+    marginLeft: '10px'
   }
 });
 
@@ -132,12 +135,11 @@ const ChainMismatchInfo = (props) => {
   return(
     <div className={props.classes.subtitleWrapper}>
       <Typography variant={'subtitle2'} className={props.classes.danger}>
-        This is a test environment that requires you to be connected to  <strong>{chainName(CHAIN_ID)}</strong> instead of <strong>{chainName(props.chainId)}</strong>. Please change the network in MetaMask.
+        This is a test environment that requires you to be connected to  <strong>{chainName(CHAIN_ID)}</strong> instead of <strong>{chainName(props.chainId)}</strong>. Please change the network in your wallet.
       </Typography>
     </div>
   );
 };
-
 
 // A Box for the Sign-in Action
 const SignInActionBox = (classes, props) => {
@@ -177,32 +179,30 @@ const SignInActionBox = (classes, props) => {
   }, [chainId]);
 
   // Check if we should disable login
-  let chainMismatch = (chainId !== 0 && chainId !== Number(CHAIN_ID));
+  const chainMismatch = (chainId !== 0 && chainId !== Number(CHAIN_ID));
 
   return (
     <Box style={{width: '80%', margin: '0 auto'}}>
       <div className={classes.screenTitleWrapper}>
-        <Typography variant={'h1'} className={classes.screenTitle}>Connect a Wallet</Typography>
+        <Typography variant={'h1'} className={classes.screenTitle}>Connect your&nbsp;wallet</Typography>
           <div className={classes.line}/>
       </div>
       <div className={classes.subtitleWrapper}>
         <Typography variant={'subtitle2'} className={classes.subtitle}>
-          [Text about wallet connection]
+         You need to have an Ethereum wallet to sign in
         </Typography>
       </div>
-      { chainMismatch
+      {chainMismatch
         ? <ChainMismatchInfo classes={classes} chainId={chainId}/>
-        : null
+        : <Grid container className={classes.buttonWrapper} alignItems='flex-start' direction='column'>
+            <Grid item>
+              <MetamaskOnboarding className={classes.walletButton} buttonLabel={classes.walletButtonLabel} disabled={chainMismatch} />
+            </Grid>
+            <Grid item>
+              <PortisOnboarding className={`${classes.walletButton} ${classes.portisButton}`} buttonLabel={classes.walletButtonLabel} disabled={chainMismatch} />
+            </Grid>
+          </Grid>
       }
-      { !chainMismatch
-        ? <div className={classes.buttonWrapper}>
-            <MetamaskOnboarding className={classes.button} buttonLabel={classes.buttonLabel}  disabled={chainMismatch} />
-          </div>
-        : null
-      }
-      <div className={classes.buttonWrapper}>
-        <PortisOnboarding className={classes.button} buttonLabel={classes.buttonLabel} />
-      </div>
     </Box>
   );
 };
@@ -219,19 +219,19 @@ const SignInBox = (classes, props) => {
   }
 }
 
-const SignIn = (props) => {
+const SignIn = props => {
   const classes = styles();
-  const [isUploaded, setUploaded] = useState(false);
-  const isInstalled = _.get(history, 'location.state.installed', false);
+  // const [isUploaded, setUploaded] = useState(false);
+  // const isInstalled = _.get(history, 'location.state.installed', false);
 
-  useEffect(() => {
-    if(isInstalled) {
-      setTimeout(() => setUploaded(true), 2000);
-      if(isUploaded) {
-        alert('Reload page after you have MetaMask installed')
-      }
-    }
-  });
+  // useEffect(() => {
+  //   if(isInstalled) {
+  //     setTimeout(() => setUploaded(true), 2000);
+  //     if(isUploaded) {
+  //       alert('Reload page after you have MetaMask installed')
+  //     }
+  //   }
+  // });
 
   return (
     <Container className={classes.container}>

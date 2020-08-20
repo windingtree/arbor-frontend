@@ -7,7 +7,7 @@ import cardWebsiteIllustration from '../../assets/SvgComponents/trust-g-website.
 import cardTwitterIllustration from '../../assets/SvgComponents/trust-g-twitter.svg';
 import cardLockIllustration from '../../assets/SvgComponents/trust-g-lock.svg';
 // import cardLifIllustration from '../../assets/SvgComponents/trust-g-lif.svg';
-import MetamaskIllustration from '../../assets/SvgComponents/trust-metamask-illustration.svg';
+import MetamaskIllustration from '../../assets/SvgComponents/connectWallet.svg';
 
 import stepsBg from '../../assets/SvgComponents/tiles-bg.svg';
 
@@ -504,7 +504,7 @@ function TrustGeneral() {
           </Grid>
         </div>
       </Container>
-      
+
       <div ref={websiteRef} className={classes.grayDiv}>
         <Container className={classes.topContent}>
           <Grid container justify='space-between' alignItems='flex-start'>
@@ -524,7 +524,7 @@ function TrustGeneral() {
             <Grid item xs={6}>
               <img src={verifyWebsiteSvg} alt={'illustration'}/>
             </Grid>
-          </Grid>          
+          </Grid>
         </Container>
         <div className={classes.graySpacer}></div>
         <Container ref={legalEntityRef} className={classes.topContent}>
@@ -539,7 +539,7 @@ function TrustGeneral() {
             <Grid item xs={6} style={{ marginRight: '-25px' }}>
               <img src={verifyYourLegalEntity} alt={'illustration'}/>
             </Grid>
-          </Grid>          
+          </Grid>
         </Container>
       </div>
 
@@ -579,7 +579,7 @@ function TrustGeneral() {
                     </Card>
                   </Grid>
                   <Grid item xs={6}>
-                    
+
                   </Grid>
                 </Grid>
               </div>
@@ -636,7 +636,7 @@ function TrustGeneral() {
                 Submit your Líf deposit
               </Typography>
               <Typography className={classes.topSectionText}>
-                Líf deposit is a small amount of cryptocurrency that is staked when you register your organization profile on Winding Tree Marketplace. 
+                Líf deposit is a small amount of cryptocurrency that is staked when you register your organization profile on Winding Tree Marketplace.
                 This action minimizes spam registrations and proves your commitment to the cause.
               </Typography>
               <div className={classes.line}/>
@@ -699,7 +699,7 @@ function TrustGeneral() {
           </Grid>
         </Container>
       </div>
-      
+
       <Grid className={classes.moreVerifiedSection}>
         <Container>
           <Grid container spacing={5} wrap={'nowrap'}>

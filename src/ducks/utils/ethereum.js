@@ -112,7 +112,7 @@ export const signTransaction = async (web3, from, gasLimit, method, args) => {
     .apply(contract, args)
     .encodeABI()
   };
-  return web3.eth.signTransaction(tx);
+  return web3.eth.signTransaction(tx, from);
 };
 
 export const sendSignedTransaction = async (web3, from, rawTransaction) => {

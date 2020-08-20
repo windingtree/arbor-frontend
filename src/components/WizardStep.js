@@ -63,6 +63,16 @@ export const styles = makeStyles({
       cursor: 'none'
     }
   },
+  buttonRefresh: {
+    border: `1px solid ${colors.primary.white}`,
+    borderRadius: '8px',
+    backgroundImage: colors.gradients.green,
+    textTransform: 'capitalize',
+    '&:disabled': {
+      opacity: '0.5',
+      cursor: 'none'
+    }
+  },
   buttonLabel: {
     fontSize: '16px',
     fontWeight: 600,

@@ -1247,7 +1247,7 @@ const ApiSendCreateOrganizationalUnit = (web3, data, gasPrice) => {
   return new Promise((resolve, reject) => {
     // Create the transaction
     orgidContract.methods.createUnit(
-        solt, // should be solt
+        solt,
         orgidParent,
         address,
         hash,

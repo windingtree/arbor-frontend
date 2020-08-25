@@ -81,6 +81,8 @@
     "@storybook/addons": "5.3.18",
     "@storybook/preset-create-react-app": "2.1.2",
     "@storybook/react": "5.3.18",
-    "env-cmd": "10.1.0"
+    "env-cmd": "10.1.0",
+    "@truffle/hdwallet-provider": "1.0.42",
+    "rlp": "2.2.6"
   }
 }

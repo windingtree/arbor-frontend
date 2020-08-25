@@ -103,7 +103,7 @@ const WizardStep = (props) => {
             const price = await priceResult.json();
             const gasCostEther = web3.utils.fromWei(gasCost, 'ether');
             const gasUsd = (Number(gasCostEther) * price.ethereum.usd * 1.1).toFixed(2);
-            console.log('@@@', gasUsd);
+            console.log('Gas (USD):', gasUsd);
             setInsufficientBalance(`${gasCostEther}:${gasUsd}`);
           }
         } else {
@@ -135,9 +135,10 @@ const WizardStep = (props) => {
         address,
         '5000000',
         method,
-        args
+        args//,
+        //true // personal_sign method
       );
-      console.log('@@@', tx);
+      console.log('>>>', tx);
     } catch (error) {}
   };
 

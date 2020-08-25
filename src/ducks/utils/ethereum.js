@@ -81,11 +81,11 @@ export const ApiGetGasPrice = async web3 => {
 }
 
 // get balance in units
-export const getBalance = async (web3, address, units = 'gwei', toBN = true) => {
+export const getBalance = async (web3, address, toBN = true) => {
   const balance = await web3.eth.getBalance(address);
   return toBN
-    ? web3.utils.toBN(web3.utils.fromWei(balance, units))
-    : web3.utils.fromWei(balance, units);
+    ? web3.utils.toBN(balance)
+    : balance;
 };
 
 // estimate gas for transaction
@@ -112,6 +112,8 @@ export const signTransaction = async (web3, from, gasLimit, method, args) => {
     .apply(contract, args)
     .encodeABI()
   };
+  console.log(JSON.stringify(tx));
+
   return web3.eth.signTransaction(tx, from);
 };
 

@@ -1081,7 +1081,14 @@ function* sendCreateLegalEntitySaga({
 }) {
   try {
     const web3 = yield select(selectWeb3);
-    const gasPrice = yield call(ApiGetGasPrice, web3);
+    let gasPrice;
+    if (payload.gasPrice) {
+      gasPrice = payload.gasPrice;
+      delete payload.gasPrice;
+      console.log('@@@@ Gas price:', gasPrice);
+    } else {
+      gasPrice = yield call(ApiGetGasPrice, web3);
+    }
     const result = yield call(ApiSendCreateLegalEntity, web3, payload, gasPrice);
 
     yield put(getTransactionStatus(result));
@@ -1096,7 +1103,14 @@ function* sendCreateOrganizationalUnitSaga({
 }) {
   try {
     const web3 = yield select(selectWeb3);
-    const gasPrice = yield call(ApiGetGasPrice, web3);
+    let gasPrice;
+    if (payload.gasPrice) {
+      gasPrice = payload.gasPrice;
+      delete payload.gasPrice;
+      console.log('@@@@ Gas price:', gasPrice);
+    } else {
+      gasPrice = yield call(ApiGetGasPrice, web3);
+    }
     const result = yield call(ApiSendCreateOrganizationalUnit, web3, payload, gasPrice);
 
     yield put(getTransactionStatus(result));
@@ -1111,7 +1125,13 @@ function* sendChangeOrgidUriAndHashSaga({
 }) {
   try {
     const web3 = yield select(selectWeb3);
-    const gasPrice = yield call(ApiGetGasPrice, web3);
+    let gasPrice;
+    if (payload.gasPrice) {
+      gasPrice = payload.gasPrice;
+      delete payload.gasPrice;
+    } else {
+      gasPrice = yield call(ApiGetGasPrice, web3);
+    }
     const result = yield call(ApiSendChangeOrgidUriAndHash, web3, payload, gasPrice);
 
     yield put(getTransactionStatus(result));
@@ -1313,8 +1333,8 @@ const ApiSendChangeOrgidUriAndHash = async (web3, data, gasPrice) => {
   });
 }
 
-function ApiGetTxStatus(web3, transactionHash) {
-  return new Promise((resolve, reject) => {
+export const ApiGetTxStatus = (web3, transactionHash) => new Promise(
+  (resolve, reject) => {
     let interval = setInterval(() => {
       web3.eth.getTransactionReceipt(transactionHash, (err, data) => {
         if (err) {
@@ -1339,8 +1359,8 @@ function ApiGetTxStatus(web3, transactionHash) {
         Transaction Hash: ${transactionHash}`
       ));
     }, 10 * 60 * 1000); // 10 min
-  })
-}
+  }
+);
 
 // Validate a JSON document according to schema
 export const validateOrgidSchema = orgidJson => {

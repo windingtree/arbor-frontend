@@ -47,7 +47,16 @@
     "web3-sagas": "0.3.1",
     "@metamask/onboarding": "1.0.0",
     "@portis/web3": "2.0.0-beta.57",
-    "@stripe/stripe-js": "1.9.0"
+    "@stripe/stripe-js": "1.9.0",
+    "@stripe/react-stripe-js": "1.1.2"
+  },
+  "devDependencies": {
+    "@storybook/addon-actions": "5.3.18",
+    "@storybook/addon-links": "5.3.18",
+    "@storybook/addons": "5.3.18",
+    "@storybook/preset-create-react-app": "2.1.2",
+    "@storybook/react": "5.3.18",
+    "env-cmd": "10.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -74,15 +83,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@storybook/addon-actions": "5.3.18",
-    "@storybook/addon-links": "5.3.18",
-    "@storybook/addons": "5.3.18",
-    "@storybook/preset-create-react-app": "2.1.2",
-    "@storybook/react": "5.3.18",
-    "env-cmd": "10.1.0",
-    "@truffle/hdwallet-provider": "1.0.42",
-    "rlp": "2.2.6"
   }
 }

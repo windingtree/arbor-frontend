@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { connect } from "react-redux";
 import { Button, Typography, Grid, CircularProgress } from '@material-ui/core';
+import CheckoutForm from './CheckoutForm';
 
+import {
+  PORTIS_DEFAULT_NETWORK
+} from '../utils/constants';
 import {
   selectWizardOrgidJson,
   selectWizardOrgidHash,
@@ -10,21 +14,20 @@ import {
   sendCreateLegalEntityRequest,
   sendCreateOrganizationalUnitRequest,
   selectPendingState,
-  selectError
+  selectError,
+  ApiGetTxStatus
 } from '../ducks/wizard';
 import {
   selectSignInAddress,
   selectWeb3
 } from '../ducks/signIn';
 import {
-  getBalance,
-  estimateGas,
-  ApiGetGasPrice,
-  signTransaction
+  getBalance
 } from '../ducks/utils/ethereum';
 import {
-  fetchPrice
-} from '../ducks/utils/coingecko';
+  estimateGas,
+  getPaymentIntentStatus
+} from '../ducks/utils/stripe';
 import { styles } from './WizardStep';
 
 // Component for a Wizard Step
@@ -39,11 +42,16 @@ const WizardStep = (props) => {
     sendCreateLegalEntityRequest,
     sendCreateOrganizationalUnitRequest,
     pendingTransaction,
-    error
+    error: wizardError
   } = props;
+  const [error, setError] = useState(null);
   const [started, setStarted] = useState(false);
   const [isBalanceFetching, setBalanceFetching] = useState(false);
   const [insufficientBalance, setInsufficientBalance] = useState(false);
+  const [estimation, setEstimation] = useState(null);
+  const [paymentOptions, setPaymentOptions] = useState(false);
+  const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
+  const [depositTransaction, setDepositTransaction] = useState(false);
 
   const getOptions = useCallback(() => {
     const hash = web3.utils.soliditySha3(JSON.stringify(orgidJson, null, 2));
@@ -89,22 +97,20 @@ const WizardStep = (props) => {
 
   const checkBalance = useCallback(async () => {
     try {
-      if (web3 && address && orgidUri) {
+      if (web3 && address && orgidUri && !isBalanceFetching && !started) {
         setBalanceFetching(true);
-        const balance = await getBalance(web3, address);
+        setEstimation(null);
         const { method, args } = getOptions();
         if (method) {
-          const gas = await estimateGas(web3, address, method, args);
-          const gasPrice = await ApiGetGasPrice(web3);
-          const gasCost = gas.mul(web3.utils.toBN(gasPrice));
+          const balance = await getBalance(web3, address);
+          const estimationResult = await estimateGas(address, method, args);
+          setEstimation(estimationResult);
+          const gasCost = web3.utils.toBN(estimationResult.value);
+          const gasCostEther = web3.utils.fromWei(estimationResult.value, 'ether');
 
           if (gasCost.gt(balance)) {
-            const priceResult = await fetchPrice('ethereum', 'usd');
-            const price = await priceResult.json();
-            const gasCostEther = web3.utils.fromWei(gasCost, 'ether');
-            const gasUsd = (Number(gasCostEther) * price.ethereum.usd * 1.1).toFixed(2);
-            console.log('Gas (USD):', gasUsd);
-            setInsufficientBalance(`${gasCostEther}:${gasUsd}`);
+            console.log('Gas (USD):', estimationResult.amount);
+            setInsufficientBalance(`${gasCostEther}:${estimationResult.amount}`);
           }
         } else {
           throw new Error('Unknown transaction method');
@@ -112,12 +118,14 @@ const WizardStep = (props) => {
       }
     } catch (error) {
       setInsufficientBalance(false);
+      setEstimation(null);
       console.log(error);
     }
     setBalanceFetching(false);
   }, [web3, address, orgidUri, getOptions]);
 
   useEffect(() => {
+    setError(null);
     checkBalance();
   }, [checkBalance]);
 
@@ -127,32 +135,95 @@ const WizardStep = (props) => {
     }
   }, [error]);
 
-  const sendSignedTransaction = async () => {
+  useEffect(() => {
+    if (wizardError) {
+      setError(wizardError);
+      setStarted(false);
+    }
+  }, [wizardError]);
+
+  const onStartPayment = async () => {
     try {
-      const { method, args } = getOptions();
-      const tx = await signTransaction(
-        web3,
-        address,
-        '5000000',
-        method,
-        args//,
-        //true // personal_sign method
-      );
-      console.log('>>>', tx);
-    } catch (error) {}
+      setPaymentOptions({
+        estimationId: estimation.id
+      });
+
+    } catch (error) {
+      setPaymentOptions(null);
+      setError(error.message);
+      console.log(error);
+    }
+  };
+
+  const onPaymentFailure = payload => {
+    // handle payment failure
+  };
+
+  const watchTransaction = async txHash => {
+    setError(null);
+
+    try {
+      await ApiGetTxStatus(web3, txHash);
+      setDepositTransaction(null);
+      setInsufficientBalance(false);
+      setShowPaymentSuccess(false);
+    } catch (error) {
+      setError(error.message);
+      console.log(error);
+    }
+  };
+
+  const onPaymentSuccess = async ({ paymentIntent }) => {
+    setError(null);
+    setPaymentOptions(null);
+    setDepositTransaction(null);
+    setShowPaymentSuccess(true);
+
+    try {
+      let paymentStatus;
+      let count = 0;
+
+      do {
+        paymentStatus = await getPaymentIntentStatus(paymentIntent.id);
+
+        if (!paymentStatus || !paymentStatus.transactionHash) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        count++;
+      } while (!paymentStatus.transactionHash && count <= 10);
+
+      if (!paymentStatus || !paymentStatus.transactionHash) {
+        throw new Error(
+          'Something goes wrong. Cannot get your payment information'
+        );
+      }
+
+      setDepositTransaction(paymentStatus.transactionHash);
+      watchTransaction(paymentStatus.transactionHash);
+    } catch (error) {
+      setError(error.message);
+      console.log(error);
+    }
   };
 
   // Define the submit function
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
     setStarted(true);
+    let gasPrice;
+
+    if (estimation) {
+      gasPrice = estimation.gasPrice;
+    }
 
     if (action === 'edit') {
-      sendChangeOrgidUriAndHashRequest({orgidUri, orgidHash, address, orgidJson});
+      sendChangeOrgidUriAndHashRequest({orgidUri, orgidHash, address, orgidJson, gasPrice});
     } else if(typeof orgidJson.legalEntity === 'object') {
-      sendCreateLegalEntityRequest({orgidJson, orgidHash, orgidUri, address, solt});
+      sendCreateLegalEntityRequest({orgidJson, orgidHash, orgidUri, address, solt, gasPrice});
     } else if (typeof orgidJson.organizationalUnit === 'object' && parent.orgid) {
-      sendCreateOrganizationalUnitRequest({orgidJson, orgidHash, orgidUri, address, parent, solt});
+      sendCreateOrganizationalUnitRequest({orgidJson, orgidHash, orgidUri, address, parent, solt, gasPrice});
     } else {
       setStarted(false);
       console.error('Something going wrong with request', {orgidJson, orgidHash, orgidUri, address, solt, parent});
@@ -165,7 +236,7 @@ const WizardStep = (props) => {
   // The Wizard Step React component
   return (
     <form onSubmit={handleSubmit}>
-      {isBalanceFetching &&
+      {(isBalanceFetching && !showPaymentSuccess) &&
         <>
           <Typography variant={'h3'} className={inheritClasses.stepTitle}>
             Fetching your wallet balance
@@ -177,7 +248,7 @@ const WizardStep = (props) => {
       }
       {!isBalanceFetching &&
         <div key={index}>
-          {insufficientBalance &&
+          {(insufficientBalance && !paymentOptions && !showPaymentSuccess) &&
             <>
               <Typography variant={'h3'} className={inheritClasses.stepTitle}>
                 Insufficient ETH balance
@@ -208,13 +279,13 @@ const WizardStep = (props) => {
                   <Grid item>
                     <Button
                       className={inheritClasses.button}
-                      onClick={sendSignedTransaction}
+                      onClick={onStartPayment}
                     >
                       <Typography
                         variant={'caption'}
                         className={inheritClasses.buttonLabel}
                       >
-                        Pay for gas by CC
+                        Pay for gas with Card
                       </Typography>
                     </Button>
                   </Grid>
@@ -222,7 +293,14 @@ const WizardStep = (props) => {
               </div>
             </>
           }
-          {!insufficientBalance &&
+          {(insufficientBalance && paymentOptions) &&
+            <CheckoutForm
+              options={paymentOptions}
+              onPaymentFailure={onPaymentFailure}
+              onPaymentSuccess={onPaymentSuccess}
+            />
+          }
+          {(!insufficientBalance && !showPaymentSuccess) &&
             <>
               <Typography variant={'h3'} className={inheritClasses.stepTitle}>
                 {stepTitle && `Step ${index+1}. `}
@@ -247,6 +325,33 @@ const WizardStep = (props) => {
                   </Typography>
                 </Button>
               </div>
+            </>
+          }
+          {showPaymentSuccess &&
+            <>
+              <Typography variant={'h3'} className={inheritClasses.stepTitle}>
+                Balance Deposit
+              </Typography>
+              <div className={inheritClasses.subtitleWrapper}>
+                {!depositTransaction &&
+                  <Typography className={inheritClasses.txSubtitle}>
+                    Fetching your payment result information
+                  </Typography>
+                }
+                {depositTransaction &&
+                  <Typography className={inheritClasses.txSubtitle}>
+                    Your wallet deposit&nbsp;
+                    <a
+                      href={`https://${PORTIS_DEFAULT_NETWORK}.etherscan.io/tx/${depositTransaction}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      transaction
+                    </a> is pending
+                  </Typography>
+                }
+              </div>
+              <CircularProgress width="40" />
             </>
           }
           {error &&

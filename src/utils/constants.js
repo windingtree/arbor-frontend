@@ -14,7 +14,6 @@ export const COINSWITCH_LABEL = process.env.REACT_APP_COINSWITCH_LABEL;
 export const COINSWITCH_URL = process.env.REACT_APP_COINSWITCH_URL;
 export const PORTIS_ID = process.env.REACT_APP_PORTIS_ID;
 export const PORTIS_DEFAULT_NETWORK = process.env.REACT_APP_PORTIS_DEFAULT_NETWORK;
-export const CMC_KEY = process.env.REACT_APP_CMC_KEY;
 export const STRIPE_PUB_KEY = process.env.REACT_APP_STRIPE_PUB_KEY;
 
 export const entityTypes = [

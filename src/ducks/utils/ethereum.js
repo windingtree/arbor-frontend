@@ -88,18 +88,6 @@ export const getBalance = async (web3, address, toBN = true) => {
     : balance;
 };
 
-// estimate gas for transaction
-export const estimateGas = async (web3, from, method, args, toBN = true) => {
-  const contract = await getOrgidContract(web3);
-  const gas = await contract.methods[method]
-    .apply(contract, args)
-    .estimateGas({
-      from,
-      gas: '5000000'
-    });
-  return toBN ? web3.utils.toBN(gas) : gas;
-};
-
 // sign transaction
 export const signTransaction = async (web3, from, gasLimit, method, args) => {
   const contract = await getOrgidContract(web3);

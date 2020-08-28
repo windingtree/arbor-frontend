@@ -21,3 +21,29 @@ export function* callApi(directory, method = 'GET', options) {
     }
   }
 }
+
+export const api = async (path, method = 'GET', options) => {
+  try {
+    let responsePromise = await fetch(
+      `${API_URI}/${path}`,
+      {
+        method,
+        ...options
+      }
+    );
+
+    responsePromise = await responsePromise.json();
+
+    if (responsePromise.errors) {
+      throw responsePromise.errors[0];
+    }
+
+    return responsePromise;
+  } catch (error) {
+    if (!!error && error.message) {
+      throw error;
+    } else if (!!error) {
+      throw new Error('Backend error');
+    }
+  }
+}

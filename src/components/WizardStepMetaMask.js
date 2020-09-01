@@ -191,7 +191,7 @@ const WizardStep = (props) => {
         }
 
         count++;
-      } while (!paymentStatus.transactionHash && count <= 10);
+      } while (!paymentStatus.transactionHash && count <= 100);
 
       if (!paymentStatus || !paymentStatus.transactionHash) {
         throw new Error(
@@ -251,14 +251,14 @@ const WizardStep = (props) => {
           {(insufficientBalance && !paymentOptions && !showPaymentSuccess) &&
             <>
               <Typography variant={'h3'} className={inheritClasses.stepTitle}>
-                Insufficient ETH balance
+                Insufficient Balance
               </Typography>
               <div className={inheritClasses.subtitleWrapper}>
                 <Typography variant={'subtitle1'} className={inheritClasses.subtitle}>
-                  In order to save your company data, a blockchain transaction is required. Creation of transaction costs about {gasFee[0]} ETH (${gasFee[1]}).
+                A transaction must be submitted to the Ethereum blockchain in order to register your company information. The cost of this action is estimated to {gasFee[0]} ETH (${gasFee[1]}).
                 </Typography>
                 <Typography variant={'subtitle1'} className={inheritClasses.subtitle}>
-                  Please, top up your wallet with required amount of ETH or pay gas fee with a credit card.
+                Please, top up your wallet with enough ETH or pay the transaction fee with your Payment Card.
                 </Typography>
               </div>
               <div className={inheritClasses.buttonWrapper}>
@@ -272,7 +272,7 @@ const WizardStep = (props) => {
                         variant={'caption'}
                         className={inheritClasses.buttonLabel}
                       >
-                        Refresh balance
+                        Refresh Balance
                       </Typography>
                     </Button>
                   </Grid>
@@ -285,7 +285,7 @@ const WizardStep = (props) => {
                         variant={'caption'}
                         className={inheritClasses.buttonLabel}
                       >
-                        Pay for gas with Card
+                        Use Payment Card
                       </Typography>
                     </Button>
                   </Grid>
@@ -335,12 +335,13 @@ const WizardStep = (props) => {
               <div className={inheritClasses.subtitleWrapper}>
                 {!depositTransaction &&
                   <Typography className={inheritClasses.txSubtitle}>
-                    Fetching your payment result information
+                    Please wait while we process your payment card
                   </Typography>
                 }
                 {depositTransaction &&
                   <Typography className={inheritClasses.txSubtitle}>
-                    Your wallet deposit&nbsp;
+                    Your payment is accepted, please wait while we setup your wallet.&nbsp;
+                    Deposit&nbsp;
                     <a
                       href={`https://${PORTIS_DEFAULT_NETWORK}.etherscan.io/tx/${depositTransaction}`}
                       target="_blank"

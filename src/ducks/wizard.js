@@ -1129,6 +1129,7 @@ function* sendChangeOrgidUriAndHashSaga({
     if (payload.gasPrice) {
       gasPrice = payload.gasPrice;
       delete payload.gasPrice;
+      console.log('@@@@ Gas price:', gasPrice);
     } else {
       gasPrice = yield call(ApiGetGasPrice, web3);
     }

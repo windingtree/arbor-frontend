@@ -33,6 +33,12 @@ const styles = makeStyles({
         fontWeight: 500,
         color: colors.greyScale.darkest
     },
+    cardDetailSubtitle: {
+        marginBottom: '20px',
+        fontSize: '16px',
+        fontWeight: 500,
+        color: colors.greyScale.darkest
+    },
     payButtonWrapper: {
         marginTop: '20px'
     },
@@ -51,6 +57,11 @@ const styles = makeStyles({
         lineHeight: 1.24,
         color: colors.primary.white,
         padding: '4px 12px'
+    },
+    payProcessingNote: {
+        fontSize: '16px',
+        fontWeight: 500,
+        color: colors.greyScale.darkest
     }
 });
 
@@ -159,22 +170,32 @@ const CheckoutForm = props => {
                     <>
                         <Grid item>
                             <Typography className={classes.cardDetailLabel}>Card details</Typography>
+                            <Typography className={classes.cardDetailSubtitle}>
+                            We are partnering with Simard and Stripe to securely encrypt and process your card details. You will be asked to authenticate with your bank if your bank requires strong authentication. Your payment is made in US Dollars (US$) to Simard OÜ, and is non-refundable.
+                            </Typography>
                             <CardElement className="sr-input" options={checkoutStyles}/>
                         </Grid>
                         <Grid item>
                             <div className={classes.payButtonWrapper}>
-                                <Button
-                                    className={classes.payButton}
-                                    disabled={processing || !clientSecret || !stripe}
-                                    onClick={handlePayWithCard}
-                                >
-                                    <Typography
-                                        className={classes.payButtonLabel}
-                                        variant="caption"
+                                {!processing &&
+                                    <Button
+                                        className={classes.payButton}
+                                        disabled={processing || !clientSecret || !stripe}
+                                        onClick={handlePayWithCard}
                                     >
-                                        {processing ? 'Processing...' : `Pay $${amount} with Card`}
+                                        <Typography
+                                            className={classes.payButtonLabel}
+                                            variant="caption"
+                                        >
+                                            {`Pay US$ ${amount}`}
+                                        </Typography>
+                                    </Button>
+                                }
+                                {processing &&
+                                    <Typography className={classes.payProcessingNote}>
+                                        Please wait while we process your payment card
                                     </Typography>
-                                </Button>
+                                }
                             </div>
                         </Grid>
                     </>

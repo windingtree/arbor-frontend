@@ -1306,6 +1306,20 @@ const ApiSendChangeOrgidUriAndHash = async (web3, data, gasPrice) => {
   // %(
   const hash = Web3.utils.soliditySha3(JSON.stringify(orgidJson, null, 2));
 
+  console.log('[[[[[!!!@@@!!!', await orgidContract.methods.setOrgJson
+  .apply(orgidContract, [
+    orgidId,
+    hash,
+    orgidUri,
+    '',
+    ''
+  ])
+  .estimateGas({
+    from: '0x0bb476cc44b32ec1b7dbf93f57a984764f7246c8',
+    gasPrice,
+    gas: '12000000'
+  }));
+
   return new Promise((resolve, reject) => {
     orgidContract.methods.setOrgJson(
         orgidId,

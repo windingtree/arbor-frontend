@@ -1207,7 +1207,7 @@ const ApiPostOrgidJson = (data) => {
   });
 }
 
-const ApiSendCreateLegalEntity = (web3, data, gasPrice) => {
+const ApiSendCreateLegalEntity = async (web3, data, gasPrice) => {
   const orgidContract = getOrgidContract(web3);
   const {
     orgidUri,
@@ -1218,6 +1218,19 @@ const ApiSendCreateLegalEntity = (web3, data, gasPrice) => {
 
   // %(
   const hash = Web3.utils.soliditySha3(JSON.stringify(orgidJson, null, 2));
+
+  const gas = await orgidContract.methods.createOrganization
+    .apply(orgidContract, [
+      solt,
+      hash,
+      orgidUri,
+      '',
+      ''
+    ])
+    .estimateGas({
+      from: address,
+      gasPrice
+    });
 
   return new Promise((resolve, reject) => {
     // Create the transaction
@@ -1234,7 +1247,8 @@ const ApiSendCreateLegalEntity = (web3, data, gasPrice) => {
         // Options: only from address
         {
           from: address,
-          gasPrice
+          gasPrice,
+          gas
         },
 
         // Callback
@@ -1249,7 +1263,7 @@ const ApiSendCreateLegalEntity = (web3, data, gasPrice) => {
   });
 }
 
-const ApiSendCreateOrganizationalUnit = (web3, data, gasPrice) => {
+const ApiSendCreateOrganizationalUnit = async (web3, data, gasPrice) => {
   const orgidContract = getOrgidContract(web3);
   const {
     parent: {
@@ -1264,6 +1278,21 @@ const ApiSendCreateOrganizationalUnit = (web3, data, gasPrice) => {
 
   // %(
   const hash = Web3.utils.soliditySha3(JSON.stringify(orgidJson, null, 2));
+
+  const gas = await orgidContract.methods.createUnit
+    .apply(orgidContract, [
+      solt,
+      orgidParent,
+      address,
+      hash,
+      orgidUri,
+      '',
+      ''
+    ])
+    .estimateGas({
+      from: address,
+      gasPrice
+    });
 
   return new Promise((resolve, reject) => {
     // Create the transaction
@@ -1282,7 +1311,8 @@ const ApiSendCreateOrganizationalUnit = (web3, data, gasPrice) => {
         // Options
         {
           from: address,
-          gasPrice
+          gasPrice,
+          gas
         },
 
         // Callback
@@ -1306,19 +1336,18 @@ const ApiSendChangeOrgidUriAndHash = async (web3, data, gasPrice) => {
   // %(
   const hash = Web3.utils.soliditySha3(JSON.stringify(orgidJson, null, 2));
 
-  console.log('[[[[[!!!@@@!!!', await orgidContract.methods.setOrgJson
-  .apply(orgidContract, [
-    orgidId,
-    hash,
-    orgidUri,
-    '',
-    ''
-  ])
-  .estimateGas({
-    from: '0x0bb476cc44b32ec1b7dbf93f57a984764f7246c8',
-    gasPrice,
-    gas: '12000000'
-  }));
+  const gas = await orgidContract.methods.setOrgJson
+    .apply(orgidContract, [
+      orgidId,
+      hash,
+      orgidUri,
+      '',
+      ''
+    ])
+    .estimateGas({
+      from: address,
+      gasPrice
+    });
 
   return new Promise((resolve, reject) => {
     orgidContract.methods.setOrgJson(
@@ -1333,7 +1362,8 @@ const ApiSendChangeOrgidUriAndHash = async (web3, data, gasPrice) => {
         // Options
         {
           from: address,
-          gasPrice
+          gasPrice,
+          gas
         },
 
         // Callback

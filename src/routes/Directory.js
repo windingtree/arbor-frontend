@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import {
   fetchSearchOrganizationsByType,
   fetchSearchOrganizations,
@@ -15,6 +16,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Pagination from '../components/Pagination';
 import colors from '../styles/colors';
 import history from '../redux/history';
+import queryString from 'query-string';
 import ArrowLeftIcon from '../assets/SvgComponents/ArrowLeftIcon';
 import { countries } from '../utils/countries';
 import _ from 'lodash';
@@ -54,7 +56,8 @@ const styles = makeStyles({
     color: colors.greyScale.darkest,
   },
   gridListWrapper: {
-    paddingTop: '30px'
+    paddingTop: '30px',
+    paddingBottom: '60px'
   },
   filterWrapper: {
     width: '30%',
@@ -96,19 +99,38 @@ const styles = makeStyles({
 
 function Directory(props) {
   const classes = styles();
+  const search = history.location.search;
   const { items, fetchSearchOrganizations, meta: { per_page, total, pages} }  = props;
-  const [forcePage, setForcePage] = useState(undefined);
-  const [countryFilterValue, setCountryFilterValue] = useState('');
-  const currentDirectory = props.match.params.directory;
+  const { directory } = useParams();
+  const [searchCountry, setSearchCountry] = useState('');
+  const [searchPage, setSearchPage] = useState(1);
+
+  const options = {
+    countries
+  };
 
   useEffect(() => {
-    const data = {
-      directory: currentDirectory,
-      page: 1,
-      per_page: per_page
+    const query = queryString.parse(search);
+    const searchData = {
+      directory: directory || '',
+      country: query.country || '',
+      page: query.page ? parseInt(query.page) : 1,
+      'per_page': query['per_page'] ? query['per_page'] : per_page
     };
-    fetchSearchOrganizations(data);
-  }, [currentDirectory, per_page, fetchSearchOrganizations]);
+
+    setSearchPage(searchData.page);
+    setSearchCountry(searchData.country);
+
+    const doSearch = async () => {
+      try {
+        await fetchSearchOrganizations(searchData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    doSearch();
+  }, [search, directory, per_page, fetchSearchOrganizations]);
 
   const CardsList = () => {
     let OrgCards = items.map((item, index) => {
@@ -124,42 +146,36 @@ function Directory(props) {
     )
   };
 
-  const handlePageClick = data => {
-    let selected = data.selected;
-    const searchData = {
-      directory: currentDirectory,
+  const updateSearchQuery = data => {
+    // delete data['per_page'];
+    history.push(`/directories/${directory}?${queryString.stringify(data)}`);
+  };
+
+  const handlePageClick = async ({ selected }) => {
+    updateSearchQuery({
+      directory,
+      country: searchCountry,
       page: selected + 1,
-      per_page: 12
-    };
-
-    props.fetchSearchOrganizations(searchData)
+      per_page: per_page
+    });
   };
 
-  //handle select fields
-  const options = {
-    countries
-  };
-
-  const handleCountryFilterValueChange = async e => {
-    const data = {
-      directory: currentDirectory,
+  const handleCountryFilterValueChange = e => {
+    updateSearchQuery({
+      directory,
       country: e.target.value,
       page: 1,
       per_page: per_page
-    };
-    await props.fetchSearchOrganizations(data);
-    setForcePage(0);
-
-    setCountryFilterValue(data.country);
+    });
   };
 
   const directoryTitle = () => {
-    if(currentDirectory === 'ota') {
+    if(directory === 'ota') {
       return 'Travel agencies'
-    } else if(currentDirectory === 'insurance') {
+    } else if(directory === 'insurance') {
       return 'Insurance companies'
     } else {
-      return `${currentDirectory.charAt(0).toUpperCase() + currentDirectory.slice(1)}s`;
+      return `${directory.charAt(0).toUpperCase() + directory.slice(1)}s`;
     }
   };
 
@@ -184,9 +200,11 @@ function Directory(props) {
           </div>
           <div className={classes.filterWrapper}>
             <FormControl className={classes.selectControl}>
-              <InputLabel>Country</InputLabel>
+              <InputLabel>
+                {searchCountry === '' ? 'Country' : ''}
+              </InputLabel>
               <Select
-                value={countryFilterValue}
+                value={searchCountry}
                 onChange={handleCountryFilterValueChange}
               >
                 <MenuItem value={''}>All</MenuItem>
@@ -213,7 +231,7 @@ function Directory(props) {
                   <Pagination
                     pageCount={pages}
                     onPageChange={handlePageClick}
-                    forcePage={forcePage}
+                    forcePage={searchPage - 1}
                   />
                 </div>
               </div>

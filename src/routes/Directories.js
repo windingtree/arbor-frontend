@@ -93,12 +93,14 @@ const styles = makeStyles({
 
 function Directories(props){
   const classes = styles();
-  const { directories }  = props;
+  const { directories, fetchSearchOrganizationsByType, meta: { per_page } }  = props;
   const dirType = history.location.state && history.location.state.dirType;
 
   useEffect(() => {
-    if (dirType) props.fetchSearchOrganizationsByType({ type: dirType, page: 1, per_page: 12 })
-  }, [dirType]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (dirType) {
+      fetchSearchOrganizationsByType({ type: dirType, page: 1, per_page })
+    }
+  }, [fetchSearchOrganizationsByType, dirType, per_page]);
 
 
   useEffect(() => {
@@ -121,7 +123,7 @@ function Directories(props){
                       directoryName={item.name}
                       directoryImage={item.image}
                       directorySearchReq={item.searchReq}
-                      handleSearchByType={() => props.fetchSearchOrganizationsByType({ type: item.searchReq, page: 1, per_page: 12 })}
+                      handleSearchByType={() => fetchSearchOrganizationsByType({ type: item.searchReq, page: 1, per_page })}
                     />
                   </Grid>
                 )

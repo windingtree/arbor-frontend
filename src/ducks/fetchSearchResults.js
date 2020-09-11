@@ -26,7 +26,7 @@ const initialState = {
   items: [],
   meta: {
     page: 1,
-    per_page: 12,
+    per_page: 4,
   },
   error: null
 };

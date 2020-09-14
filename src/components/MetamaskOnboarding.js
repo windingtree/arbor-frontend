@@ -1,87 +1,130 @@
+import Web3 from 'web3';
 import MetaMaskOnboarding from '@metamask/onboarding';
-import React from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { connect } from 'react-redux';
-import { Typography } from '@material-ui/core';
-import { fetchSignInRequest } from '../ducks/signIn';
+import { Button, Typography, CircularProgress } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+import { fetchSignInRequest, selectSignInStatus } from '../ducks/signIn';
 
-const ONBOARD_TEXT = 'Click here to install MetaMask!';
-const CONNECT_TEXT = 'Connect';
-const CONNECTED_TEXT = 'Connected';
+import metamaskIcon from '../assets/images/metamask.png';
 
-const OnboardingButton = ({ className, buttonLabel, fetchSignInRequest }) => {
-  const [buttonText, setButtonText] = React.useState(ONBOARD_TEXT);
-  const [isDisabled, setDisabled] = React.useState(false);
-  const [accounts, setAccounts] = React.useState([]);
-  const onboarding = React.useRef();
+const ONBOARD_TEXT = 'Install MetaMask';
+const CONNECT_TEXT = 'Connect MetaMask';
 
-  React.useEffect(() => {
+const styles = makeStyles({
+  buttonLabel: {
+    fontSize: '16px',
+    fontWeight: 600,
+    color: '#2E2E31',
+    textTransform: 'none'
+  },
+  walletButton: {
+    width: '308px',
+    height: '72px',
+    border: '1px solid #F6851B',
+    borderRadius: '8px',
+    backgroundColor: 'white',
+    marginBottom: '20px',
+    ['@media (max-width: 540px)']: { // eslint-disable-line no-useless-computed-key
+      width: '256px',
+    }
+  },
+  walletButtonLabel: {
+    fontSize: '16px',
+    fontWeight: 600,
+    textTransform: 'none',
+    color: '#2E2E31'
+  },
+  walletSpinner: {
+    marginLeft: '10px',
+    ['@media (max-width: 540px)']: { // eslint-disable-line no-useless-computed-key
+      position: 'absolute',
+      marginLeft: '-45%',
+      marginTop: '20px'
+    }
+  }
+});
+
+const OnboardingButton = props => {
+  const { fetchSignInRequest, loggedIn } = props;
+  const classes = styles();
+  const [buttonText, setButtonText] = useState(ONBOARD_TEXT);
+  const [loginStarted, setLoginStart] = useState(false);
+  const onboarding = useRef();
+
+  useEffect(() => {
     if (!onboarding.current) {
       onboarding.current = new MetaMaskOnboarding();
     }
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-      if (accounts.length > 0) {
-        setButtonText(CONNECTED_TEXT);
-        setDisabled(true);
-        onboarding.current.stopOnboarding();
-      } else {
-        setButtonText(CONNECT_TEXT);
-        setDisabled(false);
-      }
-    }
-  }, [accounts]);
-
-  React.useEffect(() => {
-    function handleNewAccounts(newAccounts) {
-      setAccounts(newAccounts);
-    }
-    if (MetaMaskOnboarding.isMetaMaskInstalled() && window.ethereum.request) {
-      window.ethereum
-        .request({ method: 'eth_requestAccounts' })
-        .then(handleNewAccounts);
-      window.ethereum.on('accountsChanged', handleNewAccounts);
-      return () => {
-        window.ethereum.off('accountsChanged', handleNewAccounts);
-      };
+      setButtonText(CONNECT_TEXT);
     } else {
-      window.ethereum.enable().then(handleNewAccounts);
+      setButtonText(ONBOARD_TEXT);
     }
   }, []);
 
   const onClick = () => {
     if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-      window.ethereum
-        .request({ method: 'eth_requestAccounts' })
-        .then((newAccounts) => setAccounts(newAccounts));
+      setLoginStart(true);
+
+      const connectMethod = window.ethereum.request
+        ? window.ethereum.request({ method: 'eth_requestAccounts' })
+        : window.ethereum.enable();
+
+      connectMethod
+        .then(accounts => {
+          // Ethereum user detected
+          let web3;
+
+          if (typeof window.ethereum !== 'undefined') {
+            window.ethereum.autoRefreshOnNetworkChange = false;
+            web3 = new Web3(window.ethereum);
+            console.log('Ethereum provider detected.');
+          }
+
+          // Check for injected web3 (old browsers or extensions)
+          else if (typeof window.web3 !== 'undefined') {
+            web3 = window.web3;
+            console.log('Injected web3 detected.');
+          }
+
+          fetchSignInRequest({
+            address: accounts[0],
+            web3,
+            provider: 'metamask'
+          });
+        });
     } else {
       onboarding.current.startOnboarding();
     }
   };
 
+  const isMetamaskConnecting = !loggedIn && loginStarted;
+
   return (
-      <>
-        {accounts.length > 0 &&
-            <button className={className} onClick={() => fetchSignInRequest(accounts)}>
-                <Typography variant={'caption'} className={buttonLabel}>
-                    Sign in
-                </Typography>      
-            </button>
-        }
-        {(!accounts || accounts.length === 0) &&
-            <button className={className} disabled={isDisabled} onClick={onClick}>
-                <Typography variant={'caption'} className={buttonLabel}>
-                    {buttonText}
-                </Typography>      
-            </button>
-        }
-      </>
+    <>
+      <Button className={classes.walletButton} onClick={onClick}>
+        <img src={metamaskIcon} alt='MetaMask Wallet' />
+        <Typography variant={'caption'} className={classes.buttonLabel}>
+            {buttonText}
+        </Typography>
+      </Button>
+      {isMetamaskConnecting &&
+        <CircularProgress size='30px' className={classes.walletSpinner} />
+      }
+    </>
   );
 }
+
+const mapStateToProps = state => ({
+  loggedIn: selectSignInStatus(state)
+});
 
 const mapDispatchToProps = {
   fetchSignInRequest
 };
 
-export default connect(null, mapDispatchToProps)(OnboardingButton);
+export default connect(mapStateToProps, mapDispatchToProps)(OnboardingButton);

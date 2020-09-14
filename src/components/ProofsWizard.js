@@ -15,7 +15,7 @@ import SaveButton from './buttons/Save';
 
 const useStyles = makeStyles({
     root: {
-        
+
     },
     info: {
         fontFamily: 'Inter',
@@ -55,7 +55,7 @@ const extractSocialClaim = uri => {
 
 const ProofForm = props => {
     const { proof, addAssertion, handleClose, classes } = props;
-    
+
     return (
         <>
             <Formik
@@ -67,7 +67,7 @@ const ProofForm = props => {
                     const errors = {};
 
                     if (!/\w+:(\/?\/?)[^\s]+/.test(values.proofUri)) {
-                        errors.proofUri = 'Wrong proof URI';
+                        errors.proofUri = 'Incorrect URI';
                     }
 
                     return errors;
@@ -111,7 +111,7 @@ const ProofForm = props => {
                                             className={classes.textarea}
                                             value={n.replace(/^>/, '')}
                                         />
-                                    ); 
+                                    );
                                 }
 
                                 return (
@@ -124,10 +124,10 @@ const ProofForm = props => {
                                 );
                             })}
                         </div>
-                        <div>                            
+                        <div>
                             <TextField
                                 type='input'
-                                label='Enter proof URL: https://...'
+                                label='https://...'
                                 name='proofUri'
                                 value={values['proofUri']}
                                 helperText={errors['proofUri'] && touched['proofUri'] ? errors['proofUri'] : undefined}

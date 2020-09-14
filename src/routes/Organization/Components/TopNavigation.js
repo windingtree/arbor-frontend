@@ -1,24 +1,24 @@
 import React from "react";
 import _ from 'lodash';
 
-import {makeStyles, withStyles} from '@material-ui/core/styles';
-import {Box, Button, Container, Hidden, Tooltip, Typography} from "@material-ui/core";
+import { makeStyles } from '@material-ui/core/styles';
+import { Box, Button, Container, Hidden, Typography } from "@material-ui/core";
 import history from "../../../redux/history";
-import {ArrowLeftIcon, EyeIcon, EditIcon, InfoIcon, TrustLevelIcon } from '../../../assets/SvgComponents';
+import { ArrowLeftIcon, EyeIcon, EditIcon, TrustLevelIcon } from '../../../assets/SvgComponents';
 import colors from '../../../styles/colors';
 
-const LightTooltip = withStyles({
-  tooltip: {
-    maxWidth: '240px',
-    backgroundColor: colors.primary.white,
-    boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
-    color: colors.greyScale.common,
-    fontSize: '12px',
-    fontWeight: 400,
-    padding: '12px',
-    boxSizing: 'border-box'
-  }
-})(Tooltip);
+// const LightTooltip = withStyles({
+//   tooltip: {
+//     maxWidth: '240px',
+//     backgroundColor: colors.primary.white,
+//     boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
+//     color: colors.greyScale.common,
+//     fontSize: '12px',
+//     fontWeight: 400,
+//     padding: '12px',
+//     boxSizing: 'border-box'
+//   }
+// })(Tooltip);
 
 const styles = makeStyles({
   itemTrustInfoContainer: {
@@ -188,7 +188,7 @@ function TopNavigation(props) {
               <Button onClick={() => history.push(`/organization/${id}`, {id})}>
                 <Typography variant={'caption'} className={classes.buttonLabel}>
                   <EyeIcon viewBox={'0 0 16 12'} className={[classes.itemActionButtonIcon, classes.eyeIcon].join(' ')}/>
-                  Public organization view
+                  Public view
                 </Typography>
               </Button> {/*View*/}
 
@@ -198,7 +198,7 @@ function TopNavigation(props) {
                 <Typography variant={'caption'} className={classes.buttonLabel}>
                   <EditIcon viewBox={'0 0 14 14 '}
                             className={[classes.itemActionButtonIcon, classes.editIcon].join(' ')}/>
-                  Edit organization profile
+                  Edit company profile
                 </Typography>
               </Button> {/*Edit*/}
             </div>
@@ -209,15 +209,7 @@ function TopNavigation(props) {
         canManage && (
           <div className={classes.itemTrustInfoContainer}>
             <div className={classes.itemTrustInfoBase}>
-              <LightTooltip
-                title={'The number of verified trust proofs.'}
-                placement={'top-start'}
-              >
-                <button className={classes.tooltipRef}>
-                  <InfoIcon viewBox={'0 0 16 16'} className={classes.infoIcon}/>
-                </button>
-              </LightTooltip>
-              <Typography variant={'caption'} className={classes.itemTrustInfoTitle}>Trust proofs: </Typography>
+              <Typography variant={'caption'} className={classes.itemTrustInfoTitle}>Trust </Typography>
               <TrustLevelIcon className={classes.iconTrustLevel}/>
               <Typography variant={'caption'} className={classes.trustLevelValue}>{!!proofsQty ? proofsQty : '0'}</Typography>
             </div>
@@ -226,7 +218,7 @@ function TopNavigation(props) {
                 onClick={scrollToRef}
                 className={classes.goTrust}
               >
-                Gain trust proofs
+                Get Verified
               </Button>
             </div>
           </div>

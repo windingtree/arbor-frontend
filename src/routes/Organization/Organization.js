@@ -13,6 +13,7 @@ import history from '../../redux/history';
 import TopNavigation from "./Components/TopNavigation";
 import Agents from "./Components/Agents";
 import Services from "./Components/Services";
+import Payments from "./Components/Payments";
 import Info from "./Components/Info";
 import SubOrganizations from './Components/SubOrganizations';
 import ProofsList from '../../components/ProofsList';
@@ -58,6 +59,7 @@ function Organization (props) {
   const subsidiaries = _.get(organization, 'subsidiaries', []);
   const agents = _.get(organization, 'jsonContent.publicKey', []);
   const services = _.get(organization, 'jsonContent.service', []);
+  const payments = _.get(organization, 'jsonContent.payment', []);
   const {
     owner,
     isLifProved,
@@ -104,14 +106,14 @@ function Organization (props) {
           <SubOrganizations organization={organization} subs={subs} canManage={canManage} />
         </div>
       }
-      {canManage && 
+      {canManage &&
         <Agents
           orgid={id}
           owner={owner}
           agents={agents}
         />
       }
-      {canManage && 
+      {canManage &&
         <Services
           orgid={id}
           owner={owner}
@@ -123,6 +125,13 @@ function Organization (props) {
           orgid={id}
         />
       }
+      {canManage && 
+        <Payments
+          orgid={id}
+          owner={owner}
+          payments={payments}
+        />
+      }
       {/* {canManage &&
         <div className={classes.greyDiv}>
           <Container className={classes.lifContent}>
@@ -132,7 +141,7 @@ function Organization (props) {
                   Submit your Líf deposit
                 </Typography>
                 <Typography className={classes.topSectionText}>
-                  Líf deposit is a small amount of cryptocurrency that is staked when you register your organization profile on Winding Tree Marketplace. 
+                  Líf deposit is a small amount of cryptocurrency that is staked when you register your organization profile on Winding Tree Marketplace.
                   This action minimizes spam registrations and proves your commitment to the cause.
                 </Typography>
                 <div style={{ marginTop: '30px'}}>
@@ -144,7 +153,7 @@ function Organization (props) {
                     })}>
                     Submit Líf
                   </SaveButton>
-                </div>              
+                </div>
               </Grid>
               <Grid item xs={6}>
                 <img src={trustLifDeposit} alt={'Lif Deposit'} />
@@ -156,7 +165,7 @@ function Organization (props) {
       <div ref={proofsRef} />
       <ProofsList
         canManage={canManage}
-        title='Trust proofs'
+        title='Get Verified'
         orgid={id}
         assertions={assertions}
         verifications={verifications}

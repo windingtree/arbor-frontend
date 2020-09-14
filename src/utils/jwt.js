@@ -32,28 +32,35 @@ export const createToken = (web3, options) => new Promise((resolve, reject) => {
   const sHeader = JSON.stringify(header);
   const sPayload = JSON.stringify(payload);
 
-  var toSign = "";
-  toSign = btoa(sHeader) + '.' + btoa(sPayload);
-  toSign = toSign.replace(/=/g, '');
-  toSign = toSign.replace(/\+/g, "-");
-  toSign = toSign.replace(/\//g, "_");
+  let toSign = '';
+  let params;
+
+  if (web3.currentProvider.isPortis) {
+    toSign = btoa(sHeader) + '.' + btoa(sPayload);
+    toSign = toSign.replace(/=/g, '');
+    toSign = toSign.replace(/\+/g, '-');
+    toSign = toSign.replace(/\//g, '_');
+    params = [web3.utils.toHex(toSign), from];
+  } else {
+    toSign = btoa(sHeader) + '.' + btoa(sPayload);
+    toSign = toSign.replace(/=/g, '');
+    toSign = toSign.replace(/\+/g, '-');
+    toSign = toSign.replace(/\//g, '_');
+    params = [toSign, from];
+  }
 
   // Handle the Ethereum signature process
   if (algorithm === 'ETH') {
 
-    // Prepare raw transaction data
-    
-    var params = [toSign, from];
-    var method = 'personal_sign';
-
     // Request request to web3 provider
-    web3.currentProvider.send({
-        method,
+    web3.currentProvider.sendAsync(
+      {
+        method: 'personal_sign',
         params,
-        from,
+        from
       },
       (err, result) => {
-        
+
         if (err) {
           console.error(err);
           reject(err);
@@ -67,7 +74,7 @@ export const createToken = (web3, options) => new Promise((resolve, reject) => {
         }
 
         const signature = result.result;
-        
+
         // Convert hex to base64
         // Leading '0x' is skipped, and each byte is unpacked using two hex chars
         var raw = '';
@@ -76,10 +83,11 @@ export const createToken = (web3, options) => new Promise((resolve, reject) => {
           raw += String.fromCharCode(parseInt(signature.substring(i, i + 2), 16))
         }
 
-        const b64Token = btoa(raw).replace(/\+/g, "-").replace(/\//g, "_").split('=')[0]
-                
+        const b64Token = btoa(raw).replace(/\+/g, '-').replace(/\//g, '_').split('=')[0]
+
         resolve(toSign + '.' + b64Token);
-      });
+      }
+    );
   } else {
     reject(new Error(`${algorithm} not supported yet`));
     return;

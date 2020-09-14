@@ -95,13 +95,16 @@ const styles = makeStyles({
     textTransform: 'none',
   },
   dialogContent: {
-    width: '440px'
+    width: '440px',
+    paddingBottom: '40px'
   },
   dialogTitle: {
     fontSize: '32px',
     fontWeight: 500,
     textAlign: 'start',
-    color: colors.greyScale.darkest
+    color: colors.greyScale.darkest,
+    marginBottom: '20px',
+    display: 'inline-block'
   },
   dialogSubtitleWrapper: {
     padding: '20px 0 32px 0'
@@ -180,7 +183,7 @@ function Services(props) {
       const fragment = v.id.split('#')[1];
       if (fragment) {
         a.push(fragment);
-      }      
+      }
       return a;
     },
     []
@@ -217,13 +220,8 @@ function Services(props) {
           <Typography
             variant={'caption'}
             className={classes.dialogTitle}>
-                { serviceIndexToRemove !== null ? 'Remove' : 'Add' } Service
+                { serviceIndexToRemove !== null ? 'Remove' : 'Add' } API
           </Typography>
-          <div className={classes.dialogSubtitleWrapper}>
-            <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>
-                { serviceIndexToRemove !== null ? 'To remove a service' : 'To add a service, enter its properties and write a description, then' } confirm the transaction in MetaMask.
-            </Typography>
-          </div>
           {
             serviceIndexToRemove !== null ? (
               <div className={classes.dialogButtonWrapper}>
@@ -268,7 +266,7 @@ function Services(props) {
                             break;
                           }
                           break;
-                        
+
                         case 'description':
                           break;
                         default:
@@ -299,68 +297,68 @@ function Services(props) {
                   }) => (
                   <form onSubmit={handleSubmit}>
                     <div className={classes.inputFieldWrapper}>
-                        <TextField
-                            name={'type'}
-                            autoComplete={'none'}
-                            variant={'filled'}
-                            label={'Enter service type'}
-                            fullWidth
-                            required
-                            error={errors.type && touched.type}
-                            values={values.type}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            helperText={errors.type && touched.type ? errors.type : null}                        
-                        />
+                      <TextField
+                          name={'type'}
+                          autoComplete={'none'}
+                          variant={'filled'}
+                          label={'API Type (HTNG, NDC, OTA, etc.)'}
+                          fullWidth
+                          required
+                          error={errors.type && touched.type}
+                          value={values.type}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          helperText={errors.type && touched.type ? errors.type : null}
+                      />
                     </div>
                     <div className={classes.inputFieldWrapper}>
-                        <TextField
-                            name={'fragment'}
-                            autoComplete={'none'}
-                            variant={'filled'}
-                            label={'Enter a service fragment (unique tag)'}
-                            fullWidth
-                            required
-                            error={errors.fragment && touched.fragment}
-                            values={values.fragment}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            helperText={errors.fragment && touched.fragment ? errors.fragment : null}
-                        />
+                      <TextField
+                          name={'fragment'}
+                          autoComplete={'none'}
+                          variant={'filled'}
+                          label={'Unique API ID'}
+                          fullWidth
+                          required
+                          error={errors.fragment && touched.fragment}
+                          value={values.fragment}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          helperText={errors.fragment && touched.fragment ? errors.fragment : null}
+                      />
                     </div>
                     <div className={classes.inputFieldWrapper}>
-                        <TextField
-                            name={'serviceEndpoint'}
-                            autoComplete={'none'}
-                            variant={'filled'}
-                            label={'Service endpoint URI'}
-                            fullWidth
-                            required
-                            error={errors.serviceEndpoint && touched.serviceEndpoint}
-                            values={values.serviceEndpoint}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            helperText={errors.serviceEndpoint && touched.serviceEndpoint ? errors.serviceEndpoint : null}
-                        />
+                      <TextField
+                          name={'serviceEndpoint'}
+                          autoComplete={'none'}
+                          variant={'filled'}
+                          label={'API Endpoint URI'}
+                          fullWidth
+                          required
+                          error={errors.serviceEndpoint && touched.serviceEndpoint}
+                          value={values.serviceEndpoint}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          helperText={errors.serviceEndpoint && touched.serviceEndpoint ? errors.serviceEndpoint : null}
+                      />
                     </div>
                     <div className={classes.inputFieldWrapper}>
-                        <TextField
-                            name={'description'}
-                            autoComplete={'none'}
-                            variant={'filled'}
-                            label={'Description of the service'}
-                            fullWidth
-                            error={errors.description && touched.description}
-                            values={values.description}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            helperText={errors.description && touched.description ? errors.description : null}
-                        />
+                      <TextField
+                          name={'description'}
+                          autoComplete={'none'}
+                          variant={'filled'}
+                          label={'Description'}
+                          fullWidth
+                          error={errors.description && touched.description}
+                          value={values.description}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          helperText={errors.description && touched.description ? errors.description : null}
+                      />
                     </div>
                     <div className={classes.dialogButtonWrapper}>
                       <Button type={'submit'} disabled={isSubmitting || Object.keys(touched).length === 0} className={classes.dialogButton}>
                         <Typography variant={'caption'} className={classes.dialogButtonLabel}>
-                          Save Service
+                          Next
                         </Typography>
                       </Button>
                     </div>
@@ -399,7 +397,7 @@ function Services(props) {
               !!pendingTransaction ? (
                 <div className={classes.progressWrapper}>
                   <Typography variant={'caption'} className={classes.dialogTitle}>
-                    Wait for the transaction be mined
+                    Uploading data to blockchain...
                   </Typography>
                   <div className={classes.dialogSubtitleWrapper}>
                     <CircularProgress/>
@@ -409,11 +407,11 @@ function Services(props) {
                 dialogStepsContent(activeStep)
               ) : (
                 <>
-                  <Typography variant={'caption'} className={classes.dialogTitle}>Service successfully { serviceIndexToRemove !== null ? 'removed' : 'added' }</Typography>
+                  <Typography variant={'caption'} className={classes.dialogTitle}>API { serviceIndexToRemove !== null ? 'removed' : 'added' }</Typography>
                   <div className={classes.dialogButtonWrapper}>
                     <Button onClick={handleCloseModal} className={classes.dialogButton}>
                       <Typography variant={'caption'} className={classes.dialogButtonLabel}>
-                        Manage your services
+                        Close
                       </Typography>
                     </Button>
                   </div>
@@ -430,25 +428,22 @@ function Services(props) {
     <Container>
       <div className={classes.servicesContent}>
         <div className={classes.servicesTitleWrapper}>
-          <Typography variant={'inherit'}>Services management</Typography>
+          <Typography variant={'inherit'}>APIs: Application Programming Interfaces</Typography>
         </div>
         <div>
           <Typography variant={'inherit'} className={classes.servicesSubtitle}>
-            Add public API services that can be used for communication with your organization.
+            APIs that you would like to expose on Winding Tree Marketplace. E.g. a hotel booking API, NDC API, etc.
           </Typography>
         </div>
         <div className={classes.servicesListContainer}>
-          <div className={classes.servicesInfoWrapper}>
-            <Typography variant={'inherit'} className={classes.agentTitle}>Services</Typography>
-          </div>
           <div className={classes.buttonWrapper}>
             <Button onClick={() => handleAdd()} className={classes.button}>
-              <Typography variant={'inherit'}>+ Add Service</Typography>
+              <Typography variant={'inherit'}>Add API</Typography>
             </Button>
             {addAgentKeyDialog()}
           </div>
           {
-            services.length !== 0 ? (
+            services.length !== 0 && (
               <div>
                 <ul>
                   {
@@ -462,7 +457,7 @@ function Services(props) {
                                 leftElement={(<VpnKeyIcon className={classes.keyIcon}/>)}
                                 fontSize={'14px'}
                                 width={18}
-                                title='Service URI copied to clipboard'
+                                title='Copied to clipboard'
                                 color={colors.greyScale.dark}
                               />
                             </Grid>
@@ -471,7 +466,7 @@ function Services(props) {
                             </Grid>
                             <Grid item xs={2}>
                               <Button onClick={() => handleDeleteAgent(index)} className={classes.deleteAgentButton}>
-                                <Typography variant={'inherit'}>Delete Service</Typography>
+                                <Typography variant={'inherit'}>Delete API</Typography>
                               </Button>
                             </Grid>
                           </Grid>
@@ -480,10 +475,6 @@ function Services(props) {
                     })
                   }
                 </ul>
-              </div>
-            ) : (
-              <div>
-                <Typography>You have no services</Typography>
               </div>
             )
           }

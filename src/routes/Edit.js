@@ -335,7 +335,7 @@ const Edit = (props) => {
                         <Typography variant={'h3'} className={classes.pendingTitle}>Almost there!</Typography>
                       </Grid>
                       <Grid item>
-                        <CircularProgress 
+                        <CircularProgress
                           className={classes.progress}
                           variant='indeterminate'
                           size={20}
@@ -401,7 +401,7 @@ const Edit = (props) => {
                   []
                 );
               }
-              
+
               if (v.sections && v.sections.right) {
                 right = v.sections.right.reduce(
                   (ar, vr) => {
@@ -419,7 +419,7 @@ const Edit = (props) => {
                   []
                 );
               }
-              
+
               return [
                 ...a,
                 ...left,
@@ -439,7 +439,7 @@ const Edit = (props) => {
         }
       }
     });
-    
+
     // Return errors
     console.log('ERRORS', errors)
     return errors;
@@ -491,7 +491,7 @@ const Edit = (props) => {
                     </Typography>
                     <div className={classes.editHeaderSubtitleContainer}>
                       <Typography variant={'subtitle2'} className={classes.editHeaderSubtitle}>
-                        Every profile change requires an Ethereum transaction. Make sure to have at least 0.1 Ether in your MetaMask account before you save your changes and update your profile.
+                        Every profile change requires an Ethereum transaction. Make sure to have at least 0.1 Ether in your wallet before you save your changes and update your profile.
                       </Typography>
                     </div>
                   </Grid>
@@ -591,8 +591,8 @@ const Edit = (props) => {
                         </Typography>
                       </Button>
                     </Grid>
-                  }                  
-                </Container>                
+                  }
+                </Container>
               </TabPanel>
               {setDialog()}
               <SaveStateDialog

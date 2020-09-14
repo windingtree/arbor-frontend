@@ -15,7 +15,6 @@ import RefershButton from '../../../components/buttons/Refresh';
 import DialogComponent from '../../../components/Dialog';
 import SelectField from '../../../components/Fields/SelectField';
 import { Formik } from 'formik';
-import { getWeb3 } from '../../../web3/w3';
 import { createToken } from '../../../utils/jwt';
 import {
   SIMARD_URL,
@@ -24,7 +23,8 @@ import {
 } from '../../../utils/constants';
 
 import {
-  selectSignInAddress
+  selectSignInAddress,
+  selectWeb3
 } from '../../../ducks/signIn';
 
 const styles = makeStyles({
@@ -116,6 +116,10 @@ const styles = makeStyles({
   dialogTitleWrapper: {
     marginBottom: '20px'
   },
+  dialogTitleWrapperCenter: {
+    marginBottom: '20px',
+    textAlign: 'center'
+  },
   dialogTitle: {
     fontSize: '32px',
     fontWeight: 500,
@@ -147,6 +151,19 @@ const styles = makeStyles({
       cursor: 'none'
     }
   },
+  dialogCancelButton: {
+    height: '44px',
+    border: `1px solid #3A9492`,
+    borderRadius: '8px',
+    background: 'linear-gradient(180deg, #99D7C5 -25%, #3A9492 103.57%)',
+    boxShadow: '0px 2px 12px rgba(12, 64, 78, 0.1)',
+    textTransform: 'none',
+    padding: '6px 20px',
+    '&:disabled': {
+      opacity: '0.5',
+      cursor: 'none'
+    }
+  },
   dialogButtonLabel: {
     fontSize: '16px',
     fontWeight: 600,
@@ -158,6 +175,9 @@ const styles = makeStyles({
       cursor: 'pointer',
       textDecoration: 'underline'
     }
+  },
+  confirmationButtonsWrapper: {
+    marginTop: '20px'
   }
 });
 
@@ -244,6 +264,59 @@ const removeSimardAccount = (authToken, accountId) => callSimard(
   'DELETE'
 );
 
+const DeleteAccountDialog = props => {
+  const classes = styles();
+  const { handleClose, isOpen, onDelete } = props;
+
+  return (
+    <DialogComponent
+      handleClose={handleClose}
+      isOpen={isOpen}
+      children={(
+        <div className={classes.dialogContent}>
+          <div className={classes.dialogTitleWrapperCenter}>
+            <Typography
+              variant={'caption'}
+              className={classes.dialogTitle}>
+                Confirm account deletion
+            </Typography>
+          </div>
+          <div className={classes.confirmationButtonsWrapper}>
+            <Grid container justify={'space-between'} alignItems={'center'}>
+              <Grid item xs={6}>
+                <div className={classes.dialogButtonWrapper}>
+                  <Button
+                    onClick={() => handleClose()}
+                    title='Cancel'
+                    className={classes.dialogCancelButton}
+                  >
+                    <Typography variant={'caption'} className={classes.dialogButtonLabel}>
+                      Cancel
+                    </Typography>
+                  </Button>
+                </div>
+              </Grid>
+              <Grid item xs={6}>
+                <div className={classes.dialogButtonWrapper}>
+                  <Button
+                    onClick={() => onDelete()}
+                    title='Cancel'
+                    className={classes.dialogButton}
+                  >
+                    <Typography variant={'caption'} className={classes.dialogButtonLabel}>
+                    Delete
+                    </Typography>
+                  </Button>
+                </div>
+              </Grid>
+            </Grid>
+          </div>
+        </div>
+      )}
+    />
+  );
+};
+
 const AccountDialog = props => {
   const classes = styles();
   const { handleClose, isOpen, onAction, forUpdate } = props;
@@ -278,7 +351,7 @@ const AccountDialog = props => {
                         break;
                     case 'iban':
                       if (!value.match(/^([A-Z]{2}[ -]?[0-9]{2})(?=(?:[ -]?[A-Z0-9]){9,30}$)((?:[ -]?[A-Z0-9]{3,5}){2,7})([ -]?[A-Z0-9]{1,3})?$/)) {
-                        errors[key] = `IBAN addres has wrong format`;
+                        errors[key] = `IBAN address has wrong format`;
                         break;
                       }
                       break;
@@ -329,7 +402,7 @@ const AccountDialog = props => {
                     value={values.iban}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    helperText={errors.iban && touched.iban ? errors.iban : null}                        
+                    helperText={errors.iban && touched.iban ? errors.iban : null}
                   />
                 </div>
                 <div className={classes.dialogButtonWrapper}>
@@ -353,7 +426,7 @@ const AccountDialog = props => {
 
 const SimardAccounts = props => {
   const classes = styles();
-  const { orgid, address } = props;
+  const { orgid, address, web3 } = props;
   const sessionKey = `${orgid}:token`;
   const [authToken, setAuthToken] = useState(
     sessionStorage.getItem(sessionKey)
@@ -364,6 +437,8 @@ const SimardAccounts = props => {
   const [sessionTimeout, setSessionTimeout] = useState();
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [forUpdate, setForUpdate] = useState();
+  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [accountToDelete, setAccountToDelete] = useState(null);
 
   const resetAuthToken = sessionKey => {
     sessionStorage.removeItem(sessionKey)
@@ -391,7 +466,7 @@ const SimardAccounts = props => {
           setErrorMessage(
             'A signature will be requested to manage accounts on behalf of your organization'
           );
-        } 
+        }
       } catch (error) {
         setIsFetching(false);
         setError(error);
@@ -404,7 +479,7 @@ const SimardAccounts = props => {
     if (!authToken) {
       clearTimeout(sessionTimeout);
       const token = await createToken(
-        getWeb3(),
+        web3,
         {
           algorithm: 'ETH',
           expiration: SIMARD_EXPIRATION,
@@ -496,9 +571,20 @@ const SimardAccounts = props => {
     }
   };
 
+  const handleDeleteDialogClose = () => {
+    setAccountToDelete(null);
+    setDeleteDialogOpen(false);
+  };
+
+  const handleDeleteStart = account => {
+    setAccountToDelete(account);
+    setDeleteDialogOpen(true);
+  };
+
   const handleDelete = async account => {
     try {
       setError(null);
+      setDeleteDialogOpen(false);
 
       await checkAuthToken();
       setIsFetching(true);
@@ -516,14 +602,17 @@ const SimardAccounts = props => {
       <div className={classes.header}>
         <div className={classes.headerTitle}>
           <Typography variant={'inherit'}>
-            Simard Pay Bank Accounts
+            Bank Accounts
           </Typography>
         </div>
         <div className={classes.headerSubtitle}>
           <Typography variant={'inherit'}>
-            Review your bank accounts configured on Simard Pay
+            Connect to Simard Pay to manage bank accounts for receiving and sending payments.
           </Typography>
         </div>
+
+
+
       </div>
       <div className={classes.accounts}>
         <div className={classes.accountsTitle}>
@@ -544,16 +633,18 @@ const SimardAccounts = props => {
           }
         </div>
         <div>
-          {!authToken &&
-            <div>
-              <RefershButton
-                onClick={() => handleFetchAccounts()}
-                disabled={isFetching}
-              >
-                Connect to Simard Pay
-              </RefershButton>
-            </div>
-          }
+        {!authToken &&
+          <div>
+            <RefershButton
+              onClick={() => handleFetchAccounts()}
+              disabled={isFetching}
+            >
+              Connect to Simard Pay
+            </RefershButton>
+          </div>
+        }
+        </div>
+        <div>
           {(authToken && !accounts) &&
             <div>
               <RefershButton
@@ -586,7 +677,7 @@ const SimardAccounts = props => {
                       </Grid>
                       <Grid item xs={2}>
                         <Button
-                          onClick={() => handleDelete(account)}
+                          onClick={() => handleDeleteStart(account)}
                           className={classes.deleteButton}
                           disabled={isFetching}
                         >
@@ -607,7 +698,7 @@ const SimardAccounts = props => {
           <div>
             <Typography className={classes.error}>{error}</Typography>
           </div>
-        }        
+        }
       </div>
       <AccountDialog
         forUpdate={forUpdate}
@@ -617,13 +708,19 @@ const SimardAccounts = props => {
           ? handleUpdate(values)
           : handleCreate(values)}
       />
+      <DeleteAccountDialog
+        isOpen={isDeleteDialogOpen}
+        handleClose={() => handleDeleteDialogClose()}
+        onDelete={() => handleDelete(accountToDelete)}
+      />
     </Container>
   );
 };
 
 const mapStateToProps = state => {
   return {
-    address: selectSignInAddress(state)
+    address: selectSignInAddress(state),
+    web3: selectWeb3(state)
   }
 };
 

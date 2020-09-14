@@ -24,7 +24,7 @@ import SaveButton from './buttons/Save';
 
 const useStyles = makeStyles({
     root: {
-        
+
     },
     progress: {
         marginRight: '20px',
@@ -114,7 +114,7 @@ const ProofsSaver = props => {
                             <Box>
                                 <Grid container justify='space-between' alignItems='center'>
                                     <Grid item>
-                                        <CircularProgress 
+                                        <CircularProgress
                                             className={classes.progress}
                                             variant='indeterminate'
                                             size={40}
@@ -125,7 +125,7 @@ const ProofsSaver = props => {
                                         <Typography
                                             className={classes.info}
                                         >
-                                            Waiting for the transaction: <span className='hash'>{transactionHash}</span> to be mined... 
+                                            Transaction <span className='hash'>{transactionHash}</span> is pending...
                                         </Typography>
                                     </Grid>
                                 </Grid>
@@ -151,7 +151,7 @@ const ProofsSaver = props => {
                                         >
                                             Close
                                         </SaveButton>
-                                    </div>                                    
+                                    </div>
                                 </Box>
                             )
                     }
@@ -169,7 +169,7 @@ const mapStateToProps = state => {
         transactionHash: selectTransactionHash(state)
     };
   };
-  
+
 const mapDispatchToProps = {
     resetTransactionStatus
 };

@@ -64,7 +64,7 @@ export default function SearchComponent(props) {
               id={'search-input'}
               autoComplete={''}
               className={classes.searchInput}
-              placeholder={`Search by organization name or identifier`}
+              placeholder={`Company name or ID`}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position={'start'}>
@@ -73,7 +73,7 @@ export default function SearchComponent(props) {
                 )
               }}
               fullWidth
-              value={searchValue}
+              value={searchValue || ''}
               onChange={handleSearchValue}
               onFocus={handleFocus}
               onKeyPress={(event) => {
@@ -87,7 +87,7 @@ export default function SearchComponent(props) {
         <Grid item xs={12} sm={4} className={currentPage === '/search' ? classes.buttonContainer : ''}>
           <div className={classes.searchButtonWrapper}>
             <Button onClick={fetchSearchResult} className={classes.searchButton}>
-              <Typography variant={'inherit'} className={classes.searchButtonLabel} noWrap>Find organization</Typography>
+              <Typography variant={'inherit'} className={classes.searchButtonLabel} noWrap>Search</Typography>
             </Button>
           </div>
         </Grid>

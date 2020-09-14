@@ -68,7 +68,7 @@ const styles = makeStyles({
     fontWeight: 400,
     fontSize: '14px',
     color: colors.greyScale.dark,
-    padding: '40px 0'
+    padding: '20px 0'
   },
   agentsTitleWrapper: {
     fontSize: '24px',
@@ -100,7 +100,8 @@ const styles = makeStyles({
     textTransform: 'none',
   },
   dialogContent: {
-    width: '440px'
+    width: '440px',
+    paddingBottom: '40px'
   },
   dialogTitle: {
     fontSize: '32px',
@@ -198,7 +199,7 @@ function Agents(props) {
       const fragment = v.id.split('#')[1];
       if (fragment) {
         a.push(fragment);
-      }      
+      }
       return a;
     },
     []
@@ -245,15 +246,15 @@ function Agents(props) {
       case 'step_metamask': return <WizardStepMetaMask data={content} action={'edit'} handleNext={handleNext} key={stepIndex} index={stepIndex} stepTitle={false}/>;
       default: return (
         <>
-          <Typography variant={'caption'} className={classes.dialogTitle}>{ agentIndexToRemove !== null ? 'Remove' : 'Add' } agent key</Typography>
+          <Typography variant={'caption'} className={classes.dialogTitle}>{ agentIndexToRemove !== null ? 'Remove' : 'Add' } Public Key</Typography>
           <div className={classes.dialogSubtitleWrapper}>
-            <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>{ agentIndexToRemove !== null ? 'To remove an agent' : 'To add an agent, enter its key and  write a comment, then' } confirm the transaction in MetaMask. </Typography>
             <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>
-            More details about agents keys management process can be found&nbsp; 
+            Please&nbsp;
             <Link
               target='_blank'
               href={'https://github.com/windingtree/arbor-frontend/blob/develop/docs/keys.md'}
-            >here</Link>
+            >generate keys</Link>
+            &nbsp;first
             </Typography>
           </div>
           {
@@ -277,38 +278,38 @@ function Agents(props) {
                       switch (key) {
                         case 'type':
                           if (!value) {
-                            errors[key] = 'You must choose a public key type';
+                            errors[key] = 'Choose key type';
                           }
                           break;
                         case 'key':
                           if (!values['type']) {
-                            errors[key] = 'Unable to validate key format. You must choose a public key type also';
+                            errors[key] = 'Unable to validate the key. Please choose key type';
                             break;
                           }
                           if (values['type'] === 'ETH' && !value.match(/^0x[a-fA-F0-9]{40}$/)) {
-                            errors[key] = `Public key has wrong format of type "${values['type']}"`;
+                            errors[key] = `Wrong key format: "${values['type']}"`;
                             break;
                           }
                           if (values['type'] === 'X25519' && !value.match(/^M[a-zA-Z0-9/]+=$/)) {
-                            errors[key] = `Public key has wrong format of type "${values['type']}"`;
+                            errors[key] = `Wrong key format: "${values['type']}"`;
                             break;
                           }
                           if (values['type'] === 'secp256k1' && !value.match(/^MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAE[a-zA-Z0-9+/]{86}==$/)) {
-                            errors[key] = `Public key has wrong format of type "${values['type']}"`;
+                            errors[key] = `Wrong key format: "${values['type']}"`;
                             break;
                           }
                           break;
                         case 'fragment':
                           if (!value) {
-                            errors[key] = 'You must define a public key fragment (unique tag)';
+                            errors[key] = 'Please specify unique key ID';
                             break;
                           }
                           if (fragments.includes(value)) {
-                            errors[key] = 'This fragment is already in use';
+                            errors[key] = 'Key ID already in use';
                             break;
                           }
                           if (!value.match(/^[a-zA-Z0-9_]+$/)) {
-                            errors[key] = 'There are only letters, numbers and underscore can be used in fragment';
+                            errors[key] = 'Please use only letters, numbers and underscore';
                             break;
                           }
                           break;
@@ -323,7 +324,7 @@ function Agents(props) {
                 }}
                 onSubmit={values => {
                   props.addAgentKey({
-                    id: `${orgid}#${values.fragment}`,
+                    id: `did:orgid:${orgid}#${values.fragment}`,
                     type: values.type,
                     controller: `did:orgid:${orgid}`,
                     publicKeyPem: values.key,
@@ -346,7 +347,7 @@ function Agents(props) {
                       <SelectField
                         name={'type'}
                         variant={'filled'}
-                        label={'Select a public key type'}
+                        label={'Key type'}
                         fullWidth
                         required
                         options={['X25519','secp256k1','ETH']}
@@ -361,7 +362,7 @@ function Agents(props) {
                         name={'key'}
                         autoComplete={'none'}
                         variant={'filled'}
-                        label={'Enter an Agent Key'}
+                        label={'Key in PEM format'}
                         fullWidth
                         required
                         error={errors.key && touched.key}
@@ -404,7 +405,7 @@ function Agents(props) {
                         name={'fragment'}
                         autoComplete={'none'}
                         variant={'filled'}
-                        label={'Enter a public key fragment (unique tag)'}
+                        label={'Unique key ID'}
                         fullWidth
                         required
                         error={errors.fragment && touched.fragment}
@@ -419,7 +420,7 @@ function Agents(props) {
                         name={'note'}
                         autoComplete={'none'}
                         variant={'filled'}
-                        label={'Write a comment for this agent'}
+                        label={'Note'}
                         fullWidth
                         error={errors.note && touched.note}
                         values={values.note}
@@ -431,7 +432,7 @@ function Agents(props) {
                     <div className={classes.dialogButtonWrapper}>
                       <Button type={'submit'} disabled={isSubmitting || Object.keys(touched).length === 0} className={classes.dialogButton}>
                         <Typography variant={'caption'} className={classes.dialogButtonLabel}>
-                          Save Agent Key
+                          Save
                         </Typography>
                       </Button>
                     </div>
@@ -470,7 +471,7 @@ function Agents(props) {
               !!pendingTransaction ? (
                 <div className={classes.progressWrapper}>
                   <Typography variant={'caption'} className={classes.dialogTitle}>
-                    Wait for the transaction be mined
+                    Transaction in progress
                   </Typography>
                   <div className={classes.dialogSubtitleWrapper}>
                     <CircularProgress/>
@@ -480,14 +481,11 @@ function Agents(props) {
                 dialogStepsContent(activeStep)
               ) : (
                 <>
-                  <Typography variant={'caption'} className={classes.dialogTitle}>Agent successfully { agentIndexToRemove !== null ? 'removed' : 'created' }</Typography>
-                  <div className={classes.dialogSubtitleWrapper}>
-                    <Typography variant={'subtitle2'} className={classes.dialogSubtitle}>{ agentIndexToRemove !== null ? 'Now that agent has no' : 'Your new agent now has the' } rights to act on behalf of your organization. You can add more agents or delete agent keys.</Typography>
-                  </div>
+                  <Typography variant={'caption'} className={classes.dialogTitle}>Public Key { agentIndexToRemove !== null ? 'Removed' : 'Added' }</Typography>
                   <div className={classes.dialogButtonWrapper}>
                     <Button onClick={handleCloseModal} className={classes.dialogButton}>
                       <Typography variant={'caption'} className={classes.dialogButtonLabel}>
-                        Manage your agents
+                        Close
                       </Typography>
                     </Button>
                   </div>
@@ -504,15 +502,9 @@ function Agents(props) {
     <Container>
       <div className={classes.agentsContent}>
         <div className={classes.agentsTitleWrapper}>
-          <Typography variant={'inherit'}>Owner and agent management</Typography>
-        </div>
-        <div>
-          <Typography variant={'inherit'} className={classes.agentsSubtitle}>
-            Assign agents that could act as your representatives. Add public keys of your employees (or devices) that
-            will be able to sign and encrypt communication on behalf of your organization.</Typography>
+          <Typography variant={'inherit'}>Owners</Typography>
         </div>
         <div className={classes.ownerInfoWrapper}>
-          <Typography variant={'inherit'} className={classes.agentTitle}>Owner</Typography>
           <div className={classes.ownerInfo}>
             <CopyIdComponent
               id={owner || '0xLOADING'}
@@ -522,18 +514,19 @@ function Agents(props) {
             />
           </div>
         </div>
+
+        <div className={classes.agentsTitleWrapper}>
+          <Typography variant={'inherit'}>Public Keys</Typography>
+        </div>
         <div className={classes.agentsListContainer}>
-          <div className={classes.agentInfoWrapper}>
-            <Typography variant={'inherit'} className={classes.agentTitle}>Agents</Typography>
-          </div>
           <div className={classes.buttonWrapper}>
             <Button onClick={() => handleAdd()} className={classes.button}>
-              <Typography variant={'inherit'}>+ Add agent key</Typography>
+              <Typography variant={'inherit'}>Add Public Key</Typography>
             </Button>
             {addAgentKeyDialog()}
           </div>
           {
-            agents.length !== 0 ? (
+            agents.length !== 0 && (
               <div>
                 <ul>
                   {
@@ -554,7 +547,7 @@ function Agents(props) {
                             </Grid>
                             <Grid item xs={2}>
                               <Button onClick={() => handleDeleteAgent(index)} className={classes.deleteAgentButton}>
-                                <Typography variant={'inherit'}>Delete agent key</Typography>
+                                <Typography variant={'inherit'}>Remove key</Typography>
                               </Button>
                             </Grid>
                           </Grid>
@@ -563,10 +556,6 @@ function Agents(props) {
                     })
                   }
                 </ul>
-              </div>
-            ) : (
-              <div>
-                <Typography>You have no agents</Typography>
               </div>
             )
           }

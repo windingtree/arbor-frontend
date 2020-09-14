@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from "react-redux";
 import { Button, Typography } from '@material-ui/core';
 
@@ -8,7 +8,9 @@ import {
   selectWizardOrgidUri,
   sendChangeOrgidUriAndHashRequest,
   sendCreateLegalEntityRequest,
-  sendCreateOrganizationalUnitRequest
+  sendCreateOrganizationalUnitRequest,
+  selectPendingState,
+  selectError
 } from '../ducks/wizard';
 import { selectSignInAddress } from '../ducks/signIn';
 import { styles } from './WizardStep';
@@ -17,22 +19,38 @@ import { styles } from './WizardStep';
 const WizardStep = (props) => {
   // Gather context
   const inheritClasses = styles();
-  const { index, orgidJson, orgidHash, orgidUri, address, parent, solt,
-    data: { longName, description, cta }, 
-    action, stepTitle = true } = props;
-  // console.log(`props: ${JSON.stringify(props)}`);
+  const {
+    index, orgidJson, orgidHash, orgidUri, address, parent, solt,
+    data: { longName, description, cta },
+    action, stepTitle = true,
+    sendChangeOrgidUriAndHashRequest,
+    sendCreateLegalEntityRequest,
+    sendCreateOrganizationalUnitRequest,
+    pendingTransaction,
+    error
+  } = props;
+  const [started, setStarted] = useState(false);
+
+  useEffect(() => {
+    if (error) {
+      setStarted(false);
+    }
+  }, [error]);
 
   // Define the submit function
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setStarted(true);
+
     if (action === 'edit') {
-      props.sendChangeOrgidUriAndHashRequest({orgidUri, orgidHash, address, orgidJson});
+      sendChangeOrgidUriAndHashRequest({orgidUri, orgidHash, address, orgidJson});
     } else if(typeof orgidJson.legalEntity === 'object') {
-      props.sendCreateLegalEntityRequest({orgidJson, orgidHash, orgidUri, address, solt});
+      sendCreateLegalEntityRequest({orgidJson, orgidHash, orgidUri, address, solt});
     } else if (typeof orgidJson.organizationalUnit === 'object' && parent.orgid) {
-      props.sendCreateOrganizationalUnitRequest({orgidJson, orgidHash, orgidUri, address, parent, solt});
+      sendCreateOrganizationalUnitRequest({orgidJson, orgidHash, orgidUri, address, parent, solt});
     } else {
-      console.error('Something going wrong with MetaMask request', {orgidJson, orgidHash, orgidUri, address, solt, parent});
+      setStarted(false);
+      console.error('Something going wrong with request', {orgidJson, orgidHash, orgidUri, address, solt, parent});
       console.log(typeof orgidJson.legalEntity, typeof orgidJson.organizationalUnit, parent.orgid);
     }
   };
@@ -43,21 +61,34 @@ const WizardStep = (props) => {
       <div key={index}>
         <Typography variant={'h3'} className={inheritClasses.stepTitle}>
           {stepTitle && `Step ${index+1}. `}
-          {action === 'edit' ? 'Submit transaction fee' : longName}
+          {action === 'edit' ? 'Saving to blockchain...' : longName}
         </Typography>
         <div className={inheritClasses.subtitleWrapper}>
           <Typography variant={'subtitle1'} className={inheritClasses.subtitle}>
-            { action === 'edit' ? 'You need to submit an Ethereum transaction to pay the miners’ fee for every profile update or verification.' : description}
-          </Typography>
-          <Typography  className={inheritClasses.subtitle}>
-            You can adjust the fee using gas fee's "edit" feature, which is available in Metamask popup window.
+            { action === 'edit' ? 'In order to save your company data, a blockchain transaction is required. Please confirm it in your wallet.' : description}
           </Typography>
         </div>
         <div className={inheritClasses.buttonWrapper}>
-          <Button type="submit" className={inheritClasses.button}>
-            <Typography variant={'caption'} className={inheritClasses.buttonLabel}>{action === 'edit' ? 'Confirm' : cta}</Typography>
+          <Button
+            type="submit"
+            className={inheritClasses.button}
+            disabled={pendingTransaction || started}
+          >
+            <Typography
+              variant={'caption'}
+              className={inheritClasses.buttonLabel}
+            >
+              {action === 'edit' ? 'Generate Transaction' : cta}
+            </Typography>
           </Button>
         </div>
+        {error &&
+          <div className={inheritClasses.errorWrapper}>
+            <Typography className={inheritClasses.error}>
+              {error.message ? error.message : 'Unknown error'}
+            </Typography>
+          </div>
+        }
       </div>
     </form>
   )
@@ -68,7 +99,9 @@ const mapStateToProps = state => {
     orgidJson: selectWizardOrgidJson(state),
     orgidHash: selectWizardOrgidHash(state),
     orgidUri: selectWizardOrgidUri(state),
-    address: selectSignInAddress(state)
+    address: selectSignInAddress(state),
+    pendingTransaction: selectPendingState(state),
+    error: selectError(state)
   }
 };
 

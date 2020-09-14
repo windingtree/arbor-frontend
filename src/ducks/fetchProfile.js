@@ -3,7 +3,7 @@ import { createSelector } from 'reselect';
 import { all, takeEvery, call, put } from 'redux-saga/effects';
 import { callApi } from '../redux/api';
 import _ from 'lodash';
-import {ACCOUNT_CHANGE_NOTIF} from './signIn'
+import { ACCOUNT_CHANGE } from './signIn'
 
 /**
  * Constants
@@ -51,16 +51,16 @@ export default function reducer( state = initialState, action) {
 
       payload.data.forEach((org, i) => {
         if (org.parent) {
-          
+
           if (index[org.parent.orgid] !== undefined) {
-            
+
             if (!payload.data[index[org.parent.orgid]].subs) {
               payload.data[index[org.parent.orgid]].subs = [];
             }
-            
+
             payload.data[index[org.parent.orgid]].subs.push(org);
           }
-          
+
           delete payload.data[i];
         }
       });
@@ -152,7 +152,7 @@ function* reloadProfileSaga({payload}) {
 export const saga = function* () {
   return yield all([
     takeEvery(FETCH_PROFILE_ORGANIZATIONS_REQUEST, fetchProfileOrganizationsSaga),
-    takeEvery(ACCOUNT_CHANGE_NOTIF, reloadProfileSaga),
+    takeEvery(ACCOUNT_CHANGE, reloadProfileSaga),
   ])
 };
 

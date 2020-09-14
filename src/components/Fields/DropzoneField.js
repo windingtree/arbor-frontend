@@ -1,19 +1,19 @@
-import React, {useEffect, useState} from 'react';
-import {connect} from "react-redux";
-import {useDropzone} from 'react-dropzone';
+import React, { useEffect, useState } from 'react';
+import { connect } from "react-redux";
+import { useDropzone } from 'react-dropzone';
 import _ from 'lodash';
-import {saveMediaToArbor, extendOrgidJson, selectWizardOrgidJson} from '../../ducks/wizard'
-import {selectSignInAddress} from '../../ducks/signIn'
+import { saveMediaToArbor, extendOrgidJson, selectWizardOrgidJson } from '../../ducks/wizard'
+import { selectSignInAddress } from '../../ducks/signIn'
 
-import {Tab, Tabs, TextField, Typography, Button, Link} from '@material-ui/core';
-import {makeStyles} from '@material-ui/core/styles';
+import { Tab, Tabs, TextField, Typography, Button, Link } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import DragAndDropImage from '../../assets/SvgComponents/dragNDrop-image.svg';
 
 import colors from '../../styles/colors';
 
 const styles = makeStyles({
   tabsContainer: {
-    marginTop: '40px'
+    marginTop: '10px'
   },
   dropzoneContentTitleWrapper: {
     margin: '20px 0 32px 0'
@@ -129,15 +129,24 @@ const styles = makeStyles({
 
 function Previews(props) {
   const classes = styles();
-  const {setFiles, files, helperText, description, address, orgidJson: {id}} = props;
+  const {
+    setFiles,
+    files,
+    helperText,
+    description,
+    address,
+    orgidJson: { id },
+    extendOrgidJson,
+    saveMediaToArbor
+  } = props;
   const {getRootProps, getInputProps} = useDropzone({
     accept: 'image/*',
     maxSize: 500 * 1024,
     multiple: false,
     onDrop: (acceptedFiles, ) => {
       window['file_0'] = acceptedFiles[0];
-      props.extendOrgidJson(props.values);
-      props.saveMediaToArbor({address, id, file: acceptedFiles[0]});
+      extendOrgidJson(props.values);
+      saveMediaToArbor({address, id, file: acceptedFiles[0]});
 
       setFiles(acceptedFiles.map(file => Object.assign(file, {
         preview: URL.createObjectURL(file)
@@ -146,8 +155,8 @@ function Previews(props) {
   });
 
   const handleDeletePreview = () => {
-    props.extendOrgidJson(props.values);
-    props.saveMediaToArbor({address, id, file: null});
+    extendOrgidJson(props.values);
+    saveMediaToArbor({address, id, file: null});
     setFiles([]);
   };
 
@@ -164,7 +173,7 @@ function Previews(props) {
       </div>
       <div className={classes.previewButtonWrapper}>
         <Button onClick={handleDeletePreview} className={classes.previewButton}>
-          <Typography variant={'caption'} className={classes.previewButtonLabel} noWrap>Remove photo</Typography>
+          <Typography variant={'caption'} className={classes.previewButtonLabel} noWrap>Remove image</Typography>
         </Button>
       </div>
     </div>
@@ -299,6 +308,7 @@ const DropzoneField = (props) => {
                 label={name}
                 name={orgidJsonPath}
                 value={value}
+                touched={touched}
                 helperText={isError ? _.get(errors, orgidJsonPath) : helperText}
                 required={required}
                 fullWidth

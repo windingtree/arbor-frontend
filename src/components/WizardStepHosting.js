@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from "react-redux";
 import {
   Typography,
@@ -14,7 +14,8 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
 import { Formik } from "formik";
 import Joi from '@hapi/joi';
-import { saveOrgidUri, saveOrgidJsonToArbor, selectWizardOrgidUri, selectWizardOrgidJson } from '../ducks/wizard'
+import { saveOrgidUri, saveOrgidJsonToArbor, selectWizardOrgidUri,
+  selectWizardOrgidJson, selectFetchedState, selectError } from '../ducks/wizard'
 import { selectSignInAddress } from '../ducks/signIn'
 
 import InfoIcon from '../assets/SvgComponents/InfoIcon';
@@ -109,12 +110,40 @@ const WizardStepHosting = (props) => {
   const classes = useStyles();
   const inheritClasses = styles();
 
-  const { index, orgidUri, orgidJson, address, data: { longName, description, cta }, handleNext, action, stepTitle = true } = props;
-  // next line collect from "sections" all fields with non empty "schema" to object { [fieldName]:schema }
+  const { index, orgidUri, orgidJson, address, isFetched, error,
+    data: { longName, description, cta },
+    handleNext, handleBack, action, stepTitle = true,
+    saveOrgidJsonToArbor, saveOrgidUri } = props;
+  const [isStarted, setStarted] = useState(false);
 
   const data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(orgidJson, null, 2));
 
   const scheme = Joi.string().pattern(/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/, 'uri');
+
+  // const checkStatus = useCallback(() => {
+
+  //   if (isFetching) {
+  //     setTimeout(checkStatus, 500);
+  //   } else if (!error) {
+  //     console.log('#############', isFetching,  error);
+  //     // handleNext();
+  //   }
+  // }, [isFetching,  error]);
+
+  useEffect(() => {
+    if (isStarted && isFetched && !error) {
+      handleNext();
+    }
+  }, [isStarted, isFetched, error, handleNext]);
+
+  const handleSubmit = values => {
+    if (values['hostingType'] === 'default-hosting') {
+      saveOrgidJsonToArbor(address)
+    } else {
+      saveOrgidUri(values['orgidUri']);
+    }
+    setStarted(true);
+  };
 
   return (
     <div key={index}>
@@ -135,14 +164,7 @@ const WizardStepHosting = (props) => {
           if(!_.isEmpty(errors)) console.log('ERRORS', errors);
           return errors;
         }}
-        onSubmit={(values) => {
-          if (values['hostingType'] === 'default-hosting') {
-            props.saveOrgidJsonToArbor(address)
-          } else {
-            props.saveOrgidUri(values['orgidUri']);
-          }
-          handleNext();
-        }}
+        onSubmit={handleSubmit}
       >
         {({
             values,
@@ -150,9 +172,7 @@ const WizardStepHosting = (props) => {
             touched,
             handleChange,
             handleBlur,
-            handleSubmit,
-            isSubmitting,
-            /* and other goodies */
+            handleSubmit
           }) => (
           <form onSubmit={handleSubmit}>
 
@@ -229,10 +249,25 @@ const WizardStepHosting = (props) => {
             }
 
             <div className={inheritClasses.buttonWrapper}>
-              <Button type="submit" disabled={isSubmitting} className={inheritClasses.button}>
-                <Typography variant={'caption'} className={inheritClasses.buttonLabel}>{action === 'edit' ? 'Next' : `${cta}`}</Typography>
-              </Button>
+              {!error &&
+                <Button type="submit" disabled={isStarted} className={inheritClasses.button}>
+                  <Typography variant={'caption'} className={inheritClasses.buttonLabel}>{action === 'edit' ? 'Next' : `${cta}`}</Typography>
+                </Button>
+              }
+              {error &&
+                <Button className={inheritClasses.button} onClick={handleBack}>
+                  <Typography variant={'caption'} className={inheritClasses.buttonLabel}>Back</Typography>
+                </Button>
+              }
             </div>
+
+            {error &&
+              <div className={inheritClasses.errorWrapper}>
+                <Typography className={inheritClasses.error}>
+                  {error.message ? error.message : 'Unknown error'}
+                </Typography>
+              </div>
+            }
           </form>
         )}
       </Formik>
@@ -245,7 +280,9 @@ const mapStateToProps = state => {
   return {
     orgidUri: selectWizardOrgidUri(state),
     orgidJson: selectWizardOrgidJson(state),
-    address: selectSignInAddress(state)
+    address: selectSignInAddress(state),
+    isFetched: selectFetchedState(state),
+    error: selectError(state)
   }
 };
 

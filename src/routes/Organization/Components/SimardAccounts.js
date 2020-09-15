@@ -205,11 +205,21 @@ const callSimard = async (authToken, path, method, body) => new Promise((resolve
       )
     }
   )
-  .then(async response => ({
-    isOk: response.ok,
-    status: response.status,
-    json: await response.json()
-  }))
+  .then(async response => {
+    try {
+      const json = await response.json();
+      return {
+        isOk: response.ok,
+        status: response.status,
+        json
+      };
+    } catch (error) {
+      console.log(error);
+      const err = new Error('Unable to parse response from the Simard Pay');
+      err.details = error.message;
+      throw err;
+    }
+  })
   .then(({ isOk, status, json }) => {
     if (!isOk) {
       const message = json.message

@@ -478,6 +478,11 @@ export const selectPendingState = createSelector(
   wizard => wizard.pendingTransaction
 );
 
+export const selectFetchedState = createSelector(
+  stateSelector,
+  wizard => wizard.isFetched
+);
+
 export const selectSuccessState = createSelector(
   stateSelector,
   wizard => wizard.successTransaction

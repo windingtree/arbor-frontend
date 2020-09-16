@@ -48,7 +48,8 @@
     "@metamask/onboarding": "1.0.0",
     "@portis/web3": "2.0.0-beta.57",
     "@stripe/stripe-js": "1.9.0",
-    "@stripe/react-stripe-js": "1.1.2"
+    "@stripe/react-stripe-js": "1.1.2",
+    "query-string": "6.13.1"
   },
   "devDependencies": {
     "@storybook/addon-actions": "5.3.18",

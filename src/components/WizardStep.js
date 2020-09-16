@@ -186,7 +186,7 @@ const WizardStep = (props) => {
     });
 
     // Return errors
-    console.log('ERRORS', errors)
+    //console.log('ERRORS', errors)
     return errors;
   };
 

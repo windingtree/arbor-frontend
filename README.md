@@ -12,7 +12,7 @@ This repository contains the user interface, which is deployed as a static React
 ## Configuration
 The App expects environment variables which are used to properly configure the different parameters according to the environment.
 
-* `REACT_APP_LIF_DEPOSIT_AMOUNT`: The minimal amount to be used for verficiation, eg: 1000
+* `REACT_APP_LIF_DEPOSIT_AMOUNT`: The minimal amount to be used for verification, eg: 1000
 * `REACT_APP_API_URI`: URL for the Backend API
 * `REACT_APP_ORGID_PROXY_ADDRESS`: The address of the ORG.ID proxy contract.
 * `REACT_APP_DIRECTORY_PROXY_ADDRESS`: The address of the Directory proxy contract.
@@ -53,5 +53,5 @@ The build is minified and the filenames include the hashes.<br />
 
 ## Zeit Deployment usage
 Winding Tree Marketplace can be deployed on Zeit now.<br />
-There are three preloaded configurations inlcuded in this folder for `staging`, `ropsten` and `production` (mainnet). These configurations are picked-up by the `zeit_build.sh` script during the CI/CD flow to build the proper environment.
+There are three preloaded configurations included in this folder for `staging`, `ropsten` and `production` (mainnet). These configurations are picked-up by the `zeit_build.sh` script during the CI/CD flow to build the proper environment.
 

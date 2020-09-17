@@ -155,13 +155,10 @@ const SignInActionBox = (classes, props) => {
     };
 
     const handleChainId = async () => {
-
-      if (typeof window.ethereum !== 'undefined') {
-        const chainId = window.ethereum.chainId;
+      if (web3 && web3.currentProvider) {
+        const chainId = parseInt(web3.currentProvider.chainId, 16);
         onChainChange(chainId);
-        if (web3 && web3.currentProvider) {
-          web3.currentProvider.on('chainChanged', onChainChange);
-        }
+        web3.currentProvider.on('chainChanged', onChainChange);
       }
     };
 

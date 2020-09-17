@@ -182,11 +182,8 @@ const skeletons = {
     'locations': []
   },
   'organizationalUnit': {
-    'address': {},
-    'media': {'logo':''},
-    'type': [],
-    'contacts': [],
-    'description': ''
+    'name': '',
+    'type': []
   }
 };
 
@@ -231,6 +228,14 @@ const WizardGeneral = (props) => {
     window.scrollTo(0, 0)
   }, []);
 
+  const handleNext = () => {
+    setActiveStep(prevActiveStep => prevActiveStep + 1);
+  };
+
+  const handleBack = () => {
+    setActiveStep(prevActiveStep => prevActiveStep - 1);
+  };
+
   const stepsContent = (stepIndex, parent) => {
     const content = wizardConfig[stepIndex];
     const { type } = content;
@@ -254,6 +259,7 @@ const WizardGeneral = (props) => {
             data={content}
             action={action}
             handleNext={handleNext}
+            handleBack={handleBack}
             key={stepIndex}
             index={stepIndex}/>
         );
@@ -296,14 +302,6 @@ const WizardGeneral = (props) => {
   }
 
   const steps = wizardConfig.map(step => step.name);
-
-  const handleNext = () => {
-    setActiveStep(prevActiveStep => prevActiveStep + 1);
-  };
-
-  const handleBack = () => {
-    setActiveStep(prevActiveStep => prevActiveStep - 1);
-  };
 
   return (
     <div className={classes.mainContainer}>

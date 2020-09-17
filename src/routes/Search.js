@@ -4,6 +4,7 @@ import _ from 'lodash';
 import history from '../redux/history';
 import { Container, Grid, Typography, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
+import queryString from 'query-string';
 //actions and selectors
 import {
   fetchSearchOrganizations,
@@ -124,7 +125,8 @@ const styles = makeStyles({
     }
   },
   gridListWrapper: {
-    paddingTop: '40px',
+    paddingTop: '30px',
+    paddingBottom: '60px'
   },
   paginationInfoContainer: {
     display: 'flex',
@@ -150,14 +152,24 @@ const styles = makeStyles({
 
 function Search(props) {
   const classes = styles();
-  const request = history.location.state && history.location.state.request;
+  const search = history.location.search;
   const [searchValue, setSearchValue] = useState('');
-  const [forcePage, setForcePage] = useState(undefined);
+  const [searchDirectory, setSearchDirectory] = useState('');
+  const [searchCountry, setSearchCountry] = useState('');
+  const [searchPage, setSearchPage] = useState(1);
   const [lastSearchValue, setLastSearchValue] = useState('');
-  const [directoryFilterValue, setDirectoryFilterValue] = useState('');
-  const [countryFilterValue, setCountryFilterValue] = useState('');
-  const {items, meta: {page, per_page, total, pages}, isFetched, isFetching, 
+  const {items, meta: {page, per_page, total, pages}, isFetched, isFetching,
   fetchSearchOrganizations, fetchAllOrganizations} = props;
+
+  const options = {
+    directories: {
+      'hotel': 'Hotels',
+      'airline': 'Airlines',
+      'insurance': 'Insurance Companies',
+      'ota': 'Travel Agencies'
+    },
+    countries
+  };
 
   const CardsList = () => {
     let OrgCards = items.map((item, index) => {
@@ -173,55 +185,36 @@ function Search(props) {
     )
   };
 
-  //handle pagination
-  const handlePageClick = async (data) => {
-    let selected = data.selected;
-    const searchData = {
-      directory: directoryFilterValue,
-      country: countryFilterValue,
-      name: searchValue,
-      page: selected + 1
-    };
-
-    if (searchValue === "" && !request) {
-      await props.fetchAllOrganizations({page: selected + 1, per_page: per_page});
-      setLastSearchValue('');
-    } else {
-      await props.fetchSearchOrganizations(searchData);
-      setLastSearchValue(searchValue);
-    }
-  };
-
   //handle search
   const searchTitle = () => {
 
     let searchTitle;
     // No Search initiated
-    if(!isFetched && !isFetching) {
+    if (!isFetched && !isFetching) {
       searchTitle = 'Organization Search';
     }
 
     // Search results
-    else if(isFetched) {
+    else if (isFetched) {
       // Define the organization category
-      let orgDirectory = directoryFilterValue ? options.directories[directoryFilterValue] : 'Organizations';
-      
+      let orgDirectory = searchDirectory ? options.directories[searchDirectory] : 'Organizations';
+
       // Write directory in singular to be gramatically correct
-      if(total === 1) {
+      if (total === 1) {
         // `ies` -> `y`
         if(orgDirectory.substring(orgDirectory.length-3, orgDirectory.length) === 'ies') {
           orgDirectory = orgDirectory.substring(0, orgDirectory.length-3) + 'y';
         }
-        
+
         // Remove final `s`
         else {
           orgDirectory = orgDirectory.substring(0, orgDirectory.length -1);
-        }        
+        }
       }
-      let orgCountry = countryFilterValue ? ` in ${options.countries[countryFilterValue]}` : '';
+      let orgCountry = searchCountry ? ` in ${options.countries[searchCountry]}` : '';
 
       // Search completed without results
-      if(total === 0) {
+      if (total === 0) {
         if (lastSearchValue && lastSearchValue !== "") {
           searchTitle = `Sorry, we haven’t found any ${orgDirectory} related to "${lastSearchValue}"${orgCountry}`;
         } else {
@@ -244,51 +237,48 @@ function Search(props) {
     }
 
     // Search is ongoing
-    else if(isFetching) {
+    else if (isFetching) {
       searchTitle = `Searching...`;
     }
 
     // Store search title in state
-    return(searchTitle);
-  };
-
-  const handleSearch = event => {
-    setSearchValue(event.target.value);
-  };
-
-  const fetchSearchResults = async () => {
-    // BUild data for the request
-    const data = {
-      directory: directoryFilterValue,
-      country: countryFilterValue,
-      name: searchValue,
-      page: 1,
-      per_page: per_page
-    };
-
-    if (searchValue === "" && !request) {
-      if (data.directory !== '' || data.country !== '') {
-        await props.fetchSearchOrganizations(data);
-        setForcePage(0);
-      } else {
-        await props.fetchAllOrganizations({page: page, per_page: per_page});
-        setForcePage(0);
-      }
-    } else {
-      await props.fetchSearchOrganizations(data);
-      setForcePage(0);
-      setLastSearchValue(searchValue);
-    }
-
+    return (searchTitle);
   };
 
   useEffect(() => {
-    setSearchValue(request);
-    setLastSearchValue(request);
-    if (request && request !== "") {
-      fetchSearchOrganizations({name: request, page: page, per_page: per_page});
-    } else fetchAllOrganizations({page: page, per_page: per_page});
-  }, [request, page, per_page, fetchSearchOrganizations, fetchAllOrganizations]);
+    const query = queryString.parse(search);
+    const searchData = {
+      directory: query.directory || '',
+      country: query.country || '',
+      name: query.name || '',
+      page: query.page ? parseInt(query.page) : 1,
+      'per_page': query['per_page'] ? query['per_page'] : per_page
+    };
+
+    setSearchPage(searchData.page);
+    setSearchValue(searchData.name);
+    setSearchDirectory(searchData.directory);
+    setSearchCountry(searchData.country);
+
+    const doSearch = async () => {
+      try {
+        if (searchData.name === "") {
+          if (searchData.directory !== '' || searchData.country !== '') {
+            await fetchSearchOrganizations(searchData);
+          } else {
+            await fetchAllOrganizations({page: searchData.page, per_page: per_page});
+          }
+        } else {
+          await fetchSearchOrganizations(searchData);
+          setLastSearchValue(searchData.name);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    doSearch();
+  }, [search, per_page, fetchSearchOrganizations, fetchAllOrganizations]);
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -299,41 +289,55 @@ function Search(props) {
     setSearchValue('');
   };
 
-  //handle select fields
-  const options = {
-    directories: {
-      'hotel': 'Hotels',
-      'airline': 'Airlines',
-      'insurance': 'Insurance Companies',
-      'ota': 'Travel Agencies'
-    },
-    countries
+  const updateSearchQuery = data => {
+    // delete data['per_page'];
+    history.push(`/search?${queryString.stringify(data)}`);
   };
 
-  const handleDirectoryFilterValueChange = async e => {
-    const data = {
+  const handleSearchValue = event => {
+    setSearchValue(event.target.value);
+  };
+
+  const handleSearch = () => {
+    updateSearchQuery({
+      directory: searchDirectory,
+      country: searchCountry,
+      name: searchValue,
+      page: 1,
+      per_page: per_page,
+      key: Math.random().toString(36).substr(2, 9)
+    });
+  };
+
+  const handleDirectoryFilterValueChange = e => {
+    updateSearchQuery({
       directory: e.target.value,
-      country: countryFilterValue,
+      country: searchCountry,
       name: searchValue,
       page: 1,
       per_page: per_page
-    };
-    await props.fetchSearchOrganizations(data);
-    setForcePage(0);
-    setDirectoryFilterValue(data.directory);
+    });
   };
 
-  const handleCountryFilterValueChange = async e => {
-    const data = {
-      directory: directoryFilterValue,
+  const handleCountryFilterValueChange = e => {
+    updateSearchQuery({
+      directory: searchDirectory,
       country: e.target.value,
       name: searchValue,
       page: 1,
       per_page: per_page
-    };
-    await props.fetchSearchOrganizations(data);
-    setForcePage(0);
-    setCountryFilterValue(data.country);
+    });
+  };
+
+  //handle pagination
+  const handlePageClick = async ({ selected }) => {
+    updateSearchQuery({
+      directory: searchDirectory,
+      country: searchCountry,
+      name: searchValue,
+      page: selected + 1,
+      per_page: per_page
+    });
   };
 
   const renderResultsText = () => {
@@ -354,8 +358,8 @@ function Search(props) {
             <div className={classes.searchForm}>
               <SearchComponent
                 searchValue={searchValue}
-                handleSearchValue={handleSearch}
-                fetchSearchResult={fetchSearchResults}
+                handleSearchValue={handleSearchValue}
+                fetchSearchResult={handleSearch}
                 handleFocus={handleFocus}
               />
             </div>
@@ -374,9 +378,11 @@ function Search(props) {
             <div className={classes.filtersControllersWrapper}>
               <div className={classes.filtersController}>
                 <FormControl className={classes.selectFormControl}>
-                  <InputLabel>Directories</InputLabel>
+                  <InputLabel>
+                    {searchDirectory === '' ? 'Directories' : ''}
+                  </InputLabel>
                   <Select
-                    value={directoryFilterValue}
+                    value={searchDirectory}
                     onChange={handleDirectoryFilterValueChange}
                   >
                     <MenuItem value={''}>All</MenuItem>
@@ -392,9 +398,11 @@ function Search(props) {
               </div>
               <div className={classes.filtersController}>
                 <FormControl className={classes.selectFormControl}>
-                  <InputLabel>Country</InputLabel>
+                  <InputLabel>
+                    {searchCountry === '' ? 'Country' : ''}
+                  </InputLabel>
                   <Select
-                    value={countryFilterValue}
+                    value={searchCountry}
                     onChange={handleCountryFilterValueChange}
                   >
                     <MenuItem value={''}>All</MenuItem>
@@ -424,7 +432,7 @@ function Search(props) {
                       <Pagination
                         pageCount={pages}
                         onPageChange={handlePageClick}
-                        forcePage={forcePage}
+                        forcePage={searchPage - 1}
                       />
                     </div>
                   </div>

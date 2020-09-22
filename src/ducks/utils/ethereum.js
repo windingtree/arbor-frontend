@@ -2,7 +2,11 @@ import {
   ORGID_ABI,
   ORGID_PROXY_ADDRESS,
   LIF_TOKEN_ABI,
-  LIF_TOKEN_PROXY_ADDRESS
+  LIF_TOKEN_PROXY_ADDRESS,
+  DIR_INDEX_ABI,
+  DIRECTORIES_INDEX_ADDRESS,
+  ARB_DIR_ABI,
+  DIR_ABI
 } from '../../utils/constants';
 
 const setTimeoutPromise = timeout => new Promise(resolve => setTimeout(resolve, timeout));
@@ -22,6 +26,15 @@ export const getOrgidContract = web3 => new web3.eth.Contract(ORGID_ABI, ORGID_P
 
 // Get the LIF Token contract
 export const getLifTokenContract = web3 => new web3.eth.Contract(LIF_TOKEN_ABI, LIF_TOKEN_PROXY_ADDRESS);
+
+// Get DirectoryIndex contract
+export const getDirIndexContract = web3 => new web3.eth.Contract(DIR_INDEX_ABI, DIRECTORIES_INDEX_ADDRESS);
+
+// Get ArbitrableDirectory contract
+export const getArbDirContract = (web3, address) => new web3.eth.Contract(ARB_DIR_ABI, address);
+
+// Get ArbitrableDirectory contract
+export const getDirContract = (web3, address) => new web3.eth.Contract(DIR_ABI, address);
 
 // Get block
 export const getBlock = async (web3, typeOrNumber) => {

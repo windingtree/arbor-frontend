@@ -10,6 +10,7 @@ import DefaultRoute from '../components/DefaultRoute';
 import Home from './Home';
 import Search from './Search';
 import Directories from './Directories';
+import ArbitrableDirectories from './ArbitrableDirectories';
 import Directory from './Directory';
 import Organization from './Organization/Organization';
 import Authorization from './Authorization/Authorization';
@@ -43,7 +44,7 @@ class RootRouter extends Component {
           <DefaultRoute
             isAuthenticated={isAuthenticated}
             exact path='/directories'
-            component={Directories}
+            component={ArbitrableDirectories}
           />
           <DefaultRoute
             isAuthenticated={isAuthenticated}

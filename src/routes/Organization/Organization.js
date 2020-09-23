@@ -11,6 +11,7 @@ import {
 } from '../../ducks/fetchOrganizationInfo';
 import history from '../../redux/history';
 import TopNavigation from "./Components/TopNavigation";
+import Directories from './Components/Directories';
 import Agents from "./Components/Agents";
 import Services from "./Components/Services";
 import Payments from "./Components/Payments";
@@ -86,6 +87,10 @@ function Organization (props) {
   const proofsRef = useRef(null);
 
   useEffect(() => {
+    window.scrollTo(0, 0)
+}, []);
+
+  useEffect(() => {
     fetchOrganizationInfo({ id });
   }, [id, fetchOrganizationInfo]);
 
@@ -107,6 +112,9 @@ function Organization (props) {
         </div>
       }
       {canManage &&
+        <Directories />
+      }
+      {canManage &&
         <Agents
           orgid={id}
           owner={owner}
@@ -125,7 +133,7 @@ function Organization (props) {
           orgid={id}
         />
       }
-      {canManage && 
+      {canManage &&
         <Payments
           orgid={id}
           owner={owner}

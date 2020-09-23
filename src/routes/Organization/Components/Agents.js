@@ -11,7 +11,7 @@ import {
 import {
   fetchOrganizationInfo
 } from '../../../ducks/fetchOrganizationInfo';
-import {Formik} from 'formik';
+import { Formik } from 'formik';
 import {
   Button,
   Container,
@@ -502,7 +502,7 @@ function Agents(props) {
     <Container>
       <div className={classes.agentsContent}>
         <div className={classes.agentsTitleWrapper}>
-          <Typography variant={'inherit'}>Owners</Typography>
+          <Typography variant={'inherit'}>Owner</Typography>
         </div>
         <div className={classes.ownerInfoWrapper}>
           <div className={classes.ownerInfo}>

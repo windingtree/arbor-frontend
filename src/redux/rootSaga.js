@@ -8,7 +8,7 @@ import { saga as lifDepositSaga} from '../ducks/lifDeposit';
 import { saga as backendStatus} from '../ducks/backendStatus';
 import { saga as joinSaga} from '../ducks/join';
 import { saga as orgActiveStatus} from '../ducks/orgActiveStatus';
-import { saga as directoriesIndex} from '../ducks/directoriesIndex';
+import { saga as directories} from '../ducks/directories';
 
 //Add all sagas here
 export default function* rootSaga() {
@@ -21,5 +21,5 @@ export default function* rootSaga() {
   yield spawn(backendStatus);
   yield spawn(joinSaga);
   yield spawn(orgActiveStatus);
-  yield spawn(directoriesIndex);
+  yield spawn(directories);
 }

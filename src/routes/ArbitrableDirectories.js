@@ -8,11 +8,11 @@ import CardsGridList from '../components/CardsGridList';
 
 import {
     fetchDirectories,
-    isDirectoriesFetching,
-    isDirectoriesFetched,
-    directoriesError,
-    directoriesList
-} from '../ducks/directoriesIndex';
+    isIndexFetching,
+    isIndexFetched,
+    indexError,
+    directories
+} from '../ducks/directories';
 import { getSegmentMeta } from '../utils/directories';
 
 const styles = makeStyles({
@@ -319,10 +319,10 @@ const Directories = props => {
 
 const mapStateToProps = state => {
     return {
-        isFetching: isDirectoriesFetching(state),
-        isFetched: isDirectoriesFetched(state),
-        error: directoriesError(state),
-        directories: directoriesList(state)
+        isFetching: isIndexFetching(state),
+        isFetched: isIndexFetched(state),
+        error: indexError(state),
+        directories: directories(state)
     }
 };
 

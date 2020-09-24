@@ -2,7 +2,8 @@ export default {
   primary: {
     white: '#fff',
     black: '#2E2E31',
-    accent: '#F58F7F'
+    accent: '#F58F7F',
+    green: '#3E9693'
   },
   secondary: {
     yellow: '#FFB36B',

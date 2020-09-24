@@ -2,16 +2,33 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import {
-    fetchDirectories,
-    isDirectoriesFetching,
-    isDirectoriesFetched,
-    directoriesError,
-    directoriesList
-} from '../../../ducks/directoriesIndex';
+    startPolling,
+    stopPolling,
+    lifApprovalSend,
+    dirRegisterSend,
+    setOrgId,
+    setDirectory,
+    resetState,
+    isIndexFetching,
+    isPolling,
+    isApprovalTransaction,
+    isRegisterTransaction,
+    directories,
+    lifBalance,
+    lifAllowance,
+    isOrgRequested,
+    selectedDirectory,
+    indexError,
+    pollingError,
+    approvalError,
+    registerError
+} from '../../../ducks/directories';
+import { selectItem as selectOrganizationItem } from '../../../ducks/fetchOrganizationInfo';
 import { getSegmentMeta } from '../../../utils/directories';
 
-import { Container, Typography, Button } from '@material-ui/core';
+import { Container, Typography, Button, Grid, CircularProgress } from '@material-ui/core';
 import { Formik } from 'formik';
+
 import DialogComponent from '../../../components/Dialog';
 import SelectField from '../../../components/Fields/SelectField';
 import { makeStyles } from "@material-ui/core/styles";
@@ -32,6 +49,9 @@ const styles = makeStyles({
         marginBottom: '20px'
     },
     contentWrapper: {},
+    inButtonProgress: {
+        marginLeft: '10px'
+    },
     addButtonWrapper: {
         width: '100%',
         margin: '20px 0'
@@ -58,7 +78,8 @@ const styles = makeStyles({
         fontSize: '24px',
         fontWeight: 500,
         color: colors.greyScale.darkest,
-        marginBottom: '20px'
+        marginBottom: '20px',
+        textAlign: 'center'
     },
     dialogButtonWrapper: {
         display: 'flex',
@@ -82,6 +103,17 @@ const styles = makeStyles({
         padding: '14px 26px',
         marginTop: '16px'
     },
+    dialogButtonRed: {
+        backgroundImage: colors.gradients.orange,
+        borderRadius: '6px',
+        textTransform: 'none',
+        color: colors.primary.white,
+        fontSize: '18px',
+        fontWeight: 600,
+        lineHeight: '24px',
+        padding: '14px 26px',
+        marginTop: '16px'
+    },
     dialogNewButton: {
         fontSize: '14px',
         fontWeight: 500,
@@ -90,22 +122,143 @@ const styles = makeStyles({
         textTransform: 'none',
         marginTop: '10px'
     },
+    buyLifWrapper: {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'nowrap',
+        alignItems: 'baseline'
+    },
+    yourBalanceNote: {
+        fontWeight: 500,
+        fontSize: '14px',
+        color: colors.primary.accent,
+        marginRight: '14px'
+    },
     inputFieldWrapper: {
         position: 'relative',
         marginBottom: '28px',
         '&:last-child': {
             marginBottom: '0'
         }
+    },
+    depositNote: {
+        textAlign: 'center',
+        padding: '18px',
+        border: `1px solid ${colors.secondary.green}`,
+        borderRadius: '6px',
+        marginTop: '28px',
+        marginBottom: '28px',
+        '&.insufficient': {
+            border: `1px solid ${colors.primary.accent}`
+        }
+    },
+    depositNoteSubtitle: {
+        fontWeight: 500,
+        fontSize: '14px',
+        color: colors.primary.green
+    },
+    depositNoteTitle: {
+        fontWeight: 500,
+        fontSize: '28px',
+        textTransform: 'capitalize',
+        color: colors.primary.green
     }
 });
+
+const DialogTitle = props => {
+    const classes = styles();
+    const {
+        children
+    } = props;
+
+    return (
+        <div className={classes.dialogTitleWrapper}>
+            <Typography variant={'inherit'}>
+                {children}
+            </Typography>
+        </div>
+    );
+};
+
+// Extract specific directory from the list
+const getDirectory = (address, directories) => directories.filter(d => d.address === address)[0];
 
 const AddDirectoryDialog = props => {
     const classes = styles();
     const {
         isOpened,
         handleClose,
-        directories
+        directories: directoriesRaw,
+        resetState,
+        startPolling,
+        stopPolling,
+        lifApprovalSend,
+        dirRegisterSend,
+        setDirectory,
+        isPolling,
+        isApprovalTransaction,
+        isRegisterTransaction,
+        lifBalance,
+        lifAllowance,
+        isOrgRequested,
+        selectedDirectory,
+        indexError,
+        pollingError,
+        approvalError,
+        registerError,
+        organizationItem
     } = props;
+    const [directories, setDirectories] = useState([]);
+    const [step, setStep] = useState(0);
+    const [isBalanceOk, setBalanceOk] = useState(true);
+    const [isAllowanceOk, setAllowanceOk] = useState(true);
+    const [approvalLifStarted, setStartedLifApproval] = useState(false);
+    const [requestStarted, setRequestStarted] = useState(false);
+
+    useEffect(() => {
+        resetState();
+    }, [organizationItem]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    useEffect(() => {
+        setDirectories(
+            directoriesRaw.map(dir => getSegmentMeta(dir))
+        );
+    }, [directoriesRaw]);
+
+    useEffect(() => {
+        if (isOpened) {
+            startPolling(organizationItem.orgid);
+        } else {
+            stopPolling();
+        }
+
+        switch (step) {
+            case 0:
+                setRequestStarted(false);
+                setStartedLifApproval(false);
+                break;
+            case 1:
+                break;
+            default:
+        }
+    }, [isOpened, startPolling, stopPolling, organizationItem, step]);
+
+    useEffect(() => {
+        if (selectedDirectory !== '') {
+            console.log('@@@', selectedDirectory, directories);
+            const deposit = getDirectory(selectedDirectory, directories).requesterDeposit;
+            setBalanceOk(Number(lifBalance) >= Number(deposit));
+            if (lifAllowance) {
+                setAllowanceOk(Number(lifAllowance) >= Number(deposit));
+            }
+        }
+    }, [directories, lifBalance, lifAllowance, selectedDirectory]);
+
+    const onDialogClose = () => {
+        stopPolling();
+        resetState();
+        handleClose();
+    };
 
     if (!isOpened) {
         return null;
@@ -113,78 +266,175 @@ const AddDirectoryDialog = props => {
 
     // address => title
     const options = directories.reduce(
-        (a, d) => Object.assign(a, {[d.address]: d.title}),
+        (a, d) => Object.assign(a, { [d.address]: d.title }),
         {}
     );
+
+    const selectedDirectoryDetails = getDirectory(selectedDirectory, directories);
 
     return (
         <DialogComponent
             isOpen={isOpened}
-            handleClose={handleClose}
+            handleClose={onDialogClose}
             children={(
                 <div className={classes.dialogContent}>
-                    <div className={classes.dialogTitleWrapper}>
-                        <Typography variant={'inherit'}>
-                            Choose a Directory
-                        </Typography>
-                    </div>
-                    <div className={classes.dialogSelectorWrapper}>
-                        <Formik
-                            initialValues={{ directory: '' }}
-                            validate={values => {
-                                const errors = {};
-                                return errors;
-                            }}
-                            onSubmit={values => {
-                                console.log('@@@', values);
-                                handleClose();
-                            }}
-                        >
-                            {({
-                                values,
-                                errors,
-                                touched,
-                                handleChange,
-                                handleBlur,
-                                handleSubmit,
-                                isSubmitting
-                            }) => (
-                                <form onSubmit={handleSubmit}>
-                                    <div className={classes.inputFieldWrapper}>
-                                        <SelectField
-                                            name={'directory'}
-                                            variant={'filled'}
-                                            label={'Segment name'}
-                                            fullWidth
-                                            required
-                                            options={options}
-                                            values={values.directory}
-                                            handleChange={handleChange}
-                                            handleBlur={handleBlur}
-                                            helperText={errors.type && touched.type ? errors.type : null}
-                                        />
-                                    </div>
-                                    <div className={classes.dialogButtonWrapper}>
+                    {step === 0 &&
+                        <>
+                            <DialogTitle>
+                                Choose a Directory
+                            </DialogTitle>
+                            <div className={classes.dialogSelectorWrapper}>
+                                <Formik
+                                    initialValues={{ directory: selectedDirectory }}
+                                    validate={values => {
+                                        const errors = {};
+                                        return errors;
+                                    }}
+                                    onSubmit={values => {
+                                        console.log('@@@', values);
+                                        setDirectory({
+                                            directory: values.directory
+                                        });
+                                        setStep(1);
+                                    }}
+                                >
+                                    {({
+                                        values,
+                                        errors,
+                                        touched,
+                                        handleChange,
+                                        handleBlur,
+                                        handleSubmit,
+                                        isSubmitting
+                                    }) => (
+                                        <form onSubmit={handleSubmit}>
+                                            <div className={classes.inputFieldWrapper}>
+                                                <SelectField
+                                                    name={'directory'}
+                                                    variant={'filled'}
+                                                    label={'Segment name'}
+                                                    fullWidth
+                                                    required
+                                                    options={options}
+                                                    values={values.directory}
+                                                    handleChange={handleChange}
+                                                    handleBlur={handleBlur}
+                                                    helperText={errors.type && touched.type ? errors.type : null}
+                                                />
+                                            </div>
+                                            <div className={classes.dialogButtonWrapper}>
+                                                <Button
+                                                    className={classes.dialogButton}
+                                                    type={'submit'}
+                                                    disabled={isSubmitting}
+                                                >
+                                                    Register in Directory
+                                                </Button>
+                                            </div>
+                                        </form>
+                                    )}
+                                </Formik>
+                            </div>
+                            <div className={classes.dialogButtonWrapper}>
+                                <Button
+                                    className={classes.dialogNewButton}
+                                    onClick={() => window.open('https://forms.gle/GsVZYqPXJMbdkerF8', '_blank')}
+                                >
+                                    Propose a new Directory
+                                </Button>
+                            </div>
+                        </>
+                    }
+                    {(step === 1 && !isOrgRequested) &&
+                        <>
+                            <DialogTitle>
+                                Register {organizationItem.name} in {selectedDirectoryDetails.title} Directory
+                            </DialogTitle>
+                            <div className={classes.depositNote + (isBalanceOk ? '' : ' insufficient')}>
+                                <Typography className={classes.depositNoteSubtitle}>
+                                    Required deposit
+                                </Typography>
+                                <Typography className={classes.depositNoteTitle}>
+                                    {selectedDirectoryDetails.requesterDeposit} LÍF
+                                </Typography>
+                            </div>
+                            <div>
+                                <Grid
+                                    container
+                                    direction='row'
+                                    justify='space-between'
+                                >
+                                    <Grid item>
                                         <Button
                                             className={classes.dialogButton}
-                                            type={'submit'}
-                                            disabled={isSubmitting}
+                                            onClick={() => setStep(0)}
                                         >
-                                            Register in Directory
+                                            Back
                                         </Button>
-                                    </div>
-                                </form>
-                            )}
-                        </Formik>
-                    </div>
-                    <div className={classes.dialogButtonWrapper}>
-                        <Button
-                            className={classes.dialogNewButton}
-                            onClick={() => window.open('https://forms.gle/GsVZYqPXJMbdkerF8', '_blank')}
-                        >
-                            Propose a new Directory
-                        </Button>
-                    </div>
+                                    </Grid>
+                                    <Grid item>
+                                        {!isBalanceOk &&
+                                            <div className={classes.buyLifWrapper}>
+                                                <Typography className={classes.yourBalanceNote}>
+                                                    Your balance: {lifBalance} LÍF
+                                                </Typography>
+                                                <Button
+                                                    className={classes.dialogButtonRed}
+                                                >
+                                                    Buy LÍF
+                                                </Button>
+                                            </div>
+                                        }
+                                        {(isBalanceOk && !isAllowanceOk) &&
+                                            <Button
+                                                className={classes.dialogButton}
+                                                disabled={isApprovalTransaction || approvalLifStarted}
+                                                onClick={() => {
+                                                    setStartedLifApproval(true);
+                                                    lifApprovalSend(selectedDirectoryDetails.requesterDeposit);
+                                                }}
+                                            >
+                                                Unlock Lif Tokens
+                                                {(isApprovalTransaction || approvalLifStarted) &&
+                                                    <CircularProgress className={classes.inButtonProgress} size='26px' color='secondary' />
+                                                }
+                                            </Button>
+                                        }
+                                        {(isBalanceOk && isAllowanceOk) &&
+                                            <Button
+                                                className={classes.dialogButton}
+                                                disabled={isRegisterTransaction || requestStarted}
+                                                onClick={() => {
+                                                    setRequestStarted(true);
+                                                    dirRegisterSend();
+                                                }}
+                                            >
+                                                Request to Register
+                                                {(isRegisterTransaction || requestStarted) &&
+                                                    <CircularProgress className={classes.inButtonProgress} size='26px' color='secondary' />
+                                                }
+                                            </Button>
+                                        }
+                                    </Grid>
+                                </Grid>
+                            </div>
+                        </>
+                    }
+                    {isOrgRequested &&
+                        <>
+                            <DialogTitle>
+                                Organization Registration Request has been sent successfully
+                            </DialogTitle>
+                            <div className={classes.dialogButtonWrapper}>
+                                <Button
+                                    className={classes.dialogButton}
+                                    onClick={onDialogClose}
+                                >
+                                    Close
+                                </Button>
+                            </div>
+                        </>
+                    }
                 </div>
             )}
         />
@@ -193,23 +443,9 @@ const AddDirectoryDialog = props => {
 
 const Directories = props => {
     const classes = styles();
-    const {
-        fetchDirectories,
-        isFetching,
-        isFetched,
-        error,
-        directories
-    } = props;
-    const [parsedDirectories, setDirectories] = useState([]);
-    const [isAddDialogOpened, setAddDialogOpened] = useState(false);
+    const [isDialogOpen, setDialogOpen] = useState(false);
 
-    useEffect(() => {
-        setDirectories(
-            directories.map(dir => getSegmentMeta(dir))
-        );
-    }, [directories]);
-
-    const toggleDialogOpen = () => setAddDialogOpened(!isAddDialogOpened);
+    const toggleDialogOpen = () => setDialogOpen(!isDialogOpen);
 
     return (
         <Container>
@@ -228,9 +464,9 @@ const Directories = props => {
                             </Typography>
                         </Button>
                         <AddDirectoryDialog
-                            isOpened={isAddDialogOpened}
-                            directories={parsedDirectories}
+                            isOpened={isDialogOpen}
                             handleClose={toggleDialogOpen}
+                            {...props}
                         />
                     </div>
                 </div>
@@ -241,15 +477,31 @@ const Directories = props => {
 
 const mapStateToProps = state => {
     return {
-        isFetching: isDirectoriesFetching(state),
-        isFetched: isDirectoriesFetched(state),
-        error: directoriesError(state),
-        directories: directoriesList(state)
+        isIndexFetching: isIndexFetching(state),
+        isPolling: isPolling(state),
+        isApprovalTransaction: isApprovalTransaction(state),
+        isRegisterTransaction: isRegisterTransaction(state),
+        directories: directories(state),
+        lifBalance: lifBalance(state),
+        lifAllowance: lifAllowance(state),
+        isOrgRequested: isOrgRequested(state),
+        selectedDirectory: selectedDirectory(state),
+        indexError: indexError(state),
+        pollingError: pollingError(state),
+        approvalError: approvalError(state),
+        registerError: registerError(state),
+        organizationItem: selectOrganizationItem(state)
     }
 };
 
 const mapDispatchToProps = {
-    fetchDirectories
+    startPolling,
+    stopPolling,
+    lifApprovalSend,
+    dirRegisterSend,
+    setOrgId,
+    setDirectory,
+    resetState
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Directories);

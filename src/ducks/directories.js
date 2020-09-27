@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { all, takeEvery, takeLatest, call, put, select, delay } from 'redux-saga/effects';
+import { all, takeEvery, takeLatest, call, put, select, delay, spawn } from 'redux-saga/effects';
 import { appName } from '../utils/constants';
 import {
     getDirIndexContract,
@@ -20,6 +20,7 @@ const DIR_INDEX_SUCCESS = `${prefix}/DIR_INDEX_SUCCESS`;
 const DIR_INDEX_FAILURE = `${prefix}/DIR_INDEX_FAILURE`;
 
 const POLLING_START = `${prefix}/POLLING_START`;
+const POLLING_START_SUCCESS = `${prefix}/POLLING_START_SUCCESS`;
 const POLLING_STOP = `${prefix}/POLLING_STOP`;
 const POLLING_FAILURE = `${prefix}/POLLING_FAILURE`;
 
@@ -28,6 +29,8 @@ const DIRECTORY_SET = `${prefix}/DIRECTORY_SET`;
 const LIF_BALANCE_SET = `${prefix}/LIF_BALANCE_SET`;
 const LIF_ALLOWANCE_SET = `${prefix}/LIF_ALLOWANCE_SET`;
 const ORG_REQUESTED_SET = `${prefix}/ORG_REQUESTED_SET`;
+
+const ORG_DIRECTORIES_SET = `${prefix}/ORG_DIRECTORIES_SET`;
 
 const LIF_APPROVAL_SEND = `${prefix}/LIF_APPROVAL_SEND`;
 const LIF_APPROVAL_SUCCESS = `${prefix}/LIF_APPROVAL_SUCCESS`;
@@ -45,9 +48,12 @@ const initialState = {
     isPolling: false,
     isApprovalTransaction: false,
     isRegisterTransaction: false,
+    isOrgDirectoriesFetched: false,
+    isOrgRequestedStatusFetched: false,
 
     directories: [],
     orgId: null,
+    orgDirectories: [],
     directoryId: '',
     lifBalance: '0',
     lifAllowance: '0',
@@ -86,13 +92,19 @@ export default (state = initialState, action) => {
 
         case POLLING_START:
             return Object.assign({}, state, {
-                isPolling: true,
                 orgId: payload.orgId,
+                pollingError: null
+            });
+        case POLLING_START_SUCCESS:
+            return Object.assign({}, state, {
+                isPolling: true,
                 pollingError: null
             });
         case POLLING_STOP:
             return Object.assign({}, state, {
                 isPolling: false,
+                orgDirectories: [],
+                isOrgDirectoriesFetched: false,
                 pollingError: null
             });
         case POLLING_FAILURE:
@@ -119,7 +131,13 @@ export default (state = initialState, action) => {
             });
         case ORG_REQUESTED_SET:
             return Object.assign({}, state, {
+                isOrgRequestedStatusFetched: true,
                 orgRequested: payload.orgRequested
+            });
+        case ORG_DIRECTORIES_SET:
+            return Object.assign({}, state, {
+                isOrgDirectoriesFetched: true,
+                orgDirectories: payload.orgDirectories
             });
 
         case LIF_APPROVAL_SEND:
@@ -156,10 +174,10 @@ export default (state = initialState, action) => {
 
         case DIR_RESET_STATE:
             return Object.assign({}, state, {
-                orgId: null,
                 directoryId: '',
                 lifBalance: '0',
                 lifAllowance: '0',
+                isOrgRequestedStatusFetched: false,
                 orgRequested: false
             });
         default:
@@ -234,6 +252,19 @@ export const startPolling = orgId => {
     }
 }
 
+export const setOrgDirectories = payload => {
+    return {
+        type: ORG_DIRECTORIES_SET,
+        payload
+    }
+}
+
+export const startPollingSuccess = () => {
+    return {
+        type: POLLING_START_SUCCESS
+    }
+}
+
 export const stopPolling = () => {
     return {
         type: POLLING_STOP
@@ -303,7 +334,7 @@ const stateSelector = state => state[moduleName];
 
 export const directoriesStor = createSelector(
     stateSelector,
-    stor => stor
+    store => store
 );
 
 export const isIndexFetching = createSelector(
@@ -351,6 +382,11 @@ export const lifAllowance = createSelector(
     ({ lifAllowance }) => lifAllowance
 );
 
+export const isOrgRequestedFetched = createSelector(
+    stateSelector,
+    ({ isOrgRequestedStatusFetched }) => isOrgRequestedStatusFetched
+);
+
 export const isOrgRequested = createSelector(
     stateSelector,
     ({ orgRequested }) => orgRequested
@@ -374,6 +410,16 @@ export const approvalError = createSelector(
 export const registerError = createSelector(
     stateSelector,
     ({ registerError }) => registerError
+);
+
+export const orgDirectoriesFetched = createSelector(
+    stateSelector,
+    ({ isOrgDirectoriesFetched }) => isOrgDirectoriesFetched
+);
+
+export const orgDirectories = createSelector(
+    stateSelector,
+    ({ orgDirectories }) => orgDirectories
 );
 
 /**
@@ -407,18 +453,26 @@ const fetchDirectoriesDetails = async (web3, ids = []) => Promise.all(
 
 const fetchLifBalance = async (web3, owner) => {
     const lif = getLifTokenContract(web3);
-    return lif.methods.balanceOf(owner).call();
+    const balance = await lif.methods.balanceOf(owner).call();
+    return web3.utils.fromWei(balance, 'ether');
 };
 
 const fetchLifAllowance = async (web3, owner, spender) => {
     const lif = getLifTokenContract(web3);
-    return lif.methods.allowance(owner, spender).call();
+    const allowance = await lif.methods.allowance(owner, spender).call();
+    return web3.utils.fromWei(allowance, 'ether');
 };
 
 const fetchRegistrationData = async (web3, orgId, dirId) => {
     const dir = getArbDirContract(web3, dirId);
     return dir.methods.organizationData(orgId).call();
 };
+
+const fetchOrganizationRegistrations = (web3, orgId, directories) => Promise.all(
+    directories.map(
+        d => fetchRegistrationData(web3, orgId, d.address)
+    )
+);
 
 const sendApproval = async (web3, owner, spender, amount, gasPrice) => {
     const lif = getLifTokenContract(web3);
@@ -461,15 +515,23 @@ const sendRegisterToAdd = async (web3, owner, orgId, dirAddress, gasPrice) => {
 function* startPollingSaga() {
     try {
         let count = 0;
-        let stor;
+        let store;
         let balance;
         let allowance;
         let requestData;
+        store = yield select(directoriesStor);
+
+        if (store.isPolling) {
+            return;
+        }
+
+        yield spawn(startPolingParticipationSaga);
+        yield put(startPollingSuccess());
+        store = yield select(directoriesStor);
         const owner = yield select(selectSignInAddress);
         const web3 = yield select(selectWeb3);
-        stor = yield select(directoriesStor);
 
-        while (stor.isPolling && !stor.pollingError) {
+        while (store.isPolling && !store.pollingError) {
             if (count > 1800) {
                 throw new Error('Too much polling cycles');
             }
@@ -477,15 +539,55 @@ function* startPollingSaga() {
             balance = yield call(fetchLifBalance, web3, owner);
             yield put(setLifBalance({ balance }));
 
-            if (stor.directoryId) {
-                allowance = yield call(fetchLifAllowance, web3, owner, stor.directoryId);
+            if (store.directoryId) {
+                allowance = yield call(fetchLifAllowance, web3, owner, store.directoryId);
                 yield put(setAllowance({ allowance }));
-                requestData = yield call(fetchRegistrationData, web3, stor.orgId, stor.directoryId);
-                yield put(setRequested({ orgRequested: requestData.ID === stor.orgId }));
+                requestData = yield call(fetchRegistrationData, web3, store.orgId, store.directoryId);
+                yield put(setRequested({ orgRequested: requestData.ID === store.orgId }));
             }
 
-            yield delay(1000);
-            stor = yield select(directoriesStor);
+            yield delay(1500);
+            store = yield select(directoriesStor);
+            count++;
+        };
+
+    } catch(error) {
+        yield put(pollingFailure(error))
+    }
+}
+
+function* startPolingParticipationSaga() {
+    try {
+        let count = 0;
+        let orgDirectories = [];
+        let store;
+        store = yield select(directoriesStor);
+
+        if (store.isPolling) {
+            return;
+        }
+
+        yield put(startPollingSuccess());
+        store = yield select(directoriesStor);
+        const web3 = yield select(selectWeb3);
+
+        while (store.isPolling && !store.pollingError) {
+            if (count > 1800) {
+                throw new Error('Too much polling cycles');
+            }
+
+            orgDirectories = yield call(
+                fetchOrganizationRegistrations,
+                web3,
+                store.orgId,
+                store.directories
+            );
+            yield put(setOrgDirectories({
+                orgDirectories
+            }));
+
+            yield delay(3000);
+            store = yield select(directoriesStor);
             count++;
         };
 
@@ -513,16 +615,16 @@ function* sendApprovalSaga({ payload }) {
         const web3 = yield select(selectWeb3);
         const gasPrice = yield call(ApiGetGasPrice, web3);
         const owner = yield select(selectSignInAddress);
-        const stor = yield select(directoriesStor);
+        const store = yield select(directoriesStor);
         console.log('@#@#@#@#', owner,
-        stor.directoryId,
+        store.directoryId,
         web3.utils.toWei(payload.amount),
         gasPrice);
         yield call(
             sendApproval,
             web3,
             owner,
-            stor.directoryId,
+            store.directoryId,
             web3.utils.toWei(payload.amount),
             gasPrice
         );
@@ -537,13 +639,13 @@ function* registerToAddSaga() {
         const web3 = yield select(selectWeb3);
         const gasPrice = yield call(ApiGetGasPrice, web3);
         const owner = yield select(selectSignInAddress);
-        const stor = yield select(directoriesStor);
+        const store = yield select(directoriesStor);
         yield call(
             sendRegisterToAdd,
             web3,
             owner,
-            stor.orgId,
-            stor.directoryId,
+            store.orgId,
+            store.directoryId,
             gasPrice
         );
         yield put(dirRegisterSuccess());

@@ -2,26 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import {
-    startPolling,
-    stopPolling,
     lifApprovalSend,
     dirRegisterSend,
     setOrgId,
     setDirectory,
     resetState,
     isIndexFetching,
-    isPolling,
     isApprovalTransaction,
     isRegisterTransaction,
     directories,
     lifBalance,
     lifAllowance,
     isOrgRequested,
+    isOrgRequestedFetched,
     selectedDirectory,
     indexError,
     pollingError,
     approvalError,
-    registerError
+    registerError,
+    orgDirectoriesFetched,
+    orgDirectories
 } from '../../../ducks/directories';
 import { selectItem as selectOrganizationItem } from '../../../ducks/fetchOrganizationInfo';
 import { getSegmentMeta } from '../../../utils/directories';
@@ -162,8 +162,48 @@ const styles = makeStyles({
         fontSize: '28px',
         textTransform: 'capitalize',
         color: colors.primary.green
+    },
+    actionButton: {
+        fontSize: '14px',
+        fontWeight: 500,
+        lineHeight: 1.3,
+        float: 'right',
+        color: colors.secondary.peach,
+        textTransform: 'none'
+    },
+    statusLabelWrapper: {
+        display: 'flex',
+
+    },
+    statusLabel: {
+        padding: '3px 6px',
+        borderRadius: '6px;',
+        fontSize: '14px',
+        '&.requested': {
+            backgroundColor: '#FCE8B6',
+            color: '#5E666A'
+        },
+        '&.withdrawal-requested': {
+            backgroundColor: '#7D63FF',
+            color: 'white'
+        },
+        '&.challenged': {
+            backgroundColor: '#FAC8C0',
+            color: '#5E666A'
+        },
+        '&.disputed': {
+            backgroundColor: '#FAC8C0',
+            color: '#5E666A'
+        },
+        '&.registered': {
+            backgroundColor: '#DDECD5',
+            color: '#5E666A'
+        }
     }
 });
+
+// Extract specific directory from the list
+const getDirectory = (address, directories) => directories.filter(d => d.address === address)[0];
 
 const DialogTitle = props => {
     const classes = styles();
@@ -180,8 +220,131 @@ const DialogTitle = props => {
     );
 };
 
-// Extract specific directory from the list
-const getDirectory = (address, directories) => directories.filter(d => d.address === address)[0];
+const DirectoriesList = props => {
+    const classes = styles();
+    const {
+        directories: directoriesDetails,
+        orgDirectories,
+        orgDirectoriesFetched
+    } = props;
+
+    const parseDirectories = directories => directories
+        .map((d, index) => {
+            const config = [
+                // The organization is not registered and doesn't have an open request.
+                {
+                    status: 'Not Registered',
+                    statusClass: '',
+                    action: 'Register',
+                    actionCallback: () => {}
+                },
+                // The organization has an open request.
+                {
+                    status: 'Registration Requested',
+                    statusClass: 'requested',
+                    action: 'Execute Timeout',
+                    actionCallback: () => {}
+                },
+                // The organization made a withdrawal request.
+                {
+                    status: 'Withdrawal Requested',
+                    statusClass: 'withdrawal-requested',
+                    action: 'Withdraw Tokens',
+                    actionCallback: () => {}
+                },
+                // The organization has been challenged.
+                {
+                    status: 'Challenged',
+                    statusClass: 'challenged',
+                    action: 'Accept Challenge',
+                    actionCallback: () => {}
+                },
+                // The challenge has been disputed.
+                {
+                    status: 'Disputed',
+                    statusClass: 'disputed',
+                    action: null,
+                    actionCallback: () => {}
+                },
+                {
+                    status: 'Registered',
+                    statusClass: 'registered',
+                    action: 'Request Tokens Withdrawal',
+                    actionCallback: () => {}
+                }
+            ];
+
+            if (d.status === '0') {
+                return null;
+            }
+
+            const details = directoriesDetails[index];
+            const statusNum = Number(d.status);
+
+            return {
+                title: details.title,
+                address: d.address,
+                config: config[statusNum]
+            };
+        })
+        .filter(d => d !== null);
+
+    if (!orgDirectoriesFetched) {
+        return (
+            <Grid
+                container
+                direction='row'
+                wrap='nowrap'
+                alignItems='center'
+                alignContent='space-between'
+            >
+                <Grid item style={{ marginRight: '10px'}}>
+                    <CircularProgress size='18px' />
+                </Grid>
+                <Grid item>
+                    <Typography>
+                        Directories list is loading...
+                    </Typography>
+                </Grid>
+            </Grid>
+        );
+    }
+
+    return (
+        <>
+            {parseDirectories(orgDirectories).map((directory, i) => (
+                <Grid
+                    container
+                    direction='row'
+                    wrap='nowrap'
+                    alignItems='center'
+                    key={i}
+                >
+                    <Grid item xs={2}>
+                        {directory.title}
+                    </Grid>
+                    <Grid item xs={6}>
+                        <div className={classes.statusLabelWrapper}>
+                            <Typography className={classes.statusLabel + ' ' + directory.config.statusClass}>
+                                {directory.config.status}
+                            </Typography>
+                        </div>
+                    </Grid>
+                    <Grid item xs={4}>
+                        {directory.config.action &&
+                            <Button
+                                className={classes.actionButton}
+                                onClick={directory.config.actionCallback}
+                            >
+                                {directory.config.action}
+                            </Button>
+                        }
+                    </Grid>
+                </Grid>
+            ))}
+        </>
+    );
+};
 
 const AddDirectoryDialog = props => {
     const classes = styles();
@@ -190,20 +353,17 @@ const AddDirectoryDialog = props => {
         handleClose,
         directories: directoriesRaw,
         resetState,
-        startPolling,
-        stopPolling,
         lifApprovalSend,
         dirRegisterSend,
         setDirectory,
-        isPolling,
         isApprovalTransaction,
         isRegisterTransaction,
         lifBalance,
         lifAllowance,
+        isOrgRequestedFetched,
         isOrgRequested,
         selectedDirectory,
         indexError,
-        pollingError,
         approvalError,
         registerError,
         organizationItem
@@ -226,14 +386,9 @@ const AddDirectoryDialog = props => {
     }, [directoriesRaw]);
 
     useEffect(() => {
-        if (isOpened) {
-            startPolling(organizationItem.orgid);
-        } else {
-            stopPolling();
-        }
-
         switch (step) {
             case 0:
+                resetState();
                 setRequestStarted(false);
                 setStartedLifApproval(false);
                 break;
@@ -241,11 +396,10 @@ const AddDirectoryDialog = props => {
                 break;
             default:
         }
-    }, [isOpened, startPolling, stopPolling, organizationItem, step]);
+    }, [isOpened, organizationItem, step]);
 
     useEffect(() => {
         if (selectedDirectory !== '') {
-            console.log('@@@', selectedDirectory, directories);
             const deposit = getDirectory(selectedDirectory, directories).requesterDeposit;
             setBalanceOk(Number(lifBalance) >= Number(deposit));
             if (lifAllowance) {
@@ -255,7 +409,7 @@ const AddDirectoryDialog = props => {
     }, [directories, lifBalance, lifAllowance, selectedDirectory]);
 
     const onDialogClose = () => {
-        stopPolling();
+        setStep(0);
         resetState();
         handleClose();
     };
@@ -345,7 +499,12 @@ const AddDirectoryDialog = props => {
                             </div>
                         </>
                     }
-                    {(step === 1 && !isOrgRequested) &&
+                    {(step === 1 && !isOrgRequestedFetched) &&
+                        <DialogTitle>
+                            <CircularProgress />
+                        </DialogTitle>
+                    }
+                    {(step === 1 && !isOrgRequested && isOrgRequestedFetched) &&
                         <>
                             <DialogTitle>
                                 Register {organizationItem.name} in {selectedDirectoryDetails.title} Directory
@@ -420,7 +579,7 @@ const AddDirectoryDialog = props => {
                             </div>
                         </>
                     }
-                    {isOrgRequested &&
+                    {(step === 1 && isOrgRequested && isOrgRequestedFetched) &&
                         <>
                             <DialogTitle>
                                 Organization Registration Request has been sent successfully
@@ -470,6 +629,9 @@ const Directories = props => {
                         />
                     </div>
                 </div>
+                <dir className={classes.regsListWrapper}>
+                    <DirectoriesList {...props}/>
+                </dir>
             </div>
         </Container>
     );
@@ -478,25 +640,25 @@ const Directories = props => {
 const mapStateToProps = state => {
     return {
         isIndexFetching: isIndexFetching(state),
-        isPolling: isPolling(state),
         isApprovalTransaction: isApprovalTransaction(state),
         isRegisterTransaction: isRegisterTransaction(state),
         directories: directories(state),
         lifBalance: lifBalance(state),
         lifAllowance: lifAllowance(state),
         isOrgRequested: isOrgRequested(state),
+        isOrgRequestedFetched:  isOrgRequestedFetched(state),
         selectedDirectory: selectedDirectory(state),
         indexError: indexError(state),
         pollingError: pollingError(state),
         approvalError: approvalError(state),
         registerError: registerError(state),
-        organizationItem: selectOrganizationItem(state)
+        organizationItem: selectOrganizationItem(state),
+        orgDirectoriesFetched: orgDirectoriesFetched(state),
+        orgDirectories: orgDirectories(state)
     }
 };
 
 const mapDispatchToProps = {
-    startPolling,
-    stopPolling,
     lifApprovalSend,
     dirRegisterSend,
     setOrgId,

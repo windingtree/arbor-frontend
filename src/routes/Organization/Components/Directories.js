@@ -82,7 +82,10 @@ const styles = makeStyles({
         fontWeight: 500,
         color: colors.greyScale.darkest,
         marginBottom: '20px',
-        textAlign: 'center'
+        textAlign: 'center',
+        '&.noMargin': {
+            marginBottom: 0
+        }
     },
     dialogButtonWrapper: {
         display: 'flex',
@@ -211,11 +214,12 @@ const getDirectory = (address, directories) => directories.filter(d => d.address
 const DialogTitle = props => {
     const classes = styles();
     const {
+        noMargin,
         children
     } = props;
 
     return (
-        <div className={classes.dialogTitleWrapper}>
+        <div className={classes.dialogTitleWrapper + (noMargin ? ' noMargin' : '')}>
             <Typography variant={'inherit'}>
                 {children}
             </Typography>
@@ -514,6 +518,11 @@ const AddDirectoryDialog = props => {
                             </div>
                         </>
                     }
+                    {(step === 1 && !isOrgRequestedFetched) &&
+                        <DialogTitle noMargin>
+                            <CircularProgress />
+                        </DialogTitle>
+                    }
                     {(step === 1 && isOrgRequested && isOrgRequestedFetched) &&
                         <>
                             <DialogTitle>
@@ -529,7 +538,7 @@ const AddDirectoryDialog = props => {
                             </div>
                         </>
                     }
-                    {step === 1 &&
+                    {(step === 1 && !isOrgRequested && isOrgRequestedFetched) &&
                         <>
                             <DialogTitle>
                                 {selectedDirectoryDetails.title} Directory Rules

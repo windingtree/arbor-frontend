@@ -33,6 +33,9 @@ import DialogComponent from '../../../components/Dialog';
 import SelectField from '../../../components/Fields/SelectField';
 import { makeStyles } from "@material-ui/core/styles";
 import colors from "../../../styles/colors";
+import DirRequestedIcon from '../../../assets/SvgComponents/dir-requested-icon.svg';
+import DirChallengedIcon from '../../../assets/SvgComponents/dir-challenged-icon.svg';
+import DirRegisteredIcon from '../../../assets/SvgComponents/dir-registered-icon.svg';
 
 const styles = makeStyles({
     container: {
@@ -235,6 +238,7 @@ const DirectoriesList = props => {
                 {
                     status: 'Not Registered',
                     statusClass: '',
+                    icon: '',
                     action: 'Register',
                     actionCallback: () => {}
                 },
@@ -242,6 +246,7 @@ const DirectoriesList = props => {
                 {
                     status: 'Registration Requested',
                     statusClass: 'requested',
+                    icon: DirRequestedIcon,
                     action: 'Execute Timeout',
                     actionCallback: () => {}
                 },
@@ -249,6 +254,7 @@ const DirectoriesList = props => {
                 {
                     status: 'Withdrawal Requested',
                     statusClass: 'withdrawal-requested',
+                    icon: DirChallengedIcon,
                     action: 'Withdraw Tokens',
                     actionCallback: () => {}
                 },
@@ -256,6 +262,7 @@ const DirectoriesList = props => {
                 {
                     status: 'Challenged',
                     statusClass: 'challenged',
+                    icon: DirChallengedIcon,
                     action: 'Accept Challenge',
                     actionCallback: () => {}
                 },
@@ -263,12 +270,14 @@ const DirectoriesList = props => {
                 {
                     status: 'Disputed',
                     statusClass: 'disputed',
+                    icon: DirChallengedIcon,
                     action: null,
                     actionCallback: () => {}
                 },
                 {
                     status: 'Registered',
                     statusClass: 'registered',
+                    icon: DirRegisteredIcon,
                     action: 'Request Tokens Withdrawal',
                     actionCallback: () => {}
                 }
@@ -326,6 +335,10 @@ const DirectoriesList = props => {
                     <Grid item xs={6}>
                         <div className={classes.statusLabelWrapper}>
                             <Typography className={classes.statusLabel + ' ' + directory.config.statusClass}>
+                                <img
+                                    alt={directory.config.status}
+                                    src={directory.config.icon}
+                                />&nbsp;
                                 {directory.config.status}
                             </Typography>
                         </div>
@@ -394,9 +407,11 @@ const AddDirectoryDialog = props => {
                 break;
             case 1:
                 break;
+            case 2:
+                break;
             default:
         }
-    }, [isOpened, organizationItem, step]);
+    }, [resetState, isOpened, organizationItem, step]);
 
     useEffect(() => {
         if (selectedDirectory !== '') {
@@ -499,12 +514,61 @@ const AddDirectoryDialog = props => {
                             </div>
                         </>
                     }
-                    {(step === 1 && !isOrgRequestedFetched) &&
+                    {(step === 1 && isOrgRequested && isOrgRequestedFetched) &&
+                        <>
+                            <DialogTitle>
+                                Organization Registration Request to the {selectedDirectoryDetails.title} Directory has been sent successfully
+                            </DialogTitle>
+                            <div className={classes.dialogButtonWrapper}>
+                                <Button
+                                    className={classes.dialogButton}
+                                    onClick={onDialogClose}
+                                >
+                                    Close
+                                </Button>
+                            </div>
+                        </>
+                    }
+                    {step === 1 &&
+                        <>
+                            <DialogTitle>
+                                {selectedDirectoryDetails.title} Directory Rules
+                            </DialogTitle>
+                            <div className={classes.depositNote}>
+                                [Rules text will be here]
+                            </div>
+                            <div>
+                                <Grid
+                                    container
+                                    direction='row'
+                                    justify='space-between'
+                                >
+                                    <Grid item>
+                                        <Button
+                                            className={classes.dialogButton}
+                                            onClick={() => setStep(0)}
+                                        >
+                                            Back
+                                        </Button>
+                                    </Grid>
+                                    <Grid item>
+                                    <Button
+                                            className={classes.dialogButton}
+                                            onClick={() => setStep(2)}
+                                        >
+                                            Next
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+                            </div>
+                        </>
+                    }
+                    {(step === 2 && !isOrgRequestedFetched) &&
                         <DialogTitle>
                             <CircularProgress />
                         </DialogTitle>
                     }
-                    {(step === 1 && !isOrgRequested && isOrgRequestedFetched) &&
+                    {(step === 2 && !isOrgRequested && isOrgRequestedFetched) &&
                         <>
                             <DialogTitle>
                                 Register {organizationItem.name} in {selectedDirectoryDetails.title} Directory
@@ -526,7 +590,7 @@ const AddDirectoryDialog = props => {
                                     <Grid item>
                                         <Button
                                             className={classes.dialogButton}
-                                            onClick={() => setStep(0)}
+                                            onClick={() => setStep(1)}
                                         >
                                             Back
                                         </Button>
@@ -576,21 +640,6 @@ const AddDirectoryDialog = props => {
                                         }
                                     </Grid>
                                 </Grid>
-                            </div>
-                        </>
-                    }
-                    {(step === 1 && isOrgRequested && isOrgRequestedFetched) &&
-                        <>
-                            <DialogTitle>
-                                Organization Registration Request has been sent successfully
-                            </DialogTitle>
-                            <div className={classes.dialogButtonWrapper}>
-                                <Button
-                                    className={classes.dialogButton}
-                                    onClick={onDialogClose}
-                                >
-                                    Close
-                                </Button>
                             </div>
                         </>
                     }

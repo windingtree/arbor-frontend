@@ -146,7 +146,8 @@ const DirectoryCard = props => {
         address,
         icon,
         entities,
-        numberOfChallenges
+        numberOfChallenges,
+        numberOfRequests
     } = props;
 
     return (
@@ -189,6 +190,12 @@ const DirectoryCard = props => {
                             <Typography className={classes.directoryInfoLabel}>
                                 {entities}&nbsp;
                                 Entities
+                            </Typography>
+                        </Grid>
+                        <Grid item>
+                            <Typography className={classes.directoryInfoLabel}>
+                                {numberOfRequests}&nbsp;
+                                Registration Requests
                             </Typography>
                         </Grid>
                         <Grid item>

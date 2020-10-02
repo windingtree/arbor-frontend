@@ -433,6 +433,7 @@ const fetchDirectoriesDetails = async (web3, ids = []) => Promise.all(
             const dir = getArbDirContract(web3, id);
             const segment = await dir.methods.getSegment().call();
             const entities = await dir.methods.getOrganizationsCount(0, 0).call();
+            const numberOfRequests = await dir.methods.getRequestedOrganizationsCount(0, 0).call();
             const numberOfChallenges = await dir.methods.getNumberOfChallenges(id).call();
             const requesterDeposit = await dir.methods.requesterDeposit().call();
 
@@ -441,6 +442,7 @@ const fetchDirectoriesDetails = async (web3, ids = []) => Promise.all(
                 segment,
                 entities,
                 numberOfChallenges,
+                numberOfRequests,
                 requesterDeposit: web3.utils.fromWei(requesterDeposit, 'ether')
             };
         }

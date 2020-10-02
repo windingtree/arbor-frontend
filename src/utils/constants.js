@@ -1089,6 +1089,51 @@ export const DIR_INDEX_ABI = [
     "type": "event"
   },
   {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "segment",
+        "type": "address"
+      }
+    ],
+    "name": "addSegment",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getSegments",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "segmentsList",
+        "type": "address[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address payable",
+        "name": "__owner",
+        "type": "address"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "constant": true,
     "inputs": [],
     "name": "isOwner",
@@ -1116,6 +1161,21 @@ export const DIR_INDEX_ABI = [
     ],
     "payable": false,
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "segment",
+        "type": "address"
+      }
+    ],
+    "name": "removeSegment",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -1182,66 +1242,6 @@ export const DIR_INDEX_ABI = [
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "address payable",
-        "name": "__owner",
-        "type": "address"
-      }
-    ],
-    "name": "initialize",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "segment",
-        "type": "address"
-      }
-    ],
-    "name": "addSegment",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "segment",
-        "type": "address"
-      }
-    ],
-    "name": "removeSegment",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "getSegments",
-    "outputs": [
-      {
-        "internalType": "address[]",
-        "name": "segmentsList",
-        "type": "address[]"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
     "type": "function"
   }
 ];
@@ -1447,6 +1447,26 @@ export const ARB_DIR_ABI = [
     "type": "function"
   },
   {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_organization",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "string",
+        "name": "_evidence",
+        "type": "string"
+      }
+    ],
+    "name": "acceptChallenge",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
     "constant": true,
     "inputs": [],
     "name": "arbitrator",
@@ -1518,6 +1538,196 @@ export const ARB_DIR_ABI = [
     "type": "function"
   },
   {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_organization",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "string",
+        "name": "_evidence",
+        "type": "string"
+      }
+    ],
+    "name": "challengeOrganization",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "contract IArbitrator",
+        "name": "_arbitrator",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "_arbitratorExtraData",
+        "type": "bytes"
+      }
+    ],
+    "name": "changeArbitrator",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_challengeBaseDeposit",
+        "type": "uint256"
+      }
+    ],
+    "name": "changeChallengeBaseDeposit",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_executionTimeout",
+        "type": "uint256"
+      }
+    ],
+    "name": "changeExecutionTimeout",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_loserStakeMultiplier",
+        "type": "uint256"
+      }
+    ],
+    "name": "changeLoserStakeMultiplier",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_metaEvidence",
+        "type": "string"
+      }
+    ],
+    "name": "changeMetaEvidence",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_requesterDeposit",
+        "type": "uint256"
+      }
+    ],
+    "name": "changeRequesterDeposit",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_responseTimeout",
+        "type": "uint256"
+      }
+    ],
+    "name": "changeResponseTimeout",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_sharedStakeMultiplier",
+        "type": "uint256"
+      }
+    ],
+    "name": "changeSharedStakeMultiplier",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_winnerStakeMultiplier",
+        "type": "uint256"
+      }
+    ],
+    "name": "changeWinnerStakeMultiplier",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_withdrawTimeout",
+        "type": "uint256"
+      }
+    ],
+    "name": "changeWithdrawTimeout",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_organization",
+        "type": "bytes32"
+      }
+    ],
+    "name": "executeTimeout",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "constant": true,
     "inputs": [],
     "name": "executionTimeout",
@@ -1526,6 +1736,314 @@ export const ARB_DIR_ABI = [
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_organization",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "enum ArbitrableDirectory.Party",
+        "name": "_side",
+        "type": "uint8"
+      }
+    ],
+    "name": "fundAppeal",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_organization",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_challenge",
+        "type": "uint256"
+      }
+    ],
+    "name": "getChallengeInfo",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "disputed",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "disputeID",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "resolved",
+        "type": "bool"
+      },
+      {
+        "internalType": "address payable",
+        "name": "challenger",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "numberOfRounds",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum ArbitrableDirectory.Party",
+        "name": "ruling",
+        "type": "uint8"
+      },
+      {
+        "internalType": "contract IArbitrator",
+        "name": "arbitrator",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "arbitratorExtraData",
+        "type": "bytes"
+      },
+      {
+        "internalType": "uint256",
+        "name": "metaEvidenceID",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_organization",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_challenge",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_round",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_contributor",
+        "type": "address"
+      }
+    ],
+    "name": "getContributions",
+    "outputs": [
+      {
+        "internalType": "uint256[3]",
+        "name": "contributions",
+        "type": "uint256[3]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_organization",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getNumberOfChallenges",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "numberOfChallenges",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_cursor",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_count",
+        "type": "uint256"
+      }
+    ],
+    "name": "getOrganizations",
+    "outputs": [
+      {
+        "internalType": "bytes32[]",
+        "name": "organizationsList",
+        "type": "bytes32[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_cursor",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_count",
+        "type": "uint256"
+      }
+    ],
+    "name": "getOrganizationsCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "count",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_cursor",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_count",
+        "type": "uint256"
+      }
+    ],
+    "name": "getRequestedOrganizations",
+    "outputs": [
+      {
+        "internalType": "bytes32[]",
+        "name": "organizationsList",
+        "type": "bytes32[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_cursor",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_count",
+        "type": "uint256"
+      }
+    ],
+    "name": "getRequestedOrganizationsCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "count",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_organization",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_challenge",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_round",
+        "type": "uint256"
+      }
+    ],
+    "name": "getRoundInfo",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "appealed",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256[3]",
+        "name": "paidFees",
+        "type": "uint256[3]"
+      },
+      {
+        "internalType": "bool[3]",
+        "name": "hasPaid",
+        "type": "bool[3]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "feeRewards",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getSegment",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
       }
     ],
     "payable": false,
@@ -1545,6 +2063,81 @@ export const ARB_DIR_ABI = [
     ],
     "payable": false,
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_governor",
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "_segment",
+        "type": "string"
+      },
+      {
+        "internalType": "contract OrgIdInterface",
+        "name": "_orgId",
+        "type": "address"
+      },
+      {
+        "internalType": "contract ERC20",
+        "name": "_lif",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IArbitrator",
+        "name": "_arbitrator",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "_arbitratorExtraData",
+        "type": "bytes"
+      },
+      {
+        "internalType": "string",
+        "name": "_metaEvidence",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_requesterDeposit",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_challengeBaseDeposit",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_executionTimeout",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_responseTimeout",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_withdrawTimeout",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[3]",
+        "name": "_stakeMultipliers",
+        "type": "uint256[3]"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -1575,6 +2168,21 @@ export const ARB_DIR_ABI = [
     ],
     "payable": false,
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_organization",
+        "type": "bytes32"
+      }
+    ],
+    "name": "makeWithdrawalRequest",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -1696,6 +2304,63 @@ export const ARB_DIR_ABI = [
     "type": "function"
   },
   {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_organization",
+        "type": "bytes32"
+      }
+    ],
+    "name": "requestToAdd",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "name": "requestedIndex",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "requestedOrganizations",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "constant": true,
     "inputs": [],
     "name": "requesterDeposit",
@@ -1726,6 +2391,41 @@ export const ARB_DIR_ABI = [
     "type": "function"
   },
   {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_disputeID",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_ruling",
+        "type": "uint256"
+      }
+    ],
+    "name": "rule",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_segment",
+        "type": "string"
+      }
+    ],
+    "name": "setSegment",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "constant": true,
     "inputs": [],
     "name": "sharedStakeMultiplier",
@@ -1738,6 +2438,26 @@ export const ARB_DIR_ABI = [
     ],
     "payable": false,
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_organization",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "string",
+        "name": "_evidence",
+        "type": "string"
+      }
+    ],
+    "name": "submitEvidence",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -1777,356 +2497,6 @@ export const ARB_DIR_ABI = [
     "type": "function"
   },
   {
-    "constant": true,
-    "inputs": [],
-    "name": "withdrawTimeout",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_governor",
-        "type": "address"
-      },
-      {
-        "internalType": "string",
-        "name": "_segment",
-        "type": "string"
-      },
-      {
-        "internalType": "contract OrgIdInterface",
-        "name": "_orgId",
-        "type": "address"
-      },
-      {
-        "internalType": "contract ERC20",
-        "name": "_lif",
-        "type": "address"
-      },
-      {
-        "internalType": "contract IArbitrator",
-        "name": "_arbitrator",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes",
-        "name": "_arbitratorExtraData",
-        "type": "bytes"
-      },
-      {
-        "internalType": "string",
-        "name": "_metaEvidence",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_requesterDeposit",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_challengeBaseDeposit",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_executionTimeout",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_responseTimeout",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_withdrawTimeout",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256[3]",
-        "name": "_stakeMultipliers",
-        "type": "uint256[3]"
-      }
-    ],
-    "name": "initialize",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "_segment",
-        "type": "string"
-      }
-    ],
-    "name": "setSegment",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_requesterDeposit",
-        "type": "uint256"
-      }
-    ],
-    "name": "changeRequesterDeposit",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_challengeBaseDeposit",
-        "type": "uint256"
-      }
-    ],
-    "name": "changeChallengeBaseDeposit",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_executionTimeout",
-        "type": "uint256"
-      }
-    ],
-    "name": "changeExecutionTimeout",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_responseTimeout",
-        "type": "uint256"
-      }
-    ],
-    "name": "changeResponseTimeout",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_withdrawTimeout",
-        "type": "uint256"
-      }
-    ],
-    "name": "changeWithdrawTimeout",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_sharedStakeMultiplier",
-        "type": "uint256"
-      }
-    ],
-    "name": "changeSharedStakeMultiplier",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_winnerStakeMultiplier",
-        "type": "uint256"
-      }
-    ],
-    "name": "changeWinnerStakeMultiplier",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_loserStakeMultiplier",
-        "type": "uint256"
-      }
-    ],
-    "name": "changeLoserStakeMultiplier",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "contract IArbitrator",
-        "name": "_arbitrator",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes",
-        "name": "_arbitratorExtraData",
-        "type": "bytes"
-      }
-    ],
-    "name": "changeArbitrator",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "_metaEvidence",
-        "type": "string"
-      }
-    ],
-    "name": "changeMetaEvidence",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_organization",
-        "type": "bytes32"
-      }
-    ],
-    "name": "requestToAdd",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_organization",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "string",
-        "name": "_evidence",
-        "type": "string"
-      }
-    ],
-    "name": "challengeOrganization",
-    "outputs": [],
-    "payable": true,
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_organization",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "string",
-        "name": "_evidence",
-        "type": "string"
-      }
-    ],
-    "name": "acceptChallenge",
-    "outputs": [],
-    "payable": true,
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_organization",
-        "type": "bytes32"
-      }
-    ],
-    "name": "executeTimeout",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_organization",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "enum ArbitrableDirectory.Party",
-        "name": "_side",
-        "type": "uint8"
-      }
-    ],
-    "name": "fundAppeal",
-    "outputs": [],
-    "payable": true,
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
     "constant": false,
     "inputs": [
       {
@@ -2157,18 +2527,18 @@ export const ARB_DIR_ABI = [
     "type": "function"
   },
   {
-    "constant": false,
-    "inputs": [
+    "constant": true,
+    "inputs": [],
+    "name": "withdrawTimeout",
+    "outputs": [
       {
-        "internalType": "bytes32",
-        "name": "_organization",
-        "type": "bytes32"
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
-    "name": "makeWithdrawalRequest",
-    "outputs": [],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -2184,282 +2554,6 @@ export const ARB_DIR_ABI = [
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_disputeID",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_ruling",
-        "type": "uint256"
-      }
-    ],
-    "name": "rule",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_organization",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "string",
-        "name": "_evidence",
-        "type": "string"
-      }
-    ],
-    "name": "submitEvidence",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "getSegment",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_cursor",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_count",
-        "type": "uint256"
-      }
-    ],
-    "name": "getOrganizations",
-    "outputs": [
-      {
-        "internalType": "bytes32[]",
-        "name": "organizationsList",
-        "type": "bytes32[]"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_cursor",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_count",
-        "type": "uint256"
-      }
-    ],
-    "name": "getOrganizationsCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "count",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_organization",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_challenge",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_round",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "_contributor",
-        "type": "address"
-      }
-    ],
-    "name": "getContributions",
-    "outputs": [
-      {
-        "internalType": "uint256[3]",
-        "name": "contributions",
-        "type": "uint256[3]"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_organization",
-        "type": "bytes32"
-      }
-    ],
-    "name": "getNumberOfChallenges",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "numberOfChallenges",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_organization",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_challenge",
-        "type": "uint256"
-      }
-    ],
-    "name": "getChallengeInfo",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "disputed",
-        "type": "bool"
-      },
-      {
-        "internalType": "uint256",
-        "name": "disputeID",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bool",
-        "name": "resolved",
-        "type": "bool"
-      },
-      {
-        "internalType": "address payable",
-        "name": "challenger",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "numberOfRounds",
-        "type": "uint256"
-      },
-      {
-        "internalType": "enum ArbitrableDirectory.Party",
-        "name": "ruling",
-        "type": "uint8"
-      },
-      {
-        "internalType": "contract IArbitrator",
-        "name": "arbitrator",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes",
-        "name": "arbitratorExtraData",
-        "type": "bytes"
-      },
-      {
-        "internalType": "uint256",
-        "name": "metaEvidenceID",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_organization",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_challenge",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_round",
-        "type": "uint256"
-      }
-    ],
-    "name": "getRoundInfo",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "appealed",
-        "type": "bool"
-      },
-      {
-        "internalType": "uint256[3]",
-        "name": "paidFees",
-        "type": "uint256[3]"
-      },
-      {
-        "internalType": "bool[3]",
-        "name": "hasPaid",
-        "type": "bool[3]"
-      },
-      {
-        "internalType": "uint256",
-        "name": "feeRewards",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
     "type": "function"
   }
 ];

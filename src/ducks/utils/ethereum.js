@@ -62,6 +62,7 @@ export const getBlock = async (web3, typeOrNumber) => {
 
   do {
     if (counter === 20) {
+        counter = 0;
         throw new Error(
           `Unable to fetch block "${typeOrNumber}": retries limit has been reached`
         );
@@ -90,7 +91,7 @@ export const ApiGetGasPrice = async web3 => {
     },
     0
   );
-  return web3.utils.toWei(Math.ceil(parseInt(sum / transactions.length)).toString(), 'gwei');
+  return web3.utils.toWei(Math.ceil(parseInt((sum / transactions.length * 1.2))).toString(), 'gwei');
 }
 
 // get balance in units

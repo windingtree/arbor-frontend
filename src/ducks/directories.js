@@ -487,8 +487,8 @@ const sendApproval = async (web3, owner, spender, amount, gasPrice) => {
             .on('receipt', receipt => {
                 resolve(receipt);
             })
-            .on('error', (error, receipt) => {
-                reject({error, receipt});
+            .on('error', (error) => {
+                reject(error);
             });
     });
 };
@@ -504,8 +504,8 @@ const sendRegisterToAdd = async (web3, owner, orgId, dirAddress, gasPrice) => {
             .on('receipt', receipt => {
                 resolve(receipt);
             })
-            .on('error', (error, receipt) => {
-                reject({error, receipt});
+            .on('error', (error) => {
+                reject(error);
             });
     });
 };
@@ -545,7 +545,7 @@ function* startPollingSaga() {
                 allowance = yield call(fetchLifAllowance, web3, owner, store.directoryId);
                 yield put(setAllowance({ allowance }));
                 requestData = yield call(fetchRegistrationData, web3, store.orgId, store.directoryId);
-                yield put(setRequested({ orgRequested: requestData.ID === store.orgId }));
+                yield put(setRequested({ orgRequested: requestData.ID === store.orgId && Number(requestData.status) > 0 }));
             }
 
             yield delay(1500);
@@ -618,10 +618,6 @@ function* sendApprovalSaga({ payload }) {
         const gasPrice = yield call(ApiGetGasPrice, web3);
         const owner = yield select(selectSignInAddress);
         const store = yield select(directoriesStor);
-        console.log('@#@#@#@#', owner,
-        store.directoryId,
-        web3.utils.toWei(payload.amount),
-        gasPrice);
         yield call(
             sendApproval,
             web3,

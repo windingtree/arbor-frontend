@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
 
 import {
@@ -23,8 +23,10 @@ import {
     orgDirectoriesFetched,
     orgDirectories
 } from '../../../ducks/directories';
+import { selectWeb3, selectSignInAddress } from '../../../ducks/signIn';
 import { selectItem as selectOrganizationItem } from '../../../ducks/fetchOrganizationInfo';
 import { getSegmentMeta } from '../../../utils/directories';
+import { ApiGetGasPrice, getArbDirContract } from '../../../ducks/utils/ethereum';
 
 import { Container, Typography, Button, Grid, CircularProgress } from '@material-ui/core';
 import { Formik } from 'formik';
@@ -177,6 +179,14 @@ const styles = makeStyles({
         color: colors.secondary.peach,
         textTransform: 'none'
     },
+    dirListIcon: {
+        position: 'absolute',
+        marginLeft: '-38px'
+    },
+    actionIndicator: {
+        float: 'right',
+        marginRight: '10px'
+    },
     statusLabelWrapper: {
         display: 'flex',
 
@@ -205,6 +215,13 @@ const styles = makeStyles({
             backgroundColor: '#DDECD5',
             color: '#5E666A'
         }
+    },
+    errorWrapper: {
+        marginTop: '10px'
+    },
+    errorMessage: {
+        fontSize: '16px',
+        color: '#F0806E'
     }
 });
 
@@ -227,13 +244,105 @@ const DialogTitle = props => {
     );
 };
 
+const sendDirMethod = async (web3, walletAddress, dirId, method, methodArgs) => {
+    const dir = getArbDirContract(web3, dirId);
+    const gas = await dir.methods[method].apply(dir, methodArgs).estimateGas({
+        from: walletAddress
+    });
+    const gasPrice = await ApiGetGasPrice(web3);
+    return new Promise((resolve, reject) => {
+        dir.methods[method].apply(dir, methodArgs)
+            .send({
+                from: walletAddress,
+                gas,
+                ...(gasPrice ? { gasPrice } : {})
+            })
+            .on('receipt', receipt => {
+                resolve(receipt);
+            })
+            .on('error', (error) => {
+                reject(error);
+            });
+    });
+};
+
 const DirectoriesList = props => {
     const classes = styles();
     const {
         directories: directoriesDetails,
         orgDirectories,
-        orgDirectoriesFetched
+        orgDirectoriesFetched,
+        organizationItem,
+        web3,
+        walletAddress
     } = props;
+    const [error, setError] = useState(null);
+    const [executeTimeoutSending, setExecuteTimeoutSending] = useState(false);
+    const [withdrawTokensSending, setWithdrawTokensSending] = useState(false);
+    const [makeWithdrawalRequestSending, setMakeWithdrawalRequestSending] = useState(false);
+
+    const executeTimeoutAction = useCallback((directory) => {
+        setError(null);
+        directory.config.actionIndicatorCallback(true);
+        sendDirMethod(
+            web3,
+            walletAddress,
+            directory.address,
+            'executeTimeout',
+            [
+                organizationItem.orgid
+            ]
+        )
+            .then(() => {
+                directory.config.actionIndicatorCallback(false);
+            })
+            .catch(error => {
+                setError(error);
+                directory.config.actionIndicatorCallback(false);
+            });
+    }, [web3, walletAddress, organizationItem]);
+
+    const makeWithdrawalRequestAction = useCallback((directory) => {
+        setError(null);
+        directory.config.actionIndicatorCallback(true);
+        sendDirMethod(
+            web3,
+            walletAddress,
+            directory.address,
+            'makeWithdrawalRequest',
+            [
+                organizationItem.orgid
+            ]
+        )
+            .then(() => {
+                directory.config.actionIndicatorCallback(false);
+            })
+            .catch(error => {
+                setError(error);
+                directory.config.actionIndicatorCallback(false);
+            });
+    }, [web3, walletAddress, organizationItem]);
+
+    const withdrawTokensAction = useCallback((directory) => {
+        setError(null);
+        directory.config.actionIndicatorCallback(true);
+        sendDirMethod(
+            web3,
+            walletAddress,
+            directory.address,
+            'withdrawTokens',
+            [
+                organizationItem.orgid
+            ]
+        )
+            .then(() => {
+                directory.config.actionIndicatorCallback(false);
+            })
+            .catch(error => {
+                setError(error);
+                directory.config.actionIndicatorCallback(false);
+            });
+    }, [web3, walletAddress, organizationItem]);
 
     const parseDirectories = directories => directories
         .map((d, index) => {
@@ -244,6 +353,8 @@ const DirectoriesList = props => {
                     statusClass: '',
                     icon: '',
                     action: 'Register',
+                    actionIndicator: false,
+                    actionIndicatorCallback: () => {},
                     actionCallback: () => {}
                 },
                 // The organization has an open request.
@@ -252,7 +363,9 @@ const DirectoriesList = props => {
                     statusClass: 'requested',
                     icon: DirRequestedIcon,
                     action: 'Execute Timeout',
-                    actionCallback: () => {}
+                    actionIndicator: executeTimeoutSending,
+                    actionIndicatorCallback: setExecuteTimeoutSending,
+                    actionCallback: executeTimeoutAction
                 },
                 // The organization made a withdrawal request.
                 {
@@ -260,7 +373,9 @@ const DirectoriesList = props => {
                     statusClass: 'withdrawal-requested',
                     icon: DirChallengedIcon,
                     action: 'Withdraw Tokens',
-                    actionCallback: () => {}
+                    actionIndicator: withdrawTokensSending,
+                    actionIndicatorCallback: setWithdrawTokensSending,
+                    actionCallback: withdrawTokensAction
                 },
                 // The organization has been challenged.
                 {
@@ -268,6 +383,8 @@ const DirectoriesList = props => {
                     statusClass: 'challenged',
                     icon: DirChallengedIcon,
                     action: 'Accept Challenge',
+                    actionIndicator: false,
+                    actionIndicatorCallback: () => {},
                     actionCallback: () => {}
                 },
                 // The challenge has been disputed.
@@ -276,6 +393,8 @@ const DirectoriesList = props => {
                     statusClass: 'disputed',
                     icon: DirChallengedIcon,
                     action: null,
+                    actionIndicator: false,
+                    actionIndicatorCallback: () => {},
                     actionCallback: () => {}
                 },
                 {
@@ -283,7 +402,9 @@ const DirectoriesList = props => {
                     statusClass: 'registered',
                     icon: DirRegisteredIcon,
                     action: 'Request Tokens Withdrawal',
-                    actionCallback: () => {}
+                    actionIndicator: makeWithdrawalRequestSending,
+                    actionIndicatorCallback: setMakeWithdrawalRequestSending,
+                    actionCallback: makeWithdrawalRequestAction
                 }
             ];
 
@@ -295,8 +416,7 @@ const DirectoriesList = props => {
             const statusNum = Number(d.status);
 
             return {
-                title: details.title,
-                address: d.address,
+                ...details,
                 config: config[statusNum]
             };
         })
@@ -334,6 +454,13 @@ const DirectoriesList = props => {
                     key={i}
                 >
                     <Grid item xs={2}>
+                        <img
+                            width='16px'
+                            height='16px'
+                            className={classes.dirListIcon}
+                            alt={directory.title}
+                            src={directory.icon}
+                        />
                         {directory.title}
                     </Grid>
                     <Grid item xs={6}>
@@ -348,10 +475,15 @@ const DirectoriesList = props => {
                         </div>
                     </Grid>
                     <Grid item xs={4}>
-                        {directory.config.action &&
+                        {directory.config.actionIndicator &&
+                            <div className={classes.actionIndicator}>
+                                <CircularProgress size='16px' />
+                            </div>
+                        }
+                        {(directory.config.action && !directory.config.actionIndicator) &&
                             <Button
                                 className={classes.actionButton}
-                                onClick={directory.config.actionCallback}
+                                onClick={() => directory.config.actionCallback(directory)}
                             >
                                 {directory.config.action}
                             </Button>
@@ -359,6 +491,13 @@ const DirectoriesList = props => {
                     </Grid>
                 </Grid>
             ))}
+            {error &&
+                <div className={classes.errorWrapper}>
+                    <Typography className={classes.errorMessage}>
+                        {error.message}
+                    </Typography>
+                </div>
+            }
         </>
     );
 };
@@ -523,7 +662,7 @@ const AddDirectoryDialog = props => {
                             <CircularProgress />
                         </DialogTitle>
                     }
-                    {(step === 1 && isOrgRequested && isOrgRequestedFetched) &&
+                    {((step === 1 || step === 2) && isOrgRequested && isOrgRequestedFetched) &&
                         <>
                             <DialogTitle>
                                 Organization Registration Request to the {selectedDirectoryDetails.title} Directory has been sent successfully
@@ -538,7 +677,7 @@ const AddDirectoryDialog = props => {
                             </div>
                         </>
                     }
-                    {(step === 1 && !isOrgRequested && isOrgRequestedFetched) &&
+                    {(step === 1 && isOrgRequestedFetched && !isOrgRequested) &&
                         <>
                             <DialogTitle>
                                 {selectedDirectoryDetails.title} Directory Rules
@@ -577,7 +716,7 @@ const AddDirectoryDialog = props => {
                             <CircularProgress />
                         </DialogTitle>
                     }
-                    {(step === 2 && !isOrgRequested && isOrgRequestedFetched) &&
+                    {(step === 2 && isOrgRequestedFetched && !isOrgRequested) &&
                         <>
                             <DialogTitle>
                                 Register {organizationItem.name} in {selectedDirectoryDetails.title} Directory
@@ -712,7 +851,9 @@ const mapStateToProps = state => {
         registerError: registerError(state),
         organizationItem: selectOrganizationItem(state),
         orgDirectoriesFetched: orgDirectoriesFetched(state),
-        orgDirectories: orgDirectories(state)
+        orgDirectories: orgDirectories(state),
+        web3: selectWeb3(state),
+        walletAddress: selectSignInAddress(state)
     }
 };
 

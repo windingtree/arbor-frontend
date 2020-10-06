@@ -1,13 +1,20 @@
 import { createSelector } from 'reselect';
-import { all, takeEvery, takeLatest, call, put, select, delay, spawn } from 'redux-saga/effects';
+import { all, takeEvery, takeLatest, call, put, select, delay, spawn, fork, take, cancel } from 'redux-saga/effects';
+import { eventChannel, END } from 'redux-saga';
 import { appName } from '../utils/constants';
 import {
     getDirIndexContract,
     getLifTokenContract,
     getArbDirContract,
-    ApiGetGasPrice
+    ApiGetGasPrice,
+    getBlock,
 } from './utils/ethereum';
-import { selectWeb3, selectSignInAddress, SET_DEFAULT_WEB3 } from './signIn';
+import {
+    selectWeb3,
+    selectSignInAddress,
+    SET_DEFAULT_WEB3,
+    FETCH_SIGN_IN_SUCCESS
+} from './signIn';
 
 /**
  * Constants
@@ -31,14 +38,6 @@ const LIF_ALLOWANCE_SET = `${prefix}/LIF_ALLOWANCE_SET`;
 const ORG_REQUESTED_SET = `${prefix}/ORG_REQUESTED_SET`;
 
 const ORG_DIRECTORIES_SET = `${prefix}/ORG_DIRECTORIES_SET`;
-
-const LIF_APPROVAL_SEND = `${prefix}/LIF_APPROVAL_SEND`;
-const LIF_APPROVAL_SUCCESS = `${prefix}/LIF_APPROVAL_SUCCESS`;
-const LIF_APPROVAL_FAILURE = `${prefix}/LIF_APPROVAL_FAILURE`;
-
-const DIR_REGISTER_SEND = `${prefix}/DIR_REGISTER_SEND`;
-const DIR_REGISTER_SUCCESS = `${prefix}/DIR_REGISTER_SUCCESS`;
-const DIR_REGISTER_FAILURE = `${prefix}/DIR_REGISTER_FAILURE`;
 
 const DIR_RESET_STATE = `${prefix}/DIR_RESET_STATE`;
 
@@ -138,38 +137,6 @@ export default (state = initialState, action) => {
             return Object.assign({}, state, {
                 isOrgDirectoriesFetched: true,
                 orgDirectories: payload.orgDirectories
-            });
-
-        case LIF_APPROVAL_SEND:
-            return Object.assign({}, state, {
-                isApprovalTransaction: true,
-                approvalError: null
-            });
-        case LIF_APPROVAL_SUCCESS:
-            return Object.assign({}, state, {
-                isApprovalTransaction: false,
-                approvalError: null
-            });
-        case LIF_APPROVAL_FAILURE:
-            return Object.assign({}, state, {
-                isApprovalTransaction: false,
-                approvalError: error
-            });
-
-        case DIR_REGISTER_SEND:
-            return Object.assign({}, state, {
-                isRegisterTransaction: true,
-                registerError: null
-            });
-        case DIR_REGISTER_SUCCESS:
-            return Object.assign({}, state, {
-                isRegisterTransaction: false,
-                registerError: null
-            });
-        case DIR_REGISTER_FAILURE:
-            return Object.assign({}, state, {
-                isRegisterTransaction: false,
-                registerError: error
             });
 
         case DIR_RESET_STATE:
@@ -274,49 +241,6 @@ export const stopPolling = () => {
 export const pollingFailure = error => {
     return {
         type: POLLING_FAILURE,
-        error
-    }
-}
-
-export const lifApprovalSend = amount => {
-    return {
-        type: LIF_APPROVAL_SEND,
-        payload: {
-            amount
-        }
-    }
-}
-
-export const lifApprovalSuccess = payload => {
-    return {
-        type: LIF_APPROVAL_SUCCESS,
-        payload
-    }
-}
-
-export const lifApprovalFailure = error => {
-    return {
-        type: LIF_APPROVAL_FAILURE,
-        error
-    }
-}
-
-export const dirRegisterSend = () => {
-    return {
-        type: DIR_REGISTER_SEND
-    }
-}
-
-export const dirRegisterSuccess = payload => {
-    return {
-        type: DIR_REGISTER_SUCCESS,
-        payload
-    }
-}
-
-export const dirRegisterFailure = error => {
-    return {
-        type: DIR_REGISTER_FAILURE,
         error
     }
 }
@@ -435,7 +359,7 @@ const fetchDirectoriesDetails = async (web3, ids = []) => Promise.all(
             const entities = await dir.methods.getOrganizationsCount(0, 0).call();
             const numberOfRequests = await dir.methods.getRequestedOrganizationsCount(0, 0).call();
             const numberOfChallenges = await dir.methods.getNumberOfChallenges(id).call();
-            const requesterDeposit = await dir.methods.requesterDeposit().call();
+            const requesterDepositRaw = await dir.methods.requesterDeposit().call();
 
             return {
                 address: id,
@@ -443,7 +367,8 @@ const fetchDirectoriesDetails = async (web3, ids = []) => Promise.all(
                 entities,
                 numberOfChallenges,
                 numberOfRequests,
-                requesterDeposit: web3.utils.fromWei(requesterDeposit, 'ether')
+                requesterDepositRaw,
+                requesterDeposit: web3.utils.fromWei(requesterDepositRaw, 'ether')
             };
         }
     )
@@ -510,9 +435,46 @@ const sendRegisterToAdd = async (web3, owner, orgId, dirAddress, gasPrice) => {
     });
 };
 
+export const subscribeDirectoriesEventsChannel = (web3, fromBlock, directories) => {
+    return eventChannel(emitter => {
+        const subscriptions = directories.map(({ address }) => {
+            const dir = getArbDirContract(web3, address);
+            return dir.events.allEvents(
+                {
+                    fromBlock
+                },
+                (error, _) => {
+                    if (error) {
+                        return emitter(fetchDirectoriesFailure(error));
+                    }
+                    emitter(fetchDirectories());
+                    emitter(END);
+                }
+            );
+        });
+        return () => subscriptions.forEach(d => d.unsubscribe());
+    });
+};
+
 /**
  * Sagas
  */
+
+function* subscribeDirectoriesSaga() {
+    const web3 = yield select(selectWeb3);
+    const directoriesList = yield select(directories);
+    const block = yield call(getBlock, web3, 'latest');
+    const dirsEvents = yield call(
+        subscribeDirectoriesEventsChannel,
+        web3,
+        block.number,
+        directoriesList
+    );
+    while (true) {
+        const eventAction = yield take(dirsEvents);
+        yield put(eventAction);
+    };
+}
 
 function* startPollingSaga() {
     try {
@@ -607,48 +569,11 @@ function* startFetchDirectoriesSaga() {
         yield put(fetchDirectoriesSuccess({
             directories: directoriesDetails
         }));
+        const subscriptionSaga = yield fork(subscribeDirectoriesSaga);
+        yield take(DIR_INDEX_REQUEST);
+        yield cancel(subscriptionSaga);
     } catch (error) {
         yield put(fetchDirectoriesFailure(error));
-    }
-}
-
-function* sendApprovalSaga({ payload }) {
-    try {
-        const web3 = yield select(selectWeb3);
-        const gasPrice = yield call(ApiGetGasPrice, web3);
-        const owner = yield select(selectSignInAddress);
-        const store = yield select(directoriesStor);
-        yield call(
-            sendApproval,
-            web3,
-            owner,
-            store.directoryId,
-            web3.utils.toWei(payload.amount),
-            gasPrice
-        );
-        yield put(lifApprovalSuccess());
-    } catch (error) {
-        yield put(lifApprovalFailure(error))
-    }
-}
-
-function* registerToAddSaga() {
-    try {
-        const web3 = yield select(selectWeb3);
-        const gasPrice = yield call(ApiGetGasPrice, web3);
-        const owner = yield select(selectSignInAddress);
-        const store = yield select(directoriesStor);
-        yield call(
-            sendRegisterToAdd,
-            web3,
-            owner,
-            store.orgId,
-            store.directoryId,
-            gasPrice
-        );
-        yield put(dirRegisterSuccess());
-    } catch (error) {
-        yield put(dirRegisterFailure(error))
     }
 }
 
@@ -656,8 +581,7 @@ export const saga = function* () {
     return yield all([
         takeLatest(SET_DEFAULT_WEB3, startFetchDirectoriesSaga),
         takeEvery(DIR_INDEX_REQUEST, startFetchDirectoriesSaga),
-        takeEvery(POLLING_START, startPollingSaga),
-        takeEvery(LIF_APPROVAL_SEND, sendApprovalSaga),
-        takeEvery(DIR_REGISTER_SEND, registerToAddSaga)
+        takeEvery(FETCH_SIGN_IN_SUCCESS, startFetchDirectoriesSaga),
+        takeEvery(POLLING_START, startPollingSaga)
     ]);
 };

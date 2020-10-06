@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import history from '../redux/history';
 
 import { Container, Typography, Grid, Card, CardContent, Button, CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -102,6 +103,9 @@ const styles = makeStyles({
         width: '100%',
         marginTop: '24px'
     },
+    directoryContainer: {
+        paddingBottom: '24px',
+    },
     directoryTitle: {
         fontWeight: 500,
         fontSize: '24px',
@@ -109,7 +113,6 @@ const styles = makeStyles({
         color: colors.greyScale.dark,
         textTransform: 'none',
         textAlign: 'left',
-        paddingTop: '10px',
         ['@media (max-width: 767px)']: { // eslint-disable-line no-useless-computed-key
             marginTop: 0,
             marginLeft: '10px'
@@ -126,9 +129,6 @@ const styles = makeStyles({
         width: '100%',
         height: '100%'
     },
-    directoryInfoWrapper: {
-        marginTop: '24px'
-    },
     directoryInfoLabel: {
         fontWeight: 500,
         fontSize: '16px',
@@ -136,6 +136,10 @@ const styles = makeStyles({
         color: colors.greyScale.dark,
         textTransform: 'none',
         textAlign: 'left',
+        '&:hover': {
+            cursor: 'pointer',
+            textDecoration: 'underline'
+        }
     }
 });
 
@@ -150,11 +154,27 @@ const DirectoryCard = props => {
         numberOfRequests
     } = props;
 
+    const handleDirectoryOptionClick = (e, directoryAddress, type) => {
+        e.preventDefault();
+
+        switch (type) {
+            case 'entities':
+                alert('Not implemented yet!');
+                break;
+            case 'requests':
+                history.push(`/directories/requests/${directoryAddress}`);
+                break;
+            case 'disputes':
+                alert('Not implemented yet!');
+                break;
+            default:
+        }
+    };
+
     return (
         <Card className={classes.item}>
             <Button
                 className={classes.cardButton}
-                onClick={() => console.log(address)}
             >
                 <CardContent className={classes.cardContent}>
                     <Grid
@@ -164,6 +184,8 @@ const DirectoryCard = props => {
                         alignItems='flex-start'
                         alignContent='stretch'
                         justify='space-between'
+                        className={classes.directoryContainer}
+                        onClick={e => handleDirectoryOptionClick(e, address, 'entities')}
                     >
                         <Grid item>
                             <Typography
@@ -184,22 +206,30 @@ const DirectoryCard = props => {
                         direction='column'
                         alignItems='flex-start'
                         alignContent='stretch'
-                        className={classes.directoryInfoWrapper}
                     >
                         <Grid item>
-                            <Typography className={classes.directoryInfoLabel}>
+                            <Typography
+                                onClick={e => handleDirectoryOptionClick(e, address, 'entities')}
+                                className={classes.directoryInfoLabel}
+                            >
                                 {entities}&nbsp;
                                 Entities
                             </Typography>
                         </Grid>
                         <Grid item>
-                            <Typography className={classes.directoryInfoLabel}>
+                            <Typography
+                                onClick={e => handleDirectoryOptionClick(e, address, 'requests')}
+                                className={classes.directoryInfoLabel}
+                            >
                                 {numberOfRequests}&nbsp;
                                 Registration Requests
                             </Typography>
                         </Grid>
                         <Grid item>
-                            <Typography className={classes.directoryInfoLabel}>
+                            <Typography
+                                onClick={e => handleDirectoryOptionClick(e, address, 'disputes')}
+                                className={classes.directoryInfoLabel}
+                            >
                                 {numberOfChallenges}&nbsp;
                                 Ongoing Disputes
                             </Typography>
@@ -265,7 +295,7 @@ const Directories = props => {
     const [parsedDirectories, setDirectories] = useState([]);
 
     useEffect(() => {
-        window.scrollTo(0, 0)
+        window.scrollTo(0, 0);
     }, []);
 
     useEffect(() => {

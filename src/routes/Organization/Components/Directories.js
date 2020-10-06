@@ -2,8 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
 
 import {
-    lifApprovalSend,
-    dirRegisterSend,
     setOrgId,
     setDirectory,
     resetState,
@@ -26,7 +24,11 @@ import {
 import { selectWeb3, selectSignInAddress } from '../../../ducks/signIn';
 import { selectItem as selectOrganizationItem } from '../../../ducks/fetchOrganizationInfo';
 import { getSegmentMeta } from '../../../utils/directories';
-import { ApiGetGasPrice, getArbDirContract } from '../../../ducks/utils/ethereum';
+import {
+    ApiGetGasPrice,
+    getLifTokenContract,
+    getArbDirContract
+} from '../../../ducks/utils/ethereum';
 
 import { Container, Typography, Button, Grid, CircularProgress } from '@material-ui/core';
 import { Formik } from 'formik';
@@ -228,6 +230,34 @@ const styles = makeStyles({
 // Extract specific directory from the list
 const getDirectory = (address, directories) => directories.filter(d => d.address === address)[0];
 
+// Send transaction to contract
+const sendMethod = async (web3, from, contractAddress, contractBuilder, method, methodArgs) => {
+    const contract = contractBuilder(web3, contractAddress);
+    const gas = await contract
+        .methods[method]
+        .apply(contract, methodArgs)
+        .estimateGas({
+            from
+        });
+    const gasPrice = await ApiGetGasPrice(web3);
+    return new Promise((resolve, reject) => {
+        contract
+            .methods[method]
+            .apply(contract, methodArgs)
+            .send({
+                from,
+                gas,
+                ...(gasPrice ? { gasPrice } : {})
+            })
+            .on('receipt', receipt => {
+                resolve(receipt);
+            })
+            .on('error', (error) => {
+                reject(error);
+            });
+    });
+};
+
 const DialogTitle = props => {
     const classes = styles();
     const {
@@ -242,28 +272,6 @@ const DialogTitle = props => {
             </Typography>
         </div>
     );
-};
-
-const sendDirMethod = async (web3, walletAddress, dirId, method, methodArgs) => {
-    const dir = getArbDirContract(web3, dirId);
-    const gas = await dir.methods[method].apply(dir, methodArgs).estimateGas({
-        from: walletAddress
-    });
-    const gasPrice = await ApiGetGasPrice(web3);
-    return new Promise((resolve, reject) => {
-        dir.methods[method].apply(dir, methodArgs)
-            .send({
-                from: walletAddress,
-                gas,
-                ...(gasPrice ? { gasPrice } : {})
-            })
-            .on('receipt', receipt => {
-                resolve(receipt);
-            })
-            .on('error', (error) => {
-                reject(error);
-            });
-    });
 };
 
 const DirectoriesList = props => {
@@ -284,10 +292,11 @@ const DirectoriesList = props => {
     const executeTimeoutAction = useCallback((directory) => {
         setError(null);
         directory.config.actionIndicatorCallback(true);
-        sendDirMethod(
+        sendMethod(
             web3,
             walletAddress,
             directory.address,
+            getArbDirContract,
             'executeTimeout',
             [
                 organizationItem.orgid
@@ -305,10 +314,11 @@ const DirectoriesList = props => {
     const makeWithdrawalRequestAction = useCallback((directory) => {
         setError(null);
         directory.config.actionIndicatorCallback(true);
-        sendDirMethod(
+        sendMethod(
             web3,
             walletAddress,
             directory.address,
+            getArbDirContract,
             'makeWithdrawalRequest',
             [
                 organizationItem.orgid
@@ -326,10 +336,11 @@ const DirectoriesList = props => {
     const withdrawTokensAction = useCallback((directory) => {
         setError(null);
         directory.config.actionIndicatorCallback(true);
-        sendDirMethod(
+        sendMethod(
             web3,
             walletAddress,
             directory.address,
+            getArbDirContract,
             'withdrawTokens',
             [
                 organizationItem.orgid
@@ -505,12 +516,12 @@ const DirectoriesList = props => {
 const AddDirectoryDialog = props => {
     const classes = styles();
     const {
+        web3,
+        walletAddress,
         isOpened,
         handleClose,
         directories: directoriesRaw,
         resetState,
-        lifApprovalSend,
-        dirRegisterSend,
         setDirectory,
         isApprovalTransaction,
         isRegisterTransaction,
@@ -519,16 +530,13 @@ const AddDirectoryDialog = props => {
         isOrgRequestedFetched,
         isOrgRequested,
         selectedDirectory,
-        indexError,
-        approvalError,
-        registerError,
         organizationItem
     } = props;
     const [directories, setDirectories] = useState([]);
     const [step, setStep] = useState(0);
     const [isBalanceOk, setBalanceOk] = useState(true);
     const [isAllowanceOk, setAllowanceOk] = useState(true);
-    const [approvalLifStarted, setStartedLifApproval] = useState(false);
+    const [approvalLifStarted, setApprovalLifStarted] = useState(false);
     const [requestStarted, setRequestStarted] = useState(false);
 
     useEffect(() => {
@@ -546,7 +554,7 @@ const AddDirectoryDialog = props => {
             case 0:
                 resetState();
                 setRequestStarted(false);
-                setStartedLifApproval(false);
+                setApprovalLifStarted(false);
                 break;
             case 1:
                 break;
@@ -565,6 +573,47 @@ const AddDirectoryDialog = props => {
             }
         }
     }, [directories, lifBalance, lifAllowance, selectedDirectory]);
+
+    const sendLifApproval = useCallback((spender, amount) => {
+        setApprovalLifStarted(true);
+        sendMethod(
+            web3,
+            walletAddress,
+            undefined,
+            getLifTokenContract,
+            'approve',
+            [
+                spender,
+                amount
+            ]
+        )
+            .then(() => {
+                setApprovalLifStarted(false);
+            })
+            .catch(error => {
+                setApprovalLifStarted(false);
+            });
+    }, [web3, walletAddress, setApprovalLifStarted]);
+
+    const sendRequestToAdd = useCallback((directory) => {
+        setRequestStarted(true);
+        sendMethod(
+            web3,
+            walletAddress,
+            directory.address,
+            getArbDirContract,
+            'requestToAdd',
+            [
+                organizationItem.orgid
+            ]
+        )
+            .then(() => {
+                setRequestStarted(false);
+            })
+            .catch(error => {
+                setRequestStarted(false);
+            });
+    }, [web3, walletAddress, organizationItem, setRequestStarted]);
 
     const onDialogClose = () => {
         setStep(0);
@@ -760,10 +809,10 @@ const AddDirectoryDialog = props => {
                                             <Button
                                                 className={classes.dialogButton}
                                                 disabled={isApprovalTransaction || approvalLifStarted}
-                                                onClick={() => {
-                                                    setStartedLifApproval(true);
-                                                    lifApprovalSend(selectedDirectoryDetails.requesterDeposit);
-                                                }}
+                                                onClick={() => sendLifApproval(
+                                                    selectedDirectoryDetails.address,
+                                                    selectedDirectoryDetails.requesterDepositRaw
+                                                )}
                                             >
                                                 Unlock Lif Tokens
                                                 {(isApprovalTransaction || approvalLifStarted) &&
@@ -775,10 +824,7 @@ const AddDirectoryDialog = props => {
                                             <Button
                                                 className={classes.dialogButton}
                                                 disabled={isRegisterTransaction || requestStarted}
-                                                onClick={() => {
-                                                    setRequestStarted(true);
-                                                    dirRegisterSend();
-                                                }}
+                                                onClick={() => sendRequestToAdd(selectedDirectoryDetails)}
                                             >
                                                 Request to Register
                                                 {(isRegisterTransaction || requestStarted) &&
@@ -858,8 +904,6 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-    lifApprovalSend,
-    dirRegisterSend,
     setOrgId,
     setDirectory,
     resetState

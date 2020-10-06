@@ -2,7 +2,7 @@ import Portis from '@portis/web3';
 import Web3 from 'web3';
 import {
   appName,
-  INFURA_PROVIDER,
+  INFURA_PROVIDER_WSS,
   PORTIS_ID,
   PORTIS_DEFAULT_NETWORK
 } from '../utils/constants';
@@ -18,11 +18,11 @@ let portis;
  */
 export const moduleName = 'signIn';
 const prefix = `${appName}/${moduleName}`;
-const FETCH_SIGN_IN_REQUEST = `${prefix}/FETCH_SIGN_IN_REQUEST`;
-const FETCH_SIGN_IN_SUCCESS = `${prefix}/FETCH_SIGN_IN_SUCCESS`;
-const FETCH_SIGN_IN_FAILURE = `${prefix}/FETCH_SIGN_IN_FAILURE`;
-const FETCH_LOGOUT_REQUEST = `${prefix}/FETCH_LOGOUT_REQUEST`;
-const OPEN_PORTIS_WALLET = `${prefix}/OPEN_PORTIS_WALLET`;
+export const FETCH_SIGN_IN_REQUEST = `${prefix}/FETCH_SIGN_IN_REQUEST`;
+export const FETCH_SIGN_IN_SUCCESS = `${prefix}/FETCH_SIGN_IN_SUCCESS`;
+export const FETCH_SIGN_IN_FAILURE = `${prefix}/FETCH_SIGN_IN_FAILURE`;
+export const FETCH_LOGOUT_REQUEST = `${prefix}/FETCH_LOGOUT_REQUEST`;
+export const OPEN_PORTIS_WALLET = `${prefix}/OPEN_PORTIS_WALLET`;
 export const SET_DEFAULT_WEB3 = `${prefix}/SET_DEFAULT_WEB3`;
 export const ACCOUNT_CHANGE = `${prefix}/ACCOUNT_CHANGE`;
 
@@ -233,7 +233,7 @@ const openPortisPopUp = async () => {
 function* setDefaultWeb3Saga() {
   try {
     yield put(setDefaultWeb3({
-      web3: new Web3(INFURA_PROVIDER)
+      web3: new Web3(INFURA_PROVIDER_WSS)
     }));
   } catch (error) {
     // Connection Failure

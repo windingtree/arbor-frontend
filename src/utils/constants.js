@@ -16,6 +16,7 @@ export const PORTIS_DEFAULT_NETWORK = process.env.REACT_APP_PORTIS_DEFAULT_NETWO
 export const STRIPE_PUB_KEY = process.env.REACT_APP_STRIPE_PUB_KEY;
 export const DIRECTORIES_INDEX_ADDRESS = process.env.REACT_APP_DIRECTORIES_INDEX_ADDRESS;
 export const INFURA_PROVIDER = process.env.REACT_APP_INFURA_PROVIDER;
+export const INFURA_PROVIDER_WSS = process.env.REACT_APP_INFURA_PROVIDER_WSS;
 
 export const entityTypes = [
   'private entrepreneur',

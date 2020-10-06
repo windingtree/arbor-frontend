@@ -9,9 +9,9 @@ import DefaultRoute from '../components/DefaultRoute';
 //Common routes
 import Home from './Home';
 import Search from './Search';
-import Directories from './Directories';
 import ArbitrableDirectories from './ArbitrableDirectories';
 import Directory from './Directory';
+import DirectoryRegistrationRequests from './DirectoryRegistrationRequests';
 import Organization from './Organization/Organization';
 import Authorization from './Authorization/Authorization';
 import Trust from './Trust/Trust';
@@ -45,6 +45,11 @@ class RootRouter extends Component {
             isAuthenticated={isAuthenticated}
             exact path='/directories'
             component={ArbitrableDirectories}
+          />
+          <DefaultRoute
+            isAuthenticated={isAuthenticated}
+            path='/directories/requests/:directoryId'
+            component={DirectoryRegistrationRequests}
           />
           <DefaultRoute
             isAuthenticated={isAuthenticated}

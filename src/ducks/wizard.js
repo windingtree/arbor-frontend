@@ -4,7 +4,7 @@ import { all, takeEvery, call, put, select } from 'redux-saga/effects';
 import { createSelector } from "reselect";
 
 import { appName } from "../utils/constants";
-import { callApi } from "../redux/api";
+import { callApi, createUniqueFileName } from "../redux/api";
 import { Validator } from 'jsonschema';
 import orgidSchema from '@windingtree/org.json-schema';
 import { selectWeb3 } from "./signIn";
@@ -1186,7 +1186,6 @@ export const saga = function* () {
 //endregion
 
 //region == [API] ======================================================================================================
-const createUniqueFileName = name => `${Math.random().toString(36).substr(2, 9)}${name.match(/\.[a-zA-Z0-9]+$/i)[0] || ''}`;
 const ApiPostMedia = (data) => {
   const {
     address,

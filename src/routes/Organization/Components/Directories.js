@@ -23,7 +23,6 @@ import {
 } from '../../../ducks/directories';
 import { selectWeb3, selectSignInAddress } from '../../../ducks/signIn';
 import { selectItem as selectOrganizationItem } from '../../../ducks/fetchOrganizationInfo';
-import { getSegmentMeta } from '../../../utils/directories';
 import {
     ApiGetGasPrice,
     getLifTokenContract,
@@ -403,7 +402,7 @@ const DirectoriesList = props => {
                     status: 'Disputed',
                     statusClass: 'disputed',
                     icon: DirChallengedIcon,
-                    action: null,
+                    action: '',
                     actionIndicator: false,
                     actionIndicatorCallback: () => {},
                     actionCallback: () => {}
@@ -520,7 +519,7 @@ const AddDirectoryDialog = props => {
         walletAddress,
         isOpened,
         handleClose,
-        directories: directoriesRaw,
+        directories,
         resetState,
         setDirectory,
         isApprovalTransaction,
@@ -532,7 +531,6 @@ const AddDirectoryDialog = props => {
         selectedDirectory,
         organizationItem
     } = props;
-    const [directories, setDirectories] = useState([]);
     const [step, setStep] = useState(0);
     const [isBalanceOk, setBalanceOk] = useState(true);
     const [isAllowanceOk, setAllowanceOk] = useState(true);
@@ -542,12 +540,6 @@ const AddDirectoryDialog = props => {
     useEffect(() => {
         resetState();
     }, [organizationItem]); // eslint-disable-line react-hooks/exhaustive-deps
-
-    useEffect(() => {
-        setDirectories(
-            directoriesRaw.map(dir => getSegmentMeta(dir))
-        );
-    }, [directoriesRaw]);
 
     useEffect(() => {
         switch (step) {

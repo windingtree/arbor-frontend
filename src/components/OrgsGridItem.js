@@ -111,7 +111,7 @@ const styles = makeStyles({
     fontWeight: 500,
     height: '38px',
     overflow: 'hidden',
-    paddingTop: '8px'
+    paddingTop: '16px'
   },
   errorMessageWrapper: {
     fontSize: '14px',
@@ -236,26 +236,30 @@ export default function OrgsGridItem(props) {
         }} className={classes.linkToProfileView}
         >
           {
-            logo ? (
-              <CardMedia image={logo} className={classes.itemImg}/>
-            ) : error ? (
-              <div className={classes.itemErrorImage}>
-                <ImageErrorIcon viewbow={'0 0 22 22'} className={classes.itemImgErrorIcon}/>
-              </div>
-            ) : (
-              <CardMedia label={'Organization picture'} image={setRandomDefaultImage(orgid, directory)} className={classes.itemImg}/>
-            )
+            logo
+              ? (
+                <CardMedia image={logo} className={classes.itemImg}/>
+              )
+              : error
+                  ? (
+                    <div className={classes.itemErrorImage}>
+                      <ImageErrorIcon viewbow={'0 0 22 22'} className={classes.itemImgErrorIcon}/>
+                    </div>
+                  )
+                  : (
+                    <CardMedia label={'Organization picture'} image={setRandomDefaultImage(orgid, directory)} className={classes.itemImg}/>
+                  )
           }
         </Link>
-        {!error && isSub &&
-        <div className={classes.itemMarksWrapper}>
-          {directory &&
-          <Typography variant={'subtitle2'} className={classes.itemMark} style={{ backgroundColor: colors.secondary.green }}>
-            {directory === 'ota' ? 'Travel' : directory}
-          </Typography>
-          }
-        </div>
-        }
+        {/* {(!error && isSub) &&
+          <div className={classes.itemMarksWrapper}>
+            {directory &&
+            <Typography variant={'subtitle2'} className={classes.itemMark} style={{ backgroundColor: colors.secondary.green }}>
+              {directory === 'ota' ? 'Travel' : directory}
+            </Typography>
+            }
+          </div>
+        } */}
         {
           !error ? (
             <div className={classes.idInfoWrapper}>

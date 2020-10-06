@@ -14,7 +14,6 @@ import {
     indexError,
     directories
 } from '../ducks/directories';
-import { getSegmentMeta } from '../utils/directories';
 
 const styles = makeStyles({
     content: {
@@ -162,7 +161,7 @@ const DirectoryCard = props => {
                 alert('Not implemented yet!');
                 break;
             case 'requests':
-                history.push(`/directories/requests/${directoryAddress}`);
+                history.push(`/directories/requests/${directoryAddress}`, {follow: `/directories/requests/${directoryAddress}`});
                 break;
             case 'disputes':
                 alert('Not implemented yet!');
@@ -292,17 +291,10 @@ const Directories = props => {
         error,
         directories
     } = props;
-    const [parsedDirectories, setDirectories] = useState([]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
-
-    useEffect(() => {
-        setDirectories(
-            directories.map(dir => getSegmentMeta(dir))
-        );
-    }, [directories]);
 
     return (
         <Container>
@@ -323,7 +315,7 @@ const Directories = props => {
                     }
                     {isFetched &&
                         <CardsGridList spacing={2} justify={'space-between'} alignItems={'flex-start'}>
-                            {parsedDirectories.map((item, i) => (
+                            {directories.map((item, i) => (
                                 <Grid item lg={3} sm={6} xs={12} key={i}>
                                     <DirectoryCard {...item} />
                                 </Grid>

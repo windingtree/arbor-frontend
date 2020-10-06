@@ -22,6 +22,8 @@ export function* callApi(directory, method = 'GET', options) {
   }
 }
 
+export const createUniqueFileName = name => `${Math.random().toString(36).substr(2, 9)}${name.match(/\.[a-zA-Z0-9]+$/i)[0] || ''}`;
+
 export const api = async (path, method = 'GET', options) => {
   try {
     let responsePromise = await fetch(

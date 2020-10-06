@@ -286,8 +286,12 @@ function* fetchSignInSaga({ payload }) {
     // Connection Success
     yield put(fetchSignInSuccess(payload));
 
-    // Move to My Organizations
-    yield call(history.push, { pathname: '/my-organizations' });
+    const locationState = history.location.state;
+    if (locationState && locationState.follow) {
+      yield call(history.push, locationState.follow);
+    } else {
+      yield call(history.push, '/my-organizations');
+    }
   } catch (error) {
     // Connection Failure
     yield put(fetchSignInFailure(error));

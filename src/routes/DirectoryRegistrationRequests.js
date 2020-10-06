@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import history from '../redux/history';
 
-import { Container, Typography, Button, Grid } from '@material-ui/core';
+import { Container, Typography, Button, Grid, CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import colors from '../styles/colors';
 
@@ -108,12 +108,14 @@ const RegistrationRequests = props => {
     } = props;
     const { directoryId } = useParams();
     const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
     const [organizations, setOrganizations] = useState([]);
     const [organizationsTotal, setOrganizationsTotal] = useState(0);
 
     useEffect(() => {
         setError(null);
         const getOrganizations = async () => {
+            setIsLoading(true);
             const requests = await fetchRequests(web3, directoryId);
             const organizations = await fetchOrganizations(requests.organizations);
             console.log(organizations);
@@ -122,11 +124,13 @@ const RegistrationRequests = props => {
                 ...org.data,
                 directory: 'ota'
             })));
+            setIsLoading(false);
         };
         try {
             getOrganizations();
         } catch (error) {
             setError(error);
+            setIsLoading(false);
         }
     }, [web3, directoryId]);
 
@@ -153,10 +157,15 @@ const RegistrationRequests = props => {
             </Container>
             <Container>
                 <div className={classes.orgListWrapper}>
+                {isLoading &&
+                    <CircularProgress size="32px" />
+                }
+                {!isLoading &&
                     <CardsList
                         organizations={organizations}
                         classes={classes}
                     />
+                }
                 </div>
             </Container>
         </div>

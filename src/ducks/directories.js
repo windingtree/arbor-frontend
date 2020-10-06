@@ -1,12 +1,11 @@
 import { createSelector } from 'reselect';
-import { all, takeEvery, takeLatest, call, put, select, delay, spawn, fork, take, cancel } from 'redux-saga/effects';
+import { all, takeEvery, takeLatest, call, put, select, delay, fork, take, cancel } from 'redux-saga/effects';
 import { eventChannel, END } from 'redux-saga';
 import { appName } from '../utils/constants';
 import {
     getDirIndexContract,
     getLifTokenContract,
     getArbDirContract,
-    ApiGetGasPrice,
     getBlock,
 } from './utils/ethereum';
 import {
@@ -15,6 +14,7 @@ import {
     SET_DEFAULT_WEB3,
     FETCH_SIGN_IN_SUCCESS
 } from './signIn';
+import { getSegmentMeta } from '../utils/directories';
 
 /**
  * Constants
@@ -36,6 +36,7 @@ const DIRECTORY_SET = `${prefix}/DIRECTORY_SET`;
 const LIF_BALANCE_SET = `${prefix}/LIF_BALANCE_SET`;
 const LIF_ALLOWANCE_SET = `${prefix}/LIF_ALLOWANCE_SET`;
 const ORG_REQUESTED_SET = `${prefix}/ORG_REQUESTED_SET`;
+const ETH_BALANCE_SET = `${prefix}/ETH_BALANCE_SET`;
 
 const ORG_DIRECTORIES_SET = `${prefix}/ORG_DIRECTORIES_SET`;
 
@@ -56,6 +57,7 @@ const initialState = {
     directoryId: '',
     lifBalance: '0',
     lifAllowance: '0',
+    ethBalance: '0',
     orgRequested: false,
 
     indexError: null,
@@ -81,7 +83,7 @@ export default (state = initialState, action) => {
                 isIndexFetching: false,
                 isIndexFetched: true,
                 indexError: null,
-                directories: payload.directories
+                directories: payload.directories.map(dir => getSegmentMeta(dir))
             });
         case DIR_INDEX_FAILURE:
             return Object.assign({}, state, {
@@ -138,6 +140,10 @@ export default (state = initialState, action) => {
                 isOrgDirectoriesFetched: true,
                 orgDirectories: payload.orgDirectories
             });
+        case ETH_BALANCE_SET:
+            return Object.assign({}, state, {
+                ethBalance: payload.balance
+            });
 
         case DIR_RESET_STATE:
             return Object.assign({}, state, {
@@ -192,6 +198,13 @@ export const setDirectory = payload => {
 export const setLifBalance = payload => {
     return {
         type: LIF_BALANCE_SET,
+        payload
+    }
+};
+
+export const setEthBalance = payload => {
+    return {
+        type: ETH_BALANCE_SET,
         payload
     }
 };
@@ -301,6 +314,11 @@ export const lifBalance = createSelector(
     ({ lifBalance }) => lifBalance
 );
 
+export const ethBalance = createSelector(
+    stateSelector,
+    ({ ethBalance }) => ethBalance
+);
+
 export const lifAllowance = createSelector(
     stateSelector,
     ({ lifAllowance }) => lifAllowance
@@ -360,6 +378,8 @@ const fetchDirectoriesDetails = async (web3, ids = []) => Promise.all(
             const numberOfRequests = await dir.methods.getRequestedOrganizationsCount(0, 0).call();
             const numberOfChallenges = await dir.methods.getNumberOfChallenges(id).call();
             const requesterDepositRaw = await dir.methods.requesterDeposit().call();
+            const challengeDepositRaw = await dir.methods.challengeBaseDeposit().call();
+            const responseTimeout = await dir.methods.responseTimeout().call();
 
             return {
                 address: id,
@@ -368,7 +388,10 @@ const fetchDirectoriesDetails = async (web3, ids = []) => Promise.all(
                 numberOfChallenges,
                 numberOfRequests,
                 requesterDepositRaw,
-                requesterDeposit: web3.utils.fromWei(requesterDepositRaw, 'ether')
+                requesterDeposit: web3.utils.fromWei(requesterDepositRaw, 'ether'),
+                challengeDepositRaw,
+                challengeDeposit: web3.utils.fromWei(challengeDepositRaw, 'ether'),
+                responseTimeout
             };
         }
     )
@@ -401,38 +424,9 @@ const fetchOrganizationRegistrations = (web3, orgId, directories) => Promise.all
     )
 );
 
-const sendApproval = async (web3, owner, spender, amount, gasPrice) => {
-    const lif = getLifTokenContract(web3);
-    return new Promise((resolve, reject) => {
-        lif.methods.approve(spender, amount)
-            .send({
-                from: owner,
-                gasPrice
-            })
-            .on('receipt', receipt => {
-                resolve(receipt);
-            })
-            .on('error', (error) => {
-                reject(error);
-            });
-    });
-};
-
-const sendRegisterToAdd = async (web3, owner, orgId, dirAddress, gasPrice) => {
-    const dir = getArbDirContract(web3, dirAddress);
-    return new Promise((resolve, reject) => {
-        dir.methods.requestToAdd(orgId)
-            .send({
-                from: owner,
-                gasPrice
-            })
-            .on('receipt', receipt => {
-                resolve(receipt);
-            })
-            .on('error', (error) => {
-                reject(error);
-            });
-    });
+const fetchEthBalance = async (web3, owner) => {
+    const balance = await web3.eth.getBalance(owner);
+    return web3.utils.fromWei(balance, 'ether');
 };
 
 export const subscribeDirectoriesEventsChannel = (web3, fromBlock, directories) => {
@@ -481,16 +475,18 @@ function* startPollingSaga() {
         let count = 0;
         let store;
         let balance;
+        let ethBalance;
         let allowance;
         let requestData;
+        let orgDirectories = [];
         store = yield select(directoriesStor);
 
         if (store.isPolling) {
             return;
         }
 
-        yield spawn(startPolingParticipationSaga);
         yield put(startPollingSuccess());
+
         store = yield select(directoriesStor);
         const owner = yield select(selectSignInAddress);
         const web3 = yield select(selectWeb3);
@@ -500,44 +496,22 @@ function* startPollingSaga() {
                 throw new Error('Too much polling cycles');
             }
 
-            balance = yield call(fetchLifBalance, web3, owner);
-            yield put(setLifBalance({ balance }));
-
-            if (store.directoryId) {
-                allowance = yield call(fetchLifAllowance, web3, owner, store.directoryId);
-                yield put(setAllowance({ allowance }));
-                requestData = yield call(fetchRegistrationData, web3, store.orgId, store.directoryId);
-                yield put(setRequested({ orgRequested: requestData.ID === store.orgId && Number(requestData.status) > 0 }));
+            if (owner) {
+                balance = yield call(fetchLifBalance, web3, owner);
+                yield put(setLifBalance({ balance }));
+                ethBalance = yield call(fetchEthBalance, web3, owner);
+                yield put(setEthBalance({ balance: ethBalance }));
             }
 
-            yield delay(1500);
-            store = yield select(directoriesStor);
-            count++;
-        };
+            if (store.directoryId) {
 
-    } catch(error) {
-        yield put(pollingFailure(error))
-    }
-}
+                if (owner) {
+                    allowance = yield call(fetchLifAllowance, web3, owner, store.directoryId);
+                    yield put(setAllowance({ allowance }));
+                }
 
-function* startPolingParticipationSaga() {
-    try {
-        let count = 0;
-        let orgDirectories = [];
-        let store;
-        store = yield select(directoriesStor);
-
-        if (store.isPolling) {
-            return;
-        }
-
-        yield put(startPollingSuccess());
-        store = yield select(directoriesStor);
-        const web3 = yield select(selectWeb3);
-
-        while (store.isPolling && !store.pollingError) {
-            if (count > 1800) {
-                throw new Error('Too much polling cycles');
+                requestData = yield call(fetchRegistrationData, web3, store.orgId, store.directoryId);
+                yield put(setRequested({ orgRequested: requestData.ID === store.orgId && Number(requestData.status) > 0 }));
             }
 
             orgDirectories = yield call(
@@ -546,11 +520,12 @@ function* startPolingParticipationSaga() {
                 store.orgId,
                 store.directories
             );
+            // console.log('@@@', orgDirectories);
             yield put(setOrgDirectories({
                 orgDirectories
             }));
 
-            yield delay(3000);
+            yield delay(5000);
             store = yield select(directoriesStor);
             count++;
         };

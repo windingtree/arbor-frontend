@@ -19,6 +19,7 @@ import {
 import history from '../../redux/history';
 import TopNavigation from "./Components/TopNavigation";
 import Directories from './Components/Directories';
+import PublicDirectories from './Components/PublicDirectories';
 import Agents from "./Components/Agents";
 import Services from "./Components/Services";
 import Payments from "./Components/Payments";
@@ -81,16 +82,14 @@ function Organization (props) {
   }, [orgId, fetchOrganizationInfo]);
 
   useEffect(() => {
-    if (orgId) {
+    if (orgId && !isPolling) {
       startPolling(orgId);
-    } else if (!orgId && isPolling) {
-      stopPolling();
     }
 
     return () => {
       stopPolling();
     };
-  }, [startPolling, stopPolling, isPolling, orgId]);
+  }, [startPolling, stopPolling, orgId]); //eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     subsidiaries && subsidiaries.length && fetchOrganizationSubsInfo({ id: orgId });
@@ -111,6 +110,9 @@ function Organization (props) {
       }
       {canManage &&
         <Directories />
+      }
+      {!canManage &&
+        <PublicDirectories />
       }
       {canManage &&
         <Agents
@@ -138,36 +140,6 @@ function Organization (props) {
           payments={payments}
         />
       }
-      {/* {canManage &&
-        <div className={classes.greyDiv}>
-          <Container className={classes.lifContent}>
-            <Grid container alignItems={'center'}>
-              <Grid item xs={6}>
-                <Typography className={classes.grayTitle} variant={'h1'}>
-                  Submit your Líf deposit
-                </Typography>
-                <Typography className={classes.topSectionText}>
-                  Líf deposit is a small amount of cryptocurrency that is staked when you register your organization profile on Winding Tree Marketplace.
-                  This action minimizes spam registrations and proves your commitment to the cause.
-                </Typography>
-                <div style={{ marginTop: '30px'}}>
-                  <SaveButton onClick={() => history.push({
-                      pathname: '/trust/lif-stake',
-                      state: {
-                        orgid: orgId
-                      }
-                    })}>
-                    Submit Líf
-                  </SaveButton>
-                </div>
-              </Grid>
-              <Grid item xs={6}>
-                <img src={trustLifDeposit} alt={'Lif Deposit'} />
-              </Grid>
-            </Grid>
-          </Container>
-        </div>
-      } */}
       <div ref={proofsRef} />
       <ProofsList
         canManage={canManage}

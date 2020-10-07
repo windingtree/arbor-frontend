@@ -289,9 +289,11 @@ const DialogTitle = props => {
     );
 };
 
-const ChallengeDialog = props => {
+export const ChallengeDialog = props => {
     const classes = styles();
     const {
+        dialogTitle,
+        actionMethod,
         web3,
         isOpened,
         handleClose,
@@ -313,7 +315,7 @@ const ChallengeDialog = props => {
         }
     }, [directory, ethBalance]);
 
-    const {getRootProps, getInputProps, isDragActive} = useDropzone({
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
         accept: 'application/json',
         multiple: false,
         onDrop: async acceptedFiles => {
@@ -359,7 +361,7 @@ const ChallengeDialog = props => {
                 walletAddress,
                 directory.address,
                 getArbDirContract,
-                'challengeOrganization',
+                actionMethod,
                 [
                     organizationItem.orgid,
                     data.uri
@@ -386,7 +388,7 @@ const ChallengeDialog = props => {
             children={(
                 <div className={classes.dialogContent}>
                     <DialogTitle>
-                        Challenge the Registration
+                        {dialogTitle}
                     </DialogTitle>
                     <div className={classes.depositNote + (isBalanceOk ? '' : ' insufficient')}>
                         <Typography className={classes.depositNoteSubtitle}>
@@ -503,7 +505,7 @@ const ChallengeDialog = props => {
                                             type={'submit'}
                                             disabled={!isBalanceOk || isSubmitting}
                                         >
-                                            Challenge the Registration
+                                            {dialogTitle}
                                             {challengeSending &&
                                                 <CircularProgress className={classes.inButtonProgress} size='26px' color='secondary' />
                                             }
@@ -654,6 +656,8 @@ const DirectoriesList = props => {
     return (
         <>
             <ChallengeDialog
+                dialogTitle='Challenge the Registration'
+                actionMethod='challengeOrganization'
                 isOpened={isDialogOpen}
                 handleClose={toggleChallengeDialog}
                 directory={selectedDirectory}

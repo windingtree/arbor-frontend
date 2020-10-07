@@ -8,6 +8,7 @@ import {
     directories,
     lifBalance,
     lifAllowance,
+    ethBalance,
     isOrgRequested,
     isOrgRequestedFetched,
     selectedDirectory,
@@ -36,6 +37,7 @@ import colors from "../../../styles/colors";
 import DirRequestedIcon from '../../../assets/SvgComponents/dir-requested-icon.svg';
 import DirChallengedIcon from '../../../assets/SvgComponents/dir-challenged-icon.svg';
 import DirRegisteredIcon from '../../../assets/SvgComponents/dir-registered-icon.svg';
+import { ChallengeDialog } from './PublicDirectories';
 
 const styles = makeStyles({
     container: {
@@ -657,7 +659,7 @@ const ChallengeDetailsDialog = props => {
                                         target='_blank'
                                         rel='noopener noreferrer'
                                     >
-                                        Evidence URI
+                                        Link to the evidence
                                     </a>
                                 </Typography>
                             </div>
@@ -702,6 +704,8 @@ const DirectoriesList = props => {
     const [acceptChallengeSending, setAcceptChallengeSending] = useState(false);
     const [challengeDetailsOpen, setChallengeDetailsOpen] = useState(false);
     const [evidenceURI, setEvidenceURI] = useState(null);
+    const [selectedDirectory, setSelectedDirectory] = useState(null);
+    const [isAcceptDialogOpen, seIsAcceptDialogOpen] = useState(false);
 
     useEffect(() => {
         if (evidenceURI) {
@@ -711,8 +715,20 @@ const DirectoriesList = props => {
         }
     }, [evidenceURI]);
 
+    useEffect(() => {
+        if (selectedDirectory) {
+            seIsAcceptDialogOpen(true);
+        } else {
+            seIsAcceptDialogOpen(false);
+        }
+    }, [selectedDirectory]);
+
     const handleCloseChallengeDetails = () => {
         setEvidenceURI(null);
+    };
+
+    const handleCloseAcceptDialog = () => {
+        setSelectedDirectory(null);
     };
 
     const executeTimeoutAction = useCallback(directory => {
@@ -797,6 +813,8 @@ const DirectoriesList = props => {
                 })
                 .catch(setError);
         }
+
+        setSelectedDirectory(directory);
     }, [web3]);
 
     const parseDirectories = directories => directories
@@ -906,6 +924,14 @@ const DirectoriesList = props => {
                 isOpened={challengeDetailsOpen}
                 evidenceURI={evidenceURI}
                 handleClose={handleCloseChallengeDetails}
+            />
+            <ChallengeDialog
+                dialogTitle='Accept Challenge'
+                actionMethod='acceptChallenge'
+                isOpened={isAcceptDialogOpen}
+                handleClose={handleCloseAcceptDialog}
+                directory={selectedDirectory}
+                {...props}
             />
             {parseDirectories(orgDirectories).map((directory, i) => (
                 <Grid
@@ -1042,7 +1068,8 @@ const mapStateToProps = state => {
         orgDirectoriesFetched: orgDirectoriesFetched(state),
         orgDirectories: orgDirectories(state),
         web3: selectWeb3(state),
-        walletAddress: selectSignInAddress(state)
+        walletAddress: selectSignInAddress(state),
+        ethBalance: ethBalance(state)
     }
 };
 

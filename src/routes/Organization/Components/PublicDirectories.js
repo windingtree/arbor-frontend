@@ -632,27 +632,6 @@ const DirectoriesList = props => {
         }
     }, [orgDirectoriesFetched, orgDirectories, directoriesDetails, parseDirectories]);
 
-    if (isIndexFetching || !orgDirectoriesFetched) {
-        return (
-            <Grid
-                container
-                direction='row'
-                wrap='nowrap'
-                alignItems='center'
-                alignContent='space-between'
-            >
-                <Grid item style={{ marginRight: '10px'}}>
-                    <CircularProgress size='18px' />
-                </Grid>
-                <Grid item>
-                    <Typography>
-                        Directories list is loading...
-                    </Typography>
-                </Grid>
-            </Grid>
-        );
-    }
-
     return (
         <>
             <ChallengeDialog
@@ -663,60 +642,80 @@ const DirectoriesList = props => {
                 directory={selectedDirectory}
                 {...props}
             />
-            {parsedDirectories.map((directory, i) => (
+            {!orgDirectoriesFetched &&
                 <Grid
                     container
                     direction='row'
                     wrap='nowrap'
                     alignItems='center'
-                    key={i}
+                    alignContent='space-between'
                 >
-                    <Grid item xs={2}>
-                        <img
-                            width='16px'
-                            height='16px'
-                            className={classes.dirListIcon}
-                            alt={directory.title}
-                            src={directory.icon}
-                        />
-                        {directory.title}
+                    <Grid item style={{ marginRight: '10px'}}>
+                        <CircularProgress size='18px' />
                     </Grid>
-                    <Grid item xs={6}>
-                        <div className={classes.statusLabelWrapper}>
-                            <Typography className={classes.statusLabel + ' ' + directory.config.statusClass}>
-                                <img
-                                    alt={directory.config.status}
-                                    src={directory.config.icon}
-                                />&nbsp;
-                                {directory.config.status}
-                            </Typography>
-                        </div>
-                    </Grid>
-                    <Grid item xs={4} className={classes.actionsBlock}>
-                        {directory.config.actionIndicator &&
-                            <div className={classes.actionIndicator}>
-                                <CircularProgress size='16px' />
-                            </div>
-                        }
-                        {(walletAddress && directory.config.action && !directory.config.actionIndicator) &&
-                            <Button
-                                className={classes.actionButton}
-                                onClick={() => directory.config.actionCallback(directory)}
-                            >
-                                {directory.config.action}
-                            </Button>
-                        }
-                        {!walletAddress &&
-                            <Button
-                                className={classes.actionButton}
-                                onClick={() => history.push('/authorization/signin', { follow: history.location.pathname })}
-                            >
-                                Sign Up to see available actions
-                            </Button>
-                        }
+                    <Grid item>
+                        <Typography>
+                            Directories list is loading...
+                        </Typography>
                     </Grid>
                 </Grid>
-            ))}
+            }
+            {(orgDirectoriesFetched && parsedDirectories.length > 0) &&
+                parsedDirectories.map((directory, i) => (
+                    <Grid
+                        container
+                        direction='row'
+                        wrap='nowrap'
+                        alignItems='center'
+                        key={i}
+                    >
+                        <Grid item xs={2}>
+                            <img
+                                width='16px'
+                                height='16px'
+                                className={classes.dirListIcon}
+                                alt={directory.title}
+                                src={directory.icon}
+                            />
+                            {directory.title}
+                        </Grid>
+                        <Grid item xs={6}>
+                            <div className={classes.statusLabelWrapper}>
+                                <Typography className={classes.statusLabel + ' ' + directory.config.statusClass}>
+                                    <img
+                                        alt={directory.config.status}
+                                        src={directory.config.icon}
+                                    />&nbsp;
+                                    {directory.config.status}
+                                </Typography>
+                            </div>
+                        </Grid>
+                        <Grid item xs={4} className={classes.actionsBlock}>
+                            {directory.config.actionIndicator &&
+                                <div className={classes.actionIndicator}>
+                                    <CircularProgress size='16px' />
+                                </div>
+                            }
+                            {(walletAddress && directory.config.action && !directory.config.actionIndicator) &&
+                                <Button
+                                    className={classes.actionButton}
+                                    onClick={() => directory.config.actionCallback(directory)}
+                                >
+                                    {directory.config.action}
+                                </Button>
+                            }
+                            {!walletAddress &&
+                                <Button
+                                    className={classes.actionButton}
+                                    onClick={() => history.push('/authorization/signin', { follow: history.location.pathname })}
+                                >
+                                    Sign Up to see available actions
+                                </Button>
+                            }
+                        </Grid>
+                    </Grid>
+                ))
+            }
         </>
     );
 };

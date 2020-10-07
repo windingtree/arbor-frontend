@@ -689,7 +689,6 @@ const ChallengeDetailsDialog = props => {
 const DirectoriesList = props => {
     const classes = styles();
     const {
-        isIndexFetching,
         directories: directoriesDetails,
         orgDirectories,
         orgDirectoriesFetched,
@@ -897,27 +896,6 @@ const DirectoriesList = props => {
         })
         .filter(d => d !== null);
 
-    if (isIndexFetching || !orgDirectoriesFetched) {
-        return (
-            <Grid
-                container
-                direction='row'
-                wrap='nowrap'
-                alignItems='center'
-                alignContent='space-between'
-            >
-                <Grid item style={{ marginRight: '10px'}}>
-                    <CircularProgress size='18px' />
-                </Grid>
-                <Grid item>
-                    <Typography>
-                        Directories list is loading...
-                    </Typography>
-                </Grid>
-            </Grid>
-        );
-    }
-
     return (
         <>
             <ChallengeDetailsDialog
@@ -933,7 +911,25 @@ const DirectoriesList = props => {
                 directory={selectedDirectory}
                 {...props}
             />
-            {parseDirectories(orgDirectories).map((directory, i) => (
+            {!orgDirectoriesFetched &&
+                <Grid
+                    container
+                    direction='row'
+                    wrap='nowrap'
+                    alignItems='center'
+                    alignContent='space-between'
+                >
+                    <Grid item style={{ marginRight: '10px'}}>
+                        <CircularProgress size='18px' />
+                    </Grid>
+                    <Grid item>
+                        <Typography>
+                            Directories list is loading...
+                        </Typography>
+                    </Grid>
+                </Grid>
+            }
+            {orgDirectoriesFetched && parseDirectories(orgDirectories).map((directory, i) => (
                 <Grid
                     container
                     direction='row'
@@ -1024,6 +1020,11 @@ const Directories = props => {
 
     return (
         <Container>
+            <AddDirectoryDialog
+                isOpened={isDialogOpen}
+                handleClose={toggleDialogOpen}
+                {...props}
+            />
             <div className={classes.container}>
                 <div className={classes.titleWrapper}>
                     <Typography variant={'inherit'}>Directories</Typography>
@@ -1038,11 +1039,6 @@ const Directories = props => {
                                 Add Directory
                             </Typography>
                         </Button>
-                        <AddDirectoryDialog
-                            isOpened={isDialogOpen}
-                            handleClose={toggleDialogOpen}
-                            {...props}
-                        />
                     </div>
                 </div>
                 <dir>

@@ -357,10 +357,19 @@ const fetchDirectoriesDetails = async (web3, ids = []) => Promise.all(
             const segment = await dir.methods.getSegment().call();
             const entities = await dir.methods.getOrganizationsCount(0, 0).call();
             const numberOfRequests = await dir.methods.getRequestedOrganizationsCount(0, 0).call();
-            const numberOfChallenges = await dir.methods.getNumberOfChallenges(id).call();
             const requesterDepositRaw = await dir.methods.requesterDeposit().call();
             const challengeDepositRaw = await dir.methods.challengeBaseDeposit().call();
             const responseTimeout = await dir.methods.responseTimeout().call();
+            const reqOrganizations = await dir.methods.getRequestedOrganizations(0, 0).call();
+            const organizations = await dir.methods.getOrganizations(0, 0).call();
+            const challenges = await Promise.all(
+                [...organizations, ...reqOrganizations]
+                    .map(orgId => dir.methods.getNumberOfChallenges(orgId).call())
+            );
+            const numberOfChallenges = challenges.reduce(
+                (a,v) => Number(a) + Number(v),
+                0
+            );
 
             return {
                 address: id,
@@ -525,7 +534,7 @@ function* startPollingSaga() {
         };
 
     } catch(error) {
-        console.log('!!!!!!!!!!!!!!!!!!!!!!', error);
+        console.log('Polling error!', error);
         yield put(pollingFailure(error))
     }
 }

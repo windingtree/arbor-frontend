@@ -300,7 +300,11 @@ const Directories = props => {
         <Container>
             <div className={classes.content}>
                 <div>
-                    <Typography variant={'h1'} className={classes.title}>
+                    <Typography
+                        onClick={fetchDirectories}
+                        variant={'h1'}
+                        className={classes.title}
+                    >
                         Directories
                     </Typography>
                 </div>
@@ -346,14 +350,12 @@ const Directories = props => {
     );
 };
 
-const mapStateToProps = state => {
-    return {
-        isFetching: isIndexFetching(state),
-        isFetched: isIndexFetched(state),
-        error: indexError(state),
-        directories: directories(state)
-    }
-};
+const mapStateToProps = state => ({
+    isFetching: isIndexFetching(state),
+    isFetched: isIndexFetched(state),
+    error: indexError(state),
+    directories: directories(state)
+});
 
 const mapDispatchToProps = {
     fetchDirectories

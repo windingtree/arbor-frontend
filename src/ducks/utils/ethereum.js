@@ -122,3 +122,39 @@ export const signTransaction = async (web3, from, gasLimit, method, args) => {
 export const sendSignedTransaction = async (web3, from, rawTransaction) => {
   return web3.eth.sendSignedTransaction(rawTransaction, from);
 };
+
+// Send transaction to contract
+export const sendMethod = async (web3, from, contractAddress, contractBuilder, method, methodArgs, value, gasPrice) => {
+  const contract = contractBuilder(web3, contractAddress);
+  const gas = await contract
+      .methods[method]
+      .apply(contract, methodArgs)
+      .estimateGas({
+          from,
+          ...(value ? { value } : {})
+      });
+  gasPrice = gasPrice ? gasPrice : await ApiGetGasPrice(web3);
+  console.log('@@@@@@@@@@@', {
+    from,
+    gas,
+    ...(gasPrice ? { gasPrice } : {}),
+    ...(value ? { value } : {})
+  });
+  return new Promise((resolve, reject) => {
+      contract
+          .methods[method]
+          .apply(contract, methodArgs)
+          .send({
+              from,
+              gas,
+              ...(gasPrice ? { gasPrice } : {}),
+              ...(value ? { value } : {})
+          })
+          .on('receipt', receipt => {
+              resolve(receipt);
+          })
+          .on('error', (error) => {
+              reject(error);
+          });
+  });
+};

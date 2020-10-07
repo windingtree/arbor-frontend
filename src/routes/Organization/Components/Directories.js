@@ -2,31 +2,26 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
 
 import {
-    setOrgId,
     setDirectory,
     resetState,
     isIndexFetching,
-    isApprovalTransaction,
-    isRegisterTransaction,
     directories,
     lifBalance,
     lifAllowance,
     isOrgRequested,
     isOrgRequestedFetched,
     selectedDirectory,
-    indexError,
-    pollingError,
-    approvalError,
-    registerError,
     orgDirectoriesFetched,
-    orgDirectories
+    orgDirectories,
+    indexError,
+    pollingError
 } from '../../../ducks/directories';
 import { selectWeb3, selectSignInAddress } from '../../../ducks/signIn';
 import { selectItem as selectOrganizationItem } from '../../../ducks/fetchOrganizationInfo';
 import {
-    ApiGetGasPrice,
     getLifTokenContract,
-    getArbDirContract
+    getArbDirContract,
+    sendMethod
 } from '../../../ducks/utils/ethereum';
 
 import { Container, Typography, Button, Grid, CircularProgress } from '@material-ui/core';
@@ -229,34 +224,6 @@ const styles = makeStyles({
 // Extract specific directory from the list
 const getDirectory = (address, directories) => directories.filter(d => d.address === address)[0];
 
-// Send transaction to contract
-const sendMethod = async (web3, from, contractAddress, contractBuilder, method, methodArgs) => {
-    const contract = contractBuilder(web3, contractAddress);
-    const gas = await contract
-        .methods[method]
-        .apply(contract, methodArgs)
-        .estimateGas({
-            from
-        });
-    const gasPrice = await ApiGetGasPrice(web3);
-    return new Promise((resolve, reject) => {
-        contract
-            .methods[method]
-            .apply(contract, methodArgs)
-            .send({
-                from,
-                gas,
-                ...(gasPrice ? { gasPrice } : {})
-            })
-            .on('receipt', receipt => {
-                resolve(receipt);
-            })
-            .on('error', (error) => {
-                reject(error);
-            });
-    });
-};
-
 const DialogTitle = props => {
     const classes = styles();
     const {
@@ -276,6 +243,7 @@ const DialogTitle = props => {
 const DirectoriesList = props => {
     const classes = styles();
     const {
+        isIndexFetching,
         directories: directoriesDetails,
         orgDirectories,
         orgDirectoriesFetched,
@@ -432,7 +400,7 @@ const DirectoriesList = props => {
         })
         .filter(d => d !== null);
 
-    if (!orgDirectoriesFetched) {
+    if (isIndexFetching || !orgDirectoriesFetched) {
         return (
             <Grid
                 container
@@ -522,8 +490,6 @@ const AddDirectoryDialog = props => {
         directories,
         resetState,
         setDirectory,
-        isApprovalTransaction,
-        isRegisterTransaction,
         lifBalance,
         lifAllowance,
         isOrgRequestedFetched,
@@ -800,14 +766,14 @@ const AddDirectoryDialog = props => {
                                         {(isBalanceOk && !isAllowanceOk) &&
                                             <Button
                                                 className={classes.dialogButton}
-                                                disabled={isApprovalTransaction || approvalLifStarted}
+                                                disabled={approvalLifStarted}
                                                 onClick={() => sendLifApproval(
                                                     selectedDirectoryDetails.address,
                                                     selectedDirectoryDetails.requesterDepositRaw
                                                 )}
                                             >
                                                 Unlock Lif Tokens
-                                                {(isApprovalTransaction || approvalLifStarted) &&
+                                                {(approvalLifStarted) &&
                                                     <CircularProgress className={classes.inButtonProgress} size='26px' color='secondary' />
                                                 }
                                             </Button>
@@ -815,11 +781,11 @@ const AddDirectoryDialog = props => {
                                         {(isBalanceOk && isAllowanceOk) &&
                                             <Button
                                                 className={classes.dialogButton}
-                                                disabled={isRegisterTransaction || requestStarted}
+                                                disabled={requestStarted}
                                                 onClick={() => sendRequestToAdd(selectedDirectoryDetails)}
                                             >
                                                 Request to Register
-                                                {(isRegisterTransaction || requestStarted) &&
+                                                {(requestStarted) &&
                                                     <CircularProgress className={classes.inButtonProgress} size='26px' color='secondary' />
                                                 }
                                             </Button>
@@ -864,7 +830,7 @@ const Directories = props => {
                         />
                     </div>
                 </div>
-                <dir className={classes.regsListWrapper}>
+                <dir>
                     <DirectoriesList {...props}/>
                 </dir>
             </div>
@@ -875,8 +841,6 @@ const Directories = props => {
 const mapStateToProps = state => {
     return {
         isIndexFetching: isIndexFetching(state),
-        isApprovalTransaction: isApprovalTransaction(state),
-        isRegisterTransaction: isRegisterTransaction(state),
         directories: directories(state),
         lifBalance: lifBalance(state),
         lifAllowance: lifAllowance(state),
@@ -885,8 +849,6 @@ const mapStateToProps = state => {
         selectedDirectory: selectedDirectory(state),
         indexError: indexError(state),
         pollingError: pollingError(state),
-        approvalError: approvalError(state),
-        registerError: registerError(state),
         organizationItem: selectOrganizationItem(state),
         orgDirectoriesFetched: orgDirectoriesFetched(state),
         orgDirectories: orgDirectories(state),
@@ -896,7 +858,6 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-    setOrgId,
     setDirectory,
     resetState
 };

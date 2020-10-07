@@ -60,6 +60,10 @@ const styles = makeStyles({
     },
     noRequestsNote: {
         marginLeft: '9px'
+    },
+    errorMessage: {
+        fontSize: '16px',
+        color: '#F0806E'
     }
 });
 
@@ -168,6 +172,15 @@ const RegistrationRequests = props => {
                 }
                 </div>
             </Container>
+            {error &&
+                <Container>
+                    <div>
+                        <Typography className={classes.errorMessage}>
+                            {error.message}
+                        </Typography>
+                    </div>
+                </Container>
+            }
         </div>
     );
 };

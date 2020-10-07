@@ -46,8 +46,6 @@ const initialState = {
     isIndexFetching: false,
     isIndexFetched: false,
     isPolling: false,
-    isApprovalTransaction: false,
-    isRegisterTransaction: false,
     isOrgDirectoriesFetched: false,
     isOrgRequestedStatusFetched: false,
 
@@ -61,9 +59,7 @@ const initialState = {
     orgRequested: false,
 
     indexError: null,
-    pollingError: null,
-    approvalError: null,
-    registerError: null
+    pollingError: null
 };
 
 /**
@@ -276,7 +272,7 @@ export const directoriesStor = createSelector(
 
 export const isIndexFetching = createSelector(
     stateSelector,
-    ({ isFetching }) => isFetching
+    ({ isIndexFetching }) => isIndexFetching
 );
 
 export const isIndexFetched = createSelector(
@@ -287,16 +283,6 @@ export const isIndexFetched = createSelector(
 export const isPolling = createSelector(
     stateSelector,
     ({ isPolling }) => isPolling
-);
-
-export const isApprovalTransaction = createSelector(
-    stateSelector,
-    ({ isApprovalTransaction }) => isApprovalTransaction
-);
-
-export const isRegisterTransaction = createSelector(
-    stateSelector,
-    ({ isRegisterTransaction }) => isRegisterTransaction
 );
 
 export const directories = createSelector(
@@ -347,11 +333,6 @@ export const pollingError = createSelector(
 export const approvalError = createSelector(
     stateSelector,
     ({ approvalError }) => approvalError
-);
-
-export const registerError = createSelector(
-    stateSelector,
-    ({ registerError }) => registerError
 );
 
 export const orgDirectoriesFetched = createSelector(
@@ -503,7 +484,7 @@ function* startPollingSaga() {
                 yield put(setEthBalance({ balance: ethBalance }));
             }
 
-            if (store.directoryId) {
+            if (store.directoryId && store.orgId) {
 
                 if (owner) {
                     allowance = yield call(fetchLifAllowance, web3, owner, store.directoryId);

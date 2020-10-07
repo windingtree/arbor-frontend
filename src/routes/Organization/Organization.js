@@ -11,10 +11,7 @@ import {
 } from '../../ducks/fetchOrganizationInfo';
 import {
   startPolling,
-  stopPolling,
-  isPolling,
-  orgDirectoriesFetched,
-  orgDirectories
+  stopPolling
 } from '../../ducks/directories';
 import history from '../../redux/history';
 import TopNavigation from "./Components/TopNavigation";
@@ -39,10 +36,7 @@ function Organization (props) {
     fetchOrganizationSubsInfo,
     fetchOrganizationInfo,
     startPolling,
-    stopPolling,
-    isPolling,
-    orgDirectoriesFetched,
-    orgDirectories
+    stopPolling
   } = props;
   const subsidiaries = _.get(organization, 'subsidiaries', []);
   const agents = _.get(organization, 'jsonContent.publicKey', []);
@@ -82,7 +76,7 @@ function Organization (props) {
   }, [orgId, fetchOrganizationInfo]);
 
   useEffect(() => {
-    if (orgId && !isPolling) {
+    if (orgId) {
       startPolling(orgId);
     }
 
@@ -156,8 +150,7 @@ const mapStateToProps = state => {
   return {
     organization: selectItem(state),
     subs: selectSubs(state),
-    assertions: selectAssertions(state),
-    isPolling: isPolling(state)
+    assertions: selectAssertions(state)
   }
 };
 

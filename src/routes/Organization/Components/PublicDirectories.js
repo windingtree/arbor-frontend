@@ -66,7 +66,7 @@ const styles = makeStyles({
         },
         '&.challenged': {
             backgroundColor: '#FAC8C0',
-            color: 'white'
+            color: '#5E666A'
         },
         '&.disputed': {
             backgroundColor: '#FAC8C0',
@@ -80,6 +80,10 @@ const styles = makeStyles({
     actionIndicator: {
         float: 'right',
         marginRight: '10px'
+    },
+    actionsBlock: {
+        display: 'inline-flex',
+        justifyContent: 'flex-end'
     },
     actionButton: {
         fontSize: '14px',
@@ -578,10 +582,10 @@ const DirectoriesList = props => {
                     status: 'Challenged',
                     statusClass: 'challenged',
                     icon: DirChallengedIcon,
-                    action: 'Accept Challenge',
-                    actionIndicator: false,
-                    actionIndicatorCallback: () => {},
-                    actionCallback: () => {}
+                    action: 'Challenge the Registration (again)',//'Accept Challenge'
+                    actionIndicator: challengeStarting,
+                    actionIndicatorCallback: setChallengeStarting,
+                    actionCallback: challengeTheRegistration
                 },
                 // The challenge has been disputed.
                 {
@@ -684,7 +688,7 @@ const DirectoriesList = props => {
                             </Typography>
                         </div>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={4} className={classes.actionsBlock}>
                         {directory.config.actionIndicator &&
                             <div className={classes.actionIndicator}>
                                 <CircularProgress size='16px' />

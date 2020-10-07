@@ -396,7 +396,20 @@ const fetchLifAllowance = async (web3, owner, spender) => {
 
 const fetchRegistrationData = async (web3, orgId, dirId) => {
     const dir = getArbDirContract(web3, dirId);
-    return dir.methods.organizationData(orgId).call();
+    const orgData = await dir.methods.organizationData(orgId).call();
+    let challenges;
+    if (Number(orgData.status) === 3) {
+        const numChallenges = await dir.methods.getNumberOfChallenges(orgId).call();
+        challenges = await Promise.all(
+            Array(Number(numChallenges))
+                .fill(null)
+                .map((_, i) => dir.methods.getChallengeInfo(orgId, i).call())
+        );
+    }
+    return {
+        ...orgData,
+        ...(challenges ? { challenges } : {})
+    }
 };
 
 const fetchOrganizationRegistrations = (web3, orgId, directories) => Promise.all(
@@ -512,6 +525,7 @@ function* startPollingSaga() {
         };
 
     } catch(error) {
+        console.log('!!!!!!!!!!!!!!!!!!!!!!', error);
         yield put(pollingFailure(error))
     }
 }

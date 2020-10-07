@@ -1,3 +1,4 @@
+import Web3 from 'web3';
 import {
   ORGID_ABI,
   ORGID_PROXY_ADDRESS,
@@ -134,12 +135,6 @@ export const sendMethod = async (web3, from, contractAddress, contractBuilder, m
           ...(value ? { value } : {})
       });
   gasPrice = gasPrice ? gasPrice : await ApiGetGasPrice(web3);
-  console.log('@@@@@@@@@@@', {
-    from,
-    gas,
-    ...(gasPrice ? { gasPrice } : {}),
-    ...(value ? { value } : {})
-  });
   return new Promise((resolve, reject) => {
       contract
           .methods[method]
@@ -156,5 +151,17 @@ export const sendMethod = async (web3, from, contractAddress, contractBuilder, m
           .on('error', (error) => {
               reject(error);
           });
+  });
+};
+
+// Fetching of the Evidence event for the specific challenge
+export const getEvidenceEvent = async (web3, dirAddress, arbitratorAddress, orgId, challengeNumber) => {
+  const contract = getArbDirContract(web3, dirAddress);
+  const filter = {
+    _arbitrator: arbitratorAddress,
+    _evidenceGroupID: Web3.utils.soliditySha3(orgId, challengeNumber)
+  };
+  return contract.getPastEvents('Evidence', filter, {
+    fromBlock: 0
   });
 };

@@ -459,6 +459,10 @@ function Info(props) {
     return classNameBase;
   };
 
+  const sanitizeLink = link => link
+    .replace(/(https|http[:]{0,1})(\/\/)/, '')
+    .replace(/\/$/, '');
+
   return (
     <div>
       <Container className={classes.itemMainInfo}>
@@ -573,7 +577,7 @@ function Info(props) {
             {
               socials.map((social, index) => {
                 return (
-                  <a key={index.toString()} href={"https://" + social.link} target={'_blank'} className={classes.socialLink} rel="noopener noreferrer">
+                  <a key={index.toString()} href={"https://" + sanitizeLink(social.link)} target={'_blank'} className={classes.socialLink} rel="noopener noreferrer">
                     <Hidden xsDown>
                       {icon(social.network)}
                     </Hidden>

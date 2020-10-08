@@ -15,17 +15,20 @@ import {
     indexError,
     pollingError
 } from '../../../ducks/directories';
-import { api, createUniqueFileName } from '../../../redux/api';
+import { api } from '../../../redux/api';
 import {
     ApiGetGasPrice,
     getArbDirContract,
-    sendMethod
+    sendMethod,
+    getEvidenceEvent
 } from '../../../ducks/utils/ethereum';
+import { strCenterEllipsis } from '../../../utils/helpers';
 
 import { Container, Typography, Button, Grid, CircularProgress, TextField } from '@material-ui/core';
 import { Formik } from 'formik';
 
 import DialogComponent from '../../../components/Dialog';
+import { ChallengeDetailsDialog } from './Directories';
 
 import { makeStyles } from "@material-ui/core/styles";
 import colors from "../../../styles/colors";
@@ -219,12 +222,12 @@ const saveMediaToArbor = async data => {
     const body = new FormData();
 
     if (file) {
-        body.append('media', file, createUniqueFileName(file.name));
+        body.append('media', file, `${await getHash(file)}.json`);
     } else if (text) {
         body.append(
             'media',
             new Blob([text], { type: 'application/json' }),
-            createUniqueFileName('evidence.json')
+            `${await getHash(text)}.json`
         );
     } else {
         throw new Error('Nor file not text has been provided');
@@ -238,11 +241,17 @@ const saveMediaToArbor = async data => {
     });
 }
 
-const getFileHash = file => new Promise((resolve, reject) => {
+export const serializeJson = jsonData => JSON.stringify(jsonData, null, 2);
+
+// Generate hash for string or file
+export const getHash = file => new Promise((resolve, reject) => {
     if (!file) {
         throw new Error('File not found');
     }
-    var reader = new FileReader();
+    if (typeof file === 'string') {
+        return resolve(Web3.utils.soliditySha3(file));
+    }
+    const reader = new FileReader();
     reader.readAsText(file, 'UTF-8');
     reader.onload = evt => resolve(Web3.utils.soliditySha3(evt.target.result));
     reader.onerror = () => reject(new Error('Unable to read file'));
@@ -269,7 +278,7 @@ const buildEvidenceJson = data => {
     return saveMediaToArbor({
         address,
         id,
-        text: JSON.stringify(evidence)
+        text: serializeJson(evidence)
     })
 };
 
@@ -300,7 +309,8 @@ export const ChallengeDialog = props => {
         directory,
         ethBalance,
         walletAddress,
-        organizationItem
+        organizationItem,
+        noFunding
     } = props;
     const [error, setError] = useState(null);
     const [isBalanceOk, setIsBalanceOk] = useState(true);
@@ -326,7 +336,7 @@ export const ChallengeDialog = props => {
                 }
                 const file = acceptedFiles[0];
                 setFileName(file.name);
-                const fileHash = await getFileHash(file);
+                const fileHash = await getHash(file);
                 setFileHash(fileHash);
                 const { data } = await saveMediaToArbor({
                     address: walletAddress,
@@ -341,13 +351,20 @@ export const ChallengeDialog = props => {
     });
 
     const onDialogClose = () => {
+        setError(null);
         handleClose();
     };
 
     const sendChallengeOrganization = async (values) => {
         try {
             setChallengeSending(true);
-            const { data } = await buildEvidenceJson(values);
+            const { data } = await buildEvidenceJson({
+                ...values,
+                ...{
+                    id: organizationItem.orgid,
+                    address: walletAddress
+                }
+            });
             const methodGas = '259527';
             const gasPrice = await ApiGetGasPrice(web3);
             const refinedValue = web3.utils.toBN(directory.challengeDepositRaw)
@@ -366,7 +383,7 @@ export const ChallengeDialog = props => {
                     organizationItem.orgid,
                     data.uri
                 ],
-                refinedValue,
+                noFunding ? undefined : refinedValue,
                 gasPrice
             );
             setChallengeSending(false);
@@ -377,144 +394,144 @@ export const ChallengeDialog = props => {
         }
     };
 
-    if (!isOpened || !directory) {
-        return null;
-    }
-
     return (
         <DialogComponent
             isOpen={isOpened}
             handleClose={onDialogClose}
             children={(
                 <div className={classes.dialogContent}>
-                    <DialogTitle>
-                        {dialogTitle}
-                    </DialogTitle>
-                    <div className={classes.depositNote + (isBalanceOk ? '' : ' insufficient')}>
-                        <Typography className={classes.depositNoteSubtitle}>
-                            Required deposit
-                        </Typography>
-                        <Typography className={classes.depositNoteTitle}>
-                            {directory.challengeDeposit} ETH
-                        </Typography>
-                    </div>
-                    <div>
-                        <Formik
-                            initialValues={{
-                                name: '',
-                                description: ''
-                            }}
-                            validate={values => {
-                                const errors = {};
-                                return errors;
-                            }}
-                            onSubmit={(values, { setSubmitting }) => {
-                                console.log('@@@', values, { fileURI, fileHash });
-                                sendChallengeOrganization({
-                                    ...values,
-                                    ...{ fileURI, fileHash }
-                                })
-                                    .finally(() => setSubmitting(false));
-                            }}
-                        >
-                            {({
-                                values,
-                                errors,
-                                touched,
-                                handleChange,
-                                handleBlur,
-                                handleSubmit,
-                                isSubmitting
-                            }) => (
-                                <form onSubmit={handleSubmit}>
-                                    <div className={classes.inputFieldWrapper}>
-                                        <TextField
-                                            name={'name'}
-                                            autoComplete={'none'}
-                                            variant={'filled'}
-                                            label={'Evidence Title'}
-                                            fullWidth
-                                            required
-                                            error={errors.name && touched.name}
-                                            value={values.name}
-                                            onChange={handleChange}
-                                            onBlur={handleBlur}
-                                            helperText={errors.name && touched.name ? errors.name : null}
-                                        />
-                                    </div>
-                                    <div className={classes.inputFieldWrapper}>
-                                        <TextField
-                                            name={'description'}
-                                            autoComplete={'none'}
-                                            variant={'filled'}
-                                            label={'Evidence Text'}
-                                            required
-                                            fullWidth
-                                            multiline
-                                            rows={4}
-                                            rowsMax={6}
-                                            error={errors.description && touched.description}
-                                            value={values.description}
-                                            onChange={handleChange}
-                                            onBlur={handleBlur}
-                                            helperText={errors.description && touched.description ? errors.description : null}
-                                        />
-                                    </div>
-                                    <div>
-                                        <Typography className={classes.inputLabel}>
-                                            Link to the evidence
-                                        </Typography>
-                                        <Typography className={classes.inputSubLabel}>
-                                            Provide a link to a JSON file, containing all the necessary evidence.
-                                        </Typography>
-                                    </div>
-                                    <div className={classes.inputFieldWrapper}>
-                                        <div {...getRootProps()} className={classes.dropZone}>
-                                            <input {...getInputProps()} />
-                                            {
-                                                isDragActive
-                                                    ? <Typography>Drop the file here...</Typography>
-                                                    : <Typography>
-                                                        {fileName ? fileName : 'evidence.json'}
-                                                      </Typography>
-                                            }
-                                        </div>
-                                    </div>
-                                    <div className={classes.inputFieldWrapper}>
-                                        <Grid container direction='row' wrap='nowrap' justify='flex-start'>
-                                            <Grid item>
-                                                <InfoIcon size='14px' stroke='white' fill='#8F999F' />
-                                            </Grid>
-                                            <Grid item>
-                                                <Typography className={classes.inputSubLabel}>
-                                                    Note that both sides need to deposit the fees to start the dispute. In case the other side doesn’t deposit it in {directory.responseTimeout} sec you win.
-                                                </Typography>
-                                            </Grid>
-                                        </Grid>
-                                    </div>
-                                    {error &&
+                    {directory &&
+                        <>
+                            <DialogTitle>
+                                {dialogTitle}
+                            </DialogTitle>
+                            {!noFunding &&
+                                <div className={classes.depositNote + (isBalanceOk ? '' : ' insufficient')}>
+                                    <Typography className={classes.depositNoteSubtitle}>
+                                        Required deposit
+                                    </Typography>
+                                    <Typography className={classes.depositNoteTitle}>
+                                        {directory.challengeDeposit} ETH
+                                    </Typography>
+                                </div>
+                            }
+                            <Formik
+                                initialValues={{
+                                    name: '',
+                                    description: ''
+                                }}
+                                validate={values => {
+                                    const errors = {};
+                                    return errors;
+                                }}
+                                onSubmit={(values, { setSubmitting }) => {
+                                    console.log('@@@', values, { fileURI, fileHash });
+                                    sendChallengeOrganization({
+                                        ...values,
+                                        ...{ fileURI, fileHash }
+                                    })
+                                        .finally(() => setSubmitting(false));
+                                }}
+                            >
+                                {({
+                                    values,
+                                    errors,
+                                    touched,
+                                    handleChange,
+                                    handleBlur,
+                                    handleSubmit,
+                                    isSubmitting
+                                }) => (
+                                    <form onSubmit={handleSubmit}>
                                         <div className={classes.inputFieldWrapper}>
-                                            <Typography className={classes.errorMessage}>
-                                                {error.message}
+                                            <TextField
+                                                name={'name'}
+                                                autoComplete={'none'}
+                                                variant={'filled'}
+                                                label={'Evidence Title'}
+                                                fullWidth
+                                                required
+                                                error={errors.name && touched.name}
+                                                value={values.name}
+                                                onChange={handleChange}
+                                                onBlur={handleBlur}
+                                                helperText={errors.name && touched.name ? errors.name : null}
+                                            />
+                                        </div>
+                                        <div className={classes.inputFieldWrapper}>
+                                            <TextField
+                                                name={'description'}
+                                                autoComplete={'none'}
+                                                variant={'filled'}
+                                                label={'Evidence Text'}
+                                                required
+                                                fullWidth
+                                                multiline
+                                                rows={4}
+                                                rowsMax={6}
+                                                error={errors.description && touched.description}
+                                                value={values.description}
+                                                onChange={handleChange}
+                                                onBlur={handleBlur}
+                                                helperText={errors.description && touched.description ? errors.description : null}
+                                            />
+                                        </div>
+                                        <div>
+                                            <Typography className={classes.inputLabel}>
+                                                Link to the evidence
+                                            </Typography>
+                                            <Typography className={classes.inputSubLabel}>
+                                                Provide a link to a JSON file, containing all the necessary evidence.
                                             </Typography>
                                         </div>
-                                    }
-                                    <div className={classes.dialogButtonWrapper}>
-                                        <Button
-                                            className={classes.dialogButton}
-                                            type={'submit'}
-                                            disabled={!isBalanceOk || isSubmitting}
-                                        >
-                                            {dialogTitle}
-                                            {challengeSending &&
-                                                <CircularProgress className={classes.inButtonProgress} size='26px' color='secondary' />
-                                            }
-                                        </Button>
-                                    </div>
-                                </form>
-                            )}
-                        </Formik>
-                    </div>
+                                        <div className={classes.inputFieldWrapper}>
+                                            <div {...getRootProps()} className={classes.dropZone}>
+                                                <input {...getInputProps()} />
+                                                {
+                                                    isDragActive
+                                                        ? <Typography>Drop the file here...</Typography>
+                                                        : <Typography>
+                                                            {fileName ? fileName : 'evidence.json'}
+                                                        </Typography>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div className={classes.inputFieldWrapper}>
+                                            <Grid container direction='row' wrap='nowrap' justify='flex-start'>
+                                                <Grid item>
+                                                    <InfoIcon size='14px' stroke='white' fill='#8F999F' />
+                                                </Grid>
+                                                <Grid item>
+                                                    <Typography className={classes.inputSubLabel}>
+                                                        Note that both sides need to deposit the fees to start the dispute. In case the other side doesn’t deposit it in {directory.responseTimeout} sec you win.
+                                                    </Typography>
+                                                </Grid>
+                                            </Grid>
+                                        </div>
+                                        {error &&
+                                            <div className={classes.inputFieldWrapper}>
+                                                <Typography className={classes.errorMessage}>
+                                                    {error.message}
+                                                </Typography>
+                                            </div>
+                                        }
+                                        <div className={classes.dialogButtonWrapper}>
+                                            <Button
+                                                className={classes.dialogButton}
+                                                type={'submit'}
+                                                disabled={(!noFunding && !isBalanceOk) || isSubmitting}
+                                            >
+                                                {dialogTitle}
+                                                {challengeSending &&
+                                                    <CircularProgress className={classes.inButtonProgress} size='26px' color='secondary' />
+                                                }
+                                            </Button>
+                                        </div>
+                                    </form>
+                                )}
+                            </Formik>
+                        </>
+                    }
                 </div>
             )}
         />
@@ -524,21 +541,34 @@ export const ChallengeDialog = props => {
 const DirectoriesList = props => {
     const classes = styles();
     const {
+        web3,
         directories: directoriesDetails,
-        isIndexFetching,
         orgDirectories,
         orgDirectoriesFetched,
         walletAddress
     } = props;
-    const [parsedDirectories, setParsedDirectories] = useState([]);
+    const [error, setError] = useState(null);
+
     const [challengeStarting, setChallengeStarting] = useState(false);
+    const [submitEvidenceSending, setSubmitEvidenceSending] = useState(false);
+
+    const [parsedDirectories, setParsedDirectories] = useState([]);
     const [selectedDirectory, setSelectedDirectory] = useState(null);
+    const [evidenceStor, setEvidenceStor] = useState(null);
     const [isDialogOpen, setDialogOpen] = useState(false);
+    const [challengeDetailsOpen, setChallengeDetailsOpen] = useState(false);
+    const [isEvidenceDialogOpen, setIsEvidenceDialogOpen] = useState(false);
 
     const challengeTheRegistration = useCallback(directory => {
         console.log('Selected directory:', directory);
         setSelectedDirectory(directory);
         setDialogOpen(true);
+    }, []);
+
+    const submitEvidenceAction = useCallback(directory => {
+        console.log('Directory', directory);
+        setSelectedDirectory(directory);
+        setIsEvidenceDialogOpen(true)
     }, []);
 
     const toggleChallengeDialog = () => {
@@ -554,59 +584,76 @@ const DirectoriesList = props => {
                     status: 'Not Registered',
                     statusClass: '',
                     icon: '',
-                    action: '',
-                    actionIndicator: false,
-                    actionIndicatorCallback: () => {},
-                    actionCallback: () => {}
+                    actions: []
                 },
                 // The organization has an open request.
                 {
                     status: 'Registration Requested',
                     statusClass: 'requested',
                     icon: DirRequestedIcon,
-                    action: 'Challenge the Registration',
-                    actionIndicator: challengeStarting,
-                    actionIndicatorCallback: setChallengeStarting,
-                    actionCallback: challengeTheRegistration
+                    actions: [
+                        {
+                            action: 'Challenge the Registration',
+                            actionIndicator: challengeStarting,
+                            actionIndicatorCallback: setChallengeStarting,
+                            actionCallback: challengeTheRegistration
+                        }
+                    ]
                 },
                 // The organization made a withdrawal request.
                 {
                     status: 'Withdrawal Requested',
                     statusClass: 'withdrawal-requested',
                     icon: DirChallengedIcon,
-                    action: 'Challenge the Registration',
-                    actionIndicator: challengeStarting,
-                    actionIndicatorCallback: setChallengeStarting,
-                    actionCallback: challengeTheRegistration
+                    actions: [
+                        {
+                            action: 'Challenge the Registration',
+                            actionIndicator: challengeStarting,
+                            actionIndicatorCallback: setChallengeStarting,
+                            actionCallback: challengeTheRegistration
+                        }
+                    ]
                 },
                 // The organization has been challenged.
                 {
                     status: 'Challenged',
                     statusClass: 'challenged',
                     icon: DirChallengedIcon,
-                    action: 'Challenge the Registration (again)',//'Accept Challenge'
-                    actionIndicator: challengeStarting,
-                    actionIndicatorCallback: setChallengeStarting,
-                    actionCallback: challengeTheRegistration
+                    actions: [
+                        {
+                            action: 'Submit Evidence',
+                            actionIndicator: submitEvidenceSending,
+                            actionIndicatorCallback: setSubmitEvidenceSending,
+                            actionCallback: submitEvidenceAction
+                        }
+                    ]
                 },
                 // The challenge has been disputed.
                 {
                     status: 'Disputed',
                     statusClass: 'disputed',
                     icon: DirChallengedIcon,
-                    action: '',
-                    actionIndicator: false,
-                    actionIndicatorCallback: () => {},
-                    actionCallback: () => {}
+                    actions: [
+                        {
+                            action: 'Submit Evidence',
+                            actionIndicator: submitEvidenceSending,
+                            actionIndicatorCallback: setSubmitEvidenceSending,
+                            actionCallback: submitEvidenceAction
+                        }
+                    ]
                 },
                 {
                     status: 'Registered',
                     statusClass: 'registered',
                     icon: DirRegisteredIcon,
-                    action: 'Challenge the Registration',
-                    actionIndicator: challengeStarting,
-                    actionIndicatorCallback: setChallengeStarting,
-                    actionCallback: challengeTheRegistration
+                    actions: [
+                        {
+                            action: 'Challenge the Registration',
+                            actionIndicator: challengeStarting,
+                            actionIndicatorCallback: setChallengeStarting,
+                            actionCallback: challengeTheRegistration
+                        }
+                    ]
                 }
             ];
 
@@ -619,10 +666,20 @@ const DirectoriesList = props => {
 
             return {
                 ...details,
+                status: statusNum,
+                organization: d,
                 config: config[statusNum]
             };
         })
         .filter(d => d !== null), [challengeStarting, challengeTheRegistration]);
+
+    useEffect(() => {
+        if (evidenceStor) {
+            setChallengeDetailsOpen(true);
+        } else {
+            setChallengeDetailsOpen(false);
+        }
+    }, [evidenceStor]);
 
     useEffect(() => {
         if (orgDirectoriesFetched) {
@@ -632,14 +689,57 @@ const DirectoriesList = props => {
         }
     }, [orgDirectoriesFetched, orgDirectories, directoriesDetails, parseDirectories]);
 
+    const handleCloseChallengeDetails = () => {
+        setEvidenceStor(null);
+    };
+
+    const handleCloseEvidenceDialog = () => {
+        setSelectedDirectory(null);
+        setIsEvidenceDialogOpen(false);
+    };
+
+    const showEvidence = (directory, challengeNumber) => {
+        console.log('Directory', directory);
+        getEvidenceEvent(
+            web3,
+            directory.address,
+            directory.organization.challenges[challengeNumber].arbitrator,
+            directory.organization.ID,
+            challengeNumber + 1
+        )
+            .then(events => {
+                console.log('Evidence', events);
+                setEvidenceStor({
+                    directory,
+                    challenge: directory.organization.challenges[challengeNumber],
+                    events: events.map(ev => ev.returnValues)
+                });
+            })
+            .catch(setError);
+    };
+
     return (
         <>
+            <ChallengeDetailsDialog
+                isOpened={challengeDetailsOpen}
+                evidenceStor={evidenceStor}
+                handleClose={handleCloseChallengeDetails}
+            />
             <ChallengeDialog
                 dialogTitle='Challenge the Registration'
                 actionMethod='challengeOrganization'
                 isOpened={isDialogOpen}
                 handleClose={toggleChallengeDialog}
                 directory={selectedDirectory}
+                {...props}
+            />
+            <ChallengeDialog
+                dialogTitle='Submit Evidence'
+                actionMethod='submitEvidence'
+                isOpened={isEvidenceDialogOpen}
+                handleClose={handleCloseEvidenceDialog}
+                directory={selectedDirectory}
+                noFunding
                 {...props}
             />
             {!orgDirectoriesFetched &&
@@ -679,7 +779,7 @@ const DirectoriesList = props => {
                             />
                             {directory.title}
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={2}>
                             <div className={classes.statusLabelWrapper}>
                                 <Typography className={classes.statusLabel + ' ' + directory.config.statusClass}>
                                     <img
@@ -690,19 +790,48 @@ const DirectoriesList = props => {
                                 </Typography>
                             </div>
                         </Grid>
-                        <Grid item xs={4} className={classes.actionsBlock}>
-                            {directory.config.actionIndicator &&
-                                <div className={classes.actionIndicator}>
-                                    <CircularProgress size='16px' />
-                                </div>
+                        <Grid item xs={4}>
+                            {[3, 4].includes(directory.status) &&
+                                directory.organization.challenges.map((ch, i) => (
+                                    <table key={i}>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <Button
+                                                        className={classes.actionButton}
+                                                        onClick={() => showEvidence(directory, i)}
+                                                    >
+                                                        Challenge from {strCenterEllipsis(ch.challenger.split('x')[1])} ({ch.resolved ? 'resolved' : 'not resolved'})
+                                                    </Button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                ))
                             }
-                            {(walletAddress && directory.config.action && !directory.config.actionIndicator) &&
-                                <Button
-                                    className={classes.actionButton}
-                                    onClick={() => directory.config.actionCallback(directory)}
-                                >
-                                    {directory.config.action}
-                                </Button>
+                        </Grid>
+                        <Grid item xs={4} className={classes.actionsBlock}>
+                            {walletAddress &&
+                                <Grid container direction='column'>
+                                    {directory.config.actions.map((action, i) => (
+                                        <div  key={i}>
+                                            <Grid item>
+                                                <Button
+                                                    disabled={action.actionIndicator}
+                                                    className={classes.actionButton}
+                                                    onClick={() => action.actionCallback(directory, action)}
+                                                >
+                                                    {action.action}
+                                                    {action.actionIndicator &&
+                                                        <div className={classes.actionIndicator}>
+                                                            <CircularProgress size='16px' />
+                                                        </div>
+                                                    }
+                                                </Button>
+                                            </Grid>
+                                        </div>
+                                    ))}
+                                </Grid>
                             }
                             {!walletAddress &&
                                 <Button
@@ -715,6 +844,13 @@ const DirectoriesList = props => {
                         </Grid>
                     </Grid>
                 ))
+            }
+            {error &&
+                <div className={classes.errorWrapper}>
+                    <Typography className={classes.errorMessage}>
+                        {error.message}
+                    </Typography>
+                </div>
             }
         </>
     );

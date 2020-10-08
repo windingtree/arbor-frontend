@@ -62,7 +62,7 @@ export const getBlock = async (web3, typeOrNumber) => {
   });
 
   do {
-    if (counter === 20) {
+    if (counter === 100) {
         counter = 0;
         throw new Error(
           `Unable to fetch block "${typeOrNumber}": retries limit has been reached`
@@ -70,9 +70,12 @@ export const getBlock = async (web3, typeOrNumber) => {
     }
 
     block = await blockRequest();
+    console.log('>>>', counter, block);
 
     if (!block) {
-        await setTimeoutPromise(1000 + 1000 * parseInt(counter / 3));
+        await setTimeoutPromise(parseInt(3000 + 1000 * counter / 5));
+    } else {
+      await setTimeoutPromise(2500);
     }
 
     counter++;
@@ -159,9 +162,11 @@ export const getEvidenceEvent = async (web3, dirAddress, arbitratorAddress, orgI
   const contract = getArbDirContract(web3, dirAddress);
   const filter = {
     _arbitrator: arbitratorAddress,
-    _evidenceGroupID: Web3.utils.soliditySha3(orgId, challengeNumber)
+    _evidenceGroupID: Web3.utils.toBN(Web3.utils.soliditySha3(orgId, challengeNumber)).toString()
   };
-  return contract.getPastEvents('Evidence', filter, {
-    fromBlock: 0
+  return contract.getPastEvents('Evidence', {
+    filter,
+    fromBlock: 0,
+    toBlock: 'latest'
   });
 };

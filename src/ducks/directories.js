@@ -6,7 +6,7 @@ import {
     getDirIndexContract,
     getLifTokenContract,
     getArbDirContract,
-    getBlock,
+    getBlock
 } from './utils/ethereum';
 import {
     selectWeb3,
@@ -407,7 +407,7 @@ const fetchRegistrationData = async (web3, orgId, dirId) => {
     const dir = getArbDirContract(web3, dirId);
     const orgData = await dir.methods.organizationData(orgId).call();
     let challenges;
-    if (Number(orgData.status) === 3) {
+    if ([3, 4].includes(Number(orgData.status))) {
         const numChallenges = await dir.methods.getNumberOfChallenges(orgId).call();
         challenges = await Promise.all(
             Array(Number(numChallenges))

@@ -1,3 +1,4 @@
+import Web3 from 'web3';
 import React, { useState, useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
 
@@ -26,6 +27,7 @@ import {
     getEvidenceEvent
 } from '../../../ducks/utils/ethereum';
 import { fetchJson } from '../../../redux/api';
+import { strCenterEllipsis } from '../../../utils/helpers';
 
 import { Container, Typography, Button, Grid, CircularProgress } from '@material-ui/core';
 import { Formik } from 'formik';
@@ -37,7 +39,7 @@ import colors from "../../../styles/colors";
 import DirRequestedIcon from '../../../assets/SvgComponents/dir-requested-icon.svg';
 import DirChallengedIcon from '../../../assets/SvgComponents/dir-challenged-icon.svg';
 import DirRegisteredIcon from '../../../assets/SvgComponents/dir-registered-icon.svg';
-import { ChallengeDialog } from './PublicDirectories';
+import { ChallengeDialog, serializeJson } from './PublicDirectories';
 
 const styles = makeStyles({
     container: {
@@ -74,7 +76,7 @@ const styles = makeStyles({
         padding: '20px 0'
     },
     dialogContent: {
-        width: '440px',
+        width: '600px',
         ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
             width: '100%'
         }
@@ -221,7 +223,11 @@ const styles = makeStyles({
         }
     },
     challengeDetailsWrapper: {
-        marginBottom: '10px'
+        fontSize: '14px',
+        fontWeight: 500,
+        marginBottom: '10px',
+        padding: '10px',
+        boxShadow: '0px 0px 20px rgba(189, 191, 203, 0.25), 0px 0px 2px rgba(188, 194, 211, 0.25)'
     },
     challengeDetailsLabel: {
         fontSize: '14px',
@@ -235,6 +241,23 @@ const styles = makeStyles({
         '& a, a:visited': {
             color: colors.primary.green
         }
+    },
+    disputeInfoWrapper: {
+        fontSize: '16px',
+        fontWeight: 500,
+        paddingTop: '20px',
+        paddingBottom: '40px',
+        '& p': {
+            marginBottom: '10px'
+        },
+        '& p:last-child': {
+            marginBottom: 0
+        }
+    },
+    disputeInfoLabel: {
+        fontSize: '18px',
+        fontWeight: 600,
+        color: colors.greyScale.darkest
     },
     errorWrapper: {
         marginTop: '10px'
@@ -585,33 +608,60 @@ const AddDirectoryDialog = props => {
     );
 };
 
-const ChallengeDetailsDialog = props => {
+export const ChallengeDetailsDialog = props => {
     const classes = styles();
     const {
         isOpened,
         handleClose,
-        evidenceURI
+        evidenceStor
     } = props;
     const [error, setError] = useState(null);
     const [isFetching, setIsFetching] = useState(false);
-    const [evidence, setEvidence] = useState(null);
+    const [evidenceList, setEvidenceList] = useState(null);
+
+    const validateFile = (uri, jsonData) => {
+        const hash = Web3.utils.soliditySha3(serializeJson(jsonData));
+        const fileName = uri.match(/([A-Fa-f0-9]{64})(\.json)$/);
+        if (!fileName || `0x${fileName[1]}` !== hash) {
+            throw new Error('Evidence file is not valid');
+        }
+    };
 
     useEffect(() => {
-        if (evidenceURI) {
+        const fetchFiles = async events => Promise.all(events.map(
+            ev => new Promise(
+                resolve => fetchJson(ev._evidence)
+                    .then(evidence => {
+                        console.log('%%%%', evidence);
+                        resolve({
+                            ...ev,
+                            evidence,
+                            validated: validateFile(ev._evidence, evidence, true)
+                        });
+                    })
+                    .catch(error => {
+                        resolve({
+                            ...ev,
+                            evidence: null,
+                            validated: false,
+                            error
+                        });
+                    })
+            )
+        ));
+        if (evidenceStor) {
             setIsFetching(true);
-            fetchJson(evidenceURI)
-                .then(evidence => {
-                    console.log('%%%%', evidence);
-                    setEvidence(evidence);
+            fetchFiles(evidenceStor.events)
+                .then(items => {
+                    setEvidenceList(items);
                     setIsFetching(false);
                 })
                 .catch(error => {
-                    console.log('!!!!!',error);
                     setError(error);
                     setIsFetching(false);
-                });
+                })
         }
-    }, [evidenceURI]);
+    }, [evidenceStor]);
 
     const onDialogClose = () => {
         handleClose();
@@ -625,7 +675,7 @@ const ChallengeDetailsDialog = props => {
                 <>
                     <div className={classes.dialogContent}>
                         <DialogTitle>
-                            Challenge Details
+                            Dispute Details
                         </DialogTitle>
                     </div>
                     {isFetching &&
@@ -633,36 +683,119 @@ const ChallengeDetailsDialog = props => {
                             <CircularProgress />
                         </DialogTitle>
                     }
-                    {(!isFetching && evidence) &&
+                    {(!isFetching && evidenceList) &&
                         <div>
-                            <div className={classes.challengeDetailsWrapper}>
-                                <Typography className={classes.challengeDetailsLabel}>
-                                    Name:
-                                </Typography>
-                                <Typography className={classes.challengeDetailsText}>
-                                    {evidence.name}
-                                </Typography>
-                            </div>
-                            <div className={classes.challengeDetailsWrapper}>
-                                <Typography className={classes.challengeDetailsLabel}>
-                                    Description:
-                                </Typography>
-                                <Typography className={classes.challengeDetailsText}>
-                                    {evidence.description}
-                                </Typography>
-                            </div>
-                            <div className={classes.challengeDetailsWrapper}>
-                                <Typography className={classes.challengeDetailsText}>
-                                    <a
-                                        alt={evidence.description}
-                                        href={evidence.fileURI}
-                                        target='_blank'
-                                        rel='noopener noreferrer'
+                            {(evidenceStor && evidenceStor.challenge) &&
+                                <div className={classes.disputeInfoWrapper}>
+                                    <p>
+                                        <Typography className={classes.disputeInfoLabel} variant='inherit'>Directory:</Typography> {evidenceStor.directory.title}
+                                    </p>
+                                    <p>
+                                        <Typography className={classes.disputeInfoLabel} variant='inherit'>Dispute #</Typography> {evidenceStor.challenge.disputeID}
+                                    </p>
+                                    <p>
+                                        <Typography className={classes.disputeInfoLabel} variant='inherit'>Dispute status:</Typography> {evidenceStor.challenge.resolved ? 'resolved' : 'not resolved'}
+                                    </p>
+                                    <p>
+                                        <Typography className={classes.disputeInfoLabel} variant='inherit'>Requester:</Typography> {evidenceStor.directory.organization.requester}
+                                    </p>
+                                    <p>
+                                        <Typography className={classes.disputeInfoLabel} variant='inherit'>Challenger:</Typography> {evidenceStor.challenge.challenger}
+                                    </p>
+                                    <p>
+                                        <Typography className={classes.disputeInfoLabel} variant='inherit'>Arbitrator:</Typography> {evidenceStor.challenge.arbitrator}
+                                    </p>
+                                    <p>
+                                        <Typography className={classes.disputeInfoLabel} variant='inherit'>Number of Rounds:</Typography> {evidenceStor.challenge.numberOfRounds}
+                                    </p>
+                                </div>
+                            }
+                            {evidenceList.map((ev, i) => (
+                                <div key={i} className={classes.challengeDetailsWrapper}>
+                                    <table
+                                        cellSpacing='10'
+                                        width='100%'
                                     >
-                                        Link to the evidence
-                                    </a>
-                                </Typography>
-                            </div>
+                                        <thead>
+                                            <tr>
+                                                <td width='20%'>
+                                                    <Typography className={classes.challengeDetailsLabel}>
+                                                        Evidence from:
+                                                    </Typography>
+                                                </td>
+                                                <td>
+                                                    <Typography className={classes.challengeDetailsText}>
+                                                        {ev._party}
+                                                    </Typography>
+                                                </td>
+                                            </tr>
+                                        </thead>
+                                        {ev.evidence &&
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <Typography className={classes.challengeDetailsLabel}>
+                                                            Name:
+                                                        </Typography>
+                                                    </td>
+                                                    <td>
+                                                        <Typography className={classes.challengeDetailsText}>
+                                                            {ev.evidence.name}
+                                                        </Typography>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <Typography className={classes.challengeDetailsLabel}>
+                                                            Description:
+                                                        </Typography>
+                                                    </td>
+                                                    <td>
+                                                        <Typography className={classes.challengeDetailsText}>
+                                                            {ev.evidence.description}
+                                                        </Typography>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colSpan='2'>
+                                                        <a
+                                                            alt={ev.evidence.description}
+                                                            href={ev.evidence.fileURI}
+                                                            target='_blank'
+                                                            rel='noopener noreferrer'
+                                                        >
+                                                            Link to the evidence
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        }
+                                        {(!ev.evidence && ev.error) &&
+                                            <tbody>
+                                                <tr>
+                                                    <td colSpan='2'>
+                                                        <a
+                                                            alt={''}
+                                                            href={ev._evidence}
+                                                            target='_blank'
+                                                            rel='noopener noreferrer'
+                                                        >
+                                                            Link to the evidence
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colSpan='2'>
+                                                        <Typography className={classes.errorMessage}>
+                                                            {ev.error.message}
+                                                        </Typography>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        }
+                                    </table>
+                                </div>
+                            ))}
                         </div>
                     }
                     {error &&
@@ -697,42 +830,44 @@ const DirectoriesList = props => {
         walletAddress
     } = props;
     const [error, setError] = useState(null);
+
     const [executeTimeoutSending, setExecuteTimeoutSending] = useState(false);
     const [withdrawTokensSending, setWithdrawTokensSending] = useState(false);
     const [makeWithdrawalRequestSending, setMakeWithdrawalRequestSending] = useState(false);
     const [acceptChallengeSending, setAcceptChallengeSending] = useState(false);
+    const [submitEvidenceSending, setSubmitEvidenceSending] = useState(false);
+
     const [challengeDetailsOpen, setChallengeDetailsOpen] = useState(false);
-    const [evidenceURI, setEvidenceURI] = useState(null);
+    const [evidenceStor, setEvidenceStor] = useState(null);
     const [selectedDirectory, setSelectedDirectory] = useState(null);
-    const [isAcceptDialogOpen, seIsAcceptDialogOpen] = useState(false);
+    const [isAcceptDialogOpen, setIsAcceptDialogOpen] = useState(false);
+    const [isEvidenceDialogOpen, setIsEvidenceDialogOpen] = useState(false);
 
     useEffect(() => {
-        if (evidenceURI) {
+        if (evidenceStor) {
             setChallengeDetailsOpen(true);
         } else {
             setChallengeDetailsOpen(false);
         }
-    }, [evidenceURI]);
-
-    useEffect(() => {
-        if (selectedDirectory) {
-            seIsAcceptDialogOpen(true);
-        } else {
-            seIsAcceptDialogOpen(false);
-        }
-    }, [selectedDirectory]);
+    }, [evidenceStor]);
 
     const handleCloseChallengeDetails = () => {
-        setEvidenceURI(null);
+        setEvidenceStor(null);
     };
 
     const handleCloseAcceptDialog = () => {
         setSelectedDirectory(null);
+        setIsAcceptDialogOpen(false);
     };
 
-    const executeTimeoutAction = useCallback(directory => {
+    const handleCloseEvidenceDialog = () => {
+        setSelectedDirectory(null);
+        setIsEvidenceDialogOpen(false);
+    };
+
+    const executeTimeoutAction = useCallback((directory, action) => {
         setError(null);
-        directory.config.actionIndicatorCallback(true);
+        action.actionIndicatorCallback(true);
         sendMethod(
             web3,
             walletAddress,
@@ -744,17 +879,17 @@ const DirectoriesList = props => {
             ]
         )
             .then(() => {
-                directory.config.actionIndicatorCallback(false);
+                action.actionIndicatorCallback(false);
             })
             .catch(error => {
                 setError(error);
-                directory.config.actionIndicatorCallback(false);
+                action.actionIndicatorCallback(false);
             });
     }, [web3, walletAddress, organizationItem]);
 
-    const makeWithdrawalRequestAction = useCallback(directory => {
+    const makeWithdrawalRequestAction = useCallback((directory, action) => {
         setError(null);
-        directory.config.actionIndicatorCallback(true);
+        action.actionIndicatorCallback(true);
         sendMethod(
             web3,
             walletAddress,
@@ -766,17 +901,17 @@ const DirectoriesList = props => {
             ]
         )
             .then(() => {
-                directory.config.actionIndicatorCallback(false);
+                action.actionIndicatorCallback(false);
             })
             .catch(error => {
                 setError(error);
-                directory.config.actionIndicatorCallback(false);
+                action.actionIndicatorCallback(false);
             });
     }, [web3, walletAddress, organizationItem]);
 
-    const withdrawTokensAction = useCallback(directory => {
+    const withdrawTokensAction = useCallback((directory, action) => {
         setError(null);
-        directory.config.actionIndicatorCallback(true);
+        action.actionIndicatorCallback(true);
         sendMethod(
             web3,
             walletAddress,
@@ -788,95 +923,165 @@ const DirectoriesList = props => {
             ]
         )
             .then(() => {
-                directory.config.actionIndicatorCallback(false);
+                action.actionIndicatorCallback(false);
             })
             .catch(error => {
                 setError(error);
-                directory.config.actionIndicatorCallback(false);
+                action.actionIndicatorCallback(false);
             });
     }, [web3, walletAddress, organizationItem]);
 
-    const acceptChallengeAction = useCallback((directory, challengeNumber, fetchDetails) => {
-        console.log('Accept Challenge', directory);
-        if (fetchDetails === 'details') {
-            return getEvidenceEvent(
-                web3,
-                directory.address,
-                directory.organization.challenges[challengeNumber].arbitrator,
-                directory.organization.ID,
-                challengeNumber + 1
-            )
-                .then(events => {
-                    console.log('Evidence', events[0].returnValues._evidence);
-                    setEvidenceURI(events[0].returnValues._evidence);
-                })
-                .catch(setError);
-        }
-
+    const acceptChallengeAction = useCallback(directory => {
+        console.log('Directory', directory);
         setSelectedDirectory(directory);
-    }, [web3]);
+        setIsAcceptDialogOpen(true)
+    }, []);
+
+    const submitEvidenceAction = useCallback(directory => {
+        console.log('Directory', directory);
+        setSelectedDirectory(directory);
+        setIsEvidenceDialogOpen(true)
+    }, []);
+
+    const showEvidence = (directory, challengeNumber) => {
+        console.log('Directory', directory);
+        getEvidenceEvent(
+            web3,
+            directory.address,
+            directory.organization.challenges[challengeNumber].arbitrator,
+            directory.organization.ID,
+            challengeNumber + 1
+        )
+            .then(events => {
+                console.log('Evidence', events);
+                setEvidenceStor({
+                    directory,
+                    challenge: directory.organization.challenges[challengeNumber],
+                    events: events.map(ev => ev.returnValues)
+                });
+            })
+            .catch(setError);
+    };
+
+    /**
+    Available Actions by the organization status:
+
+    *[CH] Chow only for challenger
+
+    RegistrationRequested:
+        challengeOrganization [CH]
+        executeTimeout                  executionTimeout >= now
+        makeWithdrawalRequest           owner, director
+
+    WithdrawalRequested:
+        challengeOrganization [CH]
+        executeTimeout                  executionTimeout >= time
+        withdrawTokens                  withdrawTimeout >= now
+
+    Challenged:
+        acceptChallenge                 responseTimeout <= now
+        withdrawFeesAndRewards [CH]     challenge.resolved <- in the context of the challenge
+
+    Disputed
+        submitEvidence                  !challenge.resolved
+        fundAppeal                      appealPeriodStart < now < appealPeriodEnd  <- in the context of the challenge
+        withdrawFeesAndRewards          challenge.resolved <- in the context of the challenge
+
+    Registered
+        challengeOrganization [CH]
+        makeWithdrawalRequest           owner, director
+
+    */
 
     const parseDirectories = directories => directories
         .map((d, index) => {
             const config = [
-                // The organization is not registered and doesn't have an open request.
                 {
                     status: 'Not Registered',
                     statusClass: '',
                     icon: '',
-                    action: 'Register',
-                    actionIndicator: false,
-                    actionIndicatorCallback: () => {},
-                    actionCallback: () => {}
+                    actions: []
                 },
                 // The organization has an open request.
                 {
                     status: 'Registration Requested',
                     statusClass: 'requested',
                     icon: DirRequestedIcon,
-                    action: 'Execute Timeout',
-                    actionIndicator: executeTimeoutSending,
-                    actionIndicatorCallback: setExecuteTimeoutSending,
-                    actionCallback: executeTimeoutAction
+                    actions: [
+                        {
+                            action: 'Execute Timeout',
+                            actionIndicator: executeTimeoutSending,
+                            actionIndicatorCallback: setExecuteTimeoutSending,
+                            actionCallback: executeTimeoutAction
+                        },
+                        {
+                            action: 'Request Tokens Withdrawal',
+                            actionIndicator: makeWithdrawalRequestSending,
+                            actionIndicatorCallback: setMakeWithdrawalRequestSending,
+                            actionCallback: makeWithdrawalRequestAction
+                        }
+                    ]
                 },
                 // The organization made a withdrawal request.
                 {
                     status: 'Withdrawal Requested',
                     statusClass: 'withdrawal-requested',
                     icon: DirChallengedIcon,
-                    action: 'Withdraw Tokens',
-                    actionIndicator: withdrawTokensSending,
-                    actionIndicatorCallback: setWithdrawTokensSending,
-                    actionCallback: withdrawTokensAction
+                    actions: [
+                        {
+                            action: 'Execute Timeout',
+                            actionIndicator: executeTimeoutSending,
+                            actionIndicatorCallback: setExecuteTimeoutSending,
+                            actionCallback: executeTimeoutAction
+                        },
+                        {
+                            action: 'Withdraw Tokens',
+                            actionIndicator: withdrawTokensSending,
+                            actionIndicatorCallback: setWithdrawTokensSending,
+                            actionCallback: withdrawTokensAction
+                        }
+                    ]
                 },
                 // The organization has been challenged.
                 {
                     status: 'Challenged',
                     statusClass: 'challenged',
                     icon: DirChallengedIcon,
-                    action: 'Accept Challenge',
-                    actionIndicator: acceptChallengeSending,
-                    actionIndicatorCallback: setAcceptChallengeSending,
-                    actionCallback: acceptChallengeAction
+                    actions: [
+                        {
+                            action: 'Accept Challenge',
+                            actionIndicator: acceptChallengeSending,
+                            actionIndicatorCallback: setAcceptChallengeSending,
+                            actionCallback: acceptChallengeAction
+                        }
+                    ]
                 },
                 // The challenge has been disputed.
                 {
                     status: 'Disputed',
                     statusClass: 'disputed',
                     icon: DirChallengedIcon,
-                    action: '',
-                    actionIndicator: false,
-                    actionIndicatorCallback: () => {},
-                    actionCallback: () => {}
+                    actions: [
+                        {
+                            action: 'Submit Evidence',
+                            actionIndicator: submitEvidenceSending,
+                            actionIndicatorCallback: setSubmitEvidenceSending,
+                            actionCallback: submitEvidenceAction
+                        }
+                    ]
                 },
                 {
                     status: 'Registered',
                     statusClass: 'registered',
                     icon: DirRegisteredIcon,
-                    action: 'Request Tokens Withdrawal',
-                    actionIndicator: makeWithdrawalRequestSending,
-                    actionIndicatorCallback: setMakeWithdrawalRequestSending,
-                    actionCallback: makeWithdrawalRequestAction
+                    actions: [
+                        {
+                            action: 'Request Tokens Withdrawal',
+                            actionIndicator: makeWithdrawalRequestSending,
+                            actionIndicatorCallback: setMakeWithdrawalRequestSending,
+                            actionCallback: makeWithdrawalRequestAction
+                        }
+                    ]
                 }
             ];
 
@@ -900,7 +1105,7 @@ const DirectoriesList = props => {
         <>
             <ChallengeDetailsDialog
                 isOpened={challengeDetailsOpen}
-                evidenceURI={evidenceURI}
+                evidenceStor={evidenceStor}
                 handleClose={handleCloseChallengeDetails}
             />
             <ChallengeDialog
@@ -909,6 +1114,15 @@ const DirectoriesList = props => {
                 isOpened={isAcceptDialogOpen}
                 handleClose={handleCloseAcceptDialog}
                 directory={selectedDirectory}
+                {...props}
+            />
+            <ChallengeDialog
+                dialogTitle='Submit Evidence'
+                actionMethod='submitEvidence'
+                isOpened={isEvidenceDialogOpen}
+                handleClose={handleCloseEvidenceDialog}
+                directory={selectedDirectory}
+                noFunding
                 {...props}
             />
             {!orgDirectoriesFetched &&
@@ -947,7 +1161,7 @@ const DirectoriesList = props => {
                         />
                         {directory.title}
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={2}>
                         <div className={classes.statusLabelWrapper}>
                             <Typography className={classes.statusLabel + ' ' + directory.config.statusClass}>
                                 <img
@@ -958,21 +1172,8 @@ const DirectoriesList = props => {
                             </Typography>
                         </div>
                     </Grid>
-                    <Grid item xs={4} className={classes.actionsBlock}>
-                        {directory.config.actionIndicator &&
-                            <div className={classes.actionIndicator}>
-                                <CircularProgress size='16px' />
-                            </div>
-                        }
-                        {(directory.status !== 3 && directory.config.action && !directory.config.actionIndicator) &&
-                            <Button
-                                className={classes.actionButton}
-                                onClick={() => directory.config.actionCallback(directory)}
-                            >
-                                {directory.config.action}
-                            </Button>
-                        }
-                        {(directory.status === 3 && directory.config.action && !directory.config.actionIndicator) &&
+                    <Grid item xs={4}>
+                        {[3, 4].includes(directory.status) &&
                             directory.organization.challenges.map((ch, i) => (
                                 <table key={i}>
                                     <tbody>
@@ -980,17 +1181,9 @@ const DirectoriesList = props => {
                                             <td>
                                                 <Button
                                                     className={classes.actionButton}
-                                                    onClick={() => directory.config.actionCallback(directory, i, 'details')}
+                                                    onClick={() => showEvidence(directory, i)}
                                                 >
-                                                    Details
-                                                </Button>
-                                            </td>
-                                            <td>
-                                                <Button
-                                                    className={classes.actionButton}
-                                                    onClick={() => directory.config.actionCallback(directory, i)}
-                                                >
-                                                    {directory.config.action} {directory.organization.challenges.length > 1 ? i+1 : ''}
+                                                    Challenge from {strCenterEllipsis(ch.challenger.split('x')[1])} ({ch.resolved ? 'resolved' : 'not resolved'})
                                                 </Button>
                                             </td>
                                         </tr>
@@ -998,6 +1191,28 @@ const DirectoriesList = props => {
                                 </table>
                             ))
                         }
+                    </Grid>
+                    <Grid item xs={4} className={classes.actionsBlock}>
+                        <Grid container direction='column'>
+                            {directory.config.actions.map((action, i) => (
+                                <div  key={i}>
+                                    <Grid item>
+                                        <Button
+                                            disabled={action.actionIndicator}
+                                            className={classes.actionButton}
+                                            onClick={() => action.actionCallback(directory, action)}
+                                        >
+                                            {action.action}
+                                            {action.actionIndicator &&
+                                                <div className={classes.actionIndicator}>
+                                                    <CircularProgress size='16px' />
+                                                </div>
+                                            }
+                                        </Button>
+                                    </Grid>
+                                </div>
+                            ))}
+                        </Grid>
                     </Grid>
                 </Grid>
             ))}

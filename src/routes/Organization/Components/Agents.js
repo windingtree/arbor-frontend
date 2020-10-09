@@ -286,10 +286,10 @@ function Agents(props) {
                             errors[key] = 'Unable to validate the key. Please choose key type';
                             break;
                           }
-                          if (values['type'] === 'ETH' && !value.match(/^0x[a-fA-F0-9]{40}$/)) {
-                            errors[key] = `Wrong key format: "${values['type']}"`;
-                            break;
-                          }
+                          // if (values['type'] === 'ETH' && !value.match(/^0x[a-fA-F0-9]{40}$/)) {
+                          //   errors[key] = `Wrong key format: "${values['type']}"`;
+                          //   break;
+                          // }
                           if (values['type'] === 'X25519' && !value.match(/^M[a-zA-Z0-9/]+=$/)) {
                             errors[key] = `Wrong key format: "${values['type']}"`;
                             break;
@@ -350,7 +350,7 @@ function Agents(props) {
                         label={'Key type'}
                         fullWidth
                         required
-                        options={['X25519','secp256k1','ETH']}
+                        options={['X25519','secp256k1']}
                         values={values.type}
                         handleChange={handleChange}
                         handleBlur={handleBlur}

@@ -79,3 +79,32 @@ export const ApiGetGasPrice = async web3 => {
   );
   return web3.utils.toWei(Math.ceil(parseInt(sum / transactions.length)).toString(), 'gwei');
 }
+
+// get balance in units
+export const getBalance = async (web3, address, toBN = true) => {
+  const balance = await web3.eth.getBalance(address);
+  return toBN
+    ? web3.utils.toBN(balance)
+    : balance;
+};
+
+// sign transaction
+export const signTransaction = async (web3, from, gasLimit, method, args) => {
+  const contract = await getOrgidContract(web3);
+  const tx = {
+    from,
+    to: contract.options.address,
+    gas: gasLimit,
+    value: 0,
+    data: contract.methods[method]
+    .apply(contract, args)
+    .encodeABI()
+  };
+  console.log(JSON.stringify(tx));
+
+  return web3.eth.signTransaction(tx, from);
+};
+
+export const sendSignedTransaction = async (web3, from, rawTransaction) => {
+  return web3.eth.sendSignedTransaction(rawTransaction, from);
+};

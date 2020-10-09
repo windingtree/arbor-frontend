@@ -427,10 +427,21 @@ function Info(props) {
     })
   });
 
+  const sanitizeLink = link => {
+    console.log('>>>>>>>', link, '======', link
+    .replace(/(https|http[:]{0,1})(\/\/)/, '')
+    .replace(/^[\/]{1,}/, '')
+    .replace(/\/$/, ''));
+    return link
+    .replace(/(https|http[:]{0,1})(\/\/)/, '')
+    .replace(/^[\/]{1,}/, '')
+    .replace(/\/$/, '');
+  }
+
   //check if website valid
   const website = () => {
-    let reg = /^((https?|ftp|smtp):\/\/)?(www.)?[a-z0-9]+\.[a-z]+(\/[a-zA-Z0-9#]+\/?)*$/;
-    return reg.test(contacts.website) ? contacts.website : `http://${contacts.website}`
+    // let reg = /^((https?|ftp|smtp):\/\/)?(www.)?[a-z0-9]+\.[a-z]+(\/[a-zA-Z0-9#]+\/?)*$/;
+    return `https://${sanitizeLink(contacts.website)}`
   };
 
   const icon = (socialNetwork) => {
@@ -573,7 +584,7 @@ function Info(props) {
             {
               socials.map((social, index) => {
                 return (
-                  <a key={index.toString()} href={"https://" + social.link} target={'_blank'} className={classes.socialLink} rel="noopener noreferrer">
+                  <a key={index.toString()} href={sanitizeLink(social.link)} target={'_blank'} className={classes.socialLink} rel="noopener noreferrer">
                     <Hidden xsDown>
                       {icon(social.network)}
                     </Hidden>

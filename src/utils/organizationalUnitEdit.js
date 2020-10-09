@@ -207,7 +207,11 @@ export const config = [
               type: 'input',
               icon: 'facebook',
               orgidJsonPath: 'organizationalUnit.contacts[0].facebook',
-              validate: value => {},
+              validate: value => {
+                if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+                  return 'Wrong URL';
+                }
+              },
               // trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'facebook'}).get('[0]', false).value()
             },
             {
@@ -215,7 +219,11 @@ export const config = [
               type: 'input',
               icon: 'twitter',
               orgidJsonPath: 'organizationalUnit.contacts[0].twitter',
-              validate: value => {},
+              validate: value => {
+                if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+                  return 'Wrong URL';
+                }
+              },
               // trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'twitter'}).get('[0]', false).value()
             },
             {
@@ -223,7 +231,11 @@ export const config = [
               type: 'input',
               icon: 'instagram',
               orgidJsonPath: 'organizationalUnit.contacts[0].instagram',
-              validate: value => {},
+              validate: value => {
+                if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+                  return 'Wrong URL';
+                }
+              },
               // trust: (o)=> _.chain(o).get('trust.assertions', []).filter({'type': 'instagram'}).get('[0]', false).value()
             },
           ]

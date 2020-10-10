@@ -130,13 +130,21 @@ export const sendSignedTransaction = async (web3, from, rawTransaction) => {
 // Send transaction to contract
 export const sendMethod = async (web3, from, contractAddress, contractBuilder, method, methodArgs, value, gasPrice) => {
   const contract = contractBuilder(web3, contractAddress);
-  const gas = await contract
+  let gas;
+  try {
+    gas = await contract
       .methods[method]
       .apply(contract, methodArgs)
       .estimateGas({
           from,
           ...(value ? { value } : {})
       });
+  } catch (error) {
+    if (error.message.match(/gas required exceeds allowance/)) {
+      throw new Error('This action method is currently not accessible by the contract conditions');
+    }
+    throw error;
+  }
   gasPrice = gasPrice ? gasPrice : await ApiGetGasPrice(web3);
   return new Promise((resolve, reject) => {
       contract

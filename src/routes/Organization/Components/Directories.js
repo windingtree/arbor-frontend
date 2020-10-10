@@ -1,6 +1,7 @@
 import Web3 from 'web3';
 import React, { useState, useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
+import history from '../../../redux/history';
 
 import {
     setDirectory,
@@ -611,6 +612,9 @@ const AddDirectoryDialog = props => {
 export const ChallengeDetailsDialog = props => {
     const classes = styles();
     const {
+        web3,
+        walletAddress,
+        organizationItem,
         isOpened,
         handleClose,
         evidenceStor
@@ -618,6 +622,7 @@ export const ChallengeDetailsDialog = props => {
     const [error, setError] = useState(null);
     const [isFetching, setIsFetching] = useState(false);
     const [evidenceList, setEvidenceList] = useState(null);
+    const [withdrawFeesAndRewardsSending, setWithdrawFeesAndRewardsSending] = useState(false);
 
     const validateFile = (uri, jsonData) => {
         const hash = Web3.utils.soliditySha3(serializeJson(jsonData));
@@ -666,6 +671,34 @@ export const ChallengeDetailsDialog = props => {
     const onDialogClose = () => {
         handleClose();
     };
+
+    const withdrawFeesAndRewardsAction = useCallback(
+        (directory, challengeId, roundId) => {
+            setError(null);
+            setWithdrawFeesAndRewardsSending(true);
+            sendMethod(
+                web3,
+                walletAddress,
+                directory.address,
+                getArbDirContract,
+                'withdrawFeesAndRewards',
+                [
+                    walletAddress, //beneficiary,
+                    organizationItem.orgid,
+                    challengeId,
+                    roundId
+                ]
+            )
+                .then(() => {
+                    setWithdrawFeesAndRewardsSending(false);
+                })
+                .catch(error => {
+                    setError(error);
+                    setWithdrawFeesAndRewardsSending(false);
+                });
+        },
+        [web3, walletAddress, organizationItem]
+    );
 
     return (
         <DialogComponent
@@ -806,12 +839,56 @@ export const ChallengeDetailsDialog = props => {
                         </div>
                     }
                     <div className={classes.dialogButtonWrapper}>
-                        <Button
-                            className={classes.dialogButton}
-                            onClick={handleClose}
+                        <Grid
+                            container
+                            direction='row'
+                            justify='space-between'
                         >
-                            Close
-                        </Button>
+                            <Grid item>
+                                <Button
+                                    className={classes.dialogButton}
+                                    onClick={handleClose}
+                                >
+                                    Close
+                                </Button>
+                            </Grid>
+                            <Grid item>
+                                {!walletAddress &&
+                                    <Grid container direction='column'>
+                                        <Grid item>
+                                            <Button
+                                                className={classes.dialogButtonRed}
+                                                onClick={() => history.push('/authorization/signin', { follow: history.location.pathname })}
+                                            >
+                                                Sign Up to see available actions
+                                            </Button>
+                                        </Grid>
+                                    </Grid>
+                                }
+                                {walletAddress &&
+                                    <Grid container direction='column'>
+                                        <Grid item>
+                                            <Button
+                                                className={classes.dialogButton}
+                                                disabled={!walletAddress || withdrawFeesAndRewardsSending}
+                                                onClick={() => withdrawFeesAndRewardsAction(
+                                                    evidenceStor.directory,
+                                                    evidenceStor.challenge.challengeID,
+                                                    Number(evidenceStor.challenge.numberOfRounds) - 1
+                                                )}
+                                            >
+                                                Withdraw Fees And Rewards
+                                                {withdrawFeesAndRewardsSending &&
+                                                    <div className={classes.actionIndicator}>
+                                                        <CircularProgress size='16px' />
+                                                    </div>
+                                                }
+                                            </Button>
+                                        </Grid>
+                                    </Grid>
+                                }
+                            </Grid>
+                        </Grid>
                     </div>
                 </>
             )}
@@ -943,20 +1020,23 @@ const DirectoriesList = props => {
         setIsEvidenceDialogOpen(true)
     }, []);
 
-    const showEvidence = (directory, challengeNumber) => {
+    const showEvidence = (directory, challengeID) => {
         console.log('Directory', directory);
         getEvidenceEvent(
             web3,
             directory.address,
-            directory.organization.challenges[challengeNumber].arbitrator,
+            directory.organization.challenges[challengeID].arbitrator,
             directory.organization.ID,
-            challengeNumber + 1
+            challengeID + 1
         )
             .then(events => {
                 console.log('Evidence', events);
                 setEvidenceStor({
                     directory,
-                    challenge: directory.organization.challenges[challengeNumber],
+                    challenge: {
+                        challengeID,
+                        ...directory.organization.challenges[challengeID]
+                    },
                     events: events.map(ev => ev.returnValues)
                 });
             })
@@ -980,6 +1060,7 @@ const DirectoriesList = props => {
 
     Challenged:
         acceptChallenge                 responseTimeout <= now
+        executeTimeout                  executionTimeout >= now
         withdrawFeesAndRewards [CH]     challenge.resolved <- in the context of the challenge
 
     Disputed
@@ -1053,6 +1134,12 @@ const DirectoriesList = props => {
                             actionIndicator: acceptChallengeSending,
                             actionIndicatorCallback: setAcceptChallengeSending,
                             actionCallback: acceptChallengeAction
+                        },
+                        {
+                            action: 'Execute Timeout',
+                            actionIndicator: executeTimeoutSending,
+                            actionIndicatorCallback: setExecuteTimeoutSending,
+                            actionCallback: executeTimeoutAction
                         }
                     ]
                 },
@@ -1107,6 +1194,7 @@ const DirectoriesList = props => {
                 isOpened={challengeDetailsOpen}
                 evidenceStor={evidenceStor}
                 handleClose={handleCloseChallengeDetails}
+                {...props}
             />
             <ChallengeDialog
                 dialogTitle='Accept Challenge'

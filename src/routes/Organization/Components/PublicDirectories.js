@@ -552,12 +552,19 @@ const DirectoriesList = props => {
     const [challengeStarting, setChallengeStarting] = useState(false);
     const [submitEvidenceSending, setSubmitEvidenceSending] = useState(false);
 
-    const [parsedDirectories, setParsedDirectories] = useState([]);
     const [selectedDirectory, setSelectedDirectory] = useState(null);
     const [evidenceStor, setEvidenceStor] = useState(null);
     const [isDialogOpen, setDialogOpen] = useState(false);
-    const [challengeDetailsOpen, setChallengeDetailsOpen] = useState(false);
+    const [isChallengeDetailsOpen, setIsChallengeDetailsOpen] = useState(false);
     const [isEvidenceDialogOpen, setIsEvidenceDialogOpen] = useState(false);
+
+    useEffect(() => {
+        if (evidenceStor) {
+            setIsChallengeDetailsOpen(true);
+        } else {
+            setIsChallengeDetailsOpen(false);
+        }
+    }, [evidenceStor]);
 
     const challengeTheRegistration = useCallback(directory => {
         console.log('Selected directory:', directory);
@@ -576,7 +583,16 @@ const DirectoriesList = props => {
         setSelectedDirectory(null);
     }
 
-    const parseDirectories = useCallback((directories, directoriesDetails) => directories
+    const handleCloseChallengeDetails = () => {
+        setEvidenceStor(null);
+    };
+
+    const handleCloseEvidenceDialog = () => {
+        setSelectedDirectory(null);
+        setIsEvidenceDialogOpen(false);
+    };
+
+    const parseDirectories = directories => directories
         .map((d, index) => {
             const config = [
                 // The organization is not registered and doesn't have an open request.
@@ -671,47 +687,25 @@ const DirectoriesList = props => {
                 config: config[statusNum]
             };
         })
-        .filter(d => d !== null), [challengeStarting, challengeTheRegistration]);
+        .filter(d => d !== null);
 
-    useEffect(() => {
-        if (evidenceStor) {
-            setChallengeDetailsOpen(true);
-        } else {
-            setChallengeDetailsOpen(false);
-        }
-    }, [evidenceStor]);
-
-    useEffect(() => {
-        if (orgDirectoriesFetched) {
-            setParsedDirectories(
-                parseDirectories(orgDirectories, directoriesDetails)
-            );
-        }
-    }, [orgDirectoriesFetched, orgDirectories, directoriesDetails, parseDirectories]);
-
-    const handleCloseChallengeDetails = () => {
-        setEvidenceStor(null);
-    };
-
-    const handleCloseEvidenceDialog = () => {
-        setSelectedDirectory(null);
-        setIsEvidenceDialogOpen(false);
-    };
-
-    const showEvidence = (directory, challengeNumber) => {
+    const showEvidence = (directory, challengeID) => {
         console.log('Directory', directory);
         getEvidenceEvent(
             web3,
             directory.address,
-            directory.organization.challenges[challengeNumber].arbitrator,
+            directory.organization.challenges[challengeID].arbitrator,
             directory.organization.ID,
-            challengeNumber + 1
+            challengeID + 1
         )
             .then(events => {
                 console.log('Evidence', events);
                 setEvidenceStor({
                     directory,
-                    challenge: directory.organization.challenges[challengeNumber],
+                    challenge: {
+                        challengeID,
+                        ...directory.organization.challenges[challengeID]
+                    },
                     events: events.map(ev => ev.returnValues)
                 });
             })
@@ -721,9 +715,10 @@ const DirectoriesList = props => {
     return (
         <>
             <ChallengeDetailsDialog
-                isOpened={challengeDetailsOpen}
+                isOpened={isChallengeDetailsOpen}
                 evidenceStor={evidenceStor}
                 handleClose={handleCloseChallengeDetails}
+                {...props}
             />
             <ChallengeDialog
                 dialogTitle='Challenge the Registration'
@@ -760,8 +755,7 @@ const DirectoriesList = props => {
                     </Grid>
                 </Grid>
             }
-            {(orgDirectoriesFetched && parsedDirectories.length > 0) &&
-                parsedDirectories.map((directory, i) => (
+            {orgDirectoriesFetched && parseDirectories(orgDirectories).map((directory, i) => (
                     <Grid
                         container
                         direction='row'
@@ -843,8 +837,7 @@ const DirectoriesList = props => {
                             }
                         </Grid>
                     </Grid>
-                ))
-            }
+            ))}
             {error &&
                 <div className={classes.errorWrapper}>
                     <Typography className={classes.errorMessage}>

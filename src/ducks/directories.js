@@ -374,13 +374,13 @@ const fetchDirectoriesDetails = async (web3, ids = []) => Promise.all(
             return {
                 address: id,
                 segment,
-                entities,
+                entities: Number(entities),
                 numberOfChallenges,
-                numberOfRequests,
+                numberOfRequests: Number(numberOfRequests),
                 requesterDepositRaw,
-                requesterDeposit: web3.utils.fromWei(requesterDepositRaw, 'ether'),
+                requesterDeposit: Number(web3.utils.fromWei(requesterDepositRaw, 'ether')),
                 challengeDepositRaw,
-                challengeDeposit: web3.utils.fromWei(challengeDepositRaw, 'ether'),
+                challengeDeposit: Number(web3.utils.fromWei(challengeDepositRaw, 'ether')),
                 responseTimeout
             };
         }

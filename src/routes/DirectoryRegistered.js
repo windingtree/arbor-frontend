@@ -69,13 +69,10 @@ const styles = makeStyles({
     }
 });
 
-const fetchRequests = async (web3, directoryId) => {
+const fetchRegistered = async (web3, directoryId) => {
     const dir = getArbDirContract(web3, directoryId);
-    const total = Number(await dir.methods.getRequestedOrganizationsCount(0, 0).call());
-    let organizations = [];
-    if (total > 0) {
-        organizations = await dir.methods.getRequestedOrganizations(0, 0).call();
-    }
+    const organizations = await dir.methods.getOrganizations(0, 0).call();
+    const total = organizations.length;
     return {
         total,
         organizations
@@ -86,7 +83,7 @@ const fetchOrganizations = async (organizationsIds) => {
     return Promise.all(organizationsIds.map(orgId => api(`orgids/${orgId}`)));
 };
 
-const RegistrationRequests = props => {
+const DirectoryRegistered = props => {
     const classes = styles();
     const {
         web3,
@@ -103,10 +100,10 @@ const RegistrationRequests = props => {
         setError(null);
         const getOrganizations = async () => {
             setIsLoading(true);
-            const requests = await fetchRequests(web3, directoryId);
-            const organizations = await fetchOrganizations(requests.organizations);
+            const registered = await fetchRegistered(web3, directoryId);
+            const organizations = await fetchOrganizations(registered.organizations);
             console.log(organizations);
-            setOrganizationsTotal(requests.total);
+            setOrganizationsTotal(registered.total);
             setDirectoryDetails(directories.filter(d => d.address === directoryId)[0]);
             setOrganizations(organizations.map(org => org.data));
             setIsLoading(false);
@@ -135,7 +132,7 @@ const RegistrationRequests = props => {
                 <div className={classes.pageHeader}>
                     <div>
                         <Typography variant={'h2'} className={classes.pageTitle}>
-                            Registration Requests {directoryDetails ? `at ${directoryDetails.title}` : ''}
+                            Registered {directoryDetails ? `at ${directoryDetails.title}` : ''}
                         </Typography>
                     </div>
                 </div>
@@ -175,4 +172,4 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {};
 
-export default connect(mapStateToProps, mapDispatchToProps)(RegistrationRequests);
+export default connect(mapStateToProps, mapDispatchToProps)(DirectoryRegistered);

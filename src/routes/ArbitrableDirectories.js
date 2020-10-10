@@ -158,13 +158,13 @@ const DirectoryCard = props => {
 
         switch (type) {
             case 'entities':
-                alert('Not implemented yet!');
+                history.push(`/directories/registered/${directoryAddress}`, {follow: `/directories/registered/${directoryAddress}`});
                 break;
             case 'requests':
                 history.push(`/directories/requests/${directoryAddress}`, {follow: `/directories/requests/${directoryAddress}`});
                 break;
             case 'disputes':
-                alert('Not implemented yet!');
+                history.push(`/directories/disputes/${directoryAddress}`, {follow: `/directories/disputes/${directoryAddress}`});
                 break;
             default:
         }
@@ -340,11 +340,11 @@ const Directories = props => {
                     action={'Propose a new directory'}
                     onClick={() => window.open('https://forms.gle/GsVZYqPXJMbdkerF8', '_blank')}
                 />
-                <ActionBlock
+                {/* <ActionBlock
                     title={'All registrations requests'}
                     action={'Browse requests'}
                     onClick={() => console.log('Not implemented yet')}
-                />
+                /> */}
             </div>
         </Container>
     );

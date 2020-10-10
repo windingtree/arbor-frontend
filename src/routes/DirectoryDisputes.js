@@ -69,16 +69,27 @@ const styles = makeStyles({
     }
 });
 
-const fetchRequests = async (web3, directoryId) => {
+const fetchDisputes = async (web3, directoryId) => {
     const dir = getArbDirContract(web3, directoryId);
-    const total = Number(await dir.methods.getRequestedOrganizationsCount(0, 0).call());
-    let organizations = [];
-    if (total > 0) {
-        organizations = await dir.methods.getRequestedOrganizations(0, 0).call();
-    }
+    const requestedOrganizations = await dir.methods.getRequestedOrganizations(0, 0).call();
+    const registeredOrganizations = await dir.methods.getOrganizations(0, 0).call();
+    const organizations = [...registeredOrganizations, ...requestedOrganizations];
+    const challenges = await Promise.all(
+        organizations
+            .map(orgId => dir.methods.getNumberOfChallenges(orgId).call())
+    );
+    const disputedOrganizations = challenges
+        .map((count, index) => ({
+            orgId: organizations[index],
+            challengesNumber: Number(count)
+        }))
+        .filter(org => org.challengesNumber > 0)
+        .map(org => org.orgId);
+
+    const total = disputedOrganizations.length;
     return {
         total,
-        organizations
+        organizations: disputedOrganizations
     };
 };
 
@@ -86,7 +97,7 @@ const fetchOrganizations = async (organizationsIds) => {
     return Promise.all(organizationsIds.map(orgId => api(`orgids/${orgId}`)));
 };
 
-const RegistrationRequests = props => {
+const DirectoryDisputes = props => {
     const classes = styles();
     const {
         web3,
@@ -103,10 +114,10 @@ const RegistrationRequests = props => {
         setError(null);
         const getOrganizations = async () => {
             setIsLoading(true);
-            const requests = await fetchRequests(web3, directoryId);
-            const organizations = await fetchOrganizations(requests.organizations);
+            const disputed = await fetchDisputes(web3, directoryId);
+            const organizations = await fetchOrganizations(disputed.organizations);
             console.log(organizations);
-            setOrganizationsTotal(requests.total);
+            setOrganizationsTotal(disputed.total);
             setDirectoryDetails(directories.filter(d => d.address === directoryId)[0]);
             setOrganizations(organizations.map(org => org.data));
             setIsLoading(false);
@@ -135,7 +146,7 @@ const RegistrationRequests = props => {
                 <div className={classes.pageHeader}>
                     <div>
                         <Typography variant={'h2'} className={classes.pageTitle}>
-                            Registration Requests {directoryDetails ? `at ${directoryDetails.title}` : ''}
+                            Disputes {directoryDetails ? `at ${directoryDetails.title}` : ''}
                         </Typography>
                     </div>
                 </div>
@@ -175,4 +186,4 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {};
 
-export default connect(mapStateToProps, mapDispatchToProps)(RegistrationRequests);
+export default connect(mapStateToProps, mapDispatchToProps)(DirectoryDisputes);

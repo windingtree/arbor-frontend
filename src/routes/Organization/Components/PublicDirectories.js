@@ -1,7 +1,5 @@
-import Web3 from 'web3';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { connect } from 'react-redux';
-import { useDropzone } from 'react-dropzone';
 import history from '../../../redux/history';
 
 import { selectWeb3, selectSignInAddress } from '../../../ducks/signIn';
@@ -15,27 +13,18 @@ import {
     indexError,
     pollingError
 } from '../../../ducks/directories';
-import { api } from '../../../redux/api';
-import {
-    ApiGetGasPrice,
-    getArbDirContract,
-    sendMethod,
-    getEvidenceEvent
-} from '../../../ducks/utils/ethereum';
 import { strCenterEllipsis } from '../../../utils/helpers';
 
-import { Container, Typography, Button, Grid, CircularProgress, TextField } from '@material-ui/core';
-import { Formik } from 'formik';
+import { Container, Typography, Button, Grid, CircularProgress } from '@material-ui/core';
 
-import DialogComponent from '../../../components/Dialog';
-import { ChallengeDetailsDialog } from './Directories';
+import ChallengeDetailsDialog from './ChallengeDetailsDialog';
+import EvidenceDialog from  './EvidenceDialog';
 
 import { makeStyles } from "@material-ui/core/styles";
 import colors from "../../../styles/colors";
 import DirRequestedIcon from '../../../assets/SvgComponents/dir-requested-icon.svg';
 import DirChallengedIcon from '../../../assets/SvgComponents/dir-challenged-icon.svg';
 import DirRegisteredIcon from '../../../assets/SvgComponents/dir-registered-icon.svg';
-import InfoIcon from '../../../assets/SvgComponents/InfoIcon';
 
 const styles = makeStyles({
     container: {
@@ -211,371 +200,29 @@ const styles = makeStyles({
     }
 });
 
-const saveMediaToArbor = async data => {
-    const {
-      address,
-      id,
-      file,
-      text
-    } = data;
-
-    const body = new FormData();
-
-    if (file) {
-        body.append('media', file, `${await getHash(file)}.json`);
-    } else if (text) {
-        body.append(
-            'media',
-            new Blob([text], { type: 'application/json' }),
-            `${await getHash(text)}.json`
-        );
-    } else {
-        throw new Error('Nor file not text has been provided');
-    }
-
-    body.append('address', address);
-    body.append('id', id);
-
-    return api(`media`, 'POST', {
-        body
-    });
-}
-
-export const serializeJson = jsonData => JSON.stringify(jsonData, null, 2);
-
-// Generate hash for string or file
-export const getHash = file => new Promise((resolve, reject) => {
-    if (!file) {
-        throw new Error('File not found');
-    }
-    if (typeof file === 'string') {
-        return resolve(Web3.utils.soliditySha3(file));
-    }
-    const reader = new FileReader();
-    reader.readAsText(file, 'UTF-8');
-    reader.onload = evt => resolve(Web3.utils.soliditySha3(evt.target.result));
-    reader.onerror = () => reject(new Error('Unable to read file'));
-});
-
-const buildEvidenceJson = data => {
-    const {
-        fileURI,
-        fileHash,
-        name,
-        description,
-        address,
-        id
-    } = data;
-
-    const evidence = {
-        fileURI,
-        fileHash,
-        fileTypeExtension: 'json',
-        name,
-        description
-    };
-
-    return saveMediaToArbor({
-        address,
-        id,
-        text: serializeJson(evidence)
-    })
-};
-
-const DialogTitle = props => {
-    const classes = styles();
-    const {
-        noMargin,
-        children
-    } = props;
-
-    return (
-        <div className={classes.dialogTitleWrapper + (noMargin ? ' noMargin' : '')}>
-            <Typography variant={'inherit'}>
-                {children}
-            </Typography>
-        </div>
-    );
-};
-
-export const ChallengeDialog = props => {
-    const classes = styles();
-    const {
-        dialogTitle,
-        actionMethod,
-        web3,
-        isOpened,
-        handleClose,
-        directory,
-        ethBalance,
-        walletAddress,
-        organizationItem,
-        noFunding
-    } = props;
-    const [error, setError] = useState(null);
-    const [isBalanceOk, setIsBalanceOk] = useState(true);
-    const [fileName, setFileName] = useState(null);
-    const [fileHash, setFileHash] = useState('');
-    const [fileURI, setFileUri] = useState('');
-    const [challengeSending, setChallengeSending] = useState(false);
-
-    useEffect(() => {
-        if (directory) {
-            setIsBalanceOk(Number(ethBalance) >= Number(directory.challengeDeposit));
-        }
-    }, [directory, ethBalance]);
-
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({
-        accept: 'application/json',
-        multiple: false,
-        onDrop: async acceptedFiles => {
-            try {
-                window['file_0'] = acceptedFiles[0];
-                if (!acceptedFiles[0]) {
-                    throw new Error('Unable to get the file');
-                }
-                const file = acceptedFiles[0];
-                setFileName(file.name);
-                const fileHash = await getHash(file);
-                setFileHash(fileHash);
-                const { data } = await saveMediaToArbor({
-                    address: walletAddress,
-                    id: organizationItem.orgid,
-                    file: acceptedFiles[0]
-                });
-                setFileUri(data.uri);
-            } catch (error) {
-                setError(error);
-            }
-        }
-    });
-
-    const onDialogClose = () => {
-        setError(null);
-        handleClose();
-    };
-
-    const sendChallengeOrganization = async (values) => {
-        try {
-            setChallengeSending(true);
-            const { data } = await buildEvidenceJson({
-                ...values,
-                ...{
-                    id: organizationItem.orgid,
-                    address: walletAddress
-                }
-            });
-            const methodGas = '259527';
-            const gasPrice = await ApiGetGasPrice(web3);
-            const refinedValue = web3.utils.toBN(directory.challengeDepositRaw)
-                .add(
-                    web3.utils.toBN(methodGas)
-                        .mul(web3.utils.toBN(gasPrice))
-                )
-                .toString();
-            await sendMethod(
-                web3,
-                walletAddress,
-                directory.address,
-                getArbDirContract,
-                actionMethod,
-                [
-                    organizationItem.orgid,
-                    data.uri
-                ],
-                noFunding ? undefined : refinedValue,
-                gasPrice
-            );
-            setChallengeSending(false);
-            handleClose();
-        } catch (error) {
-            setError(error);
-            setChallengeSending(false);
-        }
-    };
-
-    return (
-        <DialogComponent
-            isOpen={isOpened}
-            handleClose={onDialogClose}
-            children={(
-                <div className={classes.dialogContent}>
-                    {directory &&
-                        <>
-                            <DialogTitle>
-                                {dialogTitle}
-                            </DialogTitle>
-                            {!noFunding &&
-                                <div className={classes.depositNote + (isBalanceOk ? '' : ' insufficient')}>
-                                    <Typography className={classes.depositNoteSubtitle}>
-                                        Required deposit
-                                    </Typography>
-                                    <Typography className={classes.depositNoteTitle}>
-                                        {directory.challengeDeposit} ETH
-                                    </Typography>
-                                </div>
-                            }
-                            <Formik
-                                initialValues={{
-                                    name: '',
-                                    description: ''
-                                }}
-                                validate={values => {
-                                    const errors = {};
-                                    return errors;
-                                }}
-                                onSubmit={(values, { setSubmitting }) => {
-                                    console.log('@@@', values, { fileURI, fileHash });
-                                    sendChallengeOrganization({
-                                        ...values,
-                                        ...{ fileURI, fileHash }
-                                    })
-                                        .finally(() => setSubmitting(false));
-                                }}
-                            >
-                                {({
-                                    values,
-                                    errors,
-                                    touched,
-                                    handleChange,
-                                    handleBlur,
-                                    handleSubmit,
-                                    isSubmitting
-                                }) => (
-                                    <form onSubmit={handleSubmit}>
-                                        <div className={classes.inputFieldWrapper}>
-                                            <TextField
-                                                name={'name'}
-                                                autoComplete={'none'}
-                                                variant={'filled'}
-                                                label={'Evidence Title'}
-                                                fullWidth
-                                                required
-                                                error={errors.name && touched.name}
-                                                value={values.name}
-                                                onChange={handleChange}
-                                                onBlur={handleBlur}
-                                                helperText={errors.name && touched.name ? errors.name : null}
-                                            />
-                                        </div>
-                                        <div className={classes.inputFieldWrapper}>
-                                            <TextField
-                                                name={'description'}
-                                                autoComplete={'none'}
-                                                variant={'filled'}
-                                                label={'Evidence Text'}
-                                                required
-                                                fullWidth
-                                                multiline
-                                                rows={4}
-                                                rowsMax={6}
-                                                error={errors.description && touched.description}
-                                                value={values.description}
-                                                onChange={handleChange}
-                                                onBlur={handleBlur}
-                                                helperText={errors.description && touched.description ? errors.description : null}
-                                            />
-                                        </div>
-                                        <div>
-                                            <Typography className={classes.inputLabel}>
-                                                Link to the evidence
-                                            </Typography>
-                                            <Typography className={classes.inputSubLabel}>
-                                                Provide a link to a JSON file, containing all the necessary evidence.
-                                            </Typography>
-                                        </div>
-                                        <div className={classes.inputFieldWrapper}>
-                                            <div {...getRootProps()} className={classes.dropZone}>
-                                                <input {...getInputProps()} />
-                                                {
-                                                    isDragActive
-                                                        ? <Typography>Drop the file here...</Typography>
-                                                        : <Typography>
-                                                            {fileName ? fileName : 'evidence.json'}
-                                                        </Typography>
-                                                }
-                                            </div>
-                                        </div>
-                                        <div className={classes.inputFieldWrapper}>
-                                            <Grid container direction='row' wrap='nowrap' justify='flex-start'>
-                                                <Grid item>
-                                                    <InfoIcon size='14px' stroke='white' fill='#8F999F' />
-                                                </Grid>
-                                                <Grid item>
-                                                    <Typography className={classes.inputSubLabel}>
-                                                        Note that both sides need to deposit the fees to start the dispute. In case the other side doesn’t deposit it in {directory.responseTimeout} sec you win.
-                                                    </Typography>
-                                                </Grid>
-                                            </Grid>
-                                        </div>
-                                        {error &&
-                                            <div className={classes.inputFieldWrapper}>
-                                                <Typography className={classes.errorMessage}>
-                                                    {error.message}
-                                                </Typography>
-                                            </div>
-                                        }
-                                        <div className={classes.dialogButtonWrapper}>
-                                            <Button
-                                                className={classes.dialogButton}
-                                                type={'submit'}
-                                                disabled={(!noFunding && !isBalanceOk) || isSubmitting}
-                                            >
-                                                {dialogTitle}
-                                                {challengeSending &&
-                                                    <CircularProgress className={classes.inButtonProgress} size='26px' color='secondary' />
-                                                }
-                                            </Button>
-                                        </div>
-                                    </form>
-                                )}
-                            </Formik>
-                        </>
-                    }
-                </div>
-            )}
-        />
-    );
-};
-
 const DirectoriesList = props => {
     const classes = styles();
     const {
-        web3,
+        indexError,
+        pollingError,
         directories: directoriesDetails,
         orgDirectories,
         orgDirectoriesFetched,
         walletAddress
     } = props;
-    const [error, setError] = useState(null);
 
     const [challengeStarting, setChallengeStarting] = useState(false);
-    const [submitEvidenceSending, setSubmitEvidenceSending] = useState(false);
 
+    const [challengeDetailsOpen, setChallengeDetailsOpen] = useState(false);
+    const [selectedChallengeID, setSelectedChallengeID] = useState(null);
     const [selectedDirectory, setSelectedDirectory] = useState(null);
-    const [evidenceStor, setEvidenceStor] = useState(null);
-    const [isDialogOpen, setDialogOpen] = useState(false);
-    const [isChallengeDetailsOpen, setIsChallengeDetailsOpen] = useState(false);
-    const [isEvidenceDialogOpen, setIsEvidenceDialogOpen] = useState(false);
 
-    useEffect(() => {
-        if (evidenceStor) {
-            setIsChallengeDetailsOpen(true);
-        } else {
-            setIsChallengeDetailsOpen(false);
-        }
-    }, [evidenceStor]);
+    const [isDialogOpen, setDialogOpen] = useState(false);
 
     const challengeTheRegistration = useCallback(directory => {
         console.log('Selected directory:', directory);
         setSelectedDirectory(directory);
         setDialogOpen(true);
-    }, []);
-
-    const submitEvidenceAction = useCallback(directory => {
-        console.log('Directory', directory);
-        setSelectedDirectory(directory);
-        setIsEvidenceDialogOpen(true)
     }, []);
 
     const toggleChallengeDialog = () => {
@@ -584,12 +231,9 @@ const DirectoriesList = props => {
     }
 
     const handleCloseChallengeDetails = () => {
-        setEvidenceStor(null);
-    };
-
-    const handleCloseEvidenceDialog = () => {
+        setChallengeDetailsOpen(false);
+        setSelectedChallengeID(null);
         setSelectedDirectory(null);
-        setIsEvidenceDialogOpen(false);
     };
 
     const parseDirectories = directories => directories
@@ -635,28 +279,14 @@ const DirectoriesList = props => {
                     status: 'Challenged',
                     statusClass: 'challenged',
                     icon: DirChallengedIcon,
-                    actions: [
-                        {
-                            action: 'Submit Evidence',
-                            actionIndicator: submitEvidenceSending,
-                            actionIndicatorCallback: setSubmitEvidenceSending,
-                            actionCallback: submitEvidenceAction
-                        }
-                    ]
+                    actions: []
                 },
                 // The challenge has been disputed.
                 {
                     status: 'Disputed',
                     statusClass: 'disputed',
                     icon: DirChallengedIcon,
-                    actions: [
-                        {
-                            action: 'Submit Evidence',
-                            actionIndicator: submitEvidenceSending,
-                            actionIndicatorCallback: setSubmitEvidenceSending,
-                            actionCallback: submitEvidenceAction
-                        }
-                    ]
+                    actions: []
                 },
                 {
                     status: 'Registered',
@@ -689,52 +319,27 @@ const DirectoriesList = props => {
         })
         .filter(d => d !== null);
 
-    const showEvidence = (directory, challengeID) => {
-        console.log('Directory', directory);
-        getEvidenceEvent(
-            web3,
-            directory.address,
-            directory.organization.challenges[challengeID].arbitrator,
-            directory.organization.ID,
-            challengeID + 1
-        )
-            .then(events => {
-                console.log('Evidence', events);
-                setEvidenceStor({
-                    directory,
-                    challenge: {
-                        challengeID,
-                        ...directory.organization.challenges[challengeID]
-                    },
-                    events: events.map(ev => ev.returnValues)
-                });
-            })
-            .catch(setError);
+    const showChallengeDialog = (directory, challengeID) => {
+        setSelectedDirectory(directory);
+        setSelectedChallengeID(challengeID);
+        setChallengeDetailsOpen(true);
     };
 
     return (
         <>
             <ChallengeDetailsDialog
-                isOpened={isChallengeDetailsOpen}
-                evidenceStor={evidenceStor}
+                isOpened={challengeDetailsOpen}
+                directory={selectedDirectory}
+                challengeID={selectedChallengeID}
                 handleClose={handleCloseChallengeDetails}
                 {...props}
             />
-            <ChallengeDialog
+            <EvidenceDialog
                 dialogTitle='Challenge the Registration'
                 actionMethod='challengeOrganization'
                 isOpened={isDialogOpen}
                 handleClose={toggleChallengeDialog}
                 directory={selectedDirectory}
-                {...props}
-            />
-            <ChallengeDialog
-                dialogTitle='Submit Evidence'
-                actionMethod='submitEvidence'
-                isOpened={isEvidenceDialogOpen}
-                handleClose={handleCloseEvidenceDialog}
-                directory={selectedDirectory}
-                noFunding
                 {...props}
             />
             {!orgDirectoriesFetched &&
@@ -793,7 +398,7 @@ const DirectoriesList = props => {
                                                 <td>
                                                     <Button
                                                         className={classes.actionButton}
-                                                        onClick={() => showEvidence(directory, i)}
+                                                        onClick={() => showChallengeDialog(directory, i)}
                                                     >
                                                         Challenge from {strCenterEllipsis(ch.challenger.split('x')[1])} ({ch.resolved ? 'resolved' : 'not resolved'})
                                                     </Button>
@@ -838,10 +443,17 @@ const DirectoriesList = props => {
                         </Grid>
                     </Grid>
             ))}
-            {error &&
+            {indexError &&
                 <div className={classes.errorWrapper}>
                     <Typography className={classes.errorMessage}>
-                        {error.message}
+                        {indexError.message}
+                    </Typography>
+                </div>
+            }
+            {pollingError &&
+                <div className={classes.errorWrapper}>
+                    <Typography className={classes.errorMessage}>
+                        {pollingError.message}
                     </Typography>
                 </div>
             }

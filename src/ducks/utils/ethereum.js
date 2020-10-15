@@ -6,9 +6,14 @@ import {
   LIF_TOKEN_PROXY_ADDRESS,
   DIR_INDEX_ABI,
   DIRECTORIES_INDEX_ADDRESS,
+  ARBITRATOR_ADDRESS,
   ARB_DIR_ABI,
-  DIR_ABI
+  DIR_ABI,
+  ARBITRATOR_ABI,
+
 } from '../../utils/constants';
+
+const toBN = value => Web3.utils.toBN(value);
 
 const setTimeoutPromise = timeout => new Promise(resolve => setTimeout(resolve, timeout));
 
@@ -36,6 +41,9 @@ export const getArbDirContract = (web3, address) => new web3.eth.Contract(ARB_DI
 
 // Get ArbitrableDirectory contract
 export const getDirContract = (web3, address) => new web3.eth.Contract(DIR_ABI, address);
+
+// Get EnhancedAppealableArbitrator contract
+export const getArbitratorContract = web3 => new web3.eth.Contract(ARBITRATOR_ABI, ARBITRATOR_ADDRESS);
 
 // Get block
 export const getBlock = async (web3, typeOrNumber) => {
@@ -141,7 +149,7 @@ export const sendMethod = async (web3, from, contractAddress, contractBuilder, m
       });
   } catch (error) {
     if (error.message.match(/gas required exceeds allowance/)) {
-      throw new Error('This action method is currently not accessible by the contract conditions');
+      throw new Error('This action method is currently not accessible by the contract conditions or your balance not enough to send a transaction');
     }
     throw error;
   }
@@ -177,4 +185,113 @@ export const getEvidenceEvent = async (web3, dirAddress, arbitratorAddress, orgI
     fromBlock: 0,
     toBlock: 'latest'
   });
+};
+
+// Return challenge info
+export const getChallengeInfo = async (web3, dirAddress, orgId, challengeID) => {
+  const contract = getArbDirContract(web3, dirAddress);
+  return contract.methods.getChallengeInfo(orgId, challengeID).call();
+};
+
+// Return current Round Info
+export const getRoundInfo = async (web3, dirAddress, orgid, challengeID, round) => {
+  const contract = getArbDirContract(web3, dirAddress);
+  return contract.methods.getRoundInfo(orgid, challengeID, round).call();
+};
+
+// Return multiplier divisor
+export const getMultiplierDivisor = async (web3, dirAddress) => {
+  const contract = getArbDirContract(web3, dirAddress);
+  return await contract.methods.MULTIPLIER_DIVISOR().call();
+};
+
+// Return current ruling
+export const getCurrentRuling = async (web3, disputeID) => {
+  const contract = getArbitratorContract(web3);
+  return contract.methods.currentRuling(disputeID).call();
+};
+
+// Return current ruling
+export const appealPeriod = async (web3, disputeID) => {
+  const contract = getArbitratorContract(web3);
+  return contract.methods.appealPeriod(disputeID).call();
+};
+
+// Return disputeStatus ruling
+export const disputeStatus = async (web3, disputeID) => {
+  const contract = getArbitratorContract(web3);
+  return contract.methods.disputeStatus(disputeID).call();
+};
+
+// Return appealable dispute info
+export const appealDisputes = async (web3, disputeID) => {
+  const contract = getArbitratorContract(web3);
+  return contract.methods.appealDisputes(disputeID).call();
+};
+
+// Return arbitrator timeOut
+export const arbitratorTimeOut = async web3 => {
+  const contract = getArbitratorContract(web3);
+  return contract.methods.timeOut().call();
+};
+
+// Calculate appeal cost
+export const calculateAppealCost = async (web3, walletAddress, dirAddress, orgId, party, challengeID, challenge) => {
+  const dir = getArbDirContract(web3, dirAddress);
+  const arb = getArbitratorContract(web3);
+  const winner = await getCurrentRuling(web3, challenge.disputeID);
+  let loser;
+  if (winner === '1') {
+    loser = '2';
+  } else if (winner === '2') {
+    loser = '1';
+  }
+  let multiplier;
+  if (String(party) === winner) {
+    multiplier = 'winnerStakeMultiplier';
+  } else if (String(party) === loser) {
+    multiplier = 'sharedStakeMultiplier';
+  } else {
+    multiplier = 'sharedStakeMultiplier';
+  }
+  const MULTIPLIER_DIVISOR = toBN(await dir.methods.MULTIPLIER_DIVISOR().call());
+  const multiplierValue = toBN(await dir.methods[multiplier]().call());
+  const appealCost = toBN(await arb.methods.appealCost(challenge.disputeID, challenge.arbitratorExtraData).call());
+  const round = await dir.methods.getRoundInfo(orgId, challengeID, Number(challenge.numberOfRounds) - 1).call();
+  let totalCost = appealCost
+    .add(
+      appealCost
+        .mul(multiplierValue)
+        .div(MULTIPLIER_DIVISOR)
+    )
+    .sub(toBN(round.paidFees[party]));
+  const gas = '152114'; // pre calculated gas for the fundAppeal method
+  // try {
+  //   gas = await dir
+  //     .methods['fundAppeal']
+  //     .apply(dir, [
+  //       orgId,
+  //       party
+  //     ])
+  //     .estimateGas({
+  //         from: walletAddress,
+  //         value: totalCost.mul(toBN(2))
+  //     });
+  // } catch (error) {
+  //   if (error.message.match(/gas required exceeds allowance/)) {
+  //     throw new Error('This action method is currently not accessible by the contract conditions or your balance not enough to send a transaction');
+  //   }
+  //   throw error;
+  // }
+  const gasPrice = await ApiGetGasPrice(web3);
+  const gasCost = toBN(gas).mul(toBN(gasPrice));
+  totalCost = totalCost
+    .add(gasCost)
+    .toString();
+  return {
+    multiplier: MULTIPLIER_DIVISOR.toString(),
+    totalCost: totalCost.toString(),
+    gasCost: gasCost.toString(),
+    gasPrice
+  };
 };

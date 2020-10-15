@@ -1,7 +1,9 @@
 import { createSelector } from 'reselect';
 import { all, takeEvery, takeLatest, call, put, select, delay, fork, take, cancel } from 'redux-saga/effects';
 import { eventChannel, END } from 'redux-saga';
-import { appName } from '../utils/constants';
+import {
+    appName
+} from '../utils/constants';
 import {
     getDirIndexContract,
     getLifTokenContract,
@@ -360,11 +362,13 @@ const fetchDirectoriesDetails = async (web3, ids = []) => Promise.all(
             const requesterDepositRaw = await dir.methods.requesterDeposit().call();
             const challengeDepositRaw = await dir.methods.challengeBaseDeposit().call();
             const responseTimeout = await dir.methods.responseTimeout().call();
+            const executionTimeout = await dir.methods.executionTimeout().call();
+            const withdrawTimeout = await dir.methods.withdrawTimeout().call();
             const reqOrganizations = await dir.methods.getRequestedOrganizations(0, 0).call();
             const organizations = await dir.methods.getOrganizations(0, 0).call();
             const challenges = await Promise.all(
                 [...organizations, ...reqOrganizations]
-                    .map(orgId => dir.methods.getNumberOfChallenges(orgId).call())
+                    .map(orgId => dir.methods.getNumberOfDisputes(orgId).call())
             );
             const numberOfChallenges = challenges.reduce(
                 (a,v) => Number(a) + Number(v),
@@ -381,7 +385,9 @@ const fetchDirectoriesDetails = async (web3, ids = []) => Promise.all(
                 requesterDeposit: Number(web3.utils.fromWei(requesterDepositRaw, 'ether')),
                 challengeDepositRaw,
                 challengeDeposit: Number(web3.utils.fromWei(challengeDepositRaw, 'ether')),
-                responseTimeout
+                responseTimeout,
+                executionTimeout,
+                withdrawTimeout
             };
         }
     )
@@ -407,7 +413,7 @@ const fetchRegistrationData = async (web3, orgId, dirId) => {
     const dir = getArbDirContract(web3, dirId);
     const orgData = await dir.methods.organizationData(orgId).call();
     let challenges;
-    if ([3, 4].includes(Number(orgData.status))) {
+    if ([3, 4, 5].includes(Number(orgData.status))) {
         const numChallenges = await dir.methods.getNumberOfChallenges(orgId).call();
         challenges = await Promise.all(
             Array(Number(numChallenges))

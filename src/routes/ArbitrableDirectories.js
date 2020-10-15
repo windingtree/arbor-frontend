@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import history from '../redux/history';
 
@@ -8,11 +8,14 @@ import colors from '../styles/colors';
 import CardsGridList from '../components/CardsGridList';
 
 import {
-    fetchDirectories,
-    isIndexFetching,
-    isIndexFetched,
+    indexRequest,
+    statsRequest,
     indexError,
-    directories
+    statsError,
+    isIndexFetching,
+    isStatsFetching,
+    directories,
+    stats
 } from '../ducks/directories';
 
 const styles = makeStyles({
@@ -148,10 +151,18 @@ const DirectoryCard = props => {
         title,
         address,
         icon,
-        entities,
-        numberOfChallenges,
-        numberOfRequests
+        index,
+        isStatsFetching,
+        stats,
     } = props;
+
+    const [statsData, setStatsData] = useState({});
+
+    useEffect(() => {
+        if (stats.length > 0) {
+            setStatsData(stats[index]);
+        }
+    }, [stats, index]);
 
     const handleDirectoryOptionClick = (e, directoryAddress, type) => {
         e.preventDefault();
@@ -206,33 +217,44 @@ const DirectoryCard = props => {
                         alignItems='flex-start'
                         alignContent='stretch'
                     >
-                        <Grid item>
-                            <Typography
-                                onClick={e => handleDirectoryOptionClick(e, address, 'entities')}
-                                className={classes.directoryInfoLabel}
-                            >
-                                {entities}&nbsp;
-                                Entities
-                            </Typography>
-                        </Grid>
-                        <Grid item>
-                            <Typography
-                                onClick={e => handleDirectoryOptionClick(e, address, 'requests')}
-                                className={classes.directoryInfoLabel}
-                            >
-                                {numberOfRequests}&nbsp;
-                                Registration Requests
-                            </Typography>
-                        </Grid>
-                        <Grid item>
-                            <Typography
-                                onClick={e => handleDirectoryOptionClick(e, address, 'disputes')}
-                                className={classes.directoryInfoLabel}
-                            >
-                                {numberOfChallenges}&nbsp;
-                                Ongoing Disputes
-                            </Typography>
-                        </Grid>
+                        {isStatsFetching &&
+                            <Grid item>
+                                <CircularProgress
+                                    size='24px'
+                                />
+                            </Grid>
+                        }
+                        {!isStatsFetching &&
+                            <>
+                                <Grid item>
+                                    <Typography
+                                        onClick={e => handleDirectoryOptionClick(e, address, 'entities')}
+                                        className={classes.directoryInfoLabel}
+                                    >
+                                        {statsData.entities}&nbsp;
+                                        Entities
+                                    </Typography>
+                                </Grid>
+                                <Grid item>
+                                    <Typography
+                                        onClick={e => handleDirectoryOptionClick(e, address, 'requests')}
+                                        className={classes.directoryInfoLabel}
+                                    >
+                                        {statsData.numberOfRequests}&nbsp;
+                                        Registration Requests
+                                    </Typography>
+                                </Grid>
+                                <Grid item>
+                                    <Typography
+                                        onClick={e => handleDirectoryOptionClick(e, address, 'disputes')}
+                                        className={classes.directoryInfoLabel}
+                                    >
+                                        {statsData.numberOfChallenges}&nbsp;
+                                        Ongoing Disputes
+                                    </Typography>
+                                </Grid>
+                            </>
+                        }
                     </Grid>
                 </CardContent>
             </Button>
@@ -285,10 +307,11 @@ const ActionBlock = props => {
 const Directories = props => {
     const classes = styles();
     const {
-        fetchDirectories,
-        isFetching,
-        isFetched,
-        error,
+        indexRequest,
+        statsRequest,
+        isIndexFetching,
+        indexError,
+        statsError,
         directories
     } = props;
 
@@ -301,7 +324,7 @@ const Directories = props => {
             <div className={classes.content}>
                 <div>
                     <Typography
-                        onClick={fetchDirectories}
+                        onClick={indexRequest}
                         variant={'h1'}
                         className={classes.title}
                     >
@@ -309,7 +332,7 @@ const Directories = props => {
                     </Typography>
                 </div>
                 <div className={classes.cardsContainer}>
-                    {isFetching &&
+                    {isIndexFetching &&
                         <div className={classes.progressWrapper}>
                             <CircularProgress
                                 className={classes.cardsLoader}
@@ -317,21 +340,33 @@ const Directories = props => {
                             />
                         </div>
                     }
-                    {isFetched &&
+                    {!isIndexFetching &&
                         <CardsGridList spacing={2} justify={'space-between'} alignItems={'flex-start'}>
                             {directories.map((item, i) => (
                                 <Grid item lg={3} sm={6} xs={12} key={i}>
-                                    <DirectoryCard {...item} />
+                                    <DirectoryCard
+                                        {...item}
+                                        {...props}
+                                        index={i}
+                                    />
                                 </Grid>
                             ))}
                         </CardsGridList>
                     }
-                    {error &&
+                    {indexError &&
                         <ActionBlock
                             isError
-                            title={error.message}
+                            title={indexError.message}
                             action={'Reload directories'}
-                            onClick={fetchDirectories}
+                            onClick={indexRequest}
+                        />
+                    }
+                    {statsError &&
+                        <ActionBlock
+                            isError
+                            title={statsError.message}
+                            action={'Reload directories statistic'}
+                            onClick={statsRequest}
                         />
                     }
                 </div>
@@ -351,14 +386,17 @@ const Directories = props => {
 };
 
 const mapStateToProps = state => ({
-    isFetching: isIndexFetching(state),
-    isFetched: isIndexFetched(state),
-    error: indexError(state),
-    directories: directories(state)
+    isIndexFetching: isIndexFetching(state),
+    isStatsFetching: isStatsFetching(state),
+    indexError: indexError(state),
+    statsError: statsError(state),
+    directories: directories(state),
+    stats: stats(state)
 });
 
 const mapDispatchToProps = {
-    fetchDirectories
+    indexRequest,
+    statsRequest
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Directories);

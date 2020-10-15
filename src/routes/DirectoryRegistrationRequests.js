@@ -105,7 +105,6 @@ const RegistrationRequests = props => {
             setIsLoading(true);
             const requests = await fetchRequests(web3, directoryId);
             const organizations = await fetchOrganizations(requests.organizations);
-            console.log(organizations);
             setOrganizationsTotal(requests.total);
             setDirectoryDetails(directories.filter(d => d.address === directoryId)[0]);
             setOrganizations(organizations.map(org => org.data));

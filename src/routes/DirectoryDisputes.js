@@ -116,7 +116,6 @@ const DirectoryDisputes = props => {
             setIsLoading(true);
             const disputed = await fetchDisputes(web3, directoryId);
             const organizations = await fetchOrganizations(disputed.organizations);
-            console.log(organizations);
             setOrganizationsTotal(disputed.total);
             setDirectoryDetails(directories.filter(d => d.address === directoryId)[0]);
             setOrganizations(organizations.map(org => org.data));

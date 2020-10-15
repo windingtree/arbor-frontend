@@ -5,17 +5,15 @@ import {
     appName
 } from '../utils/constants';
 import {
-    getDirIndexContract,
-    getLifTokenContract,
-    getArbDirContract,
-    getBlock
-} from './utils/ethereum';
-import {
     selectWeb3,
     selectSignInAddress,
     SET_DEFAULT_WEB3,
     FETCH_SIGN_IN_SUCCESS
 } from './signIn';
+import {
+    getDirIndexContract,
+    getArbDirContract
+} from './utils/ethereum';
 import { getSegmentMeta } from '../utils/directories';
 
 /**
@@ -24,9 +22,18 @@ import { getSegmentMeta } from '../utils/directories';
 export const moduleName = 'directories';
 const prefix = `${appName}/${moduleName}`;
 
+const DIR_INDEX_FAILURE = `${prefix}/DIR_INDEX_FAILURE`;
 const DIR_INDEX_REQUEST = `${prefix}/DIR_INDEX_REQUEST`;
 const DIR_INDEX_SUCCESS = `${prefix}/DIR_INDEX_SUCCESS`;
-const DIR_INDEX_FAILURE = `${prefix}/DIR_INDEX_FAILURE`;
+
+const DIR_STATS_FAILURE = `${prefix}/DIR_STATS_FAILURE`;
+const DIR_STATS_REQUEST = `${prefix}/DIR_STATS_REQUEST`;
+const DIR_STATS_SUCCESS = `${prefix}/DIR_STATS_SUCCESS`;
+
+
+// =================================
+
+
 
 const POLLING_START = `${prefix}/POLLING_START`;
 const POLLING_START_SUCCESS = `${prefix}/POLLING_START_SUCCESS`;
@@ -45,23 +52,13 @@ const ORG_DIRECTORIES_SET = `${prefix}/ORG_DIRECTORIES_SET`;
 const DIR_RESET_STATE = `${prefix}/DIR_RESET_STATE`;
 
 const initialState = {
-    isIndexFetching: false,
-    isIndexFetched: false,
-    isPolling: false,
-    isOrgDirectoriesFetched: false,
-    isOrgRequestedStatusFetched: false,
-
-    directories: [],
-    orgId: null,
-    orgDirectories: [],
-    directoryId: '',
-    lifBalance: '0',
-    lifAllowance: '0',
-    ethBalance: '0',
-    orgRequested: false,
-
     indexError: null,
-    pollingError: null
+    indexFetching: false,
+    directories: [],
+
+    statsError: null,
+    statsFetching: false,
+    stats: []
 };
 
 /**
@@ -72,85 +69,42 @@ export default (state = initialState, action) => {
 
     switch (type) {
         case DIR_INDEX_REQUEST:
-            return Object.assign({}, state, {
-                isIndexFetching: true,
-                indexError: null
-            });
+            return {
+                ...state,
+                indexFetching: true
+            };
         case DIR_INDEX_SUCCESS:
-            return Object.assign({}, state, {
-                isIndexFetching: false,
-                isIndexFetched: true,
-                indexError: null,
+            return {
+                ...state,
+                indexFetching: false,
                 directories: payload.directories.map(dir => getSegmentMeta(dir))
-            });
+            };
+
+        case DIR_STATS_REQUEST:
+            return {
+                ...state,
+                statsFetching: true
+            };
+        case DIR_STATS_SUCCESS:
+            return {
+                ...state,
+                statsFetching: false,
+                stats: payload.stats
+            };
+
+        // Errors
         case DIR_INDEX_FAILURE:
-            return Object.assign({}, state, {
-                isIndexFetching: false,
+            return {
+                ...state,
+                indexFetching: false,
                 indexError: error
-            });
-
-        case POLLING_START:
-            return Object.assign({}, state, {
-                orgId: payload.orgId,
-                pollingError: null
-            });
-        case POLLING_START_SUCCESS:
-            return Object.assign({}, state, {
-                isPolling: true,
-                pollingError: null
-            });
-        case POLLING_STOP:
-            return Object.assign({}, state, {
-                isPolling: false,
-                orgDirectories: [],
-                isOrgDirectoriesFetched: false,
-                pollingError: null
-            });
-        case POLLING_FAILURE:
-            return Object.assign({}, state, {
-                isPolling: false,
-                pollingError: error
-            });
-
-        case ORG_SET:
-            return Object.assign({}, state, {
-                orgId: payload.orgId
-            });
-        case DIRECTORY_SET:
-            return Object.assign({}, state, {
-                directoryId: payload.directory
-            });
-        case LIF_BALANCE_SET:
-            return Object.assign({}, state, {
-                lifBalance: payload.balance
-            });
-        case LIF_ALLOWANCE_SET:
-            return Object.assign({}, state, {
-                lifAllowance: payload.allowance
-            });
-        case ORG_REQUESTED_SET:
-            return Object.assign({}, state, {
-                isOrgRequestedStatusFetched: true,
-                orgRequested: payload.orgRequested
-            });
-        case ORG_DIRECTORIES_SET:
-            return Object.assign({}, state, {
-                isOrgDirectoriesFetched: true,
-                orgDirectories: payload.orgDirectories
-            });
-        case ETH_BALANCE_SET:
-            return Object.assign({}, state, {
-                ethBalance: payload.balance
-            });
-
-        case DIR_RESET_STATE:
-            return Object.assign({}, state, {
-                directoryId: '',
-                lifBalance: '0',
-                lifAllowance: '0',
-                isOrgRequestedStatusFetched: false,
-                orgRequested: false
-            });
+            };
+        case DIR_STATS_FAILURE:
+            return {
+                ...state,
+                statsFetching: false,
+                statsError: error
+            };
         default:
             return state;
     }
@@ -159,11 +113,43 @@ export default (state = initialState, action) => {
 /**
  * Actions
  */
-export const fetchDirectories = () => {
-    return {
-        type: DIR_INDEX_REQUEST
+
+export const indexFailure = error => ({
+    type: DIR_INDEX_FAILURE,
+    error
+});
+
+export const indexRequest = () => ({
+    type: DIR_INDEX_REQUEST
+});
+
+export const indexSuccess = directories => ({
+    type: DIR_INDEX_SUCCESS,
+    payload: {
+        directories
     }
-}
+});
+
+export const statsFailure = error => ({
+    type: DIR_STATS_FAILURE,
+    error
+});
+
+export const statsRequest = () => ({
+    type: DIR_STATS_REQUEST
+});
+
+export const statsSuccess = stats => ({
+    type: DIR_STATS_SUCCESS,
+    payload: {
+        stats
+    }
+});
+
+
+
+// ========================================
+
 
 export const fetchDirectoriesSuccess = payload => {
     return {
@@ -267,14 +253,43 @@ export const resetState = () => {
  */
 const stateSelector = state => state[moduleName];
 
-export const directoriesStor = createSelector(
+export const indexError = createSelector(
     stateSelector,
-    store => store
+    ({ indexError }) => indexError
 );
 
 export const isIndexFetching = createSelector(
     stateSelector,
-    ({ isIndexFetching }) => isIndexFetching
+    ({ indexFetching }) => indexFetching
+);
+
+export const directories = createSelector(
+    stateSelector,
+    ({ directories }) => directories
+);
+
+export const statsError = createSelector(
+    stateSelector,
+    ({ statsError }) => statsError
+);
+
+export const isStatsFetching = createSelector(
+    stateSelector,
+    ({ statsFetching }) => statsFetching
+);
+
+export const stats = createSelector(
+    stateSelector,
+    ({ stats }) => stats
+);
+
+
+
+// ============================================================
+
+export const directoriesStor = createSelector(
+    stateSelector,
+    store => store
 );
 
 export const isIndexFetched = createSelector(
@@ -285,11 +300,6 @@ export const isIndexFetched = createSelector(
 export const isPolling = createSelector(
     stateSelector,
     ({ isPolling }) => isPolling
-);
-
-export const directories = createSelector(
-    stateSelector,
-    ({ directories }) => directories
 );
 
 export const selectedDirectory = createSelector(
@@ -322,10 +332,7 @@ export const isOrgRequested = createSelector(
     ({ orgRequested }) => orgRequested
 );
 
-export const indexError = createSelector(
-    stateSelector,
-    ({ indexError }) => indexError
-);
+
 
 export const pollingError = createSelector(
     stateSelector,
@@ -351,91 +358,80 @@ export const orgDirectories = createSelector(
  * Utils
  */
 
-// Get directories details
-const fetchDirectoriesDetails = async (web3, ids = []) => Promise.all(
-    ids.map(
-        async (id) => {
-            const dir = getArbDirContract(web3, id);
-            const segment = await dir.methods.getSegment().call();
-            const entities = await dir.methods.getOrganizationsCount(0, 0).call();
-            const numberOfRequests = await dir.methods.getRequestedOrganizationsCount(0, 0).call();
-            const requesterDepositRaw = await dir.methods.requesterDeposit().call();
-            const challengeDepositRaw = await dir.methods.challengeBaseDeposit().call();
-            const responseTimeout = await dir.methods.responseTimeout().call();
-            const executionTimeout = await dir.methods.executionTimeout().call();
-            const withdrawTimeout = await dir.methods.withdrawTimeout().call();
-            const reqOrganizations = await dir.methods.getRequestedOrganizations(0, 0).call();
-            const organizations = await dir.methods.getOrganizations(0, 0).call();
-            const challenges = await Promise.all(
-                [...organizations, ...reqOrganizations]
-                    .map(orgId => dir.methods.getNumberOfDisputes(orgId).call())
-            );
-            const numberOfChallenges = challenges.reduce(
-                (a,v) => Number(a) + Number(v),
-                0
-            );
 
-            return {
-                address: id,
-                segment,
-                entities: Number(entities),
-                numberOfChallenges,
-                numberOfRequests: Number(numberOfRequests),
-                requesterDepositRaw,
-                requesterDeposit: Number(web3.utils.fromWei(requesterDepositRaw, 'ether')),
-                challengeDepositRaw,
-                challengeDeposit: Number(web3.utils.fromWei(challengeDepositRaw, 'ether')),
-                responseTimeout,
-                executionTimeout,
-                withdrawTimeout
-            };
-        }
-    )
-);
 
 /**
  * API
  */
+const fetchDirectories = (web3, ids) => Promise.all(
+    ids.map(async address => {
+        const dir = getArbDirContract(web3, address);
+        const segment = await dir.methods.getSegment().call();
+        const governor = await dir.methods.governor().call();
+        const arbitrator = await dir.methods.arbitrator().call();
+        const arbitratorExtraData = await dir.methods.arbitratorExtraData().call();
+        const requesterDepositRaw = await dir.methods.requesterDeposit().call();
+        const requesterDeposit = Number(web3.utils.fromWei(requesterDepositRaw, 'ether'));
+        const challengeBaseDepositRaw = await dir.methods.challengeBaseDeposit().call();
+        const challengeBaseDeposit = Number(web3.utils.fromWei(challengeBaseDepositRaw, 'ether'));
+        const executionTimeout = Number(await dir.methods.executionTimeout().call());
+        const responseTimeout = Number(await dir.methods.responseTimeout().call());
+        const withdrawTimeout = Number(await dir.methods.withdrawTimeout().call());
+        const winnerStakeMultiplier = Number(await dir.methods.winnerStakeMultiplier().call());
+        const loserStakeMultiplier = Number(await dir.methods.loserStakeMultiplier().call());
+        const sharedStakeMultiplier = Number(await dir.methods.sharedStakeMultiplier().call());
+        const MULTIPLIER_DIVISOR = Number(await dir.methods.MULTIPLIER_DIVISOR().call());
 
-const fetchLifBalance = async (web3, owner) => {
-    const lif = getLifTokenContract(web3);
-    const balance = await lif.methods.balanceOf(owner).call();
-    return web3.utils.fromWei(balance, 'ether');
-};
-
-const fetchLifAllowance = async (web3, owner, spender) => {
-    const lif = getLifTokenContract(web3);
-    const allowance = await lif.methods.allowance(owner, spender).call();
-    return web3.utils.fromWei(allowance, 'ether');
-};
-
-const fetchRegistrationData = async (web3, orgId, dirId) => {
-    const dir = getArbDirContract(web3, dirId);
-    const orgData = await dir.methods.organizationData(orgId).call();
-    let challenges;
-    if ([3, 4, 5].includes(Number(orgData.status))) {
-        const numChallenges = await dir.methods.getNumberOfChallenges(orgId).call();
-        challenges = await Promise.all(
-            Array(Number(numChallenges))
-                .fill(null)
-                .map((_, i) => dir.methods.getChallengeInfo(orgId, i).call())
-        );
-    }
-    return {
-        ...orgData,
-        ...(challenges ? { challenges } : {})
-    }
-};
-
-const fetchOrganizationRegistrations = (web3, orgId, directories) => Promise.all(
-    directories.map(
-        d => fetchRegistrationData(web3, orgId, d.address)
-    )
+        return {
+            address,
+            segment,
+            governor,
+            arbitrator,
+            arbitratorExtraData,
+            requesterDepositRaw,
+            requesterDeposit,
+            challengeBaseDepositRaw,
+            challengeBaseDeposit,
+            executionTimeout,
+            responseTimeout,
+            withdrawTimeout,
+            winnerStakeMultiplier,
+            loserStakeMultiplier,
+            sharedStakeMultiplier,
+            MULTIPLIER_DIVISOR
+        };
+    })
 );
 
-const fetchEthBalance = async (web3, owner) => {
-    const balance = await web3.eth.getBalance(owner);
-    return web3.utils.fromWei(balance, 'ether');
+const fetchStats = (web3, directories) => Promise.all(
+    directories.map(async ({ address }) => {
+        const dir = getArbDirContract(web3, address);
+        const entities = Number(await dir.methods.getOrganizationsCount(0, 0).call());
+        const numberOfRequests = Number(await dir.methods.getRequestedOrganizationsCount(0, 0).call());
+        const reqOrganizations = await dir.methods.getRequestedOrganizations(0, 0).call();
+        const organizations = await dir.methods.getOrganizations(0, 0).call();
+        const challenges = await Promise.all(
+            [...organizations, ...reqOrganizations]
+                .map(orgId => dir.methods.getNumberOfDisputes(orgId).call())
+        );
+        const numberOfChallenges = challenges.reduce(
+            (a,v) => Number(a) + Number(v),
+            0
+        );
+
+        return {
+            address,
+            entities,
+            numberOfRequests,
+            numberOfChallenges
+        };
+    })
+);
+
+const fetchIndex = async web3 => {
+    const index = getDirIndexContract(web3);
+    const ids = await index.methods.getSegments().call();
+    return fetchDirectories(web3, ids);
 };
 
 export const subscribeDirectoriesEventsChannel = (web3, fromBlock, directories) => {
@@ -446,12 +442,12 @@ export const subscribeDirectoriesEventsChannel = (web3, fromBlock, directories) 
                 {
                     fromBlock
                 },
-                (error, _) => {
+                (error, evt) => {
                     if (error) {
-                        return emitter(fetchDirectoriesFailure(error));
+                        return emitter(statsFailure(error));
                     }
-                    emitter(fetchDirectories());
-                    emitter(END);
+                    console.log('Directory Event:', evt);
+                    emitter(statsRequest());
                 }
             );
         });
@@ -462,15 +458,13 @@ export const subscribeDirectoriesEventsChannel = (web3, fromBlock, directories) 
 /**
  * Sagas
  */
-
 function* subscribeDirectoriesSaga() {
     const web3 = yield select(selectWeb3);
     const directoriesList = yield select(directories);
-    const block = yield call(getBlock, web3, 'latest');
     const dirsEvents = yield call(
         subscribeDirectoriesEventsChannel,
         web3,
-        block.number,
+        'latest',
         directoriesList
     );
     while (true) {
@@ -479,94 +473,35 @@ function* subscribeDirectoriesSaga() {
     };
 }
 
-function* startPollingSaga() {
+function* fetchStatsSaga() {
     try {
-        let count = 0;
-        let store;
-        let balance;
-        let ethBalance;
-        let allowance;
-        let requestData;
-        let orgDirectories = [];
-        store = yield select(directoriesStor);
-
-        if (store.isPolling) {
-            return;
-        }
-
-        yield put(startPollingSuccess());
-
-        store = yield select(directoriesStor);
-        const owner = yield select(selectSignInAddress);
         const web3 = yield select(selectWeb3);
-
-        while (store.isPolling && !store.pollingError) {
-            if (count > 1800) {
-                throw new Error('Too much polling cycles');
-            }
-
-            if (owner) {
-                balance = yield call(fetchLifBalance, web3, owner);
-                yield put(setLifBalance({ balance }));
-                ethBalance = yield call(fetchEthBalance, web3, owner);
-                yield put(setEthBalance({ balance: ethBalance }));
-            }
-
-            if (store.directoryId && store.orgId) {
-
-                if (owner) {
-                    allowance = yield call(fetchLifAllowance, web3, owner, store.directoryId);
-                    yield put(setAllowance({ allowance }));
-                }
-
-                requestData = yield call(fetchRegistrationData, web3, store.orgId, store.directoryId);
-                yield put(setRequested({ orgRequested: requestData.ID === store.orgId && Number(requestData.status) > 0 }));
-            }
-
-            orgDirectories = yield call(
-                fetchOrganizationRegistrations,
-                web3,
-                store.orgId,
-                store.directories
-            );
-            // console.log('@@@', orgDirectories);
-            yield put(setOrgDirectories({
-                orgDirectories
-            }));
-
-            yield delay(5000);
-            store = yield select(directoriesStor);
-            count++;
-        };
-
-    } catch(error) {
-        console.log('Polling error!', error);
-        yield put(pollingFailure(error))
+        const directoriesList = yield select(directories);
+        const stats = yield call(fetchStats, web3, directoriesList);
+        yield put(statsSuccess(stats));
+    } catch (error) {
+        yield put(statsFailure(error));
     }
 }
 
-function* startFetchDirectoriesSaga() {
+function* fetchDirectoriesSaga() {
     try {
         const web3 = yield select(selectWeb3);
-        const index = getDirIndexContract(web3);
-        const directories = yield index.methods.getSegments().call();
-        const directoriesDetails = yield call(fetchDirectoriesDetails, web3, directories);
-        yield put(fetchDirectoriesSuccess({
-            directories: directoriesDetails
-        }));
+        const directories = yield call(fetchIndex, web3);
+        yield put(indexSuccess(directories));
         const subscriptionSaga = yield fork(subscribeDirectoriesSaga);
         yield take(DIR_INDEX_REQUEST);
         yield cancel(subscriptionSaga);
     } catch (error) {
-        yield put(fetchDirectoriesFailure(error));
+        yield put(indexFailure(error));
     }
 }
 
 export const saga = function* () {
     return yield all([
-        takeLatest(SET_DEFAULT_WEB3, startFetchDirectoriesSaga),
-        takeEvery(DIR_INDEX_REQUEST, startFetchDirectoriesSaga),
-        takeEvery(FETCH_SIGN_IN_SUCCESS, startFetchDirectoriesSaga),
-        takeEvery(POLLING_START, startPollingSaga)
+        takeLatest(SET_DEFAULT_WEB3, fetchDirectoriesSaga),
+        takeEvery(DIR_INDEX_REQUEST, fetchDirectoriesSaga),
+        takeEvery(DIR_INDEX_SUCCESS, fetchStatsSaga),
+        takeEvery(DIR_STATS_REQUEST, fetchStatsSaga),
     ]);
 };

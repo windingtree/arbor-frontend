@@ -1318,7 +1318,11 @@ export default props => {
                                                                     <Grid item>
                                                                         <Button
                                                                             className={classes.dialogButtonRedSmall}
-                                                                            disabled={!walletAddress || withdrawFeesAndRewardsSending}
+                                                                            disabled={
+                                                                                !walletAddress ||
+                                                                                withdrawFeesAndRewardsSending ||
+                                                                                (currentTime && Date.now() <= evidenceStor.appealPeriod.end)
+                                                                            }
                                                                             onClick={() => giveRulingAction(
                                                                                 evidenceStor.challenge.disputeID,
                                                                                 1
@@ -1339,7 +1343,11 @@ export default props => {
                                                                     <Grid item>
                                                                         <Button
                                                                             className={classes.dialogButtonRedSmall}
-                                                                            disabled={!walletAddress || withdrawFeesAndRewardsSending}
+                                                                            disabled={
+                                                                                !walletAddress ||
+                                                                                withdrawFeesAndRewardsSending ||
+                                                                                (currentTime && Date.now() <= evidenceStor.appealPeriod.end)
+                                                                            }
                                                                             onClick={() => giveRulingAction(
                                                                                 evidenceStor.challenge.disputeID,
                                                                                 2

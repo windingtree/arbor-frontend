@@ -269,6 +269,7 @@ export const calculateAppealCost = async (web3, dirAddress, orgId, party, challe
 
   const MULTIPLIER_DIVISOR = toBN(await dir.methods.MULTIPLIER_DIVISOR().call());
   const multiplierValue = toBN(await dir.methods[multiplier]().call());
+  console.log('===[[[', challenge);
   const appealCost = toBN(await arb.methods.appealCost(challenge.disputeID, challenge.arbitratorExtraData).call());
   const round = await dir.methods.getRoundInfo(orgId, challengeID, Number(challenge.numberOfRounds) - 1).call();
 

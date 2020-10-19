@@ -543,7 +543,7 @@ function* fetchStatsSaga() {
     try {
         const web3 = yield select(selectWeb3);
         const directoriesList = yield select(directories);
-        yield delay(2500);
+        yield delay(5000);
         const stats = yield call(fetchStats, web3, directoriesList);
         console.log('New stats:', stats);
         yield put(statsSuccess(stats));

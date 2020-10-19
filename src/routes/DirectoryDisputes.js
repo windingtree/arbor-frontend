@@ -76,7 +76,7 @@ const fetchDisputes = async (web3, directoryId) => {
     const organizations = [...registeredOrganizations, ...requestedOrganizations];
     const challenges = await Promise.all(
         organizations
-            .map(orgId => dir.methods.getNumberOfChallenges(orgId).call())
+            .map(orgId => dir.methods.getNumberOfDisputes(orgId).call())
     );
     const disputedOrganizations = challenges
         .map((count, index) => ({

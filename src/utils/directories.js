@@ -4,7 +4,10 @@ import AirlineIllustration from '../assets/SvgComponents/plane-illustration.svg'
 import InsuranceIllustration from '../assets/SvgComponents/Insurance-illustration.svg';
 import TravelIllustration from '../assets/SvgComponents/travel-illustration.svg';
 
-import { api } from '../redux/api'
+import { api } from '../redux/api';
+import {
+    getLifTokenContract
+} from '../ducks/utils/ethereum';
 
 // Prepare directory meta-data
 export const getSegmentMeta = data => {
@@ -106,14 +109,69 @@ export const buildAndSaveEvidenceJson = data => {
     })
 };
 
-export const isResponseTimeout = directory => (
-    Number(directory.organization.lastStatusChange) + Number(directory.responseTimeout)
+export const fetchLifBalance = async (web3, owner) => {
+    const lif = getLifTokenContract(web3);
+    const balance = await lif.methods.balanceOf(owner).call();
+    return web3.utils.fromWei(balance, 'ether');
+};
+
+export const fetchLifAllowance = async (web3, owner, spender) => {
+    const lif = getLifTokenContract(web3);
+    const allowance = await lif.methods.allowance(owner, spender).call();
+    return web3.utils.fromWei(allowance, 'ether');
+};
+
+export const fetchEthBalance = async (web3, owner) => {
+    const balance = await web3.eth.getBalance(owner);
+    return web3.utils.fromWei(balance, 'ether');
+};
+
+export const fetchBalances = async (web3, owner, spender) => {
+    const lifBalance = await fetchLifBalance(web3, owner);
+    const lifAllowance = await fetchLifAllowance(web3, owner, spender);
+    const ethBalance = await fetchEthBalance(web3, owner);
+    return {
+        lifBalance,
+        lifAllowance,
+        ethBalance
+    };
+}
+
+export const isResponseTimeout = (directory, organization) => (
+    Number(organization.lastStatusChange) + Number(directory.responseTimeout)
 ) * 1000 > Date.now();
 
-export const isExecutionTimeout = directory => (
-    Number(directory.organization.lastStatusChange) + Number(directory.executionTimeout)
+export const isExecutionTimeout = (directory, organization) => (
+    Number(organization.lastStatusChange) + Number(directory.executionTimeout)
 ) * 1000 > Date.now();
 
-export const isWithdrawTimeout = directory => (
-    Number(directory.organization.withdrawalRequestTime) + Number(directory.executionTimeout)
+export const isWithdrawTimeout = (directory, organization) => (
+    Number(organization.withdrawalRequestTime) + Number(directory.executionTimeout)
 ) * 1000 > Date.now();
+
+export const responseTimeoutTitle = (directory, organization) => {
+    const time = new Date(
+        (
+            Number(organization.lastStatusChange) + Number(directory.responseTimeout)
+        ) * 1000
+    );
+    return `${time.toLocaleDateString()} ${time.toLocaleTimeString()}`;
+};
+
+export const executionTimeoutTitle = (directory, organization) => {
+    const time = new Date(
+        (
+            Number(organization.lastStatusChange) + Number(directory.executionTimeout)
+        ) * 1000
+    );
+    return `${time.toLocaleDateString()} ${time.toLocaleTimeString()}`;
+};
+
+export const withdrawTimeoutTitle = (directory, organization) => {
+    const time = new Date(
+        (
+            Number(organization.withdrawalRequestTime) + Number(directory.executionTimeout)
+        ) * 1000
+    );
+    return `${time.toLocaleDateString()} ${time.toLocaleTimeString()}`;
+}

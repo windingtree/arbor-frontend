@@ -9,7 +9,8 @@ import {
 import {
     getHash,
     saveMediaToArbor,
-    buildAndSaveEvidenceJson
+    buildAndSaveEvidenceJson,
+    fetchBalances
 } from '../../../utils/directories';
 
 import { Typography, Button, Grid, CircularProgress, TextField } from '@material-ui/core';
@@ -222,23 +223,32 @@ export default props => {
         isOpened,
         handleClose,
         directory,
-        ethBalance,
         walletAddress,
         organizationItem,
         noFunding
     } = props;
     const [error, setError] = useState(null);
-    const [isBalanceOk, setIsBalanceOk] = useState(true);
+    const [isBalanceOk, setBalanceOk] = useState(false);
     const [fileName, setFileName] = useState(null);
     const [fileHash, setFileHash] = useState('');
     const [fileURI, setFileUri] = useState('');
     const [challengeSending, setChallengeSending] = useState(false);
 
     useEffect(() => {
-        if (directory && ethBalance !== undefined) {
-            setIsBalanceOk(Number(ethBalance) >= Number(directory.challengeDeposit));
+        let pollingInterval;
+        if (directory) {
+            pollingInterval = setInterval(() => {
+                fetchBalances(web3, walletAddress, directory.address)
+                    .then(balances => {
+                        setBalanceOk(Number(balances.ethBalance) >= directory.challengeBaseDeposit);
+                    })
+                    .catch(setError)
+            }, 1500);
+        } else {
+            clearInterval(pollingInterval);
         }
-    }, [directory, ethBalance]);
+        return () => clearInterval(pollingInterval);
+    }, [web3, walletAddress, organizationItem, directory]);
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         accept: 'application/json',
@@ -282,7 +292,7 @@ export default props => {
             });
             const methodGas = '259527';
             const gasPrice = await ApiGetGasPrice(web3);
-            const refinedValue = web3.utils.toBN(directory.challengeDepositRaw)
+            const refinedValue = web3.utils.toBN(directory.challengeBaseDepositRaw)
                 .add(
                     web3.utils.toBN(methodGas)
                         .mul(web3.utils.toBN(gasPrice))
@@ -325,7 +335,7 @@ export default props => {
                                         Required deposit
                                     </Typography>
                                     <Typography className={classes.depositNoteTitle}>
-                                        {directory.challengeDeposit} ETH
+                                        {directory.challengeBaseDeposit} ETH
                                     </Typography>
                                 </div>
                             }

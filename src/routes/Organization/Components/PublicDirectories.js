@@ -5,13 +5,14 @@ import history from '../../../redux/history';
 import { selectWeb3, selectSignInAddress } from '../../../ducks/signIn';
 import { selectItem as selectOrganizationItem } from '../../../ducks/fetchOrganizationInfo';
 import {
+    setOrgId,
     isIndexFetching,
+    isOrgDirectoriesFetching,
     directories,
-    orgDirectoriesFetched,
     orgDirectories,
-    ethBalance,
     indexError,
-    pollingError
+    statsError,
+    orgError
 } from '../../../ducks/directories';
 import { strCenterEllipsis } from '../../../utils/helpers';
 
@@ -203,11 +204,11 @@ const styles = makeStyles({
 const DirectoriesList = props => {
     const classes = styles();
     const {
-        indexError,
-        pollingError,
+        orgError,
+        isIndexFetching,
+        isOrgDirectoriesFetching,
         directories: directoriesDetails,
         orgDirectories,
-        orgDirectoriesFetched,
         walletAddress
     } = props;
 
@@ -236,7 +237,7 @@ const DirectoriesList = props => {
         setSelectedDirectory(null);
     };
 
-    const parseDirectories = directories => directories
+    const parseDirectories = (orgDirectories, directories) => orgDirectories
         .map((d, index) => {
             const config = [
                 // The organization is not registered and doesn't have an open request.
@@ -342,7 +343,7 @@ const DirectoriesList = props => {
                 directory={selectedDirectory}
                 {...props}
             />
-            {!orgDirectoriesFetched &&
+            {(isIndexFetching || isOrgDirectoriesFetching) &&
                 <Grid
                     container
                     direction='row'
@@ -360,100 +361,95 @@ const DirectoriesList = props => {
                     </Grid>
                 </Grid>
             }
-            {orgDirectoriesFetched && parseDirectories(orgDirectories).map((directory, i) => (
+            {!isIndexFetching &&
+            !isOrgDirectoriesFetching &&
+            parseDirectories(orgDirectories, directoriesDetails).map((directory, i) => (
                     <Grid
-                        container
-                        direction='row'
-                        wrap='nowrap'
-                        alignItems='center'
-                        key={i}
-                    >
-                        <Grid item xs={2}>
-                            <img
-                                width='16px'
-                                height='16px'
-                                className={classes.dirListIcon}
-                                alt={directory.title}
-                                src={directory.icon}
-                            />
-                            {directory.title}
-                        </Grid>
-                        <Grid item xs={2}>
-                            <div className={classes.statusLabelWrapper}>
-                                <Typography className={classes.statusLabel + ' ' + directory.config.statusClass}>
-                                    <img
-                                        alt={directory.config.status}
-                                        src={directory.config.icon}
-                                    />&nbsp;
-                                    {directory.config.status}
-                                </Typography>
-                            </div>
-                        </Grid>
-                        <Grid item xs={4}>
-                            {[3, 4].includes(directory.status) &&
-                                directory.organization.challenges.map((ch, i) => (
-                                    <table key={i}>
-                                        <tbody>
-                                            <tr>
-                                                <td>
-                                                    <Button
-                                                        className={classes.actionButton}
-                                                        onClick={() => showChallengeDialog(directory, i)}
-                                                    >
-                                                        Challenge from {strCenterEllipsis(ch.challenger.split('x')[1])} ({ch.resolved ? 'resolved' : 'not resolved'})
-                                                    </Button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                ))
-                            }
-                        </Grid>
-                        <Grid item xs={4} className={classes.actionsBlock}>
-                            {walletAddress &&
-                                <Grid container direction='column'>
-                                    {directory.config.actions.map((action, i) => (
-                                        <div  key={i}>
-                                            <Grid item>
-                                                <Button
-                                                    disabled={action.actionIndicator}
-                                                    className={classes.actionButton}
-                                                    onClick={() => action.actionCallback(directory, action)}
-                                                >
-                                                    {action.action}
-                                                    {action.actionIndicator &&
-                                                        <div className={classes.actionIndicator}>
-                                                            <CircularProgress size='16px' />
-                                                        </div>
-                                                    }
-                                                </Button>
-                                            </Grid>
-                                        </div>
-                                    ))}
-                                </Grid>
-                            }
-                            {!walletAddress &&
-                                <Button
-                                    className={classes.actionButton}
-                                    onClick={() => history.push('/authorization/signin', { follow: history.location.pathname })}
-                                >
-                                    Sign Up to see available actions
-                                </Button>
-                            }
-                        </Grid>
+                    container
+                    direction='row'
+                    wrap='nowrap'
+                    alignItems='center'
+                    key={i}
+                >
+                    <Grid item xs={2}>
+                        <img
+                            width='16px'
+                            height='16px'
+                            className={classes.dirListIcon}
+                            alt={directory.title}
+                            src={directory.icon}
+                        />
+                        {directory.title}
                     </Grid>
+                    <Grid item xs={2}>
+                        <div className={classes.statusLabelWrapper}>
+                            <Typography className={classes.statusLabel + ' ' + directory.config.statusClass}>
+                                <img
+                                    alt={directory.config.status}
+                                    src={directory.config.icon}
+                                />&nbsp;
+                                {directory.config.status}
+                            </Typography>
+                        </div>
+                    </Grid>
+                    <Grid item xs={4}>
+                        {[3, 4].includes(directory.status) &&
+                            directory.organization.challenges.map((ch, i) => (
+                                <table key={i}>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <Button
+                                                    className={classes.actionButton}
+                                                    onClick={() => showChallengeDialog(directory, i)}
+                                                >
+                                                    Challenge from {strCenterEllipsis(ch.challenger.split('x')[1])} ({ch.resolved ? 'resolved' : 'not resolved'})
+                                                </Button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            ))
+                        }
+                    </Grid>
+                    <Grid item xs={4} className={classes.actionsBlock}>
+                        {walletAddress &&
+                            <Grid container direction='column'>
+                                {directory.config.actions.map((action, i) => (
+                                    <div  key={i}>
+                                        <Grid item>
+                                            <Button
+                                                disabled={action.actionIndicator}
+                                                className={classes.actionButton}
+                                                onClick={() => action.actionCallback(directory, action)}
+                                            >
+                                                {action.action}
+                                                {action.actionIndicator &&
+                                                    <div className={classes.actionIndicator}>
+                                                        <CircularProgress size='16px' />
+                                                    </div>
+                                                }
+                                            </Button>
+                                        </Grid>
+                                    </div>
+                                ))}
+                            </Grid>
+                        }
+                        {!walletAddress &&
+                            <Button
+                                className={classes.actionButton}
+                                onClick={() => history.push('/authorization/signin', { follow: history.location.pathname })}
+                            >
+                                Sign Up to see available actions
+                            </Button>
+                        }
+                    </Grid>
+                </Grid>
             ))}
-            {indexError &&
+            {orgError &&
                 <div className={classes.errorWrapper}>
                     <Typography className={classes.errorMessage}>
-                        {indexError.message}
-                    </Typography>
-                </div>
-            }
-            {pollingError &&
-                <div className={classes.errorWrapper}>
-                    <Typography className={classes.errorMessage}>
-                        {pollingError.message}
+                        {orgError.message}
                     </Typography>
                 </div>
             }
@@ -465,48 +461,54 @@ const PublicDirectories = props => {
     const classes = styles();
     const {
         indexError,
-        pollingError
+        statsError
     } = props;
 
     return (
-        <Container className={classes.container}>
-            <div className={classes.titleWrapper}>
-                <Typography variant={'inherit'}>Directories</Typography>
+        <Container>
+            <div className={classes.container}>
+                <div className={classes.titleWrapper}>
+                    <Typography variant={'inherit'}>Directories</Typography>
+                </div>
+                <dir >
+                    <DirectoriesList {...props}/>
+                </dir>
+                {indexError &&
+                    <div className={classes.errorWrapper}>
+                        <Typography className={classes.errorMessage}>
+                            {indexError.message}
+                        </Typography>
+                    </div>
+                }
+                {statsError &&
+                    <div className={classes.errorWrapper}>
+                        <Typography className={classes.errorMessage}>
+                            {statsError.message}
+                        </Typography>
+                    </div>
+                }
             </div>
-            <dir >
-                <DirectoriesList {...props}/>
-            </dir>
-            {indexError &&
-                <div className={classes.errorWrapper}>
-                    <Typography className={classes.errorMessage}>
-                        {indexError.message}
-                    </Typography>
-                </div>
-            }
-            {pollingError &&
-                <div className={classes.errorWrapper}>
-                    <Typography className={classes.errorMessage}>
-                        {pollingError.message}
-                    </Typography>
-                </div>
-            }
         </Container>
     );
 }
 
-const mapStateToProps = state => ({
-    web3: selectWeb3(state),
-    walletAddress: selectSignInAddress(state),
-    directories: directories(state),
-    isIndexFetching: isIndexFetching(state),
-    orgDirectoriesFetched: orgDirectoriesFetched(state),
-    orgDirectories: orgDirectories(state),
-    organizationItem: selectOrganizationItem(state),
-    ethBalance: ethBalance(state),
-    indexError: indexError(state),
-    pollingError: pollingError(state)
-});
+const mapStateToProps = state => {
+    return {
+        isIndexFetching: isIndexFetching(state),
+        isOrgDirectoriesFetching: isOrgDirectoriesFetching(state),
+        directories: directories(state),
+        orgDirectories: orgDirectories(state),
+        indexError: indexError(state),
+        statsError: statsError(state),
+        orgError: orgError(state),
+        organizationItem: selectOrganizationItem(state),
+        web3: selectWeb3(state),
+        walletAddress: selectSignInAddress(state)
+    }
+};
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+    setOrgId
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(PublicDirectories);

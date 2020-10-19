@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { all, takeEvery, takeLatest, call, put, select, delay, fork, take, cancel } from 'redux-saga/effects';
+import { all, takeEvery, throttle, call, put, select, delay, fork, take, cancel, spawn } from 'redux-saga/effects';
 import { eventChannel, END } from 'redux-saga';
 import {
     appName
@@ -30,6 +30,10 @@ const DIR_STATS_FAILURE = `${prefix}/DIR_STATS_FAILURE`;
 const DIR_STATS_REQUEST = `${prefix}/DIR_STATS_REQUEST`;
 const DIR_STATS_SUCCESS = `${prefix}/DIR_STATS_SUCCESS`;
 
+const ORG_SET = `${prefix}/ORG_SET`;
+const ORG_RESET = `${prefix}/ORG_RESET`;
+const ORG_FAILURE = `${prefix}/ORG_FAILURE`;
+const ORG_SUCCESS = `${prefix}/ORG_SUCCESS`;
 
 // =================================
 
@@ -40,7 +44,7 @@ const POLLING_START_SUCCESS = `${prefix}/POLLING_START_SUCCESS`;
 const POLLING_STOP = `${prefix}/POLLING_STOP`;
 const POLLING_FAILURE = `${prefix}/POLLING_FAILURE`;
 
-const ORG_SET = `${prefix}/ORG_SET`;
+
 const DIRECTORY_SET = `${prefix}/DIRECTORY_SET`;
 const LIF_BALANCE_SET = `${prefix}/LIF_BALANCE_SET`;
 const LIF_ALLOWANCE_SET = `${prefix}/LIF_ALLOWANCE_SET`;
@@ -58,7 +62,12 @@ const initialState = {
 
     statsError: null,
     statsFetching: false,
-    stats: []
+    stats: [],
+
+    orgError: null,
+    orgId: null,
+    orgDirectoriesFetching: false,
+    orgDirectories: []
 };
 
 /**
@@ -92,6 +101,26 @@ export default (state = initialState, action) => {
                 stats: payload.stats
             };
 
+        case ORG_SET:
+            return {
+                ...state,
+                orgDirectoriesFetching: true,
+                orgId: payload.orgId
+            };
+        case ORG_SUCCESS:
+            return {
+                ...state,
+                orgDirectoriesFetching: false,
+                orgDirectories: payload.directories
+            };
+        case ORG_RESET:
+            return {
+                ...state,
+                orgDirectoriesFetching: false,
+                orgId: null,
+                orgDirectories: []
+            };
+
         // Errors
         case DIR_INDEX_FAILURE:
             return {
@@ -104,6 +133,12 @@ export default (state = initialState, action) => {
                 ...state,
                 statsFetching: false,
                 statsError: error
+            };
+        case ORG_FAILURE:
+            return {
+                ...state,
+                orgDirectoriesFetching: false,
+                orgError: error
             };
         default:
             return state;
@@ -146,7 +181,28 @@ export const statsSuccess = stats => ({
     }
 });
 
+export const orgFailure = error => ({
+    type: ORG_FAILURE,
+    error
+});
 
+export const setOrgId = orgId => ({
+    type: ORG_SET,
+    payload: {
+        orgId
+    }
+});
+
+export const orgDirectoriesSuccess = directories => ({
+    type: ORG_SUCCESS,
+    payload: {
+        directories
+    }
+});
+
+export const resetOrgId = () => ({
+    type: ORG_RESET
+});
 
 // ========================================
 
@@ -164,13 +220,6 @@ export const fetchDirectoriesFailure = error => {
         error
     }
 }
-
-export const setOrgId = payload => {
-    return {
-        type: ORG_SET,
-        payload
-    }
-};
 
 export const setDirectory = payload => {
     return {
@@ -216,32 +265,6 @@ export const startPolling = orgId => {
     }
 }
 
-export const setOrgDirectories = payload => {
-    return {
-        type: ORG_DIRECTORIES_SET,
-        payload
-    }
-}
-
-export const startPollingSuccess = () => {
-    return {
-        type: POLLING_START_SUCCESS
-    }
-}
-
-export const stopPolling = () => {
-    return {
-        type: POLLING_STOP
-    }
-}
-
-export const pollingFailure = error => {
-    return {
-        type: POLLING_FAILURE,
-        error
-    }
-}
-
 export const resetState = () => {
     return {
         type: DIR_RESET_STATE
@@ -283,6 +306,25 @@ export const stats = createSelector(
     ({ stats }) => stats
 );
 
+export const orgError = createSelector(
+    stateSelector,
+    ({ orgError }) => orgError
+);
+
+export const isOrgDirectoriesFetching = createSelector(
+    stateSelector,
+    ({ orgDirectoriesFetching }) => orgDirectoriesFetching
+);
+
+export const orgDirectories = createSelector(
+    stateSelector,
+    ({ orgDirectories }) => orgDirectories
+);
+
+export const selectedOrgId = createSelector(
+    stateSelector,
+    ({ orgId }) => orgId
+);
 
 
 // ============================================================
@@ -349,10 +391,7 @@ export const orgDirectoriesFetched = createSelector(
     ({ isOrgDirectoriesFetched }) => isOrgDirectoriesFetched
 );
 
-export const orgDirectories = createSelector(
-    stateSelector,
-    ({ orgDirectories }) => orgDirectories
-);
+
 
 /**
  * Utils
@@ -434,11 +473,32 @@ const fetchIndex = async web3 => {
     return fetchDirectories(web3, ids);
 };
 
+const fetchOrgDirectories = async (web3, directories, orgId) => Promise.all(
+    directories.map(async ({ address }) => {
+        const dir = getArbDirContract(web3, address);
+        const orgData = await dir.methods.organizationData(orgId).call();
+        let challenges = [];
+        const numChallenges = Number(await dir.methods.getNumberOfChallenges(orgId).call());
+        if (numChallenges > 0) {
+            challenges = await Promise.all(
+                Array(numChallenges)
+                    .fill(null)
+                    .map((_, i) => dir.methods.getChallengeInfo(orgId, i).call())
+            );
+        }
+        return {
+            address,
+            ...orgData,
+            challenges
+        }
+    })
+);
+
 export const subscribeDirectoriesEventsChannel = (web3, fromBlock, directories) => {
     return eventChannel(emitter => {
         const subscriptions = directories.map(({ address }) => {
             const dir = getArbDirContract(web3, address);
-            return dir.events.allEvents(
+            const subscription = dir.events.allEvents(
                 {
                     fromBlock
                 },
@@ -450,7 +510,13 @@ export const subscribeDirectoriesEventsChannel = (web3, fromBlock, directories) 
                     emitter(statsRequest());
                 }
             );
+            console.log('Subscribed to directory:', [
+                address,
+                fromBlock
+            ], subscription);
+            return subscription;
         });
+        console.log('Subscribed Directories channel');
         return () => subscriptions.forEach(d => d.unsubscribe());
     });
 };
@@ -477,8 +543,15 @@ function* fetchStatsSaga() {
     try {
         const web3 = yield select(selectWeb3);
         const directoriesList = yield select(directories);
+        yield delay(2500);
         const stats = yield call(fetchStats, web3, directoriesList);
+        console.log('New stats:', stats);
         yield put(statsSuccess(stats));
+        const orgId = yield select(selectedOrgId);
+        const orgFetching = yield select(isOrgDirectoriesFetching);
+        if (orgId && !orgFetching) {
+            yield put(setOrgId(orgId));
+        }
     } catch (error) {
         yield put(statsFailure(error));
     }
@@ -497,11 +570,24 @@ function* fetchDirectoriesSaga() {
     }
 }
 
+function* fetchOrgDirectoriesSaga({ payload }) {
+    try {
+        const orgId = payload.orgId;
+        const web3 = yield select(selectWeb3);
+        const directoriesList = yield select(directories);
+        const orgDirectories = yield call(fetchOrgDirectories, web3, directoriesList, orgId);
+        yield put(orgDirectoriesSuccess(orgDirectories));
+    } catch (error) {
+        yield put(orgFailure(error));
+    }
+}
+
 export const saga = function* () {
     return yield all([
-        takeLatest(SET_DEFAULT_WEB3, fetchDirectoriesSaga),
+        takeEvery(SET_DEFAULT_WEB3, fetchDirectoriesSaga),
         takeEvery(DIR_INDEX_REQUEST, fetchDirectoriesSaga),
-        takeEvery(DIR_INDEX_SUCCESS, fetchStatsSaga),
-        takeEvery(DIR_STATS_REQUEST, fetchStatsSaga),
+        throttle(1500, DIR_INDEX_SUCCESS, fetchStatsSaga),
+        throttle(1500, DIR_STATS_REQUEST, fetchStatsSaga),
+        throttle(1500, ORG_SET, fetchOrgDirectoriesSaga)
     ]);
 };

@@ -25,7 +25,8 @@ import { fetchJson } from '../../../redux/api';
 import {
     serializeJson,
     isResponseTimeout,
-    fetchBalances
+    fetchBalances,
+    timeToLocalString
 } from '../../../utils/directories';
 
 import { Typography, Button, Grid, CircularProgress, TextField } from '@material-ui/core';
@@ -1093,17 +1094,17 @@ export default props => {
                                                             <p>
                                                                 <InfoLabel>
                                                                     Current time:
-                                                                </InfoLabel> {new Date().toISOString()}
+                                                                </InfoLabel> {timeToLocalString(Date.now())}
                                                             </p>
                                                             <p>
                                                                 <InfoLabel>
                                                                     Appealable period start:
-                                                                </InfoLabel> {new Date(evidenceStor.appealPeriod.start).toISOString()}
+                                                                </InfoLabel> {timeToLocalString(evidenceStor.appealPeriod.start)}
                                                             </p>
                                                             <p>
                                                                 <InfoLabel>
                                                                     Appealable period end:
-                                                                </InfoLabel> {new Date(evidenceStor.appealPeriod.end).toISOString()}
+                                                                </InfoLabel> {timeToLocalString(evidenceStor.appealPeriod.end)}
                                                             </p>
                                                             <p>
                                                                 <InfoLabel>

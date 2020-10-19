@@ -223,7 +223,8 @@ export default props => {
         directory,
         walletAddress,
         organizationItem,
-        noFunding
+        noFunding,
+        setOrgId
     } = props;
     const [error, setError] = useState(null);
     const [isBalanceOk, setBalanceOk] = useState(false);
@@ -310,6 +311,7 @@ export default props => {
                 gasPrice
             );
             setTimeout(() => {
+                setOrgId(organizationItem.orgid);
                 setChallengeSending(false);
             }, 5000);
         } catch (error) {

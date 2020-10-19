@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { all, takeEvery, throttle, call, put, select, delay, fork, take, cancel, spawn } from 'redux-saga/effects';
+import { all, takeEvery, throttle, call, put, select, delay, fork, take, cancel, spawn, takeLatest } from 'redux-saga/effects';
 import { eventChannel, END } from 'redux-saga';
 import {
     appName
@@ -29,6 +29,8 @@ const DIR_INDEX_SUCCESS = `${prefix}/DIR_INDEX_SUCCESS`;
 const DIR_STATS_FAILURE = `${prefix}/DIR_STATS_FAILURE`;
 const DIR_STATS_REQUEST = `${prefix}/DIR_STATS_REQUEST`;
 const DIR_STATS_SUCCESS = `${prefix}/DIR_STATS_SUCCESS`;
+
+const DIR_EVENT = `${prefix}/DIR_EVENT`;
 
 const ORG_SET = `${prefix}/ORG_SET`;
 const ORG_RESET = `${prefix}/ORG_RESET`;
@@ -202,6 +204,10 @@ export const orgDirectoriesSuccess = directories => ({
 
 export const resetOrgId = () => ({
     type: ORG_RESET
+});
+
+export const directoryEvent = () => ({
+    type: DIR_EVENT
 });
 
 // ========================================
@@ -498,6 +504,7 @@ export const subscribeDirectoriesEventsChannel = (web3, fromBlock, directories) 
     return eventChannel(emitter => {
         const subscriptions = directories.map(({ address }) => {
             const dir = getArbDirContract(web3, address);
+            const events = {}; // events log
             const subscription = dir.events.allEvents(
                 {
                     fromBlock
@@ -506,8 +513,13 @@ export const subscribeDirectoriesEventsChannel = (web3, fromBlock, directories) 
                     if (error) {
                         return emitter(statsFailure(error));
                     }
-                    console.log('Directory Event:', evt);
-                    emitter(statsRequest());
+                    if (!events[evt.id]) {
+                        console.log('Directory Event:', Date.now(), evt);
+                        events[evt.id] = evt;
+                        emitter(directoryEvent());
+                    } else {
+                        console.log('Known Event:', evt);
+                    }
                 }
             );
             console.log('Subscribed to directory:', [
@@ -543,7 +555,6 @@ function* fetchStatsSaga() {
     try {
         const web3 = yield select(selectWeb3);
         const directoriesList = yield select(directories);
-        yield delay(5000);
         const stats = yield call(fetchStats, web3, directoriesList);
         console.log('New stats:', stats);
         yield put(statsSuccess(stats));
@@ -582,12 +593,19 @@ function* fetchOrgDirectoriesSaga({ payload }) {
     }
 }
 
+function* directoryEventSaga() {
+    yield delay(5000);
+    console.log('Start stats fetching:', Date.now());
+    yield fetchStatsSaga();
+}
+
 export const saga = function* () {
     return yield all([
         takeEvery(SET_DEFAULT_WEB3, fetchDirectoriesSaga),
-        takeEvery(DIR_INDEX_REQUEST, fetchDirectoriesSaga),
-        throttle(1500, DIR_INDEX_SUCCESS, fetchStatsSaga),
-        throttle(1500, DIR_STATS_REQUEST, fetchStatsSaga),
-        throttle(1500, ORG_SET, fetchOrgDirectoriesSaga)
+        takeLatest(DIR_INDEX_REQUEST, fetchDirectoriesSaga),
+        takeLatest(DIR_INDEX_SUCCESS, fetchStatsSaga),
+        takeLatest(DIR_STATS_REQUEST, fetchStatsSaga),
+        takeLatest(ORG_SET, fetchOrgDirectoriesSaga),
+        throttle(3000, DIR_EVENT, directoryEventSaga)
     ]);
 };

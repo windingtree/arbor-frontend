@@ -158,6 +158,11 @@ export const responseTimeoutTitle = (directory, organization) => {
     return `${time.toLocaleDateString()} ${time.toLocaleTimeString()}`;
 };
 
+export const timeToLocalString = unixtime => {
+    const time = new Date(Number(unixtime));
+    return `${time.toLocaleDateString()} ${time.toLocaleTimeString()}`;
+};
+
 export const executionTimeoutTitle = (directory, organization) => {
     const time = new Date(
         (

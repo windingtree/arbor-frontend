@@ -402,7 +402,9 @@ const AddDirectoryDialog = props => {
             ]
         )
             .then(() => {
-                setApprovalLifStarted(false);
+                setTimeout(() => {
+                    setApprovalLifStarted(false);
+                }, 5000);
             })
             .catch(error => {
                 setApprovalLifStarted(false);
@@ -422,8 +424,10 @@ const AddDirectoryDialog = props => {
             ]
         )
             .then(() => {
-                setRequestStarted(false);
-                setOrgId(organizationItem.orgid);
+                setTimeout(() => {
+                    setRequestStarted(false);
+                    setOrgId(organizationItem.orgid);
+                }, 5000);
             })
             .catch(error => {
                 setRequestStarted(false);

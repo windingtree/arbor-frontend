@@ -512,16 +512,6 @@ const AppealDialog = props => {
     const [appealAmount, setAppealAmount] = useState(0);
 
     useEffect(() => {
-        setIsLoading(false);
-        setIsAppealSending(false);
-        setPartySelected(false);
-        setEthBalance(0);
-        setAppealAmount(0);
-        setChallenge(null);
-        setAppealCost(null);
-    }, []);
-
-    useEffect(() => {
         let pollingInterval;
         if (directory) {
             pollingInterval = setInterval(() => {
@@ -572,6 +562,13 @@ const AppealDialog = props => {
 
     useEffect(() => {
         if (evidenceStor && evidenceStor.currentRuling) {
+            setIsLoading(false);
+            setIsAppealSending(false);
+            setPartySelected(false);
+            setEthBalance(0);
+            setAppealAmount(0);
+            setChallenge(null);
+            setAppealCost(null);
             setSelectOptions({
                 0: 'No winners',
                 1: `Requester${isWinner(evidenceStor.currentRuling, 1) ? ' (winner)' : ''}`,
@@ -898,8 +895,10 @@ export default props => {
             ]
         )
             .then(() => {
-                updateEvidenceStor();
-                setWithdrawFeesAndRewardsSending(false);
+                setTimeout(() => {
+                    updateEvidenceStor();
+                    setWithdrawFeesAndRewardsSending(false);
+                }, 5000);
             })
             .catch(error => {
                 setError(error);
@@ -944,8 +943,10 @@ export default props => {
             ]
         )
             .then(() => {
-                updateEvidenceStor();
-                progressCallback(false);
+                setTimeout(() => {
+                    updateEvidenceStor();
+                    progressCallback(false);
+                }, 5000);
             })
             .catch(error => {
                 setError(error);
@@ -1321,7 +1322,7 @@ export default props => {
                                                                             disabled={
                                                                                 !walletAddress ||
                                                                                 withdrawFeesAndRewardsSending ||
-                                                                                (currentTime && Date.now() <= evidenceStor.appealPeriod.end)
+                                                                                (currentTime && evidenceStor.appealPeriod && Date.now() <= evidenceStor.appealPeriod.end)
                                                                             }
                                                                             onClick={() => giveRulingAction(
                                                                                 evidenceStor.challenge.disputeID,
@@ -1346,7 +1347,7 @@ export default props => {
                                                                             disabled={
                                                                                 !walletAddress ||
                                                                                 withdrawFeesAndRewardsSending ||
-                                                                                (currentTime && Date.now() <= evidenceStor.appealPeriod.end)
+                                                                                (currentTime && evidenceStor.appealPeriod && Date.now() <= evidenceStor.appealPeriod.end)
                                                                             }
                                                                             onClick={() => giveRulingAction(
                                                                                 evidenceStor.challenge.disputeID,

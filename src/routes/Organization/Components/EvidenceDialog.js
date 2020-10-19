@@ -22,8 +22,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import colors from "../../../styles/colors";
 import InfoIcon from '../../../assets/SvgComponents/InfoIcon';
 
-
-
 const styles = makeStyles({
     container: {
         marginBottom: '32px'
@@ -311,7 +309,9 @@ export default props => {
                 noFunding ? undefined : refinedValue,
                 gasPrice
             );
-            setChallengeSending(false);
+            setTimeout(() => {
+                setChallengeSending(false);
+            }, 5000);
         } catch (error) {
             setError(error);
             setChallengeSending(false);

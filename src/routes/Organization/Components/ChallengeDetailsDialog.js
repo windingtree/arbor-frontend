@@ -529,6 +529,7 @@ const AppealDialog = props => {
     }, [web3, walletAddress, organizationItem, directory]);
 
     const updateAppealCost = useCallback(party => {
+        console.log('@@@@@', challenge);
         if (challenge) {
             setError(null);
             if (isLoserPeriod(evidenceStor.currentRuling, party, evidenceStor.appealPeriod)) {
@@ -568,7 +569,6 @@ const AppealDialog = props => {
             setPartySelected(false);
             setEthBalance(0);
             setAppealAmount(0);
-            setChallenge(null);
             setAppealCost(null);
             setSelectOptions({
                 0: 'No winners',
@@ -644,7 +644,7 @@ const AppealDialog = props => {
                             <CircularProgress />
                         </DialogTitle>
                     }
-                    {(partySelected && !isLoading && Number(appealCost.value) === 0) &&
+                    {(partySelected && !isLoading && appealCost && Number(appealCost.value) === 0) &&
                         <div className={classes.depositNote}>
                             <Typography className={classes.depositNoteSubtitle}>
                                 The selected party is

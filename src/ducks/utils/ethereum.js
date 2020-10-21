@@ -46,13 +46,16 @@ export const getDirContract = (web3, address) => new web3.eth.Contract(DIR_ABI, 
 export const getArbitratorContract = web3 => new web3.eth.Contract(ARBITRATOR_ABI, ARBITRATOR_ADDRESS);
 
 // Get block
-export const getBlock = async (web3, typeOrNumber) => {
+export const getBlock = async (web3, typeOrNumber = 'latest', checkEmptyBlocks = true) => {
   let counter = 0;
   let block;
 
+  const isEmpty = block => checkEmptyBlocks
+      ? block.transactions.length === 0
+      : false;
+
   const blockRequest = () => new Promise(resolve => {
     const blockNumberTimeout = setTimeout(() => resolve(null), 2000);
-
     try {
       web3.eth.getBlock(typeOrNumber, (error, result) => {
         clearTimeout(blockNumberTimeout);
@@ -70,6 +73,13 @@ export const getBlock = async (web3, typeOrNumber) => {
   });
 
   do {
+    const isConnected = () => typeof web3.currentProvider.isConnected === 'function'
+      ? web3.currentProvider.isConnected()
+      : web3.currentProvider.connected;
+    if (!isConnected()) {
+      throw new Error(`Unable to fetch block "${typeOrNumber}": no connection`);
+    }
+
     if (counter === 100) {
         counter = 0;
         throw new Error(
@@ -78,7 +88,7 @@ export const getBlock = async (web3, typeOrNumber) => {
     }
 
     block = await blockRequest();
-    console.log('>>>', counter, block);
+    console.log('>>>', counter, block.hash);
 
     if (!block) {
         await setTimeoutPromise(parseInt(3000 + 1000 * counter / 5));
@@ -87,7 +97,7 @@ export const getBlock = async (web3, typeOrNumber) => {
     }
 
     counter++;
-  } while (!block || block.transactions.length === 0);
+  } while (!block || isEmpty(block));
 
   return block;
 };
@@ -136,7 +146,7 @@ export const sendSignedTransaction = async (web3, from, rawTransaction) => {
 };
 
 // Send transaction to contract
-export const sendMethod = async (web3, from, contractAddress, contractBuilder, method, methodArgs, value, gasPrice) => {
+export const sendMethod = async (web3, from, contractAddress, contractBuilder, method, methodArgs, value, gasPrice, confirmations = 2) => {
   const contract = contractBuilder(web3, contractAddress);
   let gas;
   try {
@@ -164,8 +174,10 @@ export const sendMethod = async (web3, from, contractAddress, contractBuilder, m
               ...(gasPrice ? { gasPrice } : {}),
               ...(value ? { value } : {})
           })
-          .on('receipt', receipt => {
+          .on('confirmation', (confirmationNumber, receipt) => {
+            if (confirmationNumber > confirmations) {
               resolve(receipt);
+            }
           })
           .on('error', (error) => {
               reject(error);

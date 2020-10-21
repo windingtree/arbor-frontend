@@ -310,10 +310,8 @@ export default props => {
                 noFunding ? undefined : refinedValue,
                 gasPrice
             );
-            setTimeout(() => {
-                setOrgId(organizationItem.orgid);
-                setChallengeSending(false);
-            }, 5000);
+            setOrgId(organizationItem.orgid);
+            setChallengeSending(false);
         } catch (error) {
             setError(error);
             setChallengeSending(false);

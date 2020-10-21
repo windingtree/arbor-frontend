@@ -323,7 +323,6 @@ const AddDirectoryDialog = props => {
     const {
         web3,
         walletAddress,
-        setOrgId,
         isOpened,
         handleClose,
         directories,
@@ -336,6 +335,7 @@ const AddDirectoryDialog = props => {
 
     const [selectedDirectory, setSelectedDirectory] = useState(null);
     const [orgData, setOrgDta] = useState(null);
+    const [balanceFetched, setBalanceFetched] = useState(false);
     const [lifBalance, setLifBalance] = useState(0);
     const [isBalanceOk, setBalanceOk] = useState(false);
     const [isAllowanceOk, setAllowanceOk] = useState(false);
@@ -366,6 +366,7 @@ const AddDirectoryDialog = props => {
                         setLifBalance(Number(balances.lifBalance));
                         setBalanceOk(Number(balances.lifBalance) >= selectedDirectory.requesterDeposit);
                         setAllowanceOk(Number(balances.lifAllowance) >= selectedDirectory.requesterDeposit);
+                        setBalanceFetched(true);
                     })
                     .catch(setError)
             }, 1500);
@@ -384,11 +385,16 @@ const AddDirectoryDialog = props => {
                 break;
             case 2:
                 break;
+            case 3:
+                break;
+            case 4:
+                break;
             default:
         }
     }, [step]);
 
     const sendLifApproval = useCallback((spender, amount) => {
+        setError(null);
         setApprovalLifStarted(true);
         sendMethod(
             web3,
@@ -399,19 +405,23 @@ const AddDirectoryDialog = props => {
             [
                 spender,
                 amount
-            ]
+            ],
+            0,
+            0,
+            1
         )
             .then(() => {
-                setTimeout(() => {
-                    setApprovalLifStarted(false);
-                }, 5000);
+                setApprovalLifStarted(false);
+                setStep(3);
             })
             .catch(error => {
+                setError(error);
                 setApprovalLifStarted(false);
             });
     }, [web3, walletAddress, setApprovalLifStarted]);
 
     const sendRequestToAdd = useCallback((directory) => {
+        setError(null);
         setRequestStarted(true);
         sendMethod(
             web3,
@@ -424,15 +434,14 @@ const AddDirectoryDialog = props => {
             ]
         )
             .then(() => {
-                setTimeout(() => {
-                    setRequestStarted(false);
-                    setOrgId(organizationItem.orgid);
-                }, 5000);
+                setRequestStarted(false);
+                setStep(4);
             })
             .catch(error => {
+                setError(error);
                 setRequestStarted(false);
             });
-    }, [web3, walletAddress, organizationItem, setOrgId, setRequestStarted]);
+    }, [web3, walletAddress, organizationItem, setRequestStarted]);
 
     const onDialogClose = () => {
         setStep(0);
@@ -533,7 +542,7 @@ const AddDirectoryDialog = props => {
                             <CircularProgress />
                         </DialogTitle>
                     }
-                    {((step === 1 || step === 2) && isOrgRequested) &&
+                    {(step === 4 || (step === 1 && isOrgRequested)) &&
                         <>
                             <DialogTitle>
                                 Organization Registration Request to the {selectedDirectory.title} Directory has been sent successfully
@@ -571,18 +580,30 @@ const AddDirectoryDialog = props => {
                                         </Button>
                                     </Grid>
                                     <Grid item>
-                                    <Button
+                                        <Button
                                             className={classes.dialogButton}
-                                            onClick={() => setStep(2)}
+                                            disabled={!balanceFetched}
+                                            onClick={() => {
+                                                isAllowanceOk
+                                                    ? setStep(3)
+                                                    : setStep(2);
+                                            }}
                                         >
                                             Next
+                                            {!balanceFetched &&
+                                                <CircularProgress
+                                                    className={classes.inButtonProgress}
+                                                    size='26px'
+                                                    color='secondary'
+                                                />
+                                            }
                                         </Button>
                                     </Grid>
                                 </Grid>
                             </div>
                         </>
                     }
-                    {(step === 2 && !isOrgRequested) &&
+                    {(step === 2 || step === 3) &&
                         <>
                             <DialogTitle>
                                 Register {organizationItem.name} in {selectedDirectory.title} Directory
@@ -595,73 +616,109 @@ const AddDirectoryDialog = props => {
                                     {selectedDirectory.requesterDeposit} LÍF
                                 </Typography>
                             </div>
-                            <div>
-                                <Grid
-                                    container
-                                    direction='row'
-                                    justify='space-between'
-                                >
-                                    <Grid item>
-                                        <Button
-                                            className={classes.dialogButton}
-                                            onClick={() => setStep(1)}
-                                        >
-                                            Back
-                                        </Button>
-                                    </Grid>
-                                    <Grid item>
-                                        {!isBalanceOk &&
-                                            <div className={classes.buyLifWrapper}>
-                                                <Typography className={classes.yourBalanceNote}>
-                                                    Your balance: {lifBalance} LÍF
-                                                </Typography>
-                                                <Button
-                                                    className={classes.dialogButtonRed}
-                                                    onClick={() => window.open('https://app.uniswap.org/#/swap', '_blank')}
-                                                >
-                                                    Buy LÍF
-                                                </Button>
-                                            </div>
-                                        }
-                                        {(isBalanceOk && !isAllowanceOk) &&
-                                            <Button
-                                                className={classes.dialogButton}
-                                                disabled={approvalLifStarted}
-                                                onClick={() => sendLifApproval(
-                                                    selectedDirectory.address,
-                                                    selectedDirectory.requesterDepositRaw
-                                                )}
-                                            >
-                                                Unlock Lif Tokens
-                                                {(approvalLifStarted || isOrgDirectoriesFetching) &&
-                                                    <CircularProgress
-                                                        className={classes.inButtonProgress}
-                                                        size='26px'
-                                                        color='secondary'
-                                                    />
-                                                }
-                                            </Button>
-                                        }
-                                        {(isBalanceOk && isAllowanceOk) &&
-                                            <Button
-                                                className={classes.dialogButton}
-                                                disabled={requestStarted}
-                                                onClick={() => sendRequestToAdd(selectedDirectory)}
-                                            >
-                                                Request to Register
-                                                {(requestStarted || isOrgDirectoriesFetching) &&
-                                                    <CircularProgress
-                                                        className={classes.inButtonProgress}
-                                                        size='26px'
-                                                        color='secondary'
-                                                    />
-                                                }
-                                            </Button>
-                                        }
-                                    </Grid>
-                                </Grid>
-                            </div>
                         </>
+                    }
+                    {step === 2 &&
+                        <Grid
+                            container
+                            direction='row'
+                            justify='space-between'
+                        >
+                            <Grid item>
+                                <Button
+                                    className={classes.dialogButton}
+                                    onClick={() => setStep(1)}
+                                >
+                                    Back
+                                </Button>
+                            </Grid>
+                            <Grid item>
+                                {!isBalanceOk &&
+                                    <div className={classes.buyLifWrapper}>
+                                        <Typography className={classes.yourBalanceNote}>
+                                            Your balance: {lifBalance} LÍF
+                                        </Typography>
+                                        <Button
+                                            className={classes.dialogButtonRed}
+                                            onClick={() => window.open('https://app.uniswap.org/#/swap', '_blank')}
+                                        >
+                                            {balanceFetched &&
+                                                <>
+                                                    Buy LÍF
+                                                </>
+                                            }
+                                            {!balanceFetched &&
+                                                <CircularProgress
+                                                    className={classes.inButtonProgress}
+                                                    size='26px'
+                                                    color='secondary'
+                                                />
+                                            }
+                                        </Button>
+                                    </div>
+                                }
+                                {(isBalanceOk && !isAllowanceOk) &&
+                                    <Button
+                                        className={classes.dialogButton}
+                                        disabled={approvalLifStarted || isAllowanceOk}
+                                        onClick={() => sendLifApproval(
+                                            selectedDirectory.address,
+                                            selectedDirectory.requesterDepositRaw
+                                        )}
+                                    >
+                                        Unlock Lif Tokens
+                                        {(approvalLifStarted || isOrgDirectoriesFetching) &&
+                                            <CircularProgress
+                                                className={classes.inButtonProgress}
+                                                size='26px'
+                                                color='secondary'
+                                            />
+                                        }
+                                    </Button>
+                                }
+                                {(isBalanceOk && isAllowanceOk) &&
+                                    <Button
+                                        className={classes.dialogButton}
+                                        disabled={!balanceFetched}
+                                        onClick={() => setStep(3)}
+                                    >
+                                        Next
+                                    </Button>
+                                }
+                            </Grid>
+                        </Grid>
+                    }
+                    {step === 3 &&
+                        <Grid
+                            container
+                            direction='row'
+                            justify='space-between'
+                        >
+                            <Grid item>
+                                <Button
+                                    className={classes.dialogButton}
+                                    onClick={() => setStep(2)}
+                                >
+                                    Back
+                                </Button>
+                            </Grid>
+                            <Grid item>
+                                <Button
+                                    className={classes.dialogButton}
+                                    disabled={requestStarted}
+                                    onClick={() => sendRequestToAdd(selectedDirectory)}
+                                >
+                                    Request to Register
+                                    {(requestStarted || isOrgDirectoriesFetching) &&
+                                        <CircularProgress
+                                            className={classes.inButtonProgress}
+                                            size='26px'
+                                            color='secondary'
+                                        />
+                                    }
+                                </Button>
+                            </Grid>
+                        </Grid>
                     }
                     {error &&
                         <div className={classes.errorWrapper}>
@@ -719,10 +776,8 @@ const DirectoriesList = props => {
             ]
         )
             .then(() => {
-                setTimeout(() => {
-                    action.actionIndicatorCallback(false);
-                    setOrgId(organizationItem.orgid);
-                }, 5000);
+                action.actionIndicatorCallback(false);
+                setOrgId(organizationItem.orgid);
             })
             .catch(error => {
                 setError(error);
@@ -744,10 +799,8 @@ const DirectoriesList = props => {
             ]
         )
             .then(() => {
-                setTimeout(() => {
-                    action.actionIndicatorCallback(false);
-                    setOrgId(organizationItem.orgid);
-                }, 5000);
+                action.actionIndicatorCallback(false);
+                setOrgId(organizationItem.orgid);
             })
             .catch(error => {
                 setError(error);
@@ -770,10 +823,8 @@ const DirectoriesList = props => {
             ]
         )
             .then(() => {
-                setTimeout(() => {
-                    action.actionIndicatorCallback(false);
-                    setOrgId(organizationItem.orgid);
-                }, 5000);
+                action.actionIndicatorCallback(false);
+                setOrgId(organizationItem.orgid);
             })
             .catch(error => {
                 setError(error);

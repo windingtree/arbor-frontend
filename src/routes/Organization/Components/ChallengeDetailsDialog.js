@@ -400,7 +400,7 @@ const fetchFiles = async events => Promise.all(events.map(
     ev => new Promise(
         resolve => fetchJson(ev._evidence)
             .then(evidence => {
-                console.log('%%%%', evidence);
+                console.log('Evidence Json:', evidence);
                 resolve({
                     ...ev,
                     evidence,
@@ -420,6 +420,8 @@ const fetchFiles = async events => Promise.all(events.map(
 
 const getWinner = currentRuling => {
     switch (currentRuling) {
+        case 0:
+            return 'none';
         case 1:
             return 'requester';
         case 2:
@@ -529,7 +531,6 @@ const AppealDialog = props => {
     }, [web3, walletAddress, organizationItem, directory]);
 
     const updateAppealCost = useCallback(party => {
-        console.log('@@@@@', challenge);
         if (challenge) {
             setError(null);
             if (isLoserPeriod(evidenceStor.currentRuling, party, evidenceStor.appealPeriod)) {
@@ -571,7 +572,7 @@ const AppealDialog = props => {
             setAppealAmount(0);
             setAppealCost(null);
             setSelectOptions({
-                0: 'No winners',
+                0: `None${isWinner(evidenceStor.currentRuling, 1) ? ' (win)' : ''}`,
                 1: `Requester${isWinner(evidenceStor.currentRuling, 1) ? ' (winner)' : ''}`,
                 2: `Challenger${isWinner(evidenceStor.currentRuling, 2) ? ' (winner)' : ''}`
             });
@@ -616,10 +617,8 @@ const AppealDialog = props => {
                 amountToWei(amount),
                 appealCost.gasPrice
             );
-            setTimeout(() => {
-                setIsAppealSending(false);
-                handleClose();
-            }, 5000);
+            setIsAppealSending(false);
+            handleClose();
         } catch (error) {
             setError(error);
             setIsAppealSending(false);
@@ -810,6 +809,7 @@ export default props => {
 
     // Actions progress
     const [withdrawFeesAndRewardsSending, setWithdrawFeesAndRewardsSending] = useState(false);
+    const [giveRulingNONESending, setGiveRulingNONESending] = useState(false);
     const [giveRulingRequesterSending, setGiveRulingRequesterSending] = useState(false);
     const [giveRulingChallengerSending, setGiveRulingChallengerSending] = useState(false);
 
@@ -896,10 +896,8 @@ export default props => {
             ]
         )
             .then(() => {
-                setTimeout(() => {
-                    updateEvidenceStor();
-                    setWithdrawFeesAndRewardsSending(false);
-                }, 5000);
+                updateEvidenceStor();
+                setWithdrawFeesAndRewardsSending(false);
             })
             .catch(error => {
                 setError(error);
@@ -914,6 +912,9 @@ export default props => {
         }
         let progressCallback;
         switch (party) {
+            case 0:
+                progressCallback = setGiveRulingNONESending;
+                break;
             case 1:
                 progressCallback = setGiveRulingRequesterSending;
                 break;
@@ -944,54 +945,14 @@ export default props => {
             ]
         )
             .then(() => {
-                setTimeout(() => {
-                    updateEvidenceStor();
-                    progressCallback(false);
-                }, 5000);
+                updateEvidenceStor();
+                progressCallback(false);
             })
             .catch(error => {
                 setError(error);
                 progressCallback(false);
             });
     };
-
-    // const finalRuleAction = (disputeId, party) => {
-    //     setError(null);
-    //     if (!ARBITRATOR_ADDRESS) {
-    //         return setError(new Error('Arbitrator features are disabled'));
-    //     }
-    //     let progressCallback;
-    //     switch (party) {
-    //         case 1:
-    //             progressCallback = setFinalRuleRequesterSending;
-    //             break;
-    //         case 2:
-    //             progressCallback = setFinalRuleChallengerSending;
-    //             break;
-    //         default:
-    //             throw new Error('Wrong party');
-    //     }
-    //     progressCallback(true);
-    //     sendMethod(
-    //         web3,
-    //         walletAddress,
-    //         ARBITRATOR_ADDRESS,
-    //         getArbitratorContract,
-    //         'rule',
-    //         [
-    //             disputeId,
-    //             party
-    //         ]
-    //     )
-    //         .then(() => {
-    //             updateEvidenceStor();
-    //             progressCallback(false);
-    //         })
-    //         .catch(error => {
-    //             setError(error);
-    //             progressCallback(false);
-    //         });
-    // };
 
     const fundAppealAction = () => {
         setIsAppealOpened(true);
@@ -1322,7 +1283,32 @@ export default props => {
                                                                             className={classes.dialogButtonRedSmall}
                                                                             disabled={
                                                                                 !walletAddress ||
-                                                                                withdrawFeesAndRewardsSending ||
+                                                                                giveRulingNONESending ||
+                                                                                (currentTime && evidenceStor.appealPeriod && Date.now() <= evidenceStor.appealPeriod.end)
+                                                                            }
+                                                                            onClick={() => giveRulingAction(
+                                                                                evidenceStor.challenge.disputeID,
+                                                                                0
+                                                                            )}
+                                                                        >
+                                                                            Juror: set NONE as Winner
+                                                                            {giveRulingNONESending &&
+                                                                                <div className={classes.actionButtonIndicator}>
+                                                                                    <CircularProgress size='16px' color='secondary' />
+                                                                                </div>
+                                                                            }
+                                                                        </Button>
+                                                                    </Grid>
+                                                                }
+                                                                {(ARBITRATOR_ADDRESS &&
+                                                                    !evidenceStor.challenge.resolved &&
+                                                                    evidenceStor.arbitratorOwner.toLowerCase() === walletAddress.toLowerCase()) &&
+                                                                    <Grid item>
+                                                                        <Button
+                                                                            className={classes.dialogButtonRedSmall}
+                                                                            disabled={
+                                                                                !walletAddress ||
+                                                                                giveRulingRequesterSending ||
                                                                                 (currentTime && evidenceStor.appealPeriod && Date.now() <= evidenceStor.appealPeriod.end)
                                                                             }
                                                                             onClick={() => giveRulingAction(
@@ -1347,7 +1333,7 @@ export default props => {
                                                                             className={classes.dialogButtonRedSmall}
                                                                             disabled={
                                                                                 !walletAddress ||
-                                                                                withdrawFeesAndRewardsSending ||
+                                                                                giveRulingChallengerSending ||
                                                                                 (currentTime && evidenceStor.appealPeriod && Date.now() <= evidenceStor.appealPeriod.end)
                                                                             }
                                                                             onClick={() => giveRulingAction(

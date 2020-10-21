@@ -1,18 +1,17 @@
 import { createSelector } from 'reselect';
-import { all, takeEvery, throttle, call, put, select, delay, fork, take, cancel, spawn, takeLatest } from 'redux-saga/effects';
-import { eventChannel, END } from 'redux-saga';
+import { all, takeEvery, throttle, call, put, select, delay, fork, take, cancel, takeLatest } from 'redux-saga/effects';
+import { eventChannel } from 'redux-saga';
 import {
     appName
 } from '../utils/constants';
 import {
     selectWeb3,
-    selectSignInAddress,
-    SET_DEFAULT_WEB3,
-    FETCH_SIGN_IN_SUCCESS
+    SET_DEFAULT_WEB3
 } from './signIn';
 import {
     getDirIndexContract,
-    getArbDirContract
+    getArbDirContract,
+    getBlock
 } from './utils/ethereum';
 import { getSegmentMeta } from '../utils/directories';
 
@@ -28,6 +27,7 @@ const DIR_INDEX_SUCCESS = `${prefix}/DIR_INDEX_SUCCESS`;
 
 const DIR_STATS_FAILURE = `${prefix}/DIR_STATS_FAILURE`;
 const DIR_STATS_REQUEST = `${prefix}/DIR_STATS_REQUEST`;
+const DIR_STATS_PREREQUEST = `${prefix}/DIR_STATS_PREREQUEST`;
 const DIR_STATS_SUCCESS = `${prefix}/DIR_STATS_SUCCESS`;
 
 const DIR_EVENT = `${prefix}/DIR_EVENT`;
@@ -41,21 +41,21 @@ const ORG_SUCCESS = `${prefix}/ORG_SUCCESS`;
 
 
 
-const POLLING_START = `${prefix}/POLLING_START`;
-const POLLING_START_SUCCESS = `${prefix}/POLLING_START_SUCCESS`;
-const POLLING_STOP = `${prefix}/POLLING_STOP`;
-const POLLING_FAILURE = `${prefix}/POLLING_FAILURE`;
+// const POLLING_START = `${prefix}/POLLING_START`;
+// const POLLING_START_SUCCESS = `${prefix}/POLLING_START_SUCCESS`;
+// const POLLING_STOP = `${prefix}/POLLING_STOP`;
+// const POLLING_FAILURE = `${prefix}/POLLING_FAILURE`;
 
 
-const DIRECTORY_SET = `${prefix}/DIRECTORY_SET`;
-const LIF_BALANCE_SET = `${prefix}/LIF_BALANCE_SET`;
-const LIF_ALLOWANCE_SET = `${prefix}/LIF_ALLOWANCE_SET`;
-const ORG_REQUESTED_SET = `${prefix}/ORG_REQUESTED_SET`;
-const ETH_BALANCE_SET = `${prefix}/ETH_BALANCE_SET`;
+// const DIRECTORY_SET = `${prefix}/DIRECTORY_SET`;
+// const LIF_BALANCE_SET = `${prefix}/LIF_BALANCE_SET`;
+// const LIF_ALLOWANCE_SET = `${prefix}/LIF_ALLOWANCE_SET`;
+// const ORG_REQUESTED_SET = `${prefix}/ORG_REQUESTED_SET`;
+// const ETH_BALANCE_SET = `${prefix}/ETH_BALANCE_SET`;
 
-const ORG_DIRECTORIES_SET = `${prefix}/ORG_DIRECTORIES_SET`;
+// const ORG_DIRECTORIES_SET = `${prefix}/ORG_DIRECTORIES_SET`;
 
-const DIR_RESET_STATE = `${prefix}/DIR_RESET_STATE`;
+// const DIR_RESET_STATE = `${prefix}/DIR_RESET_STATE`;
 
 const initialState = {
     indexError: null,
@@ -82,7 +82,8 @@ export default (state = initialState, action) => {
         case DIR_INDEX_REQUEST:
             return {
                 ...state,
-                indexFetching: true
+                indexFetching: true,
+                statsFetching: true
             };
         case DIR_INDEX_SUCCESS:
             return {
@@ -91,6 +92,7 @@ export default (state = initialState, action) => {
                 directories: payload.directories.map(dir => getSegmentMeta(dir))
             };
 
+        case DIR_STATS_PREREQUEST:
         case DIR_STATS_REQUEST:
             return {
                 ...state,
@@ -172,6 +174,10 @@ export const statsFailure = error => ({
     error
 });
 
+export const statsPreRequest = () => ({
+    type: DIR_STATS_PREREQUEST
+});
+
 export const statsRequest = () => ({
     type: DIR_STATS_REQUEST
 });
@@ -206,76 +212,77 @@ export const resetOrgId = () => ({
     type: ORG_RESET
 });
 
-export const directoryEvent = () => ({
-    type: DIR_EVENT
+export const directoryEvent = event => ({
+    type: DIR_EVENT,
+    event
 });
 
 // ========================================
 
 
-export const fetchDirectoriesSuccess = payload => {
-    return {
-        type: DIR_INDEX_SUCCESS,
-        payload
-    }
-}
+// export const fetchDirectoriesSuccess = payload => {
+//     return {
+//         type: DIR_INDEX_SUCCESS,
+//         payload
+//     }
+// }
 
-export const fetchDirectoriesFailure = error => {
-    return {
-        type: DIR_INDEX_FAILURE,
-        error
-    }
-}
+// export const fetchDirectoriesFailure = error => {
+//     return {
+//         type: DIR_INDEX_FAILURE,
+//         error
+//     }
+// }
 
-export const setDirectory = payload => {
-    return {
-        type: DIRECTORY_SET,
-        payload
-    }
-};
+// export const setDirectory = payload => {
+//     return {
+//         type: DIRECTORY_SET,
+//         payload
+//     }
+// };
 
-export const setLifBalance = payload => {
-    return {
-        type: LIF_BALANCE_SET,
-        payload
-    }
-};
+// export const setLifBalance = payload => {
+//     return {
+//         type: LIF_BALANCE_SET,
+//         payload
+//     }
+// };
 
-export const setEthBalance = payload => {
-    return {
-        type: ETH_BALANCE_SET,
-        payload
-    }
-};
+// export const setEthBalance = payload => {
+//     return {
+//         type: ETH_BALANCE_SET,
+//         payload
+//     }
+// };
 
-export const setAllowance = payload => {
-    return {
-        type: LIF_ALLOWANCE_SET,
-        payload
-    }
-};
+// export const setAllowance = payload => {
+//     return {
+//         type: LIF_ALLOWANCE_SET,
+//         payload
+//     }
+// };
 
-export const setRequested = payload => {
-    return {
-        type: ORG_REQUESTED_SET,
-        payload
-    }
-};
+// export const setRequested = payload => {
+//     return {
+//         type: ORG_REQUESTED_SET,
+//         payload
+//     }
+// };
 
-export const startPolling = orgId => {
-    return {
-        type: POLLING_START,
-        payload: {
-            orgId
-        }
-    }
-}
+// export const startPolling = orgId => {
+//     return {
+//         type: POLLING_START,
+//         payload: {
+//             orgId
+//         }
+//     }
+// }
 
-export const resetState = () => {
-    return {
-        type: DIR_RESET_STATE
-    }
-}
+// export const resetState = () => {
+//     return {
+//         type: DIR_RESET_STATE
+//     }
+// }
 
 /**
  * Selectors
@@ -335,67 +342,67 @@ export const selectedOrgId = createSelector(
 
 // ============================================================
 
-export const directoriesStor = createSelector(
-    stateSelector,
-    store => store
-);
+// export const directoriesStor = createSelector(
+//     stateSelector,
+//     store => store
+// );
 
-export const isIndexFetched = createSelector(
-    stateSelector,
-    ({ isIndexFetched }) => isIndexFetched
-);
+// export const isIndexFetched = createSelector(
+//     stateSelector,
+//     ({ isIndexFetched }) => isIndexFetched
+// );
 
-export const isPolling = createSelector(
-    stateSelector,
-    ({ isPolling }) => isPolling
-);
+// export const isPolling = createSelector(
+//     stateSelector,
+//     ({ isPolling }) => isPolling
+// );
 
-export const selectedDirectory = createSelector(
-    stateSelector,
-    ({ directoryId }) => directoryId
-);
+// export const selectedDirectory = createSelector(
+//     stateSelector,
+//     ({ directoryId }) => directoryId
+// );
 
-export const lifBalance = createSelector(
-    stateSelector,
-    ({ lifBalance }) => lifBalance
-);
+// export const lifBalance = createSelector(
+//     stateSelector,
+//     ({ lifBalance }) => lifBalance
+// );
 
-export const ethBalance = createSelector(
-    stateSelector,
-    ({ ethBalance }) => ethBalance
-);
+// export const ethBalance = createSelector(
+//     stateSelector,
+//     ({ ethBalance }) => ethBalance
+// );
 
-export const lifAllowance = createSelector(
-    stateSelector,
-    ({ lifAllowance }) => lifAllowance
-);
+// export const lifAllowance = createSelector(
+//     stateSelector,
+//     ({ lifAllowance }) => lifAllowance
+// );
 
-export const isOrgRequestedFetched = createSelector(
-    stateSelector,
-    ({ isOrgRequestedStatusFetched }) => isOrgRequestedStatusFetched
-);
+// export const isOrgRequestedFetched = createSelector(
+//     stateSelector,
+//     ({ isOrgRequestedStatusFetched }) => isOrgRequestedStatusFetched
+// );
 
-export const isOrgRequested = createSelector(
-    stateSelector,
-    ({ orgRequested }) => orgRequested
-);
+// export const isOrgRequested = createSelector(
+//     stateSelector,
+//     ({ orgRequested }) => orgRequested
+// );
 
 
 
-export const pollingError = createSelector(
-    stateSelector,
-    ({ pollingError }) => pollingError
-);
+// export const pollingError = createSelector(
+//     stateSelector,
+//     ({ pollingError }) => pollingError
+// );
 
-export const approvalError = createSelector(
-    stateSelector,
-    ({ approvalError }) => approvalError
-);
+// export const approvalError = createSelector(
+//     stateSelector,
+//     ({ approvalError }) => approvalError
+// );
 
-export const orgDirectoriesFetched = createSelector(
-    stateSelector,
-    ({ isOrgDirectoriesFetched }) => isOrgDirectoriesFetched
-);
+// export const orgDirectoriesFetched = createSelector(
+//     stateSelector,
+//     ({ isOrgDirectoriesFetched }) => isOrgDirectoriesFetched
+// );
 
 
 
@@ -516,7 +523,7 @@ export const subscribeDirectoriesEventsChannel = (web3, fromBlock, directories) 
                     if (!events[evt.id]) {
                         console.log('Directory Event:', Date.now(), evt);
                         events[evt.id] = evt;
-                        emitter(directoryEvent());
+                        emitter(directoryEvent(evt));
                     } else {
                         console.log('Known Event:', evt);
                     }
@@ -593,8 +600,18 @@ function* fetchOrgDirectoriesSaga({ payload }) {
     }
 }
 
-function* directoryEventSaga() {
-    yield delay(5000);
+function* waitForConfirmations(blockNumber, confirmations) {
+    let currentBlock;
+    const web3 = yield select(selectWeb3);
+    do {
+        currentBlock = yield call(getBlock, web3, 'latest', false);
+        yield delay(1500);
+    } while (currentBlock.number < blockNumber + confirmations);
+}
+
+function* directoryEventSaga({ event }) {
+    yield put(statsPreRequest());
+    yield waitForConfirmations(event.blockNumber, 2);
     console.log('Start stats fetching:', Date.now());
     yield fetchStatsSaga();
 }

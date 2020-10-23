@@ -205,6 +205,12 @@ export const getChallengeInfo = async (web3, dirAddress, orgId, challengeID) => 
   return contract.methods.getChallengeInfo(orgId, challengeID).call();
 };
 
+// Return organization data
+export const getOrganizationData = async (web3, dirAddress, orgId) => {
+  const contract = getArbDirContract(web3, dirAddress);
+  return contract.methods.organizationData(orgId).call();
+};
+
 // Return arbitrator owner address
 export const getArbitratorOwner = async web3 => {
   const contract = getArbitratorContract(web3);

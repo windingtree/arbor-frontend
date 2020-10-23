@@ -1,9 +1,11 @@
+import Web3 from 'web3';
 import React, { useCallback, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import history from '../../redux/history';
 import { useParams } from 'react-router-dom';
-import { Container, Grid, CircularProgress, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { Container, Grid, CircularProgress, Typography, Button } from '@material-ui/core';
+import Identicon from '../../components/Identicon';
 import {
   fetchOrganizationInfo,
   isOrgInfoFetching,
@@ -22,12 +24,19 @@ import {
 } from '../../ducks/directories';
 import { selectWeb3, selectSignInAddress } from '../../ducks/signIn';
 import {
-  getChallengeInfo
+  getChallengeInfo,
+  getOrganizationData,
+  getEvidenceEvent,
+  getBlock
 } from '../../ducks/utils/ethereum';
 import {
   setRandomDefaultImage,
   strCenterEllipsis
 } from '../../utils/helpers';
+import {
+  serializeJson
+} from '../../utils/directories';
+import { fetchJson } from '../../redux/api';
 import CopyTextComponent from '../../components/CopyTextComponent';
 import LinkIcon from '../../assets/SvgComponents/link.svg';
 import CloseIcon from '../../assets/SvgComponents/mobile-menu-icon-close.svg';
@@ -40,8 +49,11 @@ const styles = makeStyles({
   pageHeader: {
     margin: '64px 0 32px 0'
   },
-  pageOrgInfoContatiner: {
-    marginBottom: '32px'
+  pageOrgInfoContainer: {
+    margin: '0 0 32px 0'
+  },
+  pageEvidenceHeaderContainer: {
+    margin: '0 0 24px 0'
   },
   challengeTitle: {
     fontWeight: '500',
@@ -49,7 +61,7 @@ const styles = makeStyles({
     lineHeight: '28px',
     whiteSpace: 'nowrap'
   },
-  challengeStatusLabel: {
+  statusLabel: {
     display: 'block',
     fontWeight: '500',
     fontSize: '14px',
@@ -58,10 +70,18 @@ const styles = makeStyles({
     color: '#5E666A',
     padding: '4px 6px',
     borderRadius: '4px',
-    '&.resolved': {
+    '&.green': {
       backgroundColor: '#98CCB0',
       color: 'white'
-    }
+    },
+    '&.red': {
+      backgroundColor: '#FAC8C0',
+      color: '#42424F'
+    },
+    '&.yellow': {
+      backgroundColor: '#FCE8B6',
+      color: '#5E666A'
+    },
   },
   closeButton: {
     padding: '4px',
@@ -72,7 +92,8 @@ const styles = makeStyles({
     }
   },
   orgImageContainer: {
-    ['@media (max-width:1069px)']: { // eslint-disable-line no-useless-computed-key
+    ['@media (max-width:1024px)']: { // eslint-disable-line no-useless-computed-key
+      width: '100%',
       marginTop: '20px',
     },
     ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
@@ -85,7 +106,7 @@ const styles = makeStyles({
     height: '100px',
     overflow: 'hidden',
     borderRadius: '6px',
-    ['@media (max-width:1069px)']: { // eslint-disable-line no-useless-computed-key
+    ['@media (max-width:1024px)']: { // eslint-disable-line no-useless-computed-key
       width: '100%',
       height: '290px'
     },
@@ -110,8 +131,152 @@ const styles = makeStyles({
     fontWeight: '500',
     fontSize: '18px',
     lineHeight: '22px'
+  },
+  evidenceTitle: {
+    fontWeight: '500',
+    fontSize: '24px',
+    lineHeight: '28px'
+  },
+  evidenceTitleRightContainer: {
+    textAlign: 'right'
+  },
+  evidenceRoundTitle: {
+    fontWeight: '500',
+    fontSize: '16px',
+    lineHeight: '20px',
+    color: '#2E2E31'
+  },
+  evidenceLeftContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyItems: 'flex-start',
+    alignItems: 'center'
+  },
+  identiconStyle: {
+    marginRight: '32px'
+  },
+  greyHLine: {
+    flexGrow: 1,
+    height: '1px',
+    borderTop: '1px solid #EFEFEF'
+  },
+  greyCenter: {
+    alignSelf: 'stretch',
+    width: '1px',
+    borderLeft: '1px solid #EFEFEF',
+    position: 'relative',
+    '&:after': {
+      content: '""',
+      position: 'absolute',
+      top: '-1px',
+      left: '-1px',
+      right: 0,
+      bottom: '50%',
+      backgroundColor: 'white'
+    }
+  },
+  greyVLine: {
+    alignSelf: 'stretch',
+    width: '1px',
+    borderLeft: '1px solid #EFEFEF'
+  },
+  cardWrapper: {
+    padding: '16px',
+    backgroundColor: '#FFFFFF',
+    border: '1px solid #EFEFEF',
+    boxSizing: 'border-box',
+    boxShadow: '0px 6px 24px #F3F3F6',
+    borderRadius: '8px'
+  },
+  cardName: {
+    fontWeight: 'bold',
+    fontSize: '14px',
+    lineHeight: '17px',
+    color: '#42424F',
+    marginBottom: '14px'
+  },
+  cardDescription: {
+    fontWeight: 'normal',
+    fontSize: '14px',
+    lineHeight: '17px',
+    color: '#42424F',
+    marginBottom: '24px'
+  },
+  cardDate: {
+    fontWeight: 'normal',
+    fontSize: '14px',
+    lineHeight: '17px',
+    color: '#8F999F'
+  },
+  fileLinkWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    whiteSpace: 'nowrap',
+    marginBottom: '24px',
+    '& > a': {
+      fontWeight: 'normal',
+      fontSize: '14px',
+      lineHeight: '16px',
+      color: '#2E2E31',
+      textDecoration: 'none',
+      '&:hover': {
+        textDecoration: 'underline'
+      }
+    },
+    '& > a:visited': {
+      color: '#2E2E31'
+    }
+  },
+  fileLinkIcon: {
+    marginRight: '8px'
+  },
+  fileLinkNotValid: {
+    color: 'red'
+  },
+  cardsWrapper: {
+    padding: '16px'
   }
 });
+
+const validateFile = (uri, jsonData) => {
+  const hash = Web3.utils.soliditySha3(serializeJson(jsonData));
+  const fileName = uri.match(/([A-Fa-f0-9]{64})(\.json)$/);
+  if (!fileName || `0x${fileName[1]}` !== hash) {
+      throw new Error('Evidence file is not valid');
+  }
+  return true;
+};
+
+const fetchFiles = async events => Promise.all(events.map(
+  ev => new Promise(
+      resolve => fetchJson(ev._evidence)
+          .then(content => {
+              console.log('Evidence Json:', content);
+              resolve({
+                  ...ev,
+                  content,
+                  validated: validateFile(ev._evidence, content, true)
+              });
+          })
+          .catch(error => {
+              resolve({
+                  ...ev,
+                  evidence: null,
+                  validated: false,
+                  error
+              });
+          })
+  )
+));
+
+const loadEvidenceFiles = async evidence => {
+  const requester = await fetchFiles(evidence.requester);
+  const other = await fetchFiles(evidence.other);
+  return {
+    requester,
+    other
+  }
+};
 
 const fetchChallengeInfo = async (web3, directory, orgId, challengeId) => {
   const challenge = await getChallengeInfo(
@@ -120,12 +285,63 @@ const fetchChallengeInfo = async (web3, directory, orgId, challengeId) => {
     orgId,
     challengeId
   );
-  console.log('Challenge', challenge);
+  console.log('Challenge:', challenge);
+
+  const organization = await getOrganizationData(
+    web3,
+    directory.address,
+    orgId
+  );
+  console.log('Organization data:', organization);
+
+  let evidence = await getEvidenceEvent(
+    web3,
+    directory.address,
+    challenge.arbitrator,
+    orgId,
+    challengeId
+  );
+  console.log('Evidence events:', evidence);
+
+  evidence = await Promise.all(
+    evidence.map(async evd => {
+      const block = await getBlock(web3, evd.blockNumber , false);
+      return {
+        ...evd,
+        block
+      };
+    })
+  );
+  console.log('Evidence events with block:', evidence);
+
+  const filteredEvidence = evidence
+    .reduce(
+      (a, v) => {
+        if (v.returnValues._party.toLowerCase() === organization.requester.toLowerCase()) {
+          a.requester.push({
+            ...v.returnValues,
+            block: v.block
+          });
+        } else {
+          a.other.push({
+            ...v.returnValues,
+            block: v.block
+          });
+        }
+        return a;
+      },
+      {
+        requester: [],
+        other: []
+      }
+    );
 
   return {
     challengeId,
     orgId,
-    ...challenge
+    ...challenge,
+    organization,
+    evidence: filteredEvidence
   };
 };
 
@@ -174,7 +390,7 @@ const ChallengeHeader = props => {
               </Typography>
             </Grid>
             <Grid item>
-              <Typography className={classes.challengeStatusLabel + ` ${challenge.resolved ? 'resolved' : ''}`}>
+              <Typography className={classes.statusLabel + ` ${challenge.resolved ? 'green' : ''}`}>
                 {challenge.resolved ? 'resolved' : 'not resolved'}
               </Typography>
             </Grid>
@@ -289,6 +505,79 @@ const OrganizationInfo = props => {
   );
 };
 
+const FileLink = props => {
+  const classes = styles();
+  const {
+    fileName,
+    fileUri,
+    isValidated
+  } = props;
+
+  return (
+    <Typography className={classes.fileLinkWrapper}>
+      <img
+        className={classes.fileLinkIcon}
+        src={LinkIcon}
+        width='16px' height='16px'
+        alt={fileUri}
+      />
+      <a
+        href={fileUri}
+        target='_blank'
+        rel='noopener noreferrer'
+      >
+        {fileName}
+      </a>
+      {!isValidated &&
+        <Typography variant='inherit'  className={classes.fileLinkNotValid}>
+          &nbsp;(not valid)
+        </Typography>
+      }
+    </Typography>
+  );
+};
+
+const EvidenceCard = props => {
+  const classes = styles();
+  const {
+    name,
+    description,
+    fileTypeExtension,
+    fileURI,
+    timestamp,
+    isValidated
+  } = props;
+
+  return (
+    <Grid container direction='column' className={classes.cardWrapper}>
+      <Grid item>
+        <Typography className={classes.cardName}>
+          {name}
+        </Typography>
+      </Grid>
+      <Grid item>
+        <Typography className={classes.cardDescription}>
+          {description}
+        </Typography>
+      </Grid>
+      <Grid item>
+        <FileLink
+          fileName={`evidence.${fileTypeExtension}`}
+          fileUri={fileURI}
+          isValidated={isValidated}
+        />
+      </Grid>
+      <Grid item>
+        {timestamp &&
+          <Typography className={classes.cardDate}>
+            {new Date(timestamp * 1000).toUTCString()}
+          </Typography>
+        }
+      </Grid>
+    </Grid>
+  );
+};
+
 const Challenge = props => {
   const classes = styles();
   const { orgId, directoryId, challengeId } = useParams();
@@ -299,16 +588,18 @@ const Challenge = props => {
     fetchOrganizationInfo,
     organization,
     isIndexFetching,
-    isOrgDirectoriesFetching,
-    setOrgId,
-    resetOrgId,
+    // isOrgDirectoriesFetching,
+    // setOrgId,
+    // resetOrgId,
     directories,
-    orgDirectories
+    // orgDirectories
   } = props;
 
   const [errors, setErrors] = useState([]);
   const [directory, setDirectory] = useState(null);
   const [challenge, setChallenge] = useState(null);
+  const [evidenceRequester, setEvidenceRequester] = useState([]);
+  const [evidenceOther, setEvidenceOther] = useState([]);
 
   const [isChallengeFetching, setIsChallengeFetching] = useState(false);
 
@@ -320,30 +611,23 @@ const Challenge = props => {
     fetchOrganizationInfo({ id: orgId });
   }, [orgId, fetchOrganizationInfo]);
 
-  useEffect(() => {
-    if (orgId) {
-      setOrgId(orgId);
-    }
+  // useEffect(() => {
+  //   if (orgId) {
+  //     setOrgId(orgId);
+  //   }
 
-    return () => {
-      resetOrgId();
-    };
-  }, [setOrgId, resetOrgId, orgId]);
+  //   return () => {
+  //     resetOrgId();
+  //   };
+  // }, [setOrgId, resetOrgId, orgId]);
 
   useEffect(() => {
-    if (orgDirectories && orgDirectories.length > 0 && orgId && directoryId) {
+    if (orgId && directoryId) {
       const directoryInfo = directories
         .filter(d => d.address === directoryId)[0];
-      const orgInfo = orgDirectories
-        .filter(
-          d => (d.ID === orgId && d.address === directoryId)
-        )[0];
-      setDirectory({
-        ...directoryInfo,
-        organization: orgInfo
-      });
+      setDirectory(directoryInfo);
     }
-  }, [directories, orgDirectories, orgId, directoryId]);
+  }, [directories, orgId, directoryId]);
 
   useEffect(() => {
     if (directory && orgId && challengeId !== undefined) {
@@ -351,6 +635,7 @@ const Challenge = props => {
       setIsChallengeFetching(true);
       fetchChallengeInfo(web3, directory, orgId, challengeId)
         .then(info => {
+          console.log('Challenge stor:', info);
           setChallenge(info);
           setIsChallengeFetching(false);
         })
@@ -360,6 +645,21 @@ const Challenge = props => {
         });
     }
   }, [directory, orgId, challengeId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (challenge) {
+      loadEvidenceFiles(challenge.evidence)
+        .then(files => {
+          console.log('####', files);
+          setEvidenceRequester(files.requester);
+          setEvidenceOther(files.other);
+        })
+        .catch(error => {
+          setErrors([...errors, error]);
+          setIsChallengeFetching(false);
+        });
+    }
+  }, [challenge]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loaded = directory && organization && challenge;
 
@@ -384,17 +684,97 @@ const Challenge = props => {
     <Grid container direction='column' className={classes.pageContainer}>
       <Grid item className={classes.pageHeader}>
         <ChallengeHeader
-          isFetching={isIndexFetching || isOrgDirectoriesFetching || isChallengeFetching}
+          isFetching={isIndexFetching || isChallengeFetching}
           challenge={challenge}
           walletAddress={walletAddress}
         />
       </Grid>
-      <Grid item className={classes.pageOrgInfoContatiner}>
+      <Grid item className={classes.pageOrgInfoContainer}>
         <OrganizationInfo
-          isFetching={isIndexFetching || isOrgDirectoriesFetching || isOrgInfoFetching}
+          isFetching={isIndexFetching || isOrgInfoFetching}
           organization={organization}
           directory={directory}
         />
+      </Grid>
+      <Grid item className={classes.pageEvidenceHeaderContainer}>
+        <Container>
+          <Grid container
+            direction='row'
+            alignItems='center'
+          >
+            <Grid item xs>
+              <Typography className={classes.evidenceTitle}>
+                Requester’s evidence
+              </Typography>
+            </Grid>
+            <Grid item zeroMinWidth={true}>
+              <Typography className={classes.evidenceRoundTitle}>
+                Round {challenge.numberOfRounds}
+              </Typography>
+            </Grid>
+            <Grid item xs className={classes.evidenceTitleRightContainer}>
+              <Typography className={classes.evidenceTitle}>
+                Other evidence
+              </Typography>
+            </Grid>
+          </Grid>
+        </Container>
+      </Grid>
+      <Grid item>
+        <Container>
+          <Grid container
+            direction='row'
+            alignItems='center'
+          >
+            <Grid item xs
+              className={classes.evidenceLeftContainer}
+            >
+              <Identicon
+                className={classes.identiconStyle}
+                address={challenge.organization.requester}
+                color='#42424F'
+              />
+              <div>
+                <Typography className={classes.statusLabel + ` yellow`}>
+                  requester
+                </Typography>
+              </div>
+              <div className={classes.greyHLine} />
+            </Grid>
+            <Grid item zeroMinWidth={true} className={classes.greyCenter}>
+            </Grid>
+            <Grid item xs>
+              <div className={classes.greyHLine} />
+            </Grid>
+          </Grid>
+          <Grid container
+            direction='row'
+            alignItems='center'
+          >
+            <Grid item xs className={classes.cardsWrapper}>
+              {evidenceRequester.map((evidence, i) => (
+                <EvidenceCard
+                  key={i}
+                  isValidated={evidence.validated}
+                  timestamp={evidence.block ? evidence.block.timestamp : null}
+                  {...(evidence.content ? evidence.content : {})}
+                />
+              ))}
+            </Grid>
+            <Grid item zeroMinWidth={true} className={classes.greyVLine}></Grid>
+            <Grid item xs className={classes.cardsWrapper}>
+              {evidenceOther.map((evidence, i) => (
+                <EvidenceCard
+                  key={i}
+                  isOther={true}
+                  isValidated={evidence.validated}
+                  timestamp={evidence.block ? evidence.block.timestamp : null}
+                  {...(evidence.content ? evidence.content : {})}
+                />
+              ))}
+            </Grid>
+          </Grid>
+        </Container>
       </Grid>
     </Grid>
   );

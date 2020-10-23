@@ -877,6 +877,10 @@ const DirectoriesList = props => {
 
     const parseDirectories = (orgDirectories, directories) => orgDirectories
         .map((d, index) => {
+            if (d.status === '0') {
+                return null;
+            }
+
             const config = [
                 {
                     status: 'Not Registered',
@@ -970,10 +974,6 @@ const DirectoriesList = props => {
                     ]
                 }
             ];
-
-            if (d.status === '0') {
-                return null;
-            }
 
             const details = directoriesDetails[index];
             const statusNum = Number(d.status);

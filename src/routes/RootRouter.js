@@ -15,6 +15,7 @@ import DirectoryRegistrationRequests from './DirectoryRegistrationRequests';
 import DirectoryDisputes from './DirectoryDisputes';
 import DirectoryRegistered from './DirectoryRegistered';
 import Organization from './Organization/Organization';
+import OrganizationChallenge from './Organization/OrganizationChallenge';
 import Authorization from './Authorization/Authorization';
 import Trust from './Trust/Trust';
 import TOS from './TOS'
@@ -77,6 +78,11 @@ class RootRouter extends Component {
             isAuthenticated={isAuthenticated}
             path='/organization/:orgId'
             component={Organization}
+          />
+          <DefaultRoute
+            isAuthenticated={isAuthenticated}
+            path='/challenge/:orgId/:directoryId/:challengeId'
+            component={OrganizationChallenge}
           />
           <DefaultRoute
             isAuthenticated={isAuthenticated}

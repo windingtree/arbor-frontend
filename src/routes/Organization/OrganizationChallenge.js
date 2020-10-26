@@ -9,6 +9,10 @@ import Identicon from '../../components/Identicon';
 import CopyTextComponent from '../../components/CopyTextComponent';
 import ActionButton from './Components/ActionButton';
 import EvidenceDialog from './Components/EvidenceDialog';
+import AppealDialog from './Components/AppealDialog';
+import {
+  ARBITRATOR_ADDRESS
+} from '../../utils/constants';
 import {
   fetchOrganizationInfo,
   isOrgInfoFetching,
@@ -30,14 +34,29 @@ import {
   getChallengeInfo,
   getOrganizationData,
   getEvidenceEvent,
-  getBlock
+  getBlock,
+  sendMethod,
+  getArbitratorContract,
+  getArbitratorOwner,
+  disputeStatus,
+  appealPeriod,
+  appealDisputes,
+  getCurrentRuling,
+  getRoundInfo,
+  getMultiplierDivisor
 } from '../../ducks/utils/ethereum';
 import {
   setRandomDefaultImage,
   strCenterEllipsis
 } from '../../utils/helpers';
 import {
-  serializeJson
+  serializeJson,
+  isResponseTimeout,
+  isAppealPossible,
+  responseTimeoutTitle,
+  timeToLocalString,
+  amountFromWei,
+  Party
 } from '../../utils/directories';
 import { fetchJson } from '../../redux/api';
 import LinkIcon from '../../assets/SvgComponents/link.svg';
@@ -162,7 +181,8 @@ const styles = makeStyles({
     display: 'flex',
     flexDirection: 'row',
     justifyItems: 'flex-start',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginBottom: '16px'
   },
   identiconStyle: {
     marginRight: '24px'
@@ -258,8 +278,12 @@ const styles = makeStyles({
   },
   cardsWrapper: {
     position: 'relative',
-    padding: '16px',
+    padding: '16px 0',
+    '&.leftColumn': {
+      paddingRight: '16px'
+    },
     '&.rightColumn': {
+      paddingLeft: '16px',
       marginTop: '-57px'
     }
   },
@@ -268,10 +292,67 @@ const styles = makeStyles({
     lineHeight: '16px',
     color: '#3E9693',
     textTransform: 'none'
+  },
+  dialogButtonRedSmall: {
+    backgroundImage: colors.gradients.orange,
+    borderRadius: '6px',
+    textTransform: 'none',
+    color: colors.primary.white,
+    fontSize: '16px',
+    fontWeight: 600,
+    lineHeight: '20px',
+    padding: '10px 20px'
+  },
+  actionButtonIndicator: {
+    marginLeft: '10px'
+  },
+  arbitratorAction: {
+    marginBottom: '10px'
+  },
+  inlineComponentTitle: {
+    fontWeight: 500,
+    fontSize: '18px',
+    lineHeight: '22px',
+    color: '#3E9693',
+    marginBottom: '24px'
+  },
+  appealSubtitle: {
+    marginBottom: '24px'
+  },
+  fundedAppealsContainer: {
+    marginBottom: '16px'
+  },
+  fundedAppealsTitle: {
+    fontWeight: 'bold',
+    fontSize: '16px',
+    lineHeight: '17px',
+    color: '#42424F',
+    marginBottom: '8px'
+  },
+  fundedAppealsLabel: {
+    fontSize: '14px',
+    marginBottom: '6px',
+    paddingLeft: '6px',
+    '& > b': {
+      fontWeight: 'bold'
+    }
   }
 });
 
-const equalAddresses = (address1, address2) => address1.toLowerCase() === address2.toLowerCase();
+const equalAddresses = (address1, address2) => address1 && address2 && address1.toLowerCase() === address2.toLowerCase();
+
+const getWinner = currentRuling => {
+  switch (Number(currentRuling)) {
+      case 0:
+          return 'none';
+      case 1:
+          return 'requester';
+      case 2:
+          return 'challenger';
+      default:
+          return 'not selected';
+  }
+};
 
 const validateFile = (uri, jsonData) => {
   const hash = Web3.utils.soliditySha3(serializeJson(jsonData));
@@ -322,12 +403,63 @@ const fetchChallengeInfo = async (web3, directory, orgId, challengeId) => {
   );
   console.log('Challenge:', challenge);
 
+  let dStatus;
+  let aPeriod;
+  let aDispute;
+  let currentRuling;
+
+  if (challenge.disputed) {
+      dStatus = await disputeStatus(
+          web3,
+          challenge.disputeID
+      );
+      console.log('disputeStatus:', dStatus);
+
+      if (Number(dStatus) === 1) {
+          aPeriod = await appealPeriod(
+              web3,
+              challenge.disputeID
+          );
+          aPeriod = {
+              start: Number(aPeriod.start) * 1000,
+              end: Number(aPeriod.end) * 1000
+          };
+          console.log('appealPeriod:', aPeriod);
+      }
+
+      aDispute = await appealDisputes(
+          web3,
+          challenge.disputeID
+      );
+      console.log('appealDisputes:', aDispute);
+
+      currentRuling = await getCurrentRuling(
+          web3,
+          challenge.disputeID
+      );
+      console.log('Ruling:', currentRuling);
+  }
+
+  const arbitratorOwner = await getArbitratorOwner(web3);
+
   const organization = await getOrganizationData(
     web3,
     directory.address,
     orgId
   );
   console.log('Organization data:', organization);
+
+  const currentRound = Number(challenge.numberOfRounds) - 1;
+  const roundInfo = await getRoundInfo(
+    web3,
+    directory.address,
+    orgId,
+    challengeId,
+    currentRound
+  );
+  console.log('Round:', roundInfo);
+
+  const multiplierDivisor = await getMultiplierDivisor(web3, directory.address);
 
   let evidence = await getEvidenceEvent(
     web3,
@@ -373,6 +505,13 @@ const fetchChallengeInfo = async (web3, directory, orgId, challengeId) => {
 
   return {
     challengeId,
+    disputeStatus: dStatus,
+    appealPeriod: aPeriod,
+    appealDispute: aDispute,
+    currentRuling,
+    roundInfo,
+    multiplierDivisor,
+    arbitratorOwner,
     orgId,
     ...challenge,
     organization,
@@ -572,6 +711,20 @@ const FileLink = props => {
   );
 };
 
+const ActionsBlock = ({ title, children }) => {
+  const classes = styles();
+  return (
+    <div className={classes.cardWrapper}>
+      {title &&
+        <Typography className={classes.inlineComponentTitle}>
+          {title}
+        </Typography>
+      }
+      {children}
+    </div>
+  );
+};
+
 const EvidenceCard = props => {
   const classes = styles();
   const {
@@ -654,15 +807,23 @@ const Challenge = props => {
   } = props;
 
   const [errors, setErrors] = useState([]);
+  const [currentTime, setCurrentTime] = useState(Date.now());
   const [directory, setDirectory] = useState(null);
   const [challenge, setChallenge] = useState(null);
   const [evidenceRequester, setEvidenceRequester] = useState([]);
   const [evidenceOther, setEvidenceOther] = useState([]);
-
   const [isChallengeFetching, setIsChallengeFetching] = useState(false);
+  const [giveRulingNONESending, setGiveRulingNONESending] = useState(false);
+  const [giveRulingRequesterSending, setGiveRulingRequesterSending] = useState(false);
+  const [giveRulingChallengerSending, setGiveRulingChallengerSending] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0)
+  }, []);
+
+  useEffect(() => {
+    const timeInterval = setInterval(() => setCurrentTime(Date.now()), 1000);
+    return () => clearInterval(timeInterval);
   }, []);
 
   useEffect(() => {
@@ -697,6 +858,7 @@ const Challenge = props => {
           setIsChallengeFetching(false);
         })
         .catch(error => {
+          console.log('!!!!!', error);
           setErrors(errors => [...errors, error]);
           setIsChallengeFetching(false);
         });
@@ -717,11 +879,60 @@ const Challenge = props => {
           setEvidenceOther(files.other);
         })
         .catch(error => {
-          setErrors([...errors, error]);
+          setErrors(errors => [...errors, error]);
           setIsChallengeFetching(false);
         });
     }
-  }, [challenge]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [challenge]);
+
+  const giveRulingAction = (disputeId, party) => {
+    setErrors([]);
+    if (!ARBITRATOR_ADDRESS) {
+      throw new Error('Arbitrator features are disabled');
+    }
+    let progressCallback;
+    switch (party) {
+        case 0:
+            progressCallback = setGiveRulingNONESending;
+            break;
+        case 1:
+            progressCallback = setGiveRulingRequesterSending;
+            break;
+        case 2:
+            progressCallback = setGiveRulingChallengerSending;
+            break;
+        default:
+            throw new Error('Wrong party');
+    }
+    progressCallback(true);
+    if (challenge.appealDispute && challenge.appealDispute.appealDisputeID !== '0') {
+        disputeId = challenge.appealDispute.appealDisputeID;
+        console.log('Using of appealDisputeID instead of DisputeID');
+    }
+    console.log('Give Ruling:', [
+      disputeId,
+      party
+    ]);
+    sendMethod(
+      web3,
+      walletAddress,
+      directory.address,
+      getArbitratorContract,
+      'giveRuling',
+      [
+        disputeId,
+        party
+      ]
+    )
+      .then(() => {
+        updateChallengeInfo();
+        progressCallback(false);
+      })
+      .catch(error => {
+        setErrors(errors => [...errors, error]);
+        progressCallback(false);
+      });
+};
 
   const loaded = directory && organization && challenge;
 
@@ -772,6 +983,21 @@ const Challenge = props => {
             <Grid item zeroMinWidth={true}>
               <Typography className={classes.evidenceRoundTitle}>
                 Round {challenge.numberOfRounds}
+                {challenge.resolved &&
+                  <>
+                    &nbsp;(winner: {getWinner(challenge.currentRuling)})
+                  </>
+                }
+                {(!challenge.resolved && !challenge.disputed) &&
+                  <>
+                    &nbsp;(status: acceptance)
+                  </>
+                }
+                {(challenge.disputed && !challenge.resolved) &&
+                  <>
+                    &nbsp;(status: {challenge.disputeStatus === '0' ? 'waiting' : challenge.disputeStatus === '1' ? 'appealable' : 'solved'})
+                  </>
+                }
               </Typography>
             </Grid>
             <Grid item xs className={classes.evidenceTitleRightContainer}>
@@ -814,55 +1040,93 @@ const Challenge = props => {
             direction='row'
             alignItems='flex-start'
           >
-            <Grid item xs className={classes.cardsWrapper}>
+            <Grid item xs className={classes.cardsWrapper + ' leftColumn'}>
               {evidenceRequester.map((evidence, i) => (
                 <EvidenceCard
                   key={i}
                   {...evidence}
                 />
               ))}
-              {(!walletAddress && !challenge.disputed) &&
-                <ActionButton
-                  onClick={() => {
-                    history.push('/authorization/signin', { follow: history.location.pathname });
-                  }}
+              {(evidenceRequester.length === 0 && !equalAddresses(walletAddress, challenge.organization.requester)) &&
+                <ActionsBlock>
+                  No evidence from requester party submitted yet
+                </ActionsBlock>
+              }
+              {challenge.appealPeriod &&
+                <ActionsBlock
+                  title={'Appeal management'}
                 >
-                  Sign In to see available actions
-                </ActionButton>
+                  <Typography className={classes.appealSubtitle}>
+                    Challenge has been ruled and "{getWinner(challenge.currentRuling)}" has been chosen as a winner.
+                    Ruling result can be appealed until {timeToLocalString(challenge.appealPeriod.end)}
+                  </Typography>
+                  {challenge.roundInfo &&
+                    <div className={classes.fundedAppealsContainer}>
+                      <Typography className={classes.fundedAppealsTitle}>
+                        Funded Appeal (by parties):
+                      </Typography>
+                      <ul>
+                        {challenge.roundInfo.paidFees.map((value, i) => (
+                          <li key={i} className={classes.fundedAppealsLabel}>
+                            <b>{Party[i]}</b>: {amountFromWei(value, challenge.multiplierDivisor)} ETH
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  }
+                  <AppealDialog
+                    {...props}
+                    inline
+                    timeoutTitle={
+                      isAppealPossible(challenge)
+                        ? `Available until ${timeToLocalString(challenge.appealPeriod.end)}`
+                        : `Appealing has been closed at ${timeToLocalString(challenge.appealPeriod.end)}`
+                    }
+                    isDisabled={currentTime && !isAppealPossible(challenge)}
+                    isOpened={walletAddress && challenge.appealPeriod && challenge.appealPeriod.end}
+                    handleClose={() => {}}
+                    setOrgId={updateChallengeInfo}
+                    directory={directory}
+                    challenge={challenge}
+                  />
+                </ActionsBlock>
               }
-              {(walletAddress && !challenge.disputed && equalAddresses(walletAddress, challenge.organization.requester)) &&
-                <EvidenceDialog
-                  {...props}
-                  inline
-                  dialogTitle='Accept Challenge'
-                  actionMethod='acceptChallenge'
-                  isOpened={true}
-                  handleClose={() => {}}
-                  setOrgId={updateChallengeInfo}
-                  directory={directory}
-                />
-              }
-              {(!walletAddress && challenge.disputed) &&
-                <ActionButton
-                  onClick={() => {
-                    history.push('/authorization/signin', { follow: history.location.pathname });
-                  }}
-                >
-                  Submit new Evidence
-                </ActionButton>
-              }
-              {(walletAddress && challenge.disputed) &&
-                <EvidenceDialog
-                  {...props}
-                  inline
-                  dialogTitle='Submit New Evidence'
-                  actionMethod='submitEvidence'
-                  isOpened={true}
-                  handleClose={() => {}}
-                  setOrgId={updateChallengeInfo}
-                  directory={directory}
-                  noFunding
-                />
+              {!challenge.resolved &&
+                <>
+                  {!walletAddress &&
+                    <ActionButton
+                      onClick={() => {
+                        history.push('/authorization/signin', { follow: history.location.pathname });
+                      }}
+                    >
+                      Sign In to see available actions
+                    </ActionButton>
+                  }
+                  <EvidenceDialog
+                    {...props}
+                    inline
+                    dialogTitle='Accept Challenge'
+                    timeoutTitle={`Available until ${responseTimeoutTitle(directory, challenge.organization)}`}
+                    actionMethod='acceptChallenge'
+                    isDisabled={currentTime && !isResponseTimeout(directory, challenge.organization)}
+                    isOpened={walletAddress && !challenge.disputed && equalAddresses(walletAddress, challenge.organization.requester)}
+                    handleClose={() => {}}
+                    setOrgId={updateChallengeInfo}
+                    directory={directory}
+                  />
+                  <EvidenceDialog
+                    {...props}
+                    inline
+                    dialogTitle='Submit New Evidence'
+                    timeoutTitle={`Available until the challenge not resolved`}
+                    actionMethod='submitEvidence'
+                    isOpened={walletAddress && challenge.disputed && !challenge.resolved && equalAddresses(walletAddress, challenge.organization.requester)}
+                    handleClose={() => {}}
+                    setOrgId={updateChallengeInfo}
+                    directory={directory}
+                    noFunding
+                  />
+                </>
               }
             </Grid>
             <Grid item zeroMinWidth={true} className={classes.greyVLine}></Grid>
@@ -875,10 +1139,105 @@ const Challenge = props => {
                   {...evidence}
                 />
               ))}
+              {(evidenceOther.length === 0 && (challenge.resolved || !walletAddress || equalAddresses(walletAddress, challenge.organization.requester))) &&
+                <ActionsBlock>
+                  No evidence from other parties submitted yet
+                </ActionsBlock>
+              }
+              <EvidenceDialog
+                {...props}
+                inline
+                dialogTitle='Submit New Evidence'
+                timeoutTitle={`Available until the challenge not resolved`}
+                actionMethod='submitEvidence'
+                isOpened={walletAddress && challenge.disputed && !challenge.resolved && !equalAddresses(walletAddress, challenge.organization.requester)}
+                handleClose={() => {}}
+                setOrgId={updateChallengeInfo}
+                directory={directory}
+                noFunding
+              />
+              {(ARBITRATOR_ADDRESS && !challenge.resolved && equalAddresses(challenge.arbitratorOwner, walletAddress)) &&
+                <ActionsBlock title={'Arbitrator actions'}>
+                  <Grid container direction='column'>
+                    <Grid item className={classes.arbitratorAction}>
+                      <Button
+                        className={classes.dialogButtonRedSmall}
+                        disabled={
+                            !walletAddress ||
+                            giveRulingNONESending ||
+                            (currentTime && challenge.appealPeriod && Date.now() <= challenge.appealPeriod.end)
+                        }
+                        onClick={() => giveRulingAction(
+                            challenge.disputeID,
+                            0
+                        )}
+                      >
+                        Juror: set NONE as Winner
+                        {giveRulingNONESending &&
+                          <div className={classes.actionButtonIndicator}>
+                              <CircularProgress size='16px' color='secondary' />
+                          </div>
+                        }
+                      </Button>
+                    </Grid>
+                    <Grid item className={classes.arbitratorAction}>
+                      <Button
+                        className={classes.dialogButtonRedSmall}
+                        disabled={
+                            !walletAddress ||
+                            giveRulingRequesterSending ||
+                            (currentTime && challenge.appealPeriod && Date.now() <= challenge.appealPeriod.end)
+                        }
+                        onClick={() => giveRulingAction(
+                            challenge.disputeID,
+                            1
+                        )}
+                      >
+                        Juror: set Requester as Winner
+                        {giveRulingRequesterSending &&
+                          <div className={classes.actionButtonIndicator}>
+                              <CircularProgress size='16px' color='secondary' />
+                          </div>
+                        }
+                      </Button>
+                    </Grid>
+                    <Grid item className={classes.arbitratorAction}>
+                      <Button
+                        className={classes.dialogButtonRedSmall}
+                        disabled={
+                          !walletAddress ||
+                          giveRulingChallengerSending ||
+                          (currentTime && challenge.appealPeriod && Date.now() <= challenge.appealPeriod.end)
+                        }
+                        onClick={() => giveRulingAction(
+                          challenge.disputeID,
+                            2
+                        )}
+                      >
+                        Juror: set Challenger as Winner
+                        {giveRulingChallengerSending &&
+                          <div className={classes.actionButtonIndicator}>
+                              <CircularProgress size='16px' color='secondary' />
+                          </div>
+                        }
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </ActionsBlock>
+              }
             </Grid>
           </Grid>
         </Container>
       </Grid>
+      {errors.length > 0 &&
+        <Grid item>
+          {errors.map((error, i) => (
+            <Typography key={i}>
+              {error.message}
+            </Typography>
+          ))}
+        </Grid>
+      }
     </Grid>
   );
 };

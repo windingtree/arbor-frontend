@@ -140,17 +140,22 @@ export const fetchBalances = async (web3, owner, spender) => {
     };
 }
 
-export const isResponseTimeout = (directory, organization) => (
-    Number(organization.lastStatusChange) + Number(directory.responseTimeout)
-) * 1000 > Date.now();
+export const Party = {
+    0: 'None',
+    1: 'Requester',
+    2: 'Challenger'
+};
 
-export const isExecutionTimeout = (directory, organization) => (
-    Number(organization.lastStatusChange) + Number(directory.executionTimeout)
-) * 1000 > Date.now();
+export const toBN = value => Web3.utils.toBN(value);
 
-export const isWithdrawTimeout = (directory, organization) => (
-    Number(organization.withdrawalRequestTime) + Number(directory.executionTimeout)
-) * 1000 > Date.now();
+export const amountToWei = amount => Web3.utils.toWei(String(amount), 'ether');
+
+export const amountFromWei = (amount, withDivisor) => {
+    if (withDivisor) {
+        amount = toBN(amount).mul(toBN(withDivisor)).toString();
+    }
+    return Web3.utils.fromWei(String(amount), 'ether');
+};
 
 export const responseTimeoutTitle = (directory, organization) => {
     const time = new Date(
@@ -164,6 +169,22 @@ export const responseTimeoutTitle = (directory, organization) => {
 export const timeToLocalString = unixtime => {
     const time = new Date(Number(unixtime));
     return `${time.toLocaleDateString()} ${time.toLocaleTimeString()}`;
+};
+
+export const isWinner = (currentRuling, party) => String(currentRuling) === String(party);
+
+export const isLoserPeriod = (currentRuling, party, appealPeriod) => {
+// (now-appealPeriodStart < (appealPeriodEnd-appealPeriodStart)/2)
+    const start = Number(appealPeriod.start) * 1000;
+    const end = Number(appealPeriod.end) * 1000;
+    return !isWinner(currentRuling, party) &&
+        (Date.now() - start < (end - start) / 2)
+};
+
+export const loserDeadline = appealPeriod => {
+    const start = Number(appealPeriod.start) * 1000;
+    const end = Number(appealPeriod.end) * 1000;
+    return timeToLocalString(Date.now() - ((end - start) / 2));
 };
 
 export const executionTimeoutTitle = (directory, organization) => {
@@ -183,3 +204,17 @@ export const withdrawTimeoutTitle = (directory, organization) => {
     );
     return `${time.toLocaleDateString()} ${time.toLocaleTimeString()}`;
 }
+
+export const isResponseTimeout = (directory, organization) => (
+    Number(organization.lastStatusChange) + Number(directory.responseTimeout)
+) * 1000 > Date.now();
+
+export const isExecutionTimeout = (directory, organization) => (
+    Number(organization.lastStatusChange) + Number(directory.executionTimeout)
+) * 1000 > Date.now();
+
+export const isWithdrawTimeout = (directory, organization) => (
+    Number(organization.withdrawalRequestTime) + Number(directory.executionTimeout)
+) * 1000 > Date.now();
+
+export const isAppealPossible = challenge => challenge.appealPeriod.end > Date.now();

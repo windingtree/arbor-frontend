@@ -180,7 +180,9 @@ export const sendMethod = async (web3, from, contractAddress, contractBuilder, m
             }
           })
           .on('error', (error) => {
-              reject(error);
+            // Transaction has been reverted by the EVM
+            console.log(error);
+            reject(error);
           });
   });
 };
@@ -190,7 +192,7 @@ export const getEvidenceEvent = async (web3, dirAddress, arbitratorAddress, orgI
   const contract = getArbDirContract(web3, dirAddress);
   const filter = {
     _arbitrator: arbitratorAddress,
-    _evidenceGroupID: Web3.utils.toBN(Web3.utils.soliditySha3(orgId, challengeId + 1)).toString()
+    _evidenceGroupID: Web3.utils.toBN(Web3.utils.soliditySha3(orgId, Number(challengeId) + 1)).toString()
   };
   return contract.getPastEvents('Evidence', {
     filter,
@@ -289,6 +291,7 @@ export const calculateAppealCost = async (web3, dirAddress, orgId, party, challe
   const multiplierValue = toBN(await dir.methods[multiplier]().call());
   console.log('===[[[', challenge);
   const appealCost = toBN(await arb.methods.appealCost(challenge.disputeID, challenge.arbitratorExtraData).call());
+  console.log('>>>[[[', orgId, challengeID, Number(challenge.numberOfRounds) - 1);
   const round = await dir.methods.getRoundInfo(orgId, challengeID, Number(challenge.numberOfRounds) - 1).call();
 
   let totalCost = appealCost

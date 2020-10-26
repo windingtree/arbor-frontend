@@ -110,6 +110,11 @@ const styles = makeStyles({
         flexDirection: 'column',
         width: '100%'
     },
+    timeoutTitle: {
+        textAlign: 'center',
+        fontSize: '16px',
+        fontWeight: 400
+    },
     dialogButton: {
         backgroundImage: colors.gradients.green,
         borderRadius: '6px',
@@ -255,9 +260,11 @@ export default props => {
     const {
         inline,
         dialogTitle,
+        timeoutTitle,
         actionMethod,
         web3,
         isOpened,
+        isDisabled,
         handleClose,
         directory,
         walletAddress,
@@ -325,15 +332,7 @@ export default props => {
         handleClose();
     };
 
-    const resetValues = () => {
-        setValues({
-            name: '',
-            description: ''
-        });
-        setFileName(null);
-    };
-
-    const sendChallengeOrganization = async (values, setSubmittingCallback) => {
+    const sendChallengeOrganization = async (values, setSubmittingCallback, resetForm) => {
         try {
             setError(null);
             setChallengeSending(true);
@@ -346,12 +345,20 @@ export default props => {
             });
             const methodGas = '259527';
             const gasPrice = await ApiGetGasPrice(web3);
-            const refinedValue = web3.utils.toBN(directory.challengeBaseDepositRaw)
-                .add(
-                    web3.utils.toBN(methodGas)
-                        .mul(web3.utils.toBN(gasPrice))
-                )
-                .toString();
+            let refinedValue;
+            if (!noFunding) {
+                refinedValue = web3.utils.toBN(directory.challengeBaseDepositRaw)
+                    .add(
+                        web3.utils.toBN(methodGas)
+                            .mul(web3.utils.toBN(gasPrice))
+                    )
+                    .toString();
+            }
+            console.log('!!!!!!!!!!!!!!!', actionMethod,
+            [
+                organization.orgid,
+                data.uri
+            ]);
             await sendMethod(
                 web3,
                 walletAddress,
@@ -365,7 +372,11 @@ export default props => {
                 noFunding ? undefined : refinedValue,
                 gasPrice
             );
-            resetValues();
+            resetForm({
+                name: '',
+                description: ''
+            });
+            setFileName(null);
             setOrgId(organization.orgid);
             setChallengeSending(false);
             setSubmittingCallback(false);
@@ -399,20 +410,23 @@ export default props => {
                                 </div>
                             }
                             <Formik
-                                initialValues={values}
+                                initialValues={{
+                                    name: '',
+                                    description: ''
+                                }}
                                 validate={values => {
                                     const errors = {};
                                     return errors;
                                 }}
-                                onSubmit={(values, { setSubmitting }) => {
+                                onSubmit={(values, { setSubmitting, resetForm }) => {
                                     console.log('@@@', values, { fileURI, fileHash });
-                                    setValues(values);
                                     sendChallengeOrganization(
                                         {
                                             ...values,
                                             ...{ fileURI, fileHash }
                                         },
-                                        setSubmitting
+                                        setSubmitting,
+                                        resetForm
                                     );
                                 }}
                             >
@@ -439,6 +453,7 @@ export default props => {
                                                 onChange={handleChange}
                                                 onBlur={handleBlur}
                                                 helperText={errors.name && touched.name ? errors.name : null}
+                                                disabled={isDisabled}
                                             />
                                         </div>
                                         <div className={classes.inputFieldWrapper}>
@@ -457,6 +472,7 @@ export default props => {
                                                 onChange={handleChange}
                                                 onBlur={handleBlur}
                                                 helperText={errors.description && touched.description ? errors.description : null}
+                                                disabled={isDisabled}
                                             />
                                         </div>
                                         <div>
@@ -466,7 +482,7 @@ export default props => {
                                         </div>
                                         <div className={classes.inputFieldWrapper}>
                                             <div {...getRootProps()} className={classes.dropZone}>
-                                                <input {...getInputProps()} />
+                                                <input {...getInputProps()} disabled={isDisabled} />
                                                 {
                                                     isDragActive
                                                         ? <Typography className={classes.inputSubLabel}>Drop the file here...</Typography>
@@ -476,18 +492,20 @@ export default props => {
                                                 }
                                             </div>
                                         </div>
-                                        <div className={classes.inputFieldWrapper}>
-                                            <Grid container direction='row' wrap='nowrap' justify='flex-start'>
-                                                <Grid item>
-                                                    <InfoIcon size='14px' stroke='white' fill='#8F999F' />
+                                        {actionMethod === 'acceptChallenge' &&
+                                            <div className={classes.inputFieldWrapper}>
+                                                <Grid container direction='row' wrap='nowrap' justify='flex-start'>
+                                                    <Grid item>
+                                                        <InfoIcon size='14px' stroke='white' fill='#8F999F' />
+                                                    </Grid>
+                                                    <Grid item>
+                                                        <Typography className={classes.inputSubLabel}>
+                                                            Note that both sides need to deposit the fees to start the dispute. In case the other side doesn’t deposit it in {directory.responseTimeout} sec you win.
+                                                        </Typography>
+                                                    </Grid>
                                                 </Grid>
-                                                <Grid item>
-                                                    <Typography className={classes.inputSubLabel}>
-                                                        Note that both sides need to deposit the fees to start the dispute. In case the other side doesn’t deposit it in {directory.responseTimeout} sec you win.
-                                                    </Typography>
-                                                </Grid>
-                                            </Grid>
-                                        </div>
+                                            </div>
+                                        }
                                         {error &&
                                             <div className={classes.inputFieldWrapper}>
                                                 <Typography className={classes.errorMessage}>
@@ -496,10 +514,15 @@ export default props => {
                                             </div>
                                         }
                                         <div className={classes.dialogButtonWrapper}>
+                                            {timeoutTitle &&
+                                                <Typography className={classes.timeoutTitle}>
+                                                    {timeoutTitle}
+                                                </Typography>
+                                            }
                                             <Button
                                                 className={classes.dialogButton}
                                                 type={'submit'}
-                                                disabled={(!noFunding && !isBalanceOk) || isSubmitting}
+                                                disabled={isDisabled || (!noFunding && !isBalanceOk) || isSubmitting}
                                             >
                                                 {dialogTitle}
                                                 {challengeSending &&

@@ -62,15 +62,18 @@ export const saveMediaToArbor = async data => {
       text
     } = data;
 
+    let fileTypeExtension;
     const body = new FormData();
 
     if (file) {
-        body.append('media', file, `${await getHash(file)}.json`);
+        fileTypeExtension = file.name.match(/\.([0-9a-z]+)$/i)[1];
+        body.append('media', file, `${await getHash(file)}.${fileTypeExtension}`);
     } else if (text) {
+        fileTypeExtension = 'json';
         body.append(
             'media',
-            new Blob([text], { type: 'application/json' }),
-            `${await getHash(text)}.json`
+            new Blob([text], { type: `application/${fileTypeExtension}` }),
+            `${await getHash(text)}.${fileTypeExtension}`
         );
     } else {
         throw new Error('Nor file not text has been provided');
@@ -97,7 +100,7 @@ export const buildAndSaveEvidenceJson = data => {
     const evidence = {
         fileURI,
         fileHash,
-        fileTypeExtension: 'json',
+        fileTypeExtension: fileURI.match(/\.([0-9a-z]+)$/i)[1],
         name,
         description
     };

@@ -6,6 +6,9 @@ import { useParams } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { Container, Grid, CircularProgress, Typography, Button } from '@material-ui/core';
 import Identicon from '../../components/Identicon';
+import CopyTextComponent from '../../components/CopyTextComponent';
+import ActionButton from './Components/ActionButton';
+import EvidenceDialog from './Components/EvidenceDialog';
 import {
   fetchOrganizationInfo,
   isOrgInfoFetching,
@@ -37,8 +40,8 @@ import {
   serializeJson
 } from '../../utils/directories';
 import { fetchJson } from '../../redux/api';
-import CopyTextComponent from '../../components/CopyTextComponent';
 import LinkIcon from '../../assets/SvgComponents/link.svg';
+import CopyIcon from '../../assets/SvgComponents/copy-icon.svg';
 import CloseIcon from '../../assets/SvgComponents/mobile-menu-icon-close.svg';
 import colors from '../../styles/colors';
 
@@ -53,7 +56,7 @@ const styles = makeStyles({
     margin: '0 0 32px 0'
   },
   pageEvidenceHeaderContainer: {
-    margin: '0 0 24px 0'
+    margin: 0
   },
   challengeTitle: {
     fontWeight: '500',
@@ -70,6 +73,9 @@ const styles = makeStyles({
     color: '#5E666A',
     padding: '4px 6px',
     borderRadius: '4px',
+    '&.mr24': {
+      marginRight: '24px'
+    },
     '&.green': {
       backgroundColor: '#98CCB0',
       color: 'white'
@@ -152,13 +158,29 @@ const styles = makeStyles({
     justifyItems: 'flex-start',
     alignItems: 'center'
   },
+  evidenceOtherContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyItems: 'flex-start',
+    alignItems: 'center'
+  },
   identiconStyle: {
-    marginRight: '32px'
+    marginRight: '24px'
   },
   greyHLine: {
     flexGrow: 1,
     height: '1px',
-    borderTop: '1px solid #EFEFEF'
+    borderTop: '1px solid #EFEFEF',
+    position: 'relative',
+    '&.rightColumn:after': {
+      content: '""',
+      position: 'absolute',
+      top: '-1px',
+      left: '96%',
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'white'
+    }
   },
   greyCenter: {
     alignSelf: 'stretch',
@@ -186,7 +208,8 @@ const styles = makeStyles({
     border: '1px solid #EFEFEF',
     boxSizing: 'border-box',
     boxShadow: '0px 6px 24px #F3F3F6',
-    borderRadius: '8px'
+    borderRadius: '8px',
+    marginBottom: '24px'
   },
   cardName: {
     fontWeight: 'bold',
@@ -234,9 +257,21 @@ const styles = makeStyles({
     color: 'red'
   },
   cardsWrapper: {
-    padding: '16px'
+    position: 'relative',
+    padding: '16px',
+    '&.rightColumn': {
+      marginTop: '-57px'
+    }
+  },
+  actionButtonLabel: {
+    fontSize: '14px',
+    lineHeight: '16px',
+    color: '#3E9693',
+    textTransform: 'none'
   }
 });
+
+const equalAddresses = (address1, address2) => address1.toLowerCase() === address2.toLowerCase();
 
 const validateFile = (uri, jsonData) => {
   const hash = Web3.utils.soliditySha3(serializeJson(jsonData));
@@ -314,7 +349,7 @@ const fetchChallengeInfo = async (web3, directory, orgId, challengeId) => {
   );
   console.log('Evidence events with block:', evidence);
 
-  const filteredEvidence = evidence
+  const splittedEvidence = evidence
     .reduce(
       (a, v) => {
         if (v.returnValues._party.toLowerCase() === organization.requester.toLowerCase()) {
@@ -341,7 +376,7 @@ const fetchChallengeInfo = async (web3, directory, orgId, challengeId) => {
     orgId,
     ...challenge,
     organization,
-    evidence: filteredEvidence
+    evidence: splittedEvidence
   };
 };
 
@@ -540,16 +575,39 @@ const FileLink = props => {
 const EvidenceCard = props => {
   const classes = styles();
   const {
-    name,
-    description,
-    fileTypeExtension,
-    fileURI,
-    timestamp,
-    isValidated
+    content: {
+      name,
+      description,
+      fileTypeExtension,
+      fileURI
+    },
+    block: {
+      timestamp
+    },
+    validated,
+    isOther,
+    _party,
+    challenger
   } = props;
+  const isPartyChallenger = isOther && _party && challenger &&
+    _party.toLowerCase() === challenger.toLowerCase();
 
   return (
     <Grid container direction='column' className={classes.cardWrapper}>
+      {isOther &&
+        <Grid item className={classes.evidenceOtherContainer}>
+          <div>
+            <Typography className={classes.statusLabel + ` mr24 ${isPartyChallenger ? 'red' : 'grey'}`}>
+              {isPartyChallenger ? 'challenger' : 'supporter'}
+            </Typography>
+          </div>
+          <Identicon
+            className={classes.identiconStyle}
+            address={_party.toLowerCase()}
+            icon={CopyIcon}
+          />
+        </Grid>
+      }
       <Grid item>
         <Typography className={classes.cardName}>
           {name}
@@ -564,7 +622,7 @@ const EvidenceCard = props => {
         <FileLink
           fileName={`evidence.${fileTypeExtension}`}
           fileUri={fileURI}
-          isValidated={isValidated}
+          isValidated={validated}
         />
       </Grid>
       <Grid item>
@@ -629,22 +687,26 @@ const Challenge = props => {
     }
   }, [directories, orgId, directoryId]);
 
-  useEffect(() => {
-    if (directory && orgId && challengeId !== undefined) {
-      setErrors([]);
-      setIsChallengeFetching(true);
-      fetchChallengeInfo(web3, directory, orgId, challengeId)
+  const updateChallengeInfo = useCallback(() => {
+    setErrors([]);
+    setIsChallengeFetching(true);
+    fetchChallengeInfo(web3, directory, orgId, challengeId)
         .then(info => {
           console.log('Challenge stor:', info);
           setChallenge(info);
           setIsChallengeFetching(false);
         })
         .catch(error => {
-          setErrors([...errors, error]);
+          setErrors(errors => [...errors, error]);
           setIsChallengeFetching(false);
         });
+  }, [web3, directory, orgId, challengeId]);
+
+  useEffect(() => {
+    if (directory && orgId && challengeId !== undefined) {
+      updateChallengeInfo();
     }
-  }, [directory, orgId, challengeId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [directory, orgId, challengeId, updateChallengeInfo]);
 
   useEffect(() => {
     if (challenge) {
@@ -733,6 +795,7 @@ const Challenge = props => {
                 className={classes.identiconStyle}
                 address={challenge.organization.requester}
                 color='#42424F'
+                icon={CopyIcon}
               />
               <div>
                 <Typography className={classes.statusLabel + ` yellow`}>
@@ -744,32 +807,72 @@ const Challenge = props => {
             <Grid item zeroMinWidth={true} className={classes.greyCenter}>
             </Grid>
             <Grid item xs>
-              <div className={classes.greyHLine} />
+              <div className={classes.greyHLine + ' rightColumn'} />
             </Grid>
           </Grid>
           <Grid container
             direction='row'
-            alignItems='center'
+            alignItems='flex-start'
           >
             <Grid item xs className={classes.cardsWrapper}>
               {evidenceRequester.map((evidence, i) => (
                 <EvidenceCard
                   key={i}
-                  isValidated={evidence.validated}
-                  timestamp={evidence.block ? evidence.block.timestamp : null}
-                  {...(evidence.content ? evidence.content : {})}
+                  {...evidence}
                 />
               ))}
+              {(!walletAddress && !challenge.disputed) &&
+                <ActionButton
+                  onClick={() => {
+                    history.push('/authorization/signin', { follow: history.location.pathname });
+                  }}
+                >
+                  Sign In to see available actions
+                </ActionButton>
+              }
+              {(walletAddress && !challenge.disputed && equalAddresses(walletAddress, challenge.organization.requester)) &&
+                <EvidenceDialog
+                  {...props}
+                  inline
+                  dialogTitle='Accept Challenge'
+                  actionMethod='acceptChallenge'
+                  isOpened={true}
+                  handleClose={() => {}}
+                  setOrgId={updateChallengeInfo}
+                  directory={directory}
+                />
+              }
+              {(!walletAddress && challenge.disputed) &&
+                <ActionButton
+                  onClick={() => {
+                    history.push('/authorization/signin', { follow: history.location.pathname });
+                  }}
+                >
+                  Submit new Evidence
+                </ActionButton>
+              }
+              {(walletAddress && challenge.disputed) &&
+                <EvidenceDialog
+                  {...props}
+                  inline
+                  dialogTitle='Submit New Evidence'
+                  actionMethod='submitEvidence'
+                  isOpened={true}
+                  handleClose={() => {}}
+                  setOrgId={updateChallengeInfo}
+                  directory={directory}
+                  noFunding
+                />
+              }
             </Grid>
             <Grid item zeroMinWidth={true} className={classes.greyVLine}></Grid>
-            <Grid item xs className={classes.cardsWrapper}>
+            <Grid item xs className={classes.cardsWrapper + ' rightColumn'}>
               {evidenceOther.map((evidence, i) => (
                 <EvidenceCard
                   key={i}
                   isOther={true}
-                  isValidated={evidence.validated}
-                  timestamp={evidence.block ? evidence.block.timestamp : null}
-                  {...(evidence.content ? evidence.content : {})}
+                  challenger={challenge.challenger}
+                  {...evidence}
                 />
               ))}
             </Grid>

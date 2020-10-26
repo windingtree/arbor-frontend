@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
+import history from '../../../redux/history';
 
 import {
     setOrgId,
@@ -223,6 +224,18 @@ const styles = makeStyles({
         '&.registered': {
             backgroundColor: '#DDECD5',
             color: '#5E666A'
+        }
+    },
+    challengeLink: {
+        fontSize: '14px',
+        fontWeight: 500,
+        color: colors.secondary.peach,
+        textDecoration: 'none',
+        '&:hover': {
+            textDecoration: 'underline'
+        },
+        '&:visited': {
+            color: colors.secondary.peach
         }
     },
     challengeDetailsWrapper: {
@@ -833,9 +846,10 @@ const DirectoriesList = props => {
     }, [web3, walletAddress, organizationItem, setOrgId]);
 
     const showEvidence = (directory, challengeID) => {
-        setSelectedDirectory(directory);
-        setSelectedChallengeID(challengeID);
-        setChallengeDetailsOpen(true);
+        // setSelectedDirectory(directory);
+        // setSelectedChallengeID(challengeID);
+        // setChallengeDetailsOpen(true);
+        history.push(`/challenge/${directory.organization.ID}/${directory.address}/${challengeID}`);
     };
 
     const handleCloseChallengeDetails = () => {
@@ -989,13 +1003,13 @@ const DirectoriesList = props => {
 
     return (
         <>
-            <ChallengeDetailsDialog
+            {/* <ChallengeDetailsDialog
                 isOpened={challengeDetailsOpen}
                 directory={selectedDirectory}
                 challengeID={selectedChallengeID}
                 handleClose={handleCloseChallengeDetails}
                 {...props}
-            />
+            /> */}
             {(isIndexFetching || isOrgDirectoriesFetching) &&
                 <Grid
                     container

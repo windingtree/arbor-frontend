@@ -106,9 +106,9 @@ const styles = makeStyles({
     },
     dialogButtonWrapper: {
         display: 'flex',
-        alignItems: 'center',
         alignContent: 'center',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        width: '100%'
     },
     dialogButton: {
         backgroundImage: colors.gradients.green,
@@ -173,7 +173,10 @@ const styles = makeStyles({
         fontSize: '14px',
         lineHeight: '20px',
         margin: '0px 12px',
-        color: '#8F999F'
+        color: '#8F999F',
+        '&.fileName': {
+            fontSize: '16px'
+        }
     },
     dropZone: {
         display: 'flex',
@@ -193,18 +196,36 @@ const styles = makeStyles({
     },
     inButtonProgress: {
         marginLeft: '10px'
+    },
+    inlineComponentWrapper: {
+        padding: '16px',
+        backgroundColor: '#FFFFFF',
+        border: '1px solid #EFEFEF',
+        boxSizing: 'border-box',
+        boxShadow: '0px 6px 24px #F3F3F6',
+        borderRadius: '8px',
+        marginBottom: '24px'
+    },
+    inlineComponentTitle: {
+        fontWeight: 500,
+        fontSize: '18px',
+        lineHeight: '22px',
+        color: '#3E9693',
+        marginBottom: '24px'
     }
 });
 
 const DialogTitle = props => {
     const classes = styles();
     const {
+        inline,
         noMargin,
         children
     } = props;
+    const titleClass = inline ? 'inlineComponentTitle' : 'dialogTitleWrapper';
 
     return (
-        <div className={classes.dialogTitleWrapper + (noMargin ? ' noMargin' : '')}>
+        <div className={classes[titleClass] + (noMargin ? ' noMargin' : '')}>
             <Typography variant={'inherit'}>
                 {children}
             </Typography>
@@ -212,9 +233,27 @@ const DialogTitle = props => {
     );
 };
 
+const InlineComponent = props => {
+    const classes = styles();
+    const {
+        isOpen
+    } = props;
+
+    if (!isOpen) {
+        return null;
+    }
+
+    return (
+        <div className={classes.inlineComponentWrapper}>
+            {props.children}
+        </div>
+    );
+};
+
 export default props => {
     const classes = styles();
     const {
+        inline,
         dialogTitle,
         actionMethod,
         web3,
@@ -222,16 +261,23 @@ export default props => {
         handleClose,
         directory,
         walletAddress,
-        organizationItem,
+        organization,
         noFunding,
         setOrgId
     } = props;
+    const WrapperComponent = inline
+        ? InlineComponent
+        : DialogComponent;
     const [error, setError] = useState(null);
     const [isBalanceOk, setBalanceOk] = useState(false);
     const [fileName, setFileName] = useState(null);
     const [fileHash, setFileHash] = useState('');
     const [fileURI, setFileUri] = useState('');
     const [challengeSending, setChallengeSending] = useState(false);
+    const [values, setValues] = useState({
+        name: '',
+        description: ''
+    });
 
     useEffect(() => {
         let pollingInterval;
@@ -247,10 +293,10 @@ export default props => {
             clearInterval(pollingInterval);
         }
         return () => clearInterval(pollingInterval);
-    }, [web3, walletAddress, organizationItem, directory]);
+    }, [web3, walletAddress, organization, directory]);
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
-        accept: 'application/json',
+        accept: 'application/pdf',
         multiple: false,
         onDrop: async acceptedFiles => {
             try {
@@ -264,8 +310,8 @@ export default props => {
                 setFileHash(fileHash);
                 const { data } = await saveMediaToArbor({
                     address: walletAddress,
-                    id: organizationItem.orgid,
-                    file: acceptedFiles[0]
+                    id: organization.orgid,
+                    file
                 });
                 setFileUri(data.uri);
             } catch (error) {
@@ -279,13 +325,22 @@ export default props => {
         handleClose();
     };
 
-    const sendChallengeOrganization = async (values) => {
+    const resetValues = () => {
+        setValues({
+            name: '',
+            description: ''
+        });
+        setFileName(null);
+    };
+
+    const sendChallengeOrganization = async (values, setSubmittingCallback) => {
         try {
+            setError(null);
             setChallengeSending(true);
             const { data } = await buildAndSaveEvidenceJson({
                 ...values,
                 ...{
-                    id: organizationItem.orgid,
+                    id: organization.orgid,
                     address: walletAddress
                 }
             });
@@ -304,29 +359,33 @@ export default props => {
                 getArbDirContract,
                 actionMethod,
                 [
-                    organizationItem.orgid,
+                    organization.orgid,
                     data.uri
                 ],
                 noFunding ? undefined : refinedValue,
                 gasPrice
             );
-            setOrgId(organizationItem.orgid);
+            resetValues();
+            setOrgId(organization.orgid);
             setChallengeSending(false);
+            setSubmittingCallback(false);
+            handleClose();
         } catch (error) {
             setError(error);
             setChallengeSending(false);
+            setSubmittingCallback(false);
         }
     };
 
     return (
-        <DialogComponent
+        <WrapperComponent
             isOpen={isOpened}
             handleClose={onDialogClose}
             children={(
                 <div className={classes.dialogContent}>
                     {directory &&
                         <>
-                            <DialogTitle>
+                            <DialogTitle inline={inline}>
                                 {dialogTitle}
                             </DialogTitle>
                             {!noFunding &&
@@ -340,24 +399,21 @@ export default props => {
                                 </div>
                             }
                             <Formik
-                                initialValues={{
-                                    name: '',
-                                    description: ''
-                                }}
+                                initialValues={values}
                                 validate={values => {
                                     const errors = {};
                                     return errors;
                                 }}
                                 onSubmit={(values, { setSubmitting }) => {
                                     console.log('@@@', values, { fileURI, fileHash });
-                                    sendChallengeOrganization({
-                                        ...values,
-                                        ...{ fileURI, fileHash }
-                                    })
-                                        .finally(() => {
-                                            setSubmitting(false);
-                                            handleClose();
-                                        });
+                                    setValues(values);
+                                    sendChallengeOrganization(
+                                        {
+                                            ...values,
+                                            ...{ fileURI, fileHash }
+                                        },
+                                        setSubmitting
+                                    );
                                 }}
                             >
                                 {({
@@ -394,8 +450,8 @@ export default props => {
                                                 required
                                                 fullWidth
                                                 multiline
-                                                rows={4}
-                                                rowsMax={6}
+                                                rows={3}
+                                                rowsMax={5}
                                                 error={errors.description && touched.description}
                                                 value={values.description}
                                                 onChange={handleChange}
@@ -404,11 +460,8 @@ export default props => {
                                             />
                                         </div>
                                         <div>
-                                            <Typography className={classes.inputLabel}>
-                                                Link to the evidence
-                                            </Typography>
                                             <Typography className={classes.inputSubLabel}>
-                                                Provide a link to a JSON file, containing all the necessary evidence.
+                                                Upload a PDF file, containing all the necessary evidence.
                                             </Typography>
                                         </div>
                                         <div className={classes.inputFieldWrapper}>
@@ -416,9 +469,9 @@ export default props => {
                                                 <input {...getInputProps()} />
                                                 {
                                                     isDragActive
-                                                        ? <Typography>Drop the file here...</Typography>
-                                                        : <Typography>
-                                                            {fileName ? fileName : 'evidence.json'}
+                                                        ? <Typography className={classes.inputSubLabel}>Drop the file here...</Typography>
+                                                        : <Typography className={classes.inputSubLabel + ' fileName'}>
+                                                            {fileName ? fileName : 'evidence.pdf'}
                                                         </Typography>
                                                 }
                                             </div>

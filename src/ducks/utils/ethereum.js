@@ -186,11 +186,11 @@ export const sendMethod = async (web3, from, contractAddress, contractBuilder, m
 };
 
 // Fetching of the Evidence event for the specific challenge
-export const getEvidenceEvent = async (web3, dirAddress, arbitratorAddress, orgId, challengeNumber) => {
+export const getEvidenceEvent = async (web3, dirAddress, arbitratorAddress, orgId, challengeId) => {
   const contract = getArbDirContract(web3, dirAddress);
   const filter = {
     _arbitrator: arbitratorAddress,
-    _evidenceGroupID: Web3.utils.toBN(Web3.utils.soliditySha3(orgId, challengeNumber)).toString()
+    _evidenceGroupID: Web3.utils.toBN(Web3.utils.soliditySha3(orgId, challengeId + 1)).toString()
   };
   return contract.getPastEvents('Evidence', {
     filter,

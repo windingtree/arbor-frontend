@@ -70,6 +70,18 @@ const styles = makeStyles({
             color: '#5E666A'
         }
     },
+    challengeLink: {
+        fontSize: '14px',
+        fontWeight: 500,
+        color: colors.secondary.peach,
+        textDecoration: 'none',
+        '&:hover': {
+            textDecoration: 'underline'
+        },
+        '&:visited': {
+            color: colors.secondary.peach
+        }
+    },
     actionIndicator: {
         float: 'right',
         marginRight: '10px'
@@ -209,7 +221,8 @@ const DirectoriesList = props => {
         isOrgDirectoriesFetching,
         directories: directoriesDetails,
         orgDirectories,
-        walletAddress
+        walletAddress,
+        organizationItem
     } = props;
 
     const [challengeStarting, setChallengeStarting] = useState(false);
@@ -321,27 +334,29 @@ const DirectoriesList = props => {
         .filter(d => d !== null);
 
     const showChallengeDialog = (directory, challengeID) => {
-        setSelectedDirectory(directory);
-        setSelectedChallengeID(challengeID);
-        setChallengeDetailsOpen(true);
+        // setSelectedDirectory(directory);
+        // setSelectedChallengeID(challengeID);
+        // setChallengeDetailsOpen(true);
+        history.push(`/challenge/${directory.organization.ID}/${directory.address}/${challengeID}`);
     };
 
     return (
         <>
-            <ChallengeDetailsDialog
+            {/* <ChallengeDetailsDialog
                 isOpened={challengeDetailsOpen}
                 directory={selectedDirectory}
                 challengeID={selectedChallengeID}
                 handleClose={handleCloseChallengeDetails}
                 {...props}
-            />
+            /> */}
             <EvidenceDialog
+                {...props}
                 dialogTitle='Challenge the Registration'
                 actionMethod='challengeOrganization'
                 isOpened={isDialogOpen}
                 handleClose={toggleChallengeDialog}
                 directory={selectedDirectory}
-                {...props}
+                organization={organizationItem}
             />
             {(isIndexFetching || isOrgDirectoriesFetching) &&
                 <Grid
@@ -371,7 +386,7 @@ const DirectoriesList = props => {
                     alignItems='center'
                     key={i}
                 >
-                    <Grid item xs={2}>
+                    <Grid item xs={3}>
                         <img
                             width='16px'
                             height='16px'
@@ -412,7 +427,7 @@ const DirectoriesList = props => {
                             ))
                         }
                     </Grid>
-                    <Grid item xs={4} className={classes.actionsBlock}>
+                    <Grid item xs={3} className={classes.actionsBlock}>
                         {walletAddress &&
                             <Grid container direction='column'>
                                 {directory.config.actions.map((action, i) => (

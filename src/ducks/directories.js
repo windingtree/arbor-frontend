@@ -6,12 +6,15 @@ import {
 } from '../utils/constants';
 import {
     selectWeb3,
+    selectSignInAddress,
     SET_DEFAULT_WEB3
 } from './signIn';
 import {
     getDirIndexContract,
     getArbDirContract,
-    getBlock
+    getBlock,
+    getChallengeContributedEvent,
+    parseContributionEvents
 } from './utils/ethereum';
 import { getSegmentMeta } from '../utils/directories';
 
@@ -486,7 +489,7 @@ const fetchIndex = async web3 => {
     return fetchDirectories(web3, ids);
 };
 
-const fetchOrgDirectories = async (web3, directories, orgId) => Promise.all(
+const fetchOrgDirectories = async (web3, directories, orgId, walletAddress) => Promise.all(
     directories.map(async ({ address }) => {
         const dir = getArbDirContract(web3, address);
         const orgData = await dir.methods.organizationData(orgId).call();
@@ -499,10 +502,23 @@ const fetchOrgDirectories = async (web3, directories, orgId) => Promise.all(
                     .map((_, i) => dir.methods.getChallengeInfo(orgId, i).call())
             );
         }
+        const contributions = await getChallengeContributedEvent(
+            web3,
+            address,
+            orgId,
+            walletAddress
+        );
+        const parsedContributions = await parseContributionEvents(
+            web3,
+            address,
+            contributions
+        );
+        console.log('Parsed contributions:', parsedContributions);
         return {
             address,
             ...orgData,
-            challenges
+            challenges,
+            contributions: parsedContributions
         }
     })
 );
@@ -593,7 +609,8 @@ function* fetchOrgDirectoriesSaga({ payload }) {
         const orgId = payload.orgId;
         const web3 = yield select(selectWeb3);
         const directoriesList = yield select(directories);
-        const orgDirectories = yield call(fetchOrgDirectories, web3, directoriesList, orgId);
+        const walletAddress = yield select(selectSignInAddress);
+        const orgDirectories = yield call(fetchOrgDirectories, web3, directoriesList, orgId, walletAddress);
         yield put(orgDirectoriesSuccess(orgDirectories));
     } catch (error) {
         yield put(orgFailure(error));

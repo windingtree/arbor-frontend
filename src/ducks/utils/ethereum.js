@@ -201,6 +201,20 @@ export const getEvidenceEvent = async (web3, dirAddress, arbitratorAddress, orgI
   });
 };
 
+// Fetching of the ChallengeContributed event for the specific organization and contributor
+export const getChallengeContributedEvent = async (web3, dirAddress, orgId, contributorAddress) => {
+  const contract = getArbDirContract(web3, dirAddress);
+  const filter = {
+    _organization: orgId,
+    _contributor: contributorAddress
+  };
+  return contract.getPastEvents('ChallengeContributed', {
+    filter,
+    fromBlock: 0,
+    toBlock: 'latest'
+  });
+};
+
 // Return challenge info
 export const getChallengeInfo = async (web3, dirAddress, orgId, challengeID) => {
   const contract = getArbDirContract(web3, dirAddress);
@@ -313,4 +327,40 @@ export const calculateAppealCost = async (web3, dirAddress, orgId, party, challe
     gasCost: gasCost.toString(),
     gasPrice
   };
+};
+
+// Parse contribution events
+export const parseContributionEvents = async (web3, dirAddress, events) => {
+  const dir = getArbDirContract(web3, dirAddress);
+
+  const contributions = await Promise.all(
+    events.map(async event => {
+      const {
+        _organization,
+        _challenge,
+        _contributor
+      } = event.returnValues;
+      // 1) check challenge status
+      // if challenge not resolved then ignore the event
+      const challenge = await dir.methods.getChallengeInfo(web3, dirAddress, _organization, _challenge).call();
+      if (!challenge.resolved) {
+        return null;
+      }
+
+      // 2) fetch total fees
+      // if amount of fees === 0 then ignore the event
+      const rewards = await dir.methods.getFeesAndRewardsTotal(_contributor, _organization, _challenge).call();
+      if (rewards.toString() === '0') {
+        return null;
+      }
+
+      return {
+        orgId: _organization,
+        challengeId: _challenge,
+        rewards: rewards.toString()
+      };
+    })
+  );
+
+  return contributions.filter(c => c !== null);
 };

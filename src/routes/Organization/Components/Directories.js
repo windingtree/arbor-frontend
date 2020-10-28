@@ -33,8 +33,9 @@ import { Container, Typography, Button, Grid, CircularProgress } from '@material
 import { Formik } from 'formik';
 
 import DialogComponent from '../../../components/Dialog';
-import ChallengeDetailsDialog from './ChallengeDetailsDialog';
+// import ChallengeDetailsDialog from './ChallengeDetailsDialog';
 import SelectField from '../../../components/Fields/SelectField';
+import Contributions from './Contributions';
 
 import { makeStyles } from "@material-ui/core/styles";
 import colors from "../../../styles/colors";
@@ -48,7 +49,7 @@ const styles = makeStyles({
         fontWeight: 400,
         fontSize: '14px',
         color: colors.greyScale.dark,
-        padding: '20px 0'
+        padding: '20px 0 60px 0'
     },
     titleWrapper: {
         fontSize: '24px',
@@ -761,14 +762,15 @@ const DirectoriesList = props => {
     } = props;
     const [error, setError] = useState(null);
     const [currentTime, setCurrentTime] = useState(Date.now());
+    const [parsedDirectories, setParsedDirectories] = useState([]);
 
     const [executeTimeoutSending, setExecuteTimeoutSending] = useState(false);
     const [withdrawTokensSending, setWithdrawTokensSending] = useState(false);
     const [makeWithdrawalRequestSending, setMakeWithdrawalRequestSending] = useState(false);
 
-    const [challengeDetailsOpen, setChallengeDetailsOpen] = useState(false);
-    const [selectedChallengeID, setSelectedChallengeID] = useState(null);
-    const [selectedDirectory, setSelectedDirectory] = useState(null);
+    // const [challengeDetailsOpen, setChallengeDetailsOpen] = useState(false);
+    // const [selectedChallengeID, setSelectedChallengeID] = useState(null);
+    // const [selectedDirectory, setSelectedDirectory] = useState(null);
 
     useEffect(() => {
         const timeInterval = setInterval(() => setCurrentTime(Date.now()), 1000);
@@ -845,52 +847,9 @@ const DirectoriesList = props => {
             });
     }, [web3, walletAddress, organizationItem, setOrgId]);
 
-    const showEvidence = (directory, challengeID) => {
-        // setSelectedDirectory(directory);
-        // setSelectedChallengeID(challengeID);
-        // setChallengeDetailsOpen(true);
-        history.push(`/challenge/${directory.organization.ID}/${directory.address}/${challengeID}`);
-    };
-
-    const handleCloseChallengeDetails = () => {
-        setChallengeDetailsOpen(false);
-        setSelectedChallengeID(null);
-        setSelectedDirectory(null);
-    };
-
-    /**
-    Available Actions by the organization status:
-
-    *[CH] Chow only for challenger
-
-    RegistrationRequested:
-        challengeOrganization [CH]
-        executeTimeout                  executionTimeout >= now
-        makeWithdrawalRequest           owner, director
-
-    WithdrawalRequested:
-        challengeOrganization [CH]
-        executeTimeout                  executionTimeout >= time
-        withdrawTokens                  withdrawTimeout >= now
-
-    Challenged:
-        acceptChallenge                 responseTimeout <= now
-        executeTimeout                  executionTimeout >= now
-        withdrawFeesAndRewards [CH]     challenge.resolved <- in the context of the challenge
-
-    Disputed
-        submitEvidence                  !challenge.resolved
-        fundAppeal                      appealPeriodStart < now < appealPeriodEnd  <- in the context of the challenge
-        withdrawFeesAndRewards          challenge.resolved <- in the context of the challenge
-
-    Registered
-        challengeOrganization [CH]
-        makeWithdrawalRequest           owner, director
-
-    */
-
-    const parseDirectories = (orgDirectories, directories) => orgDirectories
+    const parseDirectories = useCallback(() => orgDirectories
         .map((d, index) => {
+            console.log('>>>', d);
             if (d.status === '0') {
                 return null;
             }
@@ -913,8 +872,8 @@ const DirectoriesList = props => {
                             actionIndicator: executeTimeoutSending,
                             actionIndicatorCallback: setExecuteTimeoutSending,
                             actionCallback: executeTimeoutAction,
-                            timeoutCallback: () => isExecutionTimeout(directories[index], d),
-                            timeoutTitle: () => executionTimeoutTitle(directories[index], d)
+                            timeoutCallback: () => isExecutionTimeout(directoriesDetails[index], d),
+                            timeoutTitle: () => executionTimeoutTitle(directoriesDetails[index], d)
                         },
                         {
                             action: 'Request Tokens Withdrawal',
@@ -944,8 +903,8 @@ const DirectoriesList = props => {
                             actionIndicator: withdrawTokensSending,
                             actionIndicatorCallback: setWithdrawTokensSending,
                             actionCallback: withdrawTokensAction,
-                            timeoutCallback: () => isWithdrawTimeout(directories[index], d),
-                            timeoutTitle: () => withdrawTimeoutTitle(directories[index], d)
+                            timeoutCallback: () => isWithdrawTimeout(directoriesDetails[index], d),
+                            timeoutTitle: () => withdrawTimeoutTitle(directoriesDetails[index], d)
                         }
                     ]
                 },
@@ -960,8 +919,8 @@ const DirectoriesList = props => {
                             actionIndicator: executeTimeoutSending,
                             actionIndicatorCallback: setExecuteTimeoutSending,
                             actionCallback: executeTimeoutAction,
-                            timeoutCallback: () => isResponseTimeout(directories[index], d),
-                            timeoutTitle: () => responseTimeoutTitle(directories[index], d)
+                            timeoutCallback: () => isResponseTimeout(directoriesDetails[index], d),
+                            timeoutTitle: () => responseTimeoutTitle(directoriesDetails[index], d)
                         }
                     ]
                 },
@@ -999,7 +958,64 @@ const DirectoriesList = props => {
                 config: config[statusNum]
             };
         })
-        .filter(d => d !== null);
+        .filter(d => d !== null), [
+            directoriesDetails,
+            orgDirectories,
+            executeTimeoutAction,
+            executeTimeoutSending,
+            makeWithdrawalRequestAction,
+            makeWithdrawalRequestSending,
+            withdrawTokensAction,
+            withdrawTokensSending
+        ]);
+
+    useEffect(() => {
+        setParsedDirectories(parseDirectories());
+    }, [parseDirectories]);
+
+    const showEvidence = (directory, challengeID) => {
+        // setSelectedDirectory(directory);
+        // setSelectedChallengeID(challengeID);
+        // setChallengeDetailsOpen(true);
+        history.push(`/challenge/${directory.organization.ID}/${directory.address}/${challengeID}`);
+    };
+
+    // const handleCloseChallengeDetails = () => {
+    //     setChallengeDetailsOpen(false);
+    //     setSelectedChallengeID(null);
+    //     setSelectedDirectory(null);
+    // };
+
+    /**
+    Available Actions by the organization status:
+
+    *[CH] Chow only for challenger
+
+    RegistrationRequested:
+        challengeOrganization [CH]
+        executeTimeout                  executionTimeout >= now
+        makeWithdrawalRequest           owner, director
+
+    WithdrawalRequested:
+        challengeOrganization [CH]
+        executeTimeout                  executionTimeout >= time
+        withdrawTokens                  withdrawTimeout >= now
+
+    Challenged:
+        acceptChallenge                 responseTimeout <= now
+        executeTimeout                  executionTimeout >= now
+        withdrawFeesAndRewards [CH]     challenge.resolved <- in the context of the challenge
+
+    Disputed
+        submitEvidence                  !challenge.resolved
+        fundAppeal                      appealPeriodStart < now < appealPeriodEnd  <- in the context of the challenge
+        withdrawFeesAndRewards          challenge.resolved <- in the context of the challenge
+
+    Registered
+        challengeOrganization [CH]
+        makeWithdrawalRequest           owner, director
+
+    */
 
     return (
         <>
@@ -1030,7 +1046,7 @@ const DirectoriesList = props => {
             }
             {!isIndexFetching &&
             !isOrgDirectoriesFetching &&
-            parseDirectories(orgDirectories, directoriesDetails).map((directory, dirIndex) => (
+            parsedDirectories.map((directory, dirIndex) => (
                 <Grid
                     container
                     direction='row'
@@ -1038,7 +1054,7 @@ const DirectoriesList = props => {
                     alignItems='center'
                     key={dirIndex}
                 >
-                    <Grid item xs={2}>
+                    <Grid item xs={3}>
                         <img
                             width='16px'
                             height='16px'
@@ -1079,7 +1095,7 @@ const DirectoriesList = props => {
                             ))
                         }
                     </Grid>
-                    <Grid item xs={4} className={classes.actionsBlock}>
+                    <Grid item xs={3} className={classes.actionsBlock}>
                         <Grid container direction='column'>
                             {directory.config.actions.map((action, i) => (
                                 <div  key={i} title={action.timeoutTitle()}>
@@ -1157,6 +1173,9 @@ const Directories = props => {
                 <dir>
                     <DirectoriesList {...props}/>
                 </dir>
+                <div>
+                    <Contributions {...props}/>
+                </div>
                 {indexError &&
                     <div className={classes.errorWrapper}>
                         <Typography className={classes.errorMessage}>

@@ -227,8 +227,8 @@ const DirectoriesList = props => {
 
     const [challengeStarting, setChallengeStarting] = useState(false);
 
-    const [challengeDetailsOpen, setChallengeDetailsOpen] = useState(false);
-    const [selectedChallengeID, setSelectedChallengeID] = useState(null);
+    // const [challengeDetailsOpen, setChallengeDetailsOpen] = useState(false);
+    // const [selectedChallengeID, setSelectedChallengeID] = useState(null);
     const [selectedDirectory, setSelectedDirectory] = useState(null);
 
     const [isDialogOpen, setDialogOpen] = useState(false);
@@ -244,11 +244,11 @@ const DirectoriesList = props => {
         setSelectedDirectory(null);
     }
 
-    const handleCloseChallengeDetails = () => {
-        setChallengeDetailsOpen(false);
-        setSelectedChallengeID(null);
-        setSelectedDirectory(null);
-    };
+    // const handleCloseChallengeDetails = () => {
+    //     setChallengeDetailsOpen(false);
+    //     setSelectedChallengeID(null);
+    //     setSelectedDirectory(null);
+    // };
 
     const parseDirectories = (orgDirectories, directories) => orgDirectories
         .map((d, index) => {

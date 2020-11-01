@@ -1,11 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Container, Typography, Button, Grid, CircularProgress } from '@material-ui/core';
+import history from '../../../redux/history';
+import { Typography, Button, Grid, CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import colors from "../../../styles/colors";
+import {
+    getArbDirContract,
+    sendMethod
+} from '../../../ducks/utils/ethereum';
+import {
+    amountFromWei
+} from '../../../utils/directories';
 
 const styles = makeStyles({
     titleWrapper: {
-        fontSize: '24px',
+        fontSize: '18px',
         fontWeight: 500,
         color: colors.greyScale.darkest,
         marginBottom: '20px'
@@ -24,31 +32,91 @@ const styles = makeStyles({
     hLine: {
         width: '100%',
         borderTop: `1px dotted rgb(143, 153, 159)`,
+        marginTop: '20px',
         marginBottom: '20px'
+    },
+    actionsTable: {
+        width: '100%'
+    },
+    actionButton: {
+        fontSize: '14px',
+        fontWeight: 500,
+        lineHeight: 1.3,
+        float: 'right',
+        color: colors.secondary.peach,
+        textTransform: 'none'
+    },
+    actionIndicator: {
+        float: 'right',
+        marginLeft: '10px'
     }
 });
 
 export default props => {
     const classes = styles();
     const {
-        orgError,
         isIndexFetching,
         isOrgDirectoriesFetching,
         directories,
         orgDirectories,
         web3,
-        walletAddress
+        walletAddress,
+        setOrgId
     } = props;
     const [error, setError] = useState(null);
     const [parsedDirectories, setParsedDirectories] = useState([]);
+    const [withdrawFeesAndRewardsSending, setWithdrawFeesAndRewardsSending] = useState(false);
+    const [withdrawChallengeId, setWithdrawChallengeId] = useState(null);
 
-    const parseDirectories = useCallback(() => {
-        return [];
-    }, []);
+    const parseDirectories = useCallback(() => orgDirectories
+        .map((d, index) => {
+            console.log('[[[', d);
+            if (d.status === '0' || !d.contributions || d.contributions.length === 0) {
+                return null;
+            }
+
+            const details = directories[index];
+
+            return {
+                ...details,
+                contributions: d.contributions,
+                challenges: d.challenges
+            };
+        })
+        .filter(d => d !== null), [
+            directories,
+            orgDirectories
+        ]);
 
     useEffect(() => {
         setParsedDirectories(parseDirectories());
     }, [parseDirectories]);
+
+    const withdrawFeesAndRewardsAction = (dirAddress, orgId, challengeId) => {
+        setError(null);
+        setWithdrawChallengeId(challengeId);
+        setWithdrawFeesAndRewardsSending(true);
+        sendMethod(
+            web3,
+            walletAddress,
+            dirAddress,
+            getArbDirContract,
+            'withdrawFeesAndRewardsTotal',
+            [
+                walletAddress, //beneficiary,
+                orgId,
+                challengeId
+            ]
+        )
+            .then(() => {
+                setOrgId(orgId);
+                setWithdrawFeesAndRewardsSending(false);
+            })
+            .catch(error => {
+                setError(error);
+                setWithdrawFeesAndRewardsSending(false);
+            });
+    };
 
     return (
         <>
@@ -84,7 +152,7 @@ export default props => {
                     alignItems='center'
                     key={dirIndex}
                 >
-                    <Grid item xs={2}>
+                    <Grid item xs={3}>
                         <img
                             width='16px'
                             height='16px'
@@ -95,8 +163,56 @@ export default props => {
                         {directory.title}
                     </Grid>
                     <Grid item xs={2}></Grid>
-                    <Grid item xs={4}></Grid>
-                    <Grid item xs={3}></Grid>
+                    <Grid item xs={4}>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    {directory.contributions.map((contribution, i) => (
+                                        <td key={i}>
+                                            <Button
+                                                className={classes.actionButton}
+                                                onClick={() => {
+                                                    history.push(`/challenge/${contribution.orgId}/${directory.address}/${contribution.challengeId}`);
+                                                }}
+                                            >
+                                                {amountFromWei(contribution.rewards)} ETH
+                                            </Button>
+                                        </td>
+                                    ))}
+                                </tr>
+                            </tbody>
+                        </table>
+                    </Grid>
+                    <Grid item xs={3}>
+                        <table className={classes.actionsTable}>
+                            <tbody>
+                                <tr>
+                                    {directory.contributions.map((contribution, i) => (
+                                        <td key={i}>
+                                            <Button
+                                                className={classes.actionButton}
+                                                disabled={(withdrawFeesAndRewardsSending &&
+                                                    withdrawChallengeId === contribution.challengeId)}
+                                                onClick={() => withdrawFeesAndRewardsAction(
+                                                    directory.address,
+                                                    contribution.orgId,
+                                                    contribution.challengeId
+                                                )}
+                                            >
+                                                Withdraw
+                                                {(withdrawFeesAndRewardsSending &&
+                                                withdrawChallengeId === contribution.challengeId) &&
+                                                    <div className={classes.actionIndicator}>
+                                                        <CircularProgress size='16px' />
+                                                    </div>
+                                                }
+                                            </Button>
+                                        </td>
+                                    ))}
+                                </tr>
+                            </tbody>
+                        </table>
+                    </Grid>
                 </Grid>
             ))}
             {!isIndexFetching &&
@@ -110,13 +226,6 @@ export default props => {
                 <div className={classes.errorWrapper}>
                     <Typography className={classes.errorMessage}>
                         {error.message}
-                    </Typography>
-                </div>
-            }
-            {orgError &&
-                <div className={classes.errorWrapper}>
-                    <Typography className={classes.errorMessage}>
-                        {orgError.message}
                     </Typography>
                 </div>
             }

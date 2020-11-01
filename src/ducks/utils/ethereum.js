@@ -342,7 +342,7 @@ export const parseContributionEvents = async (web3, dirAddress, events) => {
       } = event.returnValues;
       // 1) check challenge status
       // if challenge not resolved then ignore the event
-      const challenge = await dir.methods.getChallengeInfo(web3, dirAddress, _organization, _challenge).call();
+      const challenge = await dir.methods.getChallengeInfo(_organization, _challenge).call();
       if (!challenge.resolved) {
         return null;
       }

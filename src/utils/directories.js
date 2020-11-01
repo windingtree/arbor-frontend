@@ -150,7 +150,7 @@ export const toBN = value => Web3.utils.toBN(value);
 
 export const amountToWei = amount => Web3.utils.toWei(String(amount), 'ether');
 
-export const amountFromWei = (amount, withDivisor) => {
+export const amountFromWei = (amount, withDivisor = 1) => {
     if (withDivisor) {
         amount = toBN(amount).mul(toBN(withDivisor)).toString();
     }

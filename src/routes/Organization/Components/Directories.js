@@ -1172,10 +1172,8 @@ const Directories = props => {
                 </div>
                 <dir>
                     <DirectoriesList {...props}/>
-                </dir>
-                <div>
                     <Contributions {...props}/>
-                </div>
+                </dir>
                 {indexError &&
                     <div className={classes.errorWrapper}>
                         <Typography className={classes.errorMessage}>

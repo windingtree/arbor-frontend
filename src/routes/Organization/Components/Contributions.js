@@ -189,24 +189,34 @@ export default props => {
                                 <tr>
                                     {directory.contributions.map((contribution, i) => (
                                         <td key={i}>
-                                            <Button
-                                                className={classes.actionButton}
-                                                disabled={(withdrawFeesAndRewardsSending &&
-                                                    withdrawChallengeId === contribution.challengeId)}
-                                                onClick={() => withdrawFeesAndRewardsAction(
-                                                    directory.address,
-                                                    contribution.orgId,
-                                                    contribution.challengeId
-                                                )}
-                                            >
-                                                Withdraw
-                                                {(withdrawFeesAndRewardsSending &&
-                                                withdrawChallengeId === contribution.challengeId) &&
-                                                    <div className={classes.actionIndicator}>
-                                                        <CircularProgress size='16px' />
-                                                    </div>
-                                                }
-                                            </Button>
+                                            {walletAddress &&
+                                                <Button
+                                                    className={classes.actionButton}
+                                                    disabled={(withdrawFeesAndRewardsSending &&
+                                                        withdrawChallengeId === contribution.challengeId)}
+                                                    onClick={() => withdrawFeesAndRewardsAction(
+                                                        directory.address,
+                                                        contribution.orgId,
+                                                        contribution.challengeId
+                                                    )}
+                                                >
+                                                    Withdraw
+                                                    {(withdrawFeesAndRewardsSending &&
+                                                    withdrawChallengeId === contribution.challengeId) &&
+                                                        <div className={classes.actionIndicator}>
+                                                            <CircularProgress size='16px' />
+                                                        </div>
+                                                    }
+                                                </Button>
+                                            }
+                                            {!walletAddress &&
+                                                <Button
+                                                    className={classes.actionButton}
+                                                    onClick={() => history.push('/authorization/signin', { follow: history.location.pathname })}
+                                                >
+                                                    Sign Up to see available actions
+                                                </Button>
+                                            }
                                         </td>
                                     ))}
                                 </tr>

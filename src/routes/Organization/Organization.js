@@ -13,6 +13,7 @@ import {
   setOrgId,
   resetOrgId
 } from '../../ducks/directories';
+import { selectSignInAddress } from '../../ducks/signIn';
 import history from '../../redux/history';
 import TopNavigation from "./Components/TopNavigation";
 import Directories from './Components/Directories';
@@ -36,7 +37,8 @@ function Organization (props) {
     fetchOrganizationSubsInfo,
     fetchOrganizationInfo,
     setOrgId,
-    resetOrgId
+    resetOrgId,
+    walletAddress
   } = props;
   const subsidiaries = _.get(organization, 'subsidiaries', []);
   const agents = _.get(organization, 'jsonContent.publicKey', []);
@@ -83,7 +85,7 @@ function Organization (props) {
     return () => {
       resetOrgId();
     };
-  }, [setOrgId, resetOrgId, orgId]);
+  }, [setOrgId, resetOrgId, orgId, walletAddress]);
 
   useEffect(() => {
     subsidiaries && subsidiaries.length && fetchOrganizationSubsInfo({ id: orgId });
@@ -150,7 +152,8 @@ const mapStateToProps = state => {
   return {
     organization: selectItem(state),
     subs: selectSubs(state),
-    assertions: selectAssertions(state)
+    assertions: selectAssertions(state),
+    walletAddress: selectSignInAddress(state)
   }
 };
 

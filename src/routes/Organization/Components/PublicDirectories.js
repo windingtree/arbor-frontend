@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { connect } from 'react-redux';
 import history from '../../../redux/history';
 
@@ -18,7 +18,7 @@ import { strCenterEllipsis } from '../../../utils/helpers';
 
 import { Container, Typography, Button, Grid, CircularProgress } from '@material-ui/core';
 
-import ChallengeDetailsDialog from './ChallengeDetailsDialog';
+import Contributions from './Contributions';
 import EvidenceDialog from  './EvidenceDialog';
 
 import { makeStyles } from "@material-ui/core/styles";
@@ -487,6 +487,7 @@ const PublicDirectories = props => {
                 </div>
                 <dir >
                     <DirectoriesList {...props}/>
+                    <Contributions {...props}/>
                 </dir>
                 {indexError &&
                     <div className={classes.errorWrapper}>

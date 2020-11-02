@@ -147,6 +147,7 @@ export default function reducer(state = initialState, action) {
   const publicKey = statePublicKey.slice();
   const service = stateService.slice();
   const payment = statePayment.slice();
+  const orgidType = state.orgidJson.legalEntity ? 'legalEntity' : 'organizationalUnit';
 
   let orgidJsonUpdates;
 
@@ -379,12 +380,18 @@ export default function reducer(state = initialState, action) {
         error: null
       });
     case SAVE_MEDIA_TO_ARBOR_SUCCESS:
+      delete state.orgidJson.media; // fix for wrong structured json
       orgidJsonUpdates = Object.assign({}, fixJsonRequiredProps(state.orgidJson), {
         ...state.orgidJson,
-        updated: new Date().toJSON(),
-        media: {
-          logo: payload
-        }
+        ...({
+          [orgidType]: {
+            ...state.orgidJson[orgidType],
+            media: {
+              logo: payload
+            }
+          }
+        }),
+        updated: new Date().toJSON()
       });
       return Object.assign({}, state, {
         isFetching: false,

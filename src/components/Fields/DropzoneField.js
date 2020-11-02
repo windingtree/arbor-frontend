@@ -256,8 +256,15 @@ const DropzoneField = (props) => {
     setFiles([]);
   };
 
+  const orgIdType = orgidJson.legalEntity ? 'legalEntity' : 'organizationalUnit';
+  let hideUpdateTabs = (
+    (
+      (orgidJson.media && orgidJson.media.logo) ||
+      (orgidJson[orgIdType].media && orgidJson[orgIdType].media.logo)
+    ) &&
+    showPreviewOnly
+  );
   let value = _.get(values, orgidJsonPath, '');
-  let hideUpdateTabs = (orgidJson.media && orgidJson.media.logo && showPreviewOnly);
 
   return (
     <div key={index} className={classes.tabsContainer}>
@@ -283,6 +290,7 @@ const DropzoneField = (props) => {
             </Tabs>
           </div>
           <TabPanel value={tabValue} index={0}>
+            [{value}]
             <Previews
               files={files}
               setFiles={setFiles}

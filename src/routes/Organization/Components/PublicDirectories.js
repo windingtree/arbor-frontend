@@ -14,6 +14,14 @@ import {
     statsError,
     orgError
 } from '../../../ducks/directories';
+import {
+    isExecutionTimeout,
+    executionTimeoutTitle
+} from '../../../utils/directories';
+import {
+    getArbDirContract,
+    sendMethod
+} from '../../../ducks/utils/ethereum';
 import { strCenterEllipsis } from '../../../utils/helpers';
 
 import { Container, Typography, Button, Grid, CircularProgress } from '@material-ui/core';
@@ -84,7 +92,7 @@ const styles = makeStyles({
     },
     actionIndicator: {
         float: 'right',
-        marginRight: '10px'
+        marginLeft: '10px'
     },
     actionsBlock: {
         display: 'inline-flex',
@@ -210,6 +218,11 @@ const styles = makeStyles({
     },
     inButtonProgress: {
         marginLeft: '10px'
+    },
+    noRecordsTitle: {
+        color: '#5E666A',
+        fontWeight: 500,
+        fontSize: '14px'
     }
 });
 
@@ -221,23 +234,56 @@ const DirectoriesList = props => {
         isOrgDirectoriesFetching,
         directories: directoriesDetails,
         orgDirectories,
+        web3,
         walletAddress,
-        organizationItem
+        organizationItem,
+        setOrgId
     } = props;
 
+    const [error, setError] = useState(null);
     const [challengeStarting, setChallengeStarting] = useState(false);
+    const [currentTime, setCurrentTime] = useState(Date.now());
 
     // const [challengeDetailsOpen, setChallengeDetailsOpen] = useState(false);
     // const [selectedChallengeID, setSelectedChallengeID] = useState(null);
     const [selectedDirectory, setSelectedDirectory] = useState(null);
-
+    const [executeTimeoutSending, setExecuteTimeoutSending] = useState(false);
     const [isDialogOpen, setDialogOpen] = useState(false);
+    const [parsedDirectories, setParsedDirectories] = useState([]);
+
+    useEffect(() => {
+        const timeInterval = setInterval(() => setCurrentTime(Date.now()), 1000);
+        return () => clearInterval(timeInterval);
+    }, []);
 
     const challengeTheRegistration = useCallback(directory => {
         console.log('Selected directory:', directory);
         setSelectedDirectory(directory);
         setDialogOpen(true);
     }, []);
+
+    const executeTimeoutAction = useCallback((directory, action) => {
+        setError(null);
+        action.actionIndicatorCallback(true);
+        sendMethod(
+            web3,
+            walletAddress,
+            directory.address,
+            getArbDirContract,
+            'executeTimeout',
+            [
+                organizationItem.orgid
+            ]
+        )
+            .then(() => {
+                action.actionIndicatorCallback(false);
+                setOrgId(organizationItem.orgid);
+            })
+            .catch(error => {
+                setError(error);
+                action.actionIndicatorCallback(false);
+            });
+    }, [web3, walletAddress, organizationItem, setOrgId]);
 
     const toggleChallengeDialog = () => {
         setDialogOpen(false);
@@ -250,7 +296,7 @@ const DirectoriesList = props => {
     //     setSelectedDirectory(null);
     // };
 
-    const parseDirectories = (orgDirectories, directories) => orgDirectories
+    const parseDirectories = useCallback(() => orgDirectories
         .map((d, index) => {
             const config = [
                 // The organization is not registered and doesn't have an open request.
@@ -293,7 +339,16 @@ const DirectoriesList = props => {
                     status: 'Challenged',
                     statusClass: 'challenged',
                     icon: DirChallengedIcon,
-                    actions: []
+                    actions: [
+                        {
+                            action: 'Close challenge',
+                            actionIndicator: executeTimeoutSending,
+                            actionIndicatorCallback: setExecuteTimeoutSending,
+                            actionCallback: executeTimeoutAction,
+                            timeoutCallback: () => isExecutionTimeout(directoriesDetails[index], d),
+                            timeoutTitle: () => executionTimeoutTitle(directoriesDetails[index], d)
+                        }
+                    ]
                 },
                 // The challenge has been disputed.
                 {
@@ -331,7 +386,18 @@ const DirectoriesList = props => {
                 config: config[statusNum]
             };
         })
-        .filter(d => d !== null);
+        .filter(d => d !== null), [
+            directoriesDetails,
+            orgDirectories,
+            executeTimeoutAction,
+            executeTimeoutSending,
+            challengeStarting,
+            challengeTheRegistration
+        ]);
+
+    useEffect(() => {
+        setParsedDirectories(parseDirectories());
+    }, [parseDirectories]);
 
     const showChallengeDialog = (directory, challengeID) => {
         // setSelectedDirectory(directory);
@@ -378,8 +444,15 @@ const DirectoriesList = props => {
             }
             {!isIndexFetching &&
             !isOrgDirectoriesFetching &&
-            parseDirectories(orgDirectories, directoriesDetails).map((directory, i) => (
-                    <Grid
+            parsedDirectories.length === 0 &&
+                <Typography className={classes.noRecordsTitle}>
+                    Organization not registered in directories
+                </Typography>
+            }
+            {!isIndexFetching &&
+            !isOrgDirectoriesFetching &&
+            parsedDirectories.map((directory, i) => (
+                <Grid
                     container
                     direction='row'
                     wrap='nowrap'
@@ -434,7 +507,7 @@ const DirectoriesList = props => {
                                     <div  key={i}>
                                         <Grid item>
                                             <Button
-                                                disabled={action.actionIndicator}
+                                                disabled={currentTime && (action.timeoutCallback() || action.actionIndicator)}
                                                 className={classes.actionButton}
                                                 onClick={() => action.actionCallback(directory, action)}
                                             >
@@ -461,6 +534,13 @@ const DirectoriesList = props => {
                     </Grid>
                 </Grid>
             ))}
+            {error &&
+                <div className={classes.errorWrapper}>
+                    <Typography className={classes.errorMessage}>
+                        {error.message}
+                    </Typography>
+                </div>
+            }
             {orgError &&
                 <div className={classes.errorWrapper}>
                     <Typography className={classes.errorMessage}>

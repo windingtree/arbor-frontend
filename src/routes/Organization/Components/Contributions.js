@@ -49,6 +49,11 @@ const styles = makeStyles({
     actionIndicator: {
         float: 'right',
         marginLeft: '10px'
+    },
+    noRecordsTitle: {
+        color: '#5E666A',
+        fontWeight: 500,
+        fontSize: '14px'
     }
 });
 
@@ -228,7 +233,7 @@ export default props => {
             {!isIndexFetching &&
             !isOrgDirectoriesFetching &&
             parsedDirectories.length === 0 &&
-                <Typography>
+                <Typography className={classes.noRecordsTitle}>
                     No fees or rewards are available for withdrawal
                 </Typography>
             }

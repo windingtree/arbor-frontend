@@ -15,8 +15,12 @@ import {
     orgError
 } from '../../../ducks/directories';
 import {
+    isResponseTimeout,
     isExecutionTimeout,
-    executionTimeoutTitle
+    isWithdrawTimeout,
+    executionTimeoutTitle,
+    responseTimeoutTitle,
+    withdrawTimeoutTitle
 } from '../../../utils/directories';
 import {
     getArbDirContract,
@@ -316,7 +320,9 @@ const DirectoriesList = props => {
                             action: 'Challenge the Registration',
                             actionIndicator: challengeStarting,
                             actionIndicatorCallback: setChallengeStarting,
-                            actionCallback: challengeTheRegistration
+                            actionCallback: challengeTheRegistration,
+                            timeoutCallback: () => isResponseTimeout(directoriesDetails[index], d),
+                            timeoutTitle: () => responseTimeoutTitle(directoriesDetails[index], d)
                         }
                     ]
                 },
@@ -330,7 +336,9 @@ const DirectoriesList = props => {
                             action: 'Challenge the Registration',
                             actionIndicator: challengeStarting,
                             actionIndicatorCallback: setChallengeStarting,
-                            actionCallback: challengeTheRegistration
+                            actionCallback: challengeTheRegistration,
+                            timeoutCallback: () => isWithdrawTimeout(directoriesDetails[index], d),
+                            timeoutTitle: () => withdrawTimeoutTitle(directoriesDetails[index], d)
                         }
                     ]
                 },
@@ -366,7 +374,9 @@ const DirectoriesList = props => {
                             action: 'Challenge the Registration',
                             actionIndicator: challengeStarting,
                             actionIndicatorCallback: setChallengeStarting,
-                            actionCallback: challengeTheRegistration
+                            actionCallback: challengeTheRegistration,
+                            timeoutCallback: () => {},
+                            timeoutTitle: () => ''
                         }
                     ]
                 }

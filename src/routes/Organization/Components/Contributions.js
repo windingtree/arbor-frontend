@@ -171,9 +171,9 @@ export default props => {
                     <Grid item xs={4}>
                         <table>
                             <tbody>
-                                <tr>
-                                    {directory.contributions.map((contribution, i) => (
-                                        <td key={i}>
+                                {directory.contributions.map((contribution, i) => (
+                                    <tr key={i}>
+                                        <td>
                                             <Button
                                                 className={classes.actionButton}
                                                 onClick={() => {
@@ -183,17 +183,17 @@ export default props => {
                                                 {amountFromWei(contribution.rewards)} ETH
                                             </Button>
                                         </td>
-                                    ))}
-                                </tr>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </Grid>
                     <Grid item xs={3}>
                         <table className={classes.actionsTable}>
                             <tbody>
-                                <tr>
-                                    {directory.contributions.map((contribution, i) => (
-                                        <td key={i}>
+                                {directory.contributions.map((contribution, i) => (
+                                    <tr key={i}>
+                                        <td>
                                             {walletAddress &&
                                                 <Button
                                                     className={classes.actionButton}
@@ -223,8 +223,8 @@ export default props => {
                                                 </Button>
                                             }
                                         </td>
-                                    ))}
-                                </tr>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </Grid>

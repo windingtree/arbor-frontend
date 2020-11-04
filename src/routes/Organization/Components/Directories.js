@@ -849,7 +849,7 @@ const DirectoriesList = props => {
 
     const parseDirectories = useCallback(() => orgDirectories
         .map((d, index) => {
-            console.log('>>>', d);
+            // console.log('>>>', d);
             if (d.status === '0') {
                 return null;
             }

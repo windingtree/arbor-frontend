@@ -508,6 +508,7 @@ const fetchOrgDirectories = async (web3, directories, orgId, walletAddress) => P
             orgId,
             walletAddress
         );
+        console.log('CONTRIBS:', contributions);
         const parsedContributions = await parseContributionEvents(
             web3,
             address,

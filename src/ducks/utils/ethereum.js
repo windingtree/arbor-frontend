@@ -332,9 +332,19 @@ export const calculateAppealCost = async (web3, dirAddress, orgId, party, challe
 // Parse contribution events
 export const parseContributionEvents = async (web3, dirAddress, events) => {
   const dir = getArbDirContract(web3, dirAddress);
+  const uniqueChallenges = events.reduce(
+    (a, v) => {
+      const { _challenge } = v.returnValues;
+      if (!a._challenge) {
+        a[_challenge] = v;
+      }
+      return a;
+    },
+    {}
+  );
 
   const contributions = await Promise.all(
-    events.map(async event => {
+    Object.entries(uniqueChallenges).map(async ([_, event]) => {
       const {
         _organization,
         _challenge,

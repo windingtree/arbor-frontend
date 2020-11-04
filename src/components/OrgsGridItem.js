@@ -76,7 +76,7 @@ const styles = makeStyles({
     borderRadius: '4px',
     marginRight: '8px',
     padding: '5px 12px',
-    textTransform: 'capitalize'
+    textTransform: 'none'
   },
   itemMarkType: {
     backgroundColor: colors.primary.accent,
@@ -251,15 +251,29 @@ export default function OrgsGridItem(props) {
                   )
           }
         </Link>
-        {/* {(!error && isSub) &&
+        {(!error &&
+        directory &&
+        directory.match(/^\[[a-zA-Z0-9"', ]+\]/gm)) &&
           <div className={classes.itemMarksWrapper}>
-            {directory &&
-            <Typography variant={'subtitle2'} className={classes.itemMark} style={{ backgroundColor: colors.secondary.green }}>
-              {directory === 'ota' ? 'Travel' : directory}
-            </Typography>
+            {
+            JSON.parse(directory).map((d, i) => {
+              if (d === 'legalEntity' || d === 'organizationalUnit') {
+                return null;
+              }
+              return (
+                <Typography
+                  key={i}
+                  variant={'subtitle2'}
+                  className={classes.itemMark}
+                  style={{ backgroundColor: colors.secondary.green }}
+                >
+                  {d}
+                </Typography>
+              );
+            })
             }
           </div>
-        } */}
+        }
         {
           !error ? (
             <div className={classes.idInfoWrapper}>

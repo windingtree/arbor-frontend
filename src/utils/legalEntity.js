@@ -14,21 +14,15 @@ export const wizardConfig = [
         type: 'section',
         fields: [
           {
-            type: 'select',
+            type: 'input',
             name: 'Legal entity type',
-            options: [
-              'Cooperative',
-              'Corporation',
-              'Individual Entrepreneur (Sole Trader)',
-              'Limited Liability Company',
-              'NGO',
-              'Nonprofit',
-              'Partnership',
-              'Sole Proprietorship',
-              'Trust'
-            ],
             required: true,
-            orgidJsonPath: 'legalEntity.legalType'
+            orgidJsonPath: 'legalEntity.legalType',
+            validate: value => {
+              if (!value) {
+                return 'Required field';
+              }
+            }
           },
           {
             type: 'input',

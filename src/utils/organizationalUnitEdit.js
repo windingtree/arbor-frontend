@@ -14,14 +14,8 @@ export const config = [
           type: 'section',
           fields: [
             {
-              type: 'select',
-              name: 'Directory',
-              options: {
-                'hotel': 'Hotel',
-                'airline': 'Airline',
-                'insurance': 'Insurance',
-                'ota': 'Travel agencies'
-              },
+              type: 'input',
+              name: 'Unit type (comma-separated list of tags, e.g. hotel)',
               required: true,
               orgidJsonPath: 'organizationalUnit.type',
               validate: value => {

@@ -255,8 +255,8 @@ function Services(props) {
                                 errors[key] = 'This fragment is already in use';
                                 break;
                             }
-                            if (!value.match(/^[a-zA-Z0-9_]+$/)) {
-                                errors[key] = 'There are only letters, numbers and underscore can be used in fragment';
+                            if (!value.match(/^[a-zA-Z0-9]+$/)) {
+                                errors[key] = 'There are only letters and numbers can be used in fragment';
                                 break;
                             }
                         break;

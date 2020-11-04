@@ -151,6 +151,43 @@ export default function reducer(state = initialState, action) {
 
   let orgidJsonUpdates;
 
+  // START: fixes for wrong records in current json
+  if (state.orgidJson.media && state.orgidJson.media.logo !== '') {
+    state.orgidJson[orgidType].media = {
+      logo: state.orgidJson.media.logo
+    };
+  }
+  delete state.orgidJson.media; // fix for wrong structured json
+
+  if (state.orgidJson[orgidType] &&
+    state.orgidJson[orgidType].media &&
+    state.orgidJson[orgidType].media.logo === '') {
+      delete state.orgidJson[orgidType].media.logo;
+  }
+
+  if (state.orgidJson.service &&
+    state.orgidJson.service.length > 0) {
+
+    state.orgidJson.service = state.orgidJson.service.map(
+      s => {
+        s.id = s.id.replace('_', '');
+        return s;
+      }
+    );
+  }
+
+  if (state.orgidJson.publicKey &&
+    state.orgidJson.publicKey.length > 0) {
+
+    state.orgidJson.publicKey = state.orgidJson.publicKey.map(
+      s => {
+        s.id = s.id.replace('_', '');
+        return s;
+      }
+    );
+  }
+  // STOP: fixes
+
   switch (type) {
     /////////////
     // REQUEST //
@@ -380,7 +417,6 @@ export default function reducer(state = initialState, action) {
         error: null
       });
     case SAVE_MEDIA_TO_ARBOR_SUCCESS:
-      delete state.orgidJson.media; // fix for wrong structured json
       orgidJsonUpdates = Object.assign({}, fixJsonRequiredProps(state.orgidJson), {
         ...state.orgidJson,
         ...({

@@ -290,7 +290,6 @@ const DropzoneField = (props) => {
             </Tabs>
           </div>
           <TabPanel value={tabValue} index={0}>
-            [{value}]
             <Previews
               files={files}
               setFiles={setFiles}

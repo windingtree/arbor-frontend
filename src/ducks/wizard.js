@@ -56,6 +56,10 @@ const REMOVE_ASSERTION_REQUEST = `${prefix}/REMOVE_ASSERTION_REQUEST`;
 const REMOVE_ASSERTION_SUCCESS = `${prefix}/REMOVE_ASSERTION_SUCCESS`;
 const REMOVE_ASSERTION_FAILURE = `${prefix}/REMOVE_ASSERTION_FAILURE`;
 
+const ADD_GPS_COORDINATES = `${prefix}/ADD_GPS_COORDINATES`;
+const ADD_GPS_COORDINATES_SUCCESS = `${prefix}/ADD_GPS_COORDINATES_SUCCESS`;
+const ADD_GPS_COORDINATES_FAILURE = `${prefix}/ADD_GPS_COORDINATES_FAILURE`;
+
 const SAVE_MEDIA_TO_ARBOR_REQUEST = `${prefix}/SAVE_MEDIA_TO_ARBOR_REQUEST`;
 const SAVE_MEDIA_TO_ARBOR_SUCCESS = `${prefix}/SAVE_MEDIA_TO_ARBOR_SUCCESS`;
 const SAVE_MEDIA_TO_ARBOR_FAILURE = `${prefix}/SAVE_MEDIA_TO_ARBOR_FAILURE`;
@@ -147,8 +151,46 @@ export default function reducer(state = initialState, action) {
   const publicKey = statePublicKey.slice();
   const service = stateService.slice();
   const payment = statePayment.slice();
+  const orgidType = state.orgidJson.legalEntity ? 'legalEntity' : 'organizationalUnit';
 
   let orgidJsonUpdates;
+
+  // START: fixes for wrong records in current json
+  if (state.orgidJson.media && state.orgidJson.media.logo !== '') {
+    state.orgidJson[orgidType].media = {
+      logo: state.orgidJson.media.logo
+    };
+  }
+  delete state.orgidJson.media; // fix for wrong structured json
+
+  if (state.orgidJson[orgidType] &&
+    state.orgidJson[orgidType].media &&
+    state.orgidJson[orgidType].media.logo === '') {
+      delete state.orgidJson[orgidType].media.logo;
+  }
+
+  if (state.orgidJson.service &&
+    state.orgidJson.service.length > 0) {
+
+    state.orgidJson.service = state.orgidJson.service.map(
+      s => {
+        s.id = s.id.replace('_', '');
+        return s;
+      }
+    );
+  }
+
+  if (state.orgidJson.publicKey &&
+    state.orgidJson.publicKey.length > 0) {
+
+    state.orgidJson.publicKey = state.orgidJson.publicKey.map(
+      s => {
+        s.id = s.id.replace('_', '');
+        return s;
+      }
+    );
+  }
+  // STOP: fixes
 
   switch (type) {
     /////////////
@@ -164,6 +206,7 @@ export default function reducer(state = initialState, action) {
     case REMOVE_PAYMENT_REQUEST:
     case ADD_ASSERTION_REQUEST:
     case REMOVE_ASSERTION_REQUEST:
+    case ADD_GPS_COORDINATES:
     case SAVE_MEDIA_TO_ARBOR_REQUEST:
     case SAVE_ORGID_JSON_TO_ARBOR_REQUEST:
     case SAVE_ORGID_JSON_URI_REQUEST:
@@ -378,13 +421,37 @@ export default function reducer(state = initialState, action) {
         orgidHash: Web3.utils.soliditySha3(JSON.stringify(updatedJsonWithRemovedAssertion, null, 2)),
         error: null
       });
+
+    case ADD_GPS_COORDINATES_SUCCESS:
+      const updatedJsonWithCoordinates = {
+        ...state.orgidJson,
+        [orgidType]: {
+          ...state.orgidJson[orgidType],
+          address: {
+            ...(state.orgidJson[orgidType].address ? state.orgidJson[orgidType].address : {}),
+            gps: payload.join(',')
+          }
+        }
+      };
+      return Object.assign({}, state, {
+        isFetching: false,
+        isFetched: true,
+        orgidJson: updatedJsonWithCoordinates,
+        orgidHash: Web3.utils.soliditySha3(JSON.stringify(updatedJsonWithCoordinates, null, 2)),
+        error: null
+      });
     case SAVE_MEDIA_TO_ARBOR_SUCCESS:
       orgidJsonUpdates = Object.assign({}, fixJsonRequiredProps(state.orgidJson), {
         ...state.orgidJson,
-        updated: new Date().toJSON(),
-        media: {
-          logo: payload
-        }
+        ...({
+          [orgidType]: {
+            ...state.orgidJson[orgidType],
+            media: {
+              logo: payload
+            }
+          }
+        }),
+        updated: new Date().toJSON()
       });
       return Object.assign({}, state, {
         isFetching: false,
@@ -430,6 +497,7 @@ export default function reducer(state = initialState, action) {
     case REMOVE_PAYMENT_FAILURE:
     case ADD_ASSERTION_FAILURE:
     case REMOVE_ASSERTION_FAILURE:
+    case ADD_GPS_COORDINATES_FAILURE:
     case SAVE_MEDIA_TO_ARBOR_FAILURE:
     case SAVE_ORGID_JSON_URI_FAILURE:
     case SAVE_ORGID_JSON_TO_ARBOR_FAILURE:
@@ -546,6 +614,28 @@ function extendOrgidJsonFailure(error) {
 }
 //endregion
 
+//region == [ACTIONS: addGpsCoordinates] =================================================================================
+export function addGpsCoordinates(payload) {
+  return {
+    type: ADD_GPS_COORDINATES,
+    payload
+  }
+}
+
+function addGpsCoordinatesSuccess(payload) {
+  return {
+    type: ADD_GPS_COORDINATES_SUCCESS,
+    payload
+  }
+}
+
+function addGpsCoordinatesFailure(error) {
+  return {
+    type: ADD_GPS_COORDINATES_FAILURE,
+    error
+  }
+}
+//endregion
 //region == [ACTIONS: addAgentKey] =================================================================================
 export function addAgentKey(payload) {
   return {
@@ -1017,6 +1107,18 @@ function* addAssertionToOrgidJsonSaga({
   }
 }
 
+function* addGpsCoordinatesSaga({
+  payload
+}) {
+  try {
+    const result = yield call((data) => data, payload);
+
+    yield put(addGpsCoordinatesSuccess(result));
+  } catch (error) {
+    yield put(addGpsCoordinatesFailure(error));
+  }
+}
+
 function* removeAssertionFromOrgidJsonSaga({
   payload
 }) {
@@ -1174,6 +1276,7 @@ export const saga = function* () {
     takeEvery(REMOVE_PAYMENT_REQUEST, removePaymentFromOrgidJsonSaga),
     takeEvery(ADD_ASSERTION_REQUEST, addAssertionToOrgidJsonSaga),
     takeEvery(REMOVE_ASSERTION_REQUEST, removeAssertionFromOrgidJsonSaga),
+    takeEvery(ADD_GPS_COORDINATES, addGpsCoordinatesSaga),
     takeEvery(SAVE_MEDIA_TO_ARBOR_REQUEST, saveMediaToArborSaga),
     takeEvery(SAVE_ORGID_JSON_TO_ARBOR_REQUEST, saveOrgidJsonToArborSaga),
     takeEvery(SAVE_ORGID_JSON_URI_REQUEST, saveOrgidUriSaga),

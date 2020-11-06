@@ -17,7 +17,8 @@ import Payments from "./Components/Payments";
 import Info from "./Components/Info";
 import SubOrganizations from './Components/SubOrganizations';
 import ProofsList from '../../components/ProofsList';
-import SimardAccounts from './Components/SimardAccounts'
+import SimardAccounts from './Components/SimardAccounts';
+import Gps from './Components/Gps';
 // import SaveButton from '../../components/buttons/Save';
 // import { makeStyles } from '@material-ui/core/styles';
 // import trustLifDeposit from '../../assets/SvgComponents/trust-lif-deposit.svg';
@@ -125,13 +126,18 @@ function Organization (props) {
           orgid={id}
         />
       }
-      {canManage && 
+      {canManage &&
         <Payments
           orgid={id}
           owner={owner}
           payments={payments}
         />
       }
+      <Gps
+        canManage={canManage}
+        organization={organization}
+      />
+
       {/* {canManage &&
         <div className={classes.greyDiv}>
           <Container className={classes.lifContent}>

@@ -49,7 +49,11 @@
     "@portis/web3": "2.0.0-beta.57",
     "@stripe/stripe-js": "1.9.0",
     "@stripe/react-stripe-js": "1.1.2",
-    "query-string": "6.13.1"
+    "query-string": "6.13.1",
+    "leaflet": "1.7.1",
+    "react-leaflet": "3.0.0",
+    "esri-leaflet-geocoder": "2.3.3",
+    "react-esri-leaflet": "0.2.2"
   },
   "devDependencies": {
     "@storybook/addon-actions": "5.3.18",

@@ -423,12 +423,15 @@ export default function reducer(state = initialState, action) {
       });
 
     case ADD_GPS_COORDINATES_SUCCESS:
+      const addressKey = orgidType === 'legalEntity'
+        ? 'registeredAddress'
+        : 'address';
       const updatedJsonWithCoordinates = {
         ...state.orgidJson,
         [orgidType]: {
           ...state.orgidJson[orgidType],
-          address: {
-            ...(state.orgidJson[orgidType].address ? state.orgidJson[orgidType].address : {}),
+          [addressKey]: {
+            ...(state.orgidJson[orgidType][addressKey] ? state.orgidJson[orgidType][addressKey] : {}),
             gps: payload.join(',')
           }
         }

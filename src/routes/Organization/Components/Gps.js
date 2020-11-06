@@ -9,6 +9,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import colors from '../../../styles/colors';
 import PositionDialog from '../../../components/PositionDialog';
 import ShowMap from '../../../components/ShowMap';
+import CopyTextComponent from '../../../components/CopyTextComponent';
+import CopyIcon from '../../../assets/SvgComponents/copy-icon.svg';
 
 const styles = makeStyles({
   content: {
@@ -40,6 +42,9 @@ const styles = makeStyles({
     backgroundColor: colors.primary.white,
     borderRadius: '8px',
     padding: '20px 0'
+  },
+  coordinatesSubtitle: {
+    marginTop: '15px'
   }
 });
 
@@ -50,19 +55,23 @@ const Gps = props => {
     organization
   } = props;
   const [isAddDialogOpen, setAddDialogOpen] = useState(false);
-  console.log('ORG:',organization);
 
   const handleCloseAddDialog = position => {
     setAddDialogOpen(false);
   };
 
-  if (!organization || !organization.jsonContent) {
+  let isCoordinates;
+  let addressKey;
+
+  if (organization && organization.jsonContent) {
+    addressKey = organization.orgidType === 'legalEntity'
+      ? 'registeredAddress'
+      : 'address';
+    isCoordinates = organization.jsonContent[organization.orgidType][addressKey] &&
+      organization.jsonContent[organization.orgidType][addressKey].gps;
+  } else {
     return null;
   }
-
-  const isCoordinates = organization &&
-    organization.jsonContent[organization.orgidType].address &&
-    organization.jsonContent[organization.orgidType].address.gps;
 
   if (!isCoordinates && !canManage) {
     return null;
@@ -81,7 +90,18 @@ const Gps = props => {
         />
         {isCoordinates &&
           <div>
-            <ShowMap position={organization.jsonContent[organization.orgidType].address.gps.split(',')} />
+            <ShowMap position={organization.jsonContent[organization.orgidType][addressKey].gps.split(',')} />
+            <div className={classes.coordinatesSubtitle}>
+              <CopyTextComponent
+                title='Coordinates are copied to clipboard'
+                text={organization.jsonContent[organization.orgidType][addressKey].gps}
+                label={organization.jsonContent[organization.orgidType][addressKey].gps}
+                color='#42424F'
+                fontWeight='500'
+                fontSize='18px'
+                icon={CopyIcon}
+              />
+            </div>
           </div>
         }
         {canManage &&

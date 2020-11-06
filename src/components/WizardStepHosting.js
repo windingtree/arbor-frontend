@@ -258,7 +258,7 @@ const WizardStepHosting = (props) => {
                 <Button type="submit" disabled={isStarted} className={inheritClasses.button}>
                   <Typography variant={'caption'} className={inheritClasses.buttonLabel}>
                     {action === 'edit' ? 'Next' : `${cta}`}
-                    {!isStarted &&
+                    {isStarted &&
                       <CircularProgress size={18} color={'secondary'} className={classes.inButtonProgress} />
                     }
                   </Typography>

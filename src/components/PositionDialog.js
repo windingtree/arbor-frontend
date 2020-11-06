@@ -8,6 +8,8 @@ import colors from '../styles/colors';
 import Dialog from './Dialog';
 import WizardStepHosting from './WizardStepHosting';
 import WizardStepMetaMask from './WizardStepMetaMask';
+import CopyTextComponent from './CopyTextComponent';
+import CopyIcon from '../assets/SvgComponents/copy-icon.svg';
 import { wizardConfig as wizardConfigLegalEntity  } from '../utils/legalEntity';
 import { wizardConfig as wizardConfigOrganizationalUnit  } from '../utils/organizationalUnit';
 import {
@@ -68,7 +70,10 @@ const styles = makeStyles({
   },
   inButtonProgress: {
     marginLeft: '10px',
-    marginBottom: '-3px;'
+    marginBottom: '-3px'
+  },
+  coordinatesSubtitle: {
+    marginBottom: '10px'
   },
   error: {
     color: colors.primary.accent,
@@ -179,6 +184,17 @@ const PositionDialog = props => {
             <Typography variant={'h3'} className={classes.dialogTitle}>
               Choose coordinates
             </Typography>
+            <div className={classes.coordinatesSubtitle}>
+              <CopyTextComponent
+                title='Coordinates are copied to clipboard'
+                text={position.join(',')}
+                label={position.join(',')}
+                color='#42424F'
+                fontWeight='500'
+                fontSize='18px'
+                icon={CopyIcon}
+              />
+            </div>
             <MapContainer
               center={position}
               zoom={13}

@@ -321,8 +321,8 @@ const DirectoriesList = props => {
                             actionIndicator: challengeStarting,
                             actionIndicatorCallback: setChallengeStarting,
                             actionCallback: challengeTheRegistration,
-                            timeoutCallback: () => isResponseTimeout(directoriesDetails[index], d),
-                            timeoutTitle: () => responseTimeoutTitle(directoriesDetails[index], d)
+                            timeoutCallback: () => false,
+                            timeoutTitle: () => ''
                         }
                     ]
                 },

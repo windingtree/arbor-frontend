@@ -164,21 +164,33 @@ export const wizardConfig = [
             type: 'input',
             icon: 'facebook',
             orgidJsonPath: 'legalEntity.contacts[0].facebook',
-            validate: value => {}
+            validate: value => {
+              if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+                return 'Wrong URL';
+              }
+            }
           },
           {
             name: 'Twitter',
             type: 'input',
             icon: 'twitter',
             orgidJsonPath: 'legalEntity.contacts[0].twitter',
-            validate: value => {}
+            validate: value => {
+              if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+                return 'Wrong URL';
+              }
+            }
           },
           {
             name: 'Instagram',
             type: 'input',
             icon: 'instagram',
             orgidJsonPath: 'legalEntity.contacts[0].instagram',
-            validate: value => {}
+            validate: value => {
+              if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+                return 'Wrong URL';
+              }
+            }
           }
         ]
       },

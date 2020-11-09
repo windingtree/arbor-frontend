@@ -51,7 +51,11 @@
     "redux-saga": "1.1.3",
     "reselect": "4.0.0",
     "web3": "1.3.0",
-    "web3-sagas": "0.3.1"
+    "web3-sagas": "0.3.1",
+    "leaflet": "1.7.1",
+    "react-leaflet": "3.0.0",
+    "esri-leaflet-geocoder": "2.3.3",
+    "react-esri-leaflet": "0.2.2"
   },
   "devDependencies": {
     "@storybook/addon-actions": "5.3.18",

@@ -25,6 +25,40 @@ import Info from "./Components/Info";
 import SubOrganizations from './Components/SubOrganizations';
 import ProofsList from '../../components/ProofsList';
 import SimardAccounts from './Components/SimardAccounts';
+import Gps from './Components/Gps';
+// import SaveButton from '../../components/buttons/Save';
+// import { makeStyles } from '@material-ui/core/styles';
+// import trustLifDeposit from '../../assets/SvgComponents/trust-lif-deposit.svg';
+
+// const styles = makeStyles({
+//   greyDiv: {
+//     width: '100%',
+//     backgroundColor: '#FAFBFC',
+//     paddingTop: '80px',
+//     paddingBottom: '80px',
+//     marginBottom: '50px',
+//     ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+//       paddingBottom: '30px'
+//     }
+//   },
+//   lifContent: {
+//     position: 'relative',
+//     display: 'flex',
+//     justifyContent: 'space-between'
+//   },
+//   grayTitle: {
+//     fontSize: '40px',
+//     fontWeight: 500,
+//     lineHeight: 1.14,
+//     color: '#42424F',
+//     margin: '0 0 20px 0'
+//   },
+//   topSectionText: {
+//     color: '#5E666A',
+//     marginBottom: '19px',
+//     lineHeight: '28px'
+//   }
+// });
 
 function Organization (props) {
   const { orgId } = useParams();
@@ -136,6 +170,41 @@ function Organization (props) {
           payments={payments}
         />
       }
+      <Gps
+        canManage={canManage}
+        organization={organization}
+      />
+
+      {/* {canManage &&
+        <div className={classes.greyDiv}>
+          <Container className={classes.lifContent}>
+            <Grid container alignItems={'center'}>
+              <Grid item xs={6}>
+                <Typography className={classes.grayTitle} variant={'h1'}>
+                  Submit your Líf deposit
+                </Typography>
+                <Typography className={classes.topSectionText}>
+                  Líf deposit is a small amount of cryptocurrency that is staked when you register your organization profile on Winding Tree Marketplace.
+                  This action minimizes spam registrations and proves your commitment to the cause.
+                </Typography>
+                <div style={{ marginTop: '30px'}}>
+                  <SaveButton onClick={() => history.push({
+                      pathname: '/trust/lif-stake',
+                      state: {
+                        orgid: id
+                      }
+                    })}>
+                    Submit Líf
+                  </SaveButton>
+                </div>
+              </Grid>
+              <Grid item xs={6}>
+                <img src={trustLifDeposit} alt={'Lif Deposit'} />
+              </Grid>
+            </Grid>
+          </Container>
+        </div>
+      } */}
       <div ref={proofsRef} />
       <ProofsList
         canManage={canManage}

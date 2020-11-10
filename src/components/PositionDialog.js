@@ -145,7 +145,6 @@ const PositionDialog = props => {
   const [closeProgress, setCloseProgress] = useState(false);
 
   useEffect(() => {
-    console.log('AAAAAA', JSON.stringify(initialPosition), JSON.stringify([0,0]));
     if (navigator.geolocation && (!initialPosition || JSON.stringify(initialPosition) === JSON.stringify([0,0]))) {
       navigator.geolocation.getCurrentPosition(
         geolocation => setPosition(

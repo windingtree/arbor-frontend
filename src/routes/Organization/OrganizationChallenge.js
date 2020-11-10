@@ -363,17 +363,9 @@ const validateFile = (uri, jsonData) => {
   return true;
 };
 
-const fetchFile = async url => {
-  try {
-    return await fetchJson(url);
-  } catch (error) {
-    return error;
-  }
-};
-
 const fetchFiles = async events => Promise.all(events.map(
   ev => new Promise(
-      resolve => fetchFile(ev._evidence)
+      resolve => fetchJson(ev._evidence)
           .then(content => {
               console.log('Evidence Json:', content);
               resolve({
@@ -386,6 +378,7 @@ const fetchFiles = async events => Promise.all(events.map(
               resolve({
                   ...ev,
                   evidence: null,
+                  content: {},
                   validated: false,
                   error
               });
@@ -736,6 +729,7 @@ const ActionsBlock = ({ title, children }) => {
 const EvidenceCard = props => {
   const classes = styles();
   const {
+    error,
     content: {
       name,
       description,
@@ -748,7 +742,8 @@ const EvidenceCard = props => {
     validated,
     isOther,
     _party,
-    challenger
+    challenger,
+    _evidence
   } = props;
   const isPartyChallenger = isOther && _party && challenger &&
     _party.toLowerCase() === challenger.toLowerCase();
@@ -769,30 +764,57 @@ const EvidenceCard = props => {
           />
         </Grid>
       }
-      <Grid item>
-        <Typography className={classes.cardName}>
-          {name}
-        </Typography>
-      </Grid>
-      <Grid item>
-        <Typography className={classes.cardDescription}>
-          {description}
-        </Typography>
-      </Grid>
-      <Grid item>
-        <FileLink
-          fileName={`evidence.${fileTypeExtension}`}
-          fileUri={fileURI}
-          isValidated={validated}
-        />
-      </Grid>
-      <Grid item>
-        {timestamp &&
-          <Typography className={classes.cardDate}>
-            {new Date(timestamp * 1000).toUTCString()}
+      {error &&
+      <>
+        <Grid item>
+          <Typography className={classes.cardName}>
+            Unable to fetch the evidence
           </Typography>
-        }
-      </Grid>
+        </Grid>
+        <Grid item>
+          <FileLink
+            fileName={`evidence.pdf`}
+            fileUri={_evidence}
+            isValidated={validated}
+          />
+        </Grid>
+        <Grid item>
+          {timestamp &&
+            <Typography className={classes.cardDate}>
+              {new Date(timestamp * 1000).toUTCString()}
+            </Typography>
+          }
+        </Grid>
+      </>
+      }
+      {!error &&
+        <>
+          <Grid item>
+            <Typography className={classes.cardName}>
+              {name}
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Typography className={classes.cardDescription}>
+              {description}
+            </Typography>
+          </Grid>
+          <Grid item>
+            <FileLink
+              fileName={`evidence.${fileTypeExtension}`}
+              fileUri={fileURI}
+              isValidated={validated}
+            />
+          </Grid>
+          <Grid item>
+            {timestamp &&
+              <Typography className={classes.cardDate}>
+                {new Date(timestamp * 1000).toUTCString()}
+              </Typography>
+            }
+          </Grid>
+        </>
+      }
     </Grid>
   );
 };
@@ -1050,10 +1072,10 @@ const Challenge = props => {
           >
             <Grid item xs className={classes.cardsWrapper + ' leftColumn'}>
               {evidenceRequester.map((evidence, i) => (
-                <EvidenceCard
-                  key={i}
-                  {...evidence}
-                />
+                  <EvidenceCard
+                    key={i}
+                    {...evidence}
+                  />
               ))}
               {(evidenceRequester.length === 0 && !equalAddresses(walletAddress, challenge.organization.requester)) &&
                 <ActionsBlock>

@@ -363,9 +363,17 @@ const validateFile = (uri, jsonData) => {
   return true;
 };
 
+const fetchFile = async url => {
+  try {
+    return await fetchJson(url);
+  } catch (error) {
+    return error;
+  }
+};
+
 const fetchFiles = async events => Promise.all(events.map(
   ev => new Promise(
-      resolve => fetchJson(ev._evidence)
+      resolve => fetchFile(ev._evidence)
           .then(content => {
               console.log('Evidence Json:', content);
               resolve({

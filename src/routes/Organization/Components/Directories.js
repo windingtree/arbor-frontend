@@ -849,16 +849,16 @@ const DirectoriesList = props => {
 
     const parseDirectories = useCallback(() => orgDirectories
         .map((d, index) => {
-            // console.log('>>>', d);
-            if (d.status === '0') {
+            console.log('>>>', d);
+            if (d.status === '0' && d.challenges.length === 0) {
                 return null;
             }
 
             const config = [
                 {
                     status: 'Not Registered',
-                    statusClass: '',
-                    icon: '',
+                    statusClass: 'challenged',
+                    icon: DirChallengedIcon,
                     actions: []
                 },
                 // The organization has an open request.
@@ -1076,7 +1076,7 @@ const DirectoriesList = props => {
                         </div>
                     </Grid>
                     <Grid item xs={4}>
-                        {[3, 4, 5].includes(directory.status) &&
+                        {[0, 3, 4, 5].includes(directory.status) &&
                             directory.organization.challenges.map((ch, i) => (
                                 <table key={i}>
                                     <tbody>

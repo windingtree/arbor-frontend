@@ -88,7 +88,6 @@ export const getBlock = async (web3, typeOrNumber = 'latest', checkEmptyBlocks =
     }
 
     block = await blockRequest();
-    console.log('>>>', counter, block.hash);
 
     if (!block) {
         await setTimeoutPromise(parseInt(3000 + 1000 * counter / 5));

@@ -277,6 +277,16 @@ export default props => {
           resetForm({ party: '', amount: 0 });
           handleClose();
       } catch (error) {
+          const contractErrors = [
+              'Directory: The organization must have an open dispute',
+              'Directory: Contributions must be made within the appeal period',
+              'Directory: The loser must contribute during the first half of the period'
+          ];
+          contractErrors.forEach(e => {
+              if (error.message.match(e)) {
+                error.message = e;
+              }
+          });
           setError(error);
           setIsAppealSending(false);
       }

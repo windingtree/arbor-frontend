@@ -1088,7 +1088,7 @@ const Challenge = props => {
                 >
                   <Typography className={classes.appealSubtitle}>
                     Challenge has been ruled and "{getWinner(challenge.currentRuling)}" has been chosen as a winner.
-                    Ruling result can be appealed until {timeToLocalString(challenge.appealPeriod.end)}
+                    Ruling result can be appealed before {timeToLocalString(challenge.appealPeriod.end)}
                   </Typography>
                   {challenge.roundInfo &&
                     <div className={classes.fundedAppealsContainer}>

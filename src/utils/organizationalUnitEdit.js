@@ -183,7 +183,7 @@ export const config = [
               name: 'Email',
               orgidJsonPath: 'organizationalUnit.contacts[0].email',
               validate: value => {
-                if (value && !value.trim().match(/^[\w.-]+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) {
+                if (value && !value.trim().match(/^[\w.-]+@[a-zA-Z_-]+?\.[a-zA-Z]{2,3}$/)) {
                   return 'Wrong email format';
                 }
               }

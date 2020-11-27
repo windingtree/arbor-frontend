@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useCallback} from "react";
 import {Button, Collapse, Container, Fade, Grid, Hidden, Typography} from "@material-ui/core";
 import CopyIdComponent from "../../../components/CopyIdComponent";
 import {setRandomDefaultImage} from "../../../utils/helpers";
@@ -464,6 +464,14 @@ function Info(props) {
     return classNameBase;
   };
 
+  const imgError = useCallback(function onImgError(e) {
+    if (e.target) {
+      e.target.onerror = null;
+      e.target.src = setRandomDefaultImage(id || '0xLOADING', directory || 'hotel');
+    }
+    return true;
+  }, [id, directory]);
+
   return (
     <div>
       <Container className={classes.itemMainInfo}>
@@ -472,13 +480,16 @@ function Info(props) {
           {/* TOP-LEFT-BLOCK: IMAGE =================================================================================*/}
           <Grid item className={classes.orgImageContainer}>
             <div className={classes.orgImageWrapper}>
-              {
-                logo ? (
-                  <img className={classes.orgImage} src={logo} alt={`Organization Logo cannot be loaded. URI: ${logo}`}/>
-                ) : (
-                  <img className={classes.orgImage} src={setRandomDefaultImage(id || '0xLOADING', directory || 'hotel')} alt={`Organization from directory: ${directory}`}/>
-                )
-              }
+              <img
+                alt={`Organization Logo cannot be loaded. URI: ${logo}`}
+                className={classes.orgImage}
+                onError={e => imgError(e)}
+                src={
+                  logo
+                    ? logo
+                    : setRandomDefaultImage(id || '0xLOADING', directory || 'hotel')
+                }
+              />
             </div>
           </Grid>
 

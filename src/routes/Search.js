@@ -25,6 +25,9 @@ import SearchNoResultsIllustration from '../assets/SvgComponents/search-no-resul
 //styles
 import colors from '../styles/colors';
 import {countries} from '../utils/countries';
+import {
+  DIRECTORIES_ENABLED
+} from '../utils/constants';
 
 const styles = makeStyles({
   searchHeaderWrapper: {
@@ -376,26 +379,28 @@ function Search(props) {
               Filter organizations by
             </Typography>
             <div className={classes.filtersControllersWrapper}>
-              <div className={classes.filtersController}>
-                <FormControl className={classes.selectFormControl}>
-                  <InputLabel>
-                    {searchDirectory === '' ? 'Directories' : ''}
-                  </InputLabel>
-                  <Select
-                    value={searchDirectory}
-                    onChange={handleDirectoryFilterValueChange}
-                  >
-                    <MenuItem value={''}>All</MenuItem>
-                    {
-                      _.map(options.directories, (name, value) => {
-                        return (
-                          <MenuItem key={value.toString()} value={value}>{name}</MenuItem>
-                        )
-                      })
-                    }
-                  </Select>
-                </FormControl>
-              </div>
+              {DIRECTORIES_ENABLED &&
+                <div className={classes.filtersController}>
+                  <FormControl className={classes.selectFormControl}>
+                    <InputLabel>
+                      {searchDirectory === '' ? 'Directories' : ''}
+                    </InputLabel>
+                    <Select
+                      value={searchDirectory}
+                      onChange={handleDirectoryFilterValueChange}
+                    >
+                      <MenuItem value={''}>All</MenuItem>
+                      {
+                        _.map(options.directories, (name, value) => {
+                          return (
+                            <MenuItem key={value.toString()} value={value}>{name}</MenuItem>
+                          )
+                        })
+                      }
+                    </Select>
+                  </FormControl>
+                </div>
+              }
               <div className={classes.filtersController}>
                 <FormControl className={classes.selectFormControl}>
                   <InputLabel>

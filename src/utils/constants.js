@@ -18,6 +18,7 @@ export const DIRECTORIES_INDEX_ADDRESS = process.env.REACT_APP_DIRECTORIES_INDEX
 export const ARBITRATOR_ADDRESS = process.env.REACT_APP_ARBITRATOR_ADDRESS;
 export const INFURA_PROVIDER = process.env.REACT_APP_INFURA_PROVIDER;
 export const INFURA_PROVIDER_WSS = process.env.REACT_APP_INFURA_PROVIDER_WSS;
+export const DIRECTORIES_ENABLED = process.env.REACT_APP_DIRECTORIES_ENABLED === 'true';
 
 export const entityTypes = [
   'private entrepreneur',

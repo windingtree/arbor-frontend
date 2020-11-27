@@ -260,7 +260,7 @@ const DropzoneField = (props) => {
   let hideUpdateTabs = (
     (
       (orgidJson.media && orgidJson.media.logo) ||
-      (orgidJson[orgIdType].media && orgidJson[orgIdType].media.logo)
+      (orgidJson[orgIdType] && orgidJson[orgIdType].media && orgidJson[orgIdType].media.logo)
     ) &&
     showPreviewOnly
   );

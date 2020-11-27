@@ -148,7 +148,7 @@ export const wizardConfig = [
             name: 'Email',
             orgidJsonPath: 'legalEntity.contacts[0].email',
             validate: value => {
-              if (value && !value.trim().match(/^[\w.-]+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) {
+              if (value && !value.trim().match(/^[\w.-]+@[a-zA-Z_-]+?\.[a-zA-Z]{2,3}$/)) {
                 return 'Wrong email format';
               }
             }

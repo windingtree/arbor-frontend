@@ -220,8 +220,8 @@ export const wizardConfig = [
     type: 'step_hosting',
     name: 'Hosting',
     icon: StepperHostingIcon,
-    longName: 'Choose Data Store',
-    description: 'Please choose where to store your data',
+    longName: 'Decentralized Storage',
+    description: 'Your organization data is going to be stored in the IPFS decentralized storage and accessible publicly. By saving your data, you acknowledge that the data you provided will be public and does not contain personal or sensitive information',
     sections: [
       {
         name: 'Choose type of JSON hosting',
@@ -238,7 +238,7 @@ export const wizardConfig = [
         ]
       }
     ],
-    cta: 'Confirm'
+    cta: 'Save'
   },
   {
     type: 'step_metamask',

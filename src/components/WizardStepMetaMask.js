@@ -202,7 +202,7 @@ const WizardStep = (props) => {
       setDepositTransaction(paymentStatus.transactionHash);
       watchTransaction(paymentStatus.transactionHash);
     } catch (error) {
-      setError(error.message);
+      setError(error);
       console.log(error);
     }
   };

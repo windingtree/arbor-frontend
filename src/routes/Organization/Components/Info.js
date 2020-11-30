@@ -428,21 +428,13 @@ function Info(props) {
   });
 
   const sanitizeLink = link => {
-    console.log('>>>>>>>', link, '======', link
-    .replace(/(https|http[:]{0,1})(\/\/)/, '')
-    .replace(/^[\/]{1,}/, '')
-    .replace(/\/$/, ''));
-    return link
-    .replace(/(https|http[:]{0,1})(\/\/)/, '')
-    .replace(/^[\/]{1,}/, '')
-    .replace(/\/$/, '');
+    console.log('>>>>>>>', link, '======');
+    const url = new URL(
+      link.replace(/^[\/]{1,}/, '')
+        .replace(/\/$/, '')
+    );
+    return `https://${url.hostname}${url.pathname !== '' ? url.pathname : ''}`;
   }
-
-  //check if website valid
-  const website = () => {
-    // let reg = /^((https?|ftp|smtp):\/\/)?(www.)?[a-z0-9]+\.[a-z]+(\/[a-zA-Z0-9#]+\/?)*$/;
-    return `https://${sanitizeLink(contacts.website)}`
-  };
 
   const icon = (socialNetwork) => {
     switch (socialNetwork) {
@@ -562,7 +554,7 @@ function Info(props) {
               <div className={classes.orgInfoFieldWrapper} style={{width: '100%'}}>
                 <Typography variant={'caption'} className={classes.orgInfoFieldTitle} noWrap>
                   {'Website: '}
-                  <a href={website()} target={'_blank'} className={classes.orgInfoField} rel="noopener noreferrer">{contacts.website}</a>
+                  <a href={sanitizeLink(contacts.website)} target={'_blank'} className={classes.orgInfoField} rel="noopener noreferrer">{contacts.website}</a>
                   {isWebsiteProved &&
                   <TrustLevelIcon className={classes.iconTrustLevel} style={{verticalAlign: 'text-bottom'}}/>}
                 </Typography>

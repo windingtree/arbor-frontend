@@ -14,21 +14,15 @@ export const wizardConfig = [
         type: 'section',
         fields: [
           {
-            type: 'select',
+            type: 'input',
             name: 'Legal entity type',
-            options: [
-              'Cooperative',
-              'Corporation',
-              'Individual Entrepreneur (Sole Trader)',
-              'Limited Liability Company',
-              'NGO',
-              'Nonprofit',
-              'Partnership',
-              'Sole Proprietorship',
-              'Trust'
-            ],
             required: true,
-            orgidJsonPath: 'legalEntity.legalType'
+            orgidJsonPath: 'legalEntity.legalType',
+            validate: value => {
+              if (!value) {
+                return 'Required field';
+              }
+            }
           },
           {
             type: 'input',
@@ -208,7 +202,7 @@ export const wizardConfig = [
             name: 'Logo',
             type: 'dropzone',
             description: 'Add a logo or any image that represents your organization. It will help you stand out in search results.',
-            orgidJsonPath: 'media.logo',
+            orgidJsonPath: 'legalEntity.media.logo',
             helperText: 'Recommended dimensions: 908х400 (at least 454x200) Format: JPG, PNG, SVG',
             validate: value => {
               if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {

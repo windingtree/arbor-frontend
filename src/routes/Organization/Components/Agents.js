@@ -11,7 +11,7 @@ import {
 import {
   fetchOrganizationInfo
 } from '../../../ducks/fetchOrganizationInfo';
-import {Formik} from 'formik';
+import { Formik } from 'formik';
 import {
   Button,
   Container,
@@ -308,8 +308,8 @@ function Agents(props) {
                             errors[key] = 'Key ID already in use';
                             break;
                           }
-                          if (!value.match(/^[a-zA-Z0-9_]+$/)) {
-                            errors[key] = 'Please use only letters, numbers and underscore';
+                          if (!value.match(/^[a-zA-Z0-9]+$/)) {
+                            errors[key] = 'Please use only letters and numbers';
                             break;
                           }
                           break;
@@ -502,7 +502,7 @@ function Agents(props) {
     <Container>
       <div className={classes.agentsContent}>
         <div className={classes.agentsTitleWrapper}>
-          <Typography variant={'inherit'}>Owners</Typography>
+          <Typography variant={'inherit'}>Owner</Typography>
         </div>
         <div className={classes.ownerInfoWrapper}>
           <div className={classes.ownerInfo}>

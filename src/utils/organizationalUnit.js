@@ -168,7 +168,7 @@ export const wizardConfig = [
           {
             name: 'Logo',
             type: 'dropzone',
-            orgidJsonPath: 'media.logo',
+            orgidJsonPath: 'organizationalUnit.media.logo',
             description: '',
             helperText: 'Recommended dimensions: 908х400 (minimal: 454x200)\nFormat: JPG, PNG',
             validate: value => {

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import _ from 'lodash';
 import { connect } from 'react-redux';
-// import { Container, Typography, Grid } from '@material-ui/core';
+import { useParams } from 'react-router-dom';
 import {
   fetchOrganizationInfo,
   fetchOrganizationSubsInfo,
@@ -9,15 +9,23 @@ import {
   selectSubs,
   selectAssertions
 } from '../../ducks/fetchOrganizationInfo';
+import {
+  setOrgId,
+  resetOrgId
+} from '../../ducks/directories';
+import { selectSignInAddress } from '../../ducks/signIn';
 import history from '../../redux/history';
 import TopNavigation from "./Components/TopNavigation";
+import Directories from './Components/Directories';
+import PublicDirectories from './Components/PublicDirectories';
 import Agents from "./Components/Agents";
 import Services from "./Components/Services";
 import Payments from "./Components/Payments";
 import Info from "./Components/Info";
 import SubOrganizations from './Components/SubOrganizations';
 import ProofsList from '../../components/ProofsList';
-import SimardAccounts from './Components/SimardAccounts'
+import SimardAccounts from './Components/SimardAccounts';
+import Gps from './Components/Gps';
 // import SaveButton from '../../components/buttons/Save';
 // import { makeStyles } from '@material-ui/core/styles';
 // import trustLifDeposit from '../../assets/SvgComponents/trust-lif-deposit.svg';
@@ -53,9 +61,19 @@ import SimardAccounts from './Components/SimardAccounts'
 // });
 
 function Organization (props) {
-  const id = history.location.state ? history.location.state.id : history.location.pathname.split('/')[2];
-  const canManage = history.location.pathname !== `/organization/${id}`;
-  const { organization, subs, assertions, fetchOrganizationSubsInfo, fetchOrganizationInfo } = props;
+  const { orgId } = useParams();
+  // const orgId = history.location.state ? history.location.state.orgId : history.location.pathname.split('/')[2];
+  const canManage = history.location.pathname !== `/organization/${orgId}`;
+  const {
+    organization,
+    subs,
+    assertions,
+    fetchOrganizationSubsInfo,
+    fetchOrganizationInfo,
+    setOrgId,
+    resetOrgId,
+    walletAddress
+  } = props;
   const subsidiaries = _.get(organization, 'subsidiaries', []);
   const agents = _.get(organization, 'jsonContent.publicKey', []);
   const services = _.get(organization, 'jsonContent.service', []);
@@ -86,12 +104,26 @@ function Organization (props) {
   const proofsRef = useRef(null);
 
   useEffect(() => {
-    fetchOrganizationInfo({ id });
-  }, [id, fetchOrganizationInfo]);
+    window.scrollTo(0, 0)
+}, []);
 
   useEffect(() => {
-    subsidiaries && subsidiaries.length && fetchOrganizationSubsInfo({ id });
-  }, [id, subsidiaries, fetchOrganizationSubsInfo]);
+    fetchOrganizationInfo({ id: orgId });
+  }, [orgId, fetchOrganizationInfo]);
+
+  useEffect(() => {
+    if (orgId) {
+      setOrgId(orgId);
+    }
+
+    return () => {
+      resetOrgId();
+    };
+  }, [setOrgId, resetOrgId, orgId, walletAddress]);
+
+  useEffect(() => {
+    subsidiaries && subsidiaries.length && fetchOrganizationSubsInfo({ id: orgId });
+  }, [orgId, subsidiaries, fetchOrganizationSubsInfo]);
 
   return (
     <div>
@@ -107,31 +139,42 @@ function Organization (props) {
         </div>
       }
       {canManage &&
+        <Directories />
+      }
+      {!canManage &&
+        <PublicDirectories />
+      }
+      {canManage &&
         <Agents
-          orgid={id}
+          orgid={orgId}
           owner={owner}
           agents={agents}
         />
       }
       {canManage &&
         <Services
-          orgid={id}
+          orgid={orgId}
           owner={owner}
           services={services}
         />
       }
       {canManage &&
         <SimardAccounts
-          orgid={id}
+          orgid={orgId}
         />
       }
-      {canManage && 
+      {canManage &&
         <Payments
-          orgid={id}
+          orgid={orgId}
           owner={owner}
           payments={payments}
         />
       }
+      <Gps
+        canManage={canManage}
+        organization={organization}
+      />
+
       {/* {canManage &&
         <div className={classes.greyDiv}>
           <Container className={classes.lifContent}>
@@ -166,7 +209,7 @@ function Organization (props) {
       <ProofsList
         canManage={canManage}
         title='Get Verified'
-        orgid={id}
+        orgid={orgId}
         assertions={assertions}
         verifications={verifications}
       />
@@ -178,13 +221,16 @@ const mapStateToProps = state => {
   return {
     organization: selectItem(state),
     subs: selectSubs(state),
-    assertions: selectAssertions(state)
+    assertions: selectAssertions(state),
+    walletAddress: selectSignInAddress(state)
   }
 };
 
 const mapDispatchToProps = {
   fetchOrganizationInfo,
-  fetchOrganizationSubsInfo
+  fetchOrganizationSubsInfo,
+  setOrgId,
+  resetOrgId
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Organization);

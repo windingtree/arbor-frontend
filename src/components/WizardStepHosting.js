@@ -8,7 +8,8 @@ import {
   Radio,
   TextField,
   Button,
-  Tooltip
+  Tooltip,
+  CircularProgress
 } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
@@ -92,6 +93,10 @@ const useStyles = makeStyles({
     verticalAlign: 'middle',
     marginRight: '10px'
   },
+  inButtonProgress: {
+    marginLeft: '10px',
+    marginBottom: '-3px;'
+  }
 });
 
 const LightTooltip = withStyles({
@@ -251,7 +256,12 @@ const WizardStepHosting = (props) => {
             <div className={inheritClasses.buttonWrapper}>
               {!error &&
                 <Button type="submit" disabled={isStarted} className={inheritClasses.button}>
-                  <Typography variant={'caption'} className={inheritClasses.buttonLabel}>{action === 'edit' ? 'Next' : `${cta}`}</Typography>
+                  <Typography variant={'caption'} className={inheritClasses.buttonLabel}>
+                    {action === 'edit' ? 'Next' : `${cta}`}
+                    {isStarted &&
+                      <CircularProgress size={18} color={'secondary'} className={classes.inButtonProgress} />
+                    }
+                  </Typography>
                 </Button>
               }
               {error &&

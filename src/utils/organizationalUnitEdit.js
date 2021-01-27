@@ -14,14 +14,8 @@ export const config = [
           type: 'section',
           fields: [
             {
-              type: 'select',
-              name: 'Directory',
-              options: {
-                'hotel': 'Hotel',
-                'airline': 'Airline',
-                'insurance': 'Insurance',
-                'ota': 'Travel agencies'
-              },
+              type: 'input',
+              name: 'Unit type (comma-separated list of tags, e.g. hotel)',
               required: true,
               orgidJsonPath: 'organizationalUnit.type',
               validate: value => {
@@ -142,7 +136,7 @@ export const config = [
             {
               name: 'Profile image',
               type: 'dropzone',
-              orgidJsonPath: 'media.logo',
+              orgidJsonPath: 'organizationalUnit.media.logo',
               description: 'Add a logo or any image that represents your organization. It will help you stand out in search results.',
               helperText: 'Recommended dimensions: 908х400 (minimal: 454x200)\nFormat: JPG, PNG'
             }

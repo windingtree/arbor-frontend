@@ -22,7 +22,7 @@ const styles = makeStyles({
 
 const SelectField = (props) => {
   const classes = styles();
-  const {name, label, variant, orgidJsonPath, index, options, required, 
+  const {name, label, variant, orgidJsonPath, index, options, required, disabled,
     values, errors, touched, handleChange, handleBlur, helperText} = props;
   const optionsObj = Array.isArray(options) ? options.reduce((o, key) => Object.assign(o, {[key]: key}), {}) : options;
   const isError = (_.get(errors, orgidJsonPath) && _.get(touched, orgidJsonPath)) || helperText;
@@ -78,6 +78,7 @@ const SelectField = (props) => {
           open={open}
           onClose={handleClose}
           onOpen={handleOpen}
+          disabled={disabled}
         >
           <MenuItem value={''} key={''}/>
           {

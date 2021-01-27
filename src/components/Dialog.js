@@ -58,7 +58,7 @@ export default function DialogComponent(props) {
             <CloseIcon className={classes.dialogCloseButtonIcon}/>
           </Button>
         </DialogActions>
-        {children}
+        {isOpen ? children: null}
       </DialogContent>
     </Dialog>
   )

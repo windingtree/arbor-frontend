@@ -9,9 +9,13 @@ import DefaultRoute from '../components/DefaultRoute';
 //Common routes
 import Home from './Home';
 import Search from './Search';
-import Directories from './Directories';
+import ArbitrableDirectories from './ArbitrableDirectories';
 import Directory from './Directory';
+import DirectoryRegistrationRequests from './DirectoryRegistrationRequests';
+import DirectoryDisputes from './DirectoryDisputes';
+import DirectoryRegistered from './DirectoryRegistered';
 import Organization from './Organization/Organization';
+import OrganizationChallenge from './Organization/OrganizationChallenge';
 import Authorization from './Authorization/Authorization';
 import Trust from './Trust/Trust';
 import TOS from './TOS'
@@ -43,7 +47,22 @@ class RootRouter extends Component {
           <DefaultRoute
             isAuthenticated={isAuthenticated}
             exact path='/directories'
-            component={Directories}
+            component={ArbitrableDirectories}
+          />
+          <DefaultRoute
+            isAuthenticated={isAuthenticated}
+            path='/directories/registered/:directoryId'
+            component={DirectoryRegistered}
+          />
+          <DefaultRoute
+            isAuthenticated={isAuthenticated}
+            path='/directories/requests/:directoryId'
+            component={DirectoryRegistrationRequests}
+          />
+          <DefaultRoute
+            isAuthenticated={isAuthenticated}
+            path='/directories/disputes/:directoryId'
+            component={DirectoryDisputes}
           />
           <DefaultRoute
             isAuthenticated={isAuthenticated}
@@ -59,6 +78,11 @@ class RootRouter extends Component {
             isAuthenticated={isAuthenticated}
             path='/organization/:orgId'
             component={Organization}
+          />
+          <DefaultRoute
+            isAuthenticated={isAuthenticated}
+            path='/challenge/:orgId/:directoryId/:challengeId'
+            component={OrganizationChallenge}
           />
           <DefaultRoute
             isAuthenticated={isAuthenticated}

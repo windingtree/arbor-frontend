@@ -209,16 +209,14 @@ export const subscribeMetamaskEventChannel = web3 => {
       }
     };
     const handleChainChange = () => {
-      emitter(logOutRequest());
+      emitter(END);
+      window.location.reload();
     };
 
     window.ethereum.on('accountsChanged', handleNewAccounts);
-    web3.currentProvider.on('chainChanged', handleChainChange);
+    window.ethereum.on('chainChanged', handleChainChange);
 
-    return () => {
-      window.ethereum.off('accountsChanged', handleNewAccounts);
-      web3.currentProvider.off('chainChanged', handleChainChange);
-    };
+    return () => {};
   });
 };
 

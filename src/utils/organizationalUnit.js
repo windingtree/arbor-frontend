@@ -1,5 +1,6 @@
 import { countries } from './countries';
 import { StepperGeneralIcon, StepperHostingIcon, StepperMetaMaskIcon } from '../assets/SvgComponents';
+import match from './regex';
 
 export const wizardConfig = [
   {
@@ -99,7 +100,7 @@ export const wizardConfig = [
             name: 'Phone',
             orgidJsonPath: 'organizationalUnit.contacts[0].phone',
             validate: value => {
-              if (value && !value.trim().match(/^([+]{0,1})([0-9- ]+)$/)) {
+              if (value && !value.trim().match(match.phone)) {
                 return 'Wrong phone number format';
               }
             }
@@ -110,7 +111,7 @@ export const wizardConfig = [
             name: 'Website',
             orgidJsonPath: 'organizationalUnit.contacts[0].website',
             validate: value => {
-              if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+              if (value && !value.trim().match(match.url)) {
                 return 'Wrong website URL';
               }
             }
@@ -121,7 +122,7 @@ export const wizardConfig = [
             name: 'Email',
             orgidJsonPath: 'organizationalUnit.contacts[0].email',
             validate: value => {
-              if (value && !value.trim().match(/^[\w.-]+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) {
+              if (value && !value.trim().match(match.email)) {
                 return 'Wrong email format';
               }
             }
@@ -138,7 +139,7 @@ export const wizardConfig = [
             icon: 'facebook',
             orgidJsonPath: 'organizationalUnit.contacts[0].facebook',
             validate: value => {
-              if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+              if (value && !value.trim().match(match.url)) {
                 return 'Wrong URL';
               }
             }
@@ -149,7 +150,7 @@ export const wizardConfig = [
             icon: 'twitter',
             orgidJsonPath: 'organizationalUnit.contacts[0].twitter',
             validate: value => {
-              if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+              if (value && !value.trim().match(match.url)) {
                 return 'Wrong URL';
               }
             }
@@ -160,7 +161,7 @@ export const wizardConfig = [
             icon: 'instagram',
             orgidJsonPath: 'organizationalUnit.contacts[0].instagram',
             validate: value => {
-              if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+              if (value && !value.trim().match(match.url)) {
                 return 'Wrong URL';
               }
             }
@@ -172,7 +173,7 @@ export const wizardConfig = [
             description: '',
             helperText: 'Recommended dimensions: 908х400 (minimal: 454x200)\nFormat: JPG, PNG',
             validate: value => {
-              if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+              if (value && !value.trim().match(match.url)) {
                 return 'Media URI contains forbidden symbols';
               }
             }

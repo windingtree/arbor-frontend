@@ -37,7 +37,10 @@ const useStyles = makeStyles({
     borderRadius: '8px',
     margin: '6px 0',
     padding: '12px',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    '&.hidden': {
+      display: 'none'
+    }
   },
   formControlTitle: {
     fontSize: '16px',
@@ -183,7 +186,7 @@ const WizardStepHosting = (props) => {
 
             <FormControl component="fieldset" className={classes.formControlGroup}>
               <RadioGroup aria-label="hostingType" name="hostingType" value={values['hostingType']} onChange={handleChange}>
-                <div className={classes.formControlItem}>
+                <div className={classes.formControlItem + ' hidden'}>
                   <FormControlLabel value="default-hosting" control={<Radio color='primary' />} label="Winding Tree Marketplace" className={classes.radioItem}/>
                   <div>
                     <LightTooltip
@@ -196,7 +199,7 @@ const WizardStepHosting = (props) => {
                     </LightTooltip>
                   </div>
                 </div>
-                <div className={classes.formControlItem}>
+                {/* <div className={classes.formControlItem}>
                   <FormControlLabel value="self-hosting" control={<Radio color='primary' />} label="Your server" className={classes.radioItem}/>
                   <div>
                     <LightTooltip
@@ -208,11 +211,11 @@ const WizardStepHosting = (props) => {
                       </button>
                     </LightTooltip>
                   </div>
-                </div>
+                </div> */}
               </RadioGroup>
             </FormControl>
 
-            {
+            {/* {
               values['hostingType'] === 'self-hosting' ?
                 <div>
                   <div className={classes.selfHostingSubtitleWrapper}>
@@ -251,7 +254,7 @@ const WizardStepHosting = (props) => {
                 </div>
                 :
                 <div/>
-            }
+            } */}
 
             <div className={inheritClasses.buttonWrapper}>
               {!error &&

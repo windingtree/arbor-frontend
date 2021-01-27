@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useCallback} from "react";
 import {Button, Collapse, Container, Fade, Grid, Hidden, Typography} from "@material-ui/core";
 import CopyIdComponent from "../../../components/CopyIdComponent";
 import {setRandomDefaultImage} from "../../../utils/helpers";
@@ -427,16 +427,14 @@ function Info(props) {
     })
   });
 
-  const sanitizeLink = link => link
-    .replace(/(https|http[:]{0,1})(\/\/)/, '')
-    .replace(/^[\/]{1,}/, '')
-    .replace(/\/$/, '');
-
-  //check if website valid
-  const website = () => {
-    // let reg = /^((https?|ftp|smtp):\/\/)?(www.)?[a-z0-9]+\.[a-z]+(\/[a-zA-Z0-9#]+\/?)*$/;
-    return `https://${sanitizeLink(contacts.website)}`
-  };
+  const sanitizeLink = link => {
+    console.log('>>>>>>>', link, '======');
+    const url = new URL(
+      link.replace(/^[\/]{1,}/, '')
+        .replace(/\/$/, '')
+    );
+    return `https://${url.hostname}${url.pathname !== '' ? url.pathname : ''}`;
+  }
 
   const icon = (socialNetwork) => {
     switch (socialNetwork) {
@@ -464,6 +462,14 @@ function Info(props) {
     return classNameBase;
   };
 
+  const imgError = useCallback(function onImgError(e) {
+    if (e.target) {
+      e.target.onerror = null;
+      e.target.src = setRandomDefaultImage(id || '0xLOADING', directory || 'hotel');
+    }
+    return true;
+  }, [id, directory]);
+
   return (
     <div>
       <Container className={classes.itemMainInfo}>
@@ -472,13 +478,16 @@ function Info(props) {
           {/* TOP-LEFT-BLOCK: IMAGE =================================================================================*/}
           <Grid item className={classes.orgImageContainer}>
             <div className={classes.orgImageWrapper}>
-              {
-                logo ? (
-                  <img className={classes.orgImage} src={logo} alt={`Organization Logo cannot be loaded. URI: ${logo}`}/>
-                ) : (
-                  <img className={classes.orgImage} src={setRandomDefaultImage(id || '0xLOADING', directory || 'hotel')} alt={`Organization from directory: ${directory}`}/>
-                )
-              }
+              <img
+                alt={`Organization Logo cannot be loaded. URI: ${logo}`}
+                className={classes.orgImage}
+                onError={e => imgError(e)}
+                src={
+                  logo
+                    ? logo
+                    : setRandomDefaultImage(id || '0xLOADING', directory || 'hotel')
+                }
+              />
             </div>
           </Grid>
 
@@ -545,7 +554,7 @@ function Info(props) {
               <div className={classes.orgInfoFieldWrapper} style={{width: '100%'}}>
                 <Typography variant={'caption'} className={classes.orgInfoFieldTitle} noWrap>
                   {'Website: '}
-                  <a href={website()} target={'_blank'} className={classes.orgInfoField} rel="noopener noreferrer">{contacts.website}</a>
+                  <a href={sanitizeLink(contacts.website)} target={'_blank'} className={classes.orgInfoField} rel="noopener noreferrer">{contacts.website}</a>
                   {isWebsiteProved &&
                   <TrustLevelIcon className={classes.iconTrustLevel} style={{verticalAlign: 'text-bottom'}}/>}
                 </Typography>
@@ -578,7 +587,7 @@ function Info(props) {
             {
               socials.map((social, index) => {
                 return (
-                  <a key={index.toString()} href={"https://" + sanitizeLink(social.link)} target={'_blank'} className={classes.socialLink} rel="noopener noreferrer">
+                  <a key={index.toString()} href={sanitizeLink(social.link)} target={'_blank'} className={classes.socialLink} rel="noopener noreferrer">
                     <Hidden xsDown>
                       {icon(social.network)}
                     </Hidden>

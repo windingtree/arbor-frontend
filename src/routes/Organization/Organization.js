@@ -26,6 +26,9 @@ import SubOrganizations from './Components/SubOrganizations';
 import ProofsList from '../../components/ProofsList';
 import SimardAccounts from './Components/SimardAccounts';
 import Gps from './Components/Gps';
+import {
+  DIRECTORIES_ENABLED
+} from '../../utils/constants';
 // import SaveButton from '../../components/buttons/Save';
 // import { makeStyles } from '@material-ui/core/styles';
 // import trustLifDeposit from '../../assets/SvgComponents/trust-lif-deposit.svg';
@@ -138,10 +141,10 @@ function Organization (props) {
           <SubOrganizations organization={organization} subs={subs} canManage={canManage} />
         </div>
       }
-      {canManage &&
+      {DIRECTORIES_ENABLED && canManage &&
         <Directories />
       }
-      {!canManage &&
+      {DIRECTORIES_ENABLED && !canManage &&
         <PublicDirectories />
       }
       {canManage &&

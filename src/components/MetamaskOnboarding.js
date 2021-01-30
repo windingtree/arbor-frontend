@@ -1,3 +1,4 @@
+import Web3 from 'web3';
 import MetaMaskOnboarding from '@metamask/onboarding';
 import React, { useEffect, useState, useRef } from 'react';
 import { connect } from 'react-redux';
@@ -45,7 +46,7 @@ const styles = makeStyles({
 });
 
 const OnboardingButton = props => {
-  const { fetchSignInRequest, loggedIn, web3 } = props;
+  const { fetchSignInRequest, loggedIn, web3: web3Default } = props;
   const classes = styles();
   const [buttonText, setButtonText] = useState(ONBOARD_TEXT);
   const [loginStarted, setLoginStart] = useState(false);
@@ -75,6 +76,14 @@ const OnboardingButton = props => {
 
       connectMethod
         .then(accounts => {
+          let web3;
+
+          if (typeof window.ethereum !== 'undefined') {
+            window.ethereum.autoRefreshOnNetworkChange = false;
+            web3 = new Web3(window.ethereum);
+            console.log('Ethereum provider detected.');
+          }
+
           fetchSignInRequest({
             address: accounts[0],
             web3,

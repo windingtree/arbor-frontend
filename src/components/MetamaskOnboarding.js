@@ -76,7 +76,7 @@ const OnboardingButton = props => {
 
       connectMethod
         .then(accounts => {
-          let web3;
+          let web3 = web3Default;
 
           if (typeof window.ethereum !== 'undefined') {
             window.ethereum.autoRefreshOnNetworkChange = false;

@@ -430,8 +430,10 @@ function Info(props) {
   const sanitizeLink = link => {
     console.log('>>>>>>>', link, '======');
     const url = new URL(
-      link.replace(/^[\/]{1,}/, '')
-        .replace(/\/$/, '')
+      `https://${link
+        .replace(/^(http|https):\d{0,}\/\//, '')
+        .replace(/^[\/]{1,}/, '')
+        .replace(/\/$/, '')}`
     );
     return `https://${url.hostname}${url.pathname !== '' ? url.pathname : ''}`;
   }

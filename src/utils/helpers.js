@@ -95,12 +95,12 @@ export const setRandomDefaultImage = (orgid, directory) => {
 
 export const generateSolt = () => Web3.utils.keccak256(Math.random().toString());
 
-export const createIdWithSolt = (address, solt) => {
-  return `did:orgid:${Web3.utils.soliditySha3(
+export const createIdWithSolt = (address, salt) => `did:orgid:${
+  Web3.utils.soliditySha3(
     address,
-    solt
-  )}`;
-};
+    salt
+  )
+}`;
 
 /*
 export const getWeb3 = () => {

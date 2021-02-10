@@ -18,7 +18,7 @@ import {
 
 import history from '../redux/history';
 import queryString from 'query-string';
-import { rewriteOrgidJson, selectPendingState, selectSuccessState } from "../ducks/wizard";
+import { rewriteOrgidJson, selectPendingState, selectSuccessState, selectWizardOrgidJson } from "../ducks/wizard";
 import { selectSignInAddress } from '../ducks/signIn';
 
 import { WizardStep, WizardStepHosting, WizardStepMetaMask } from "../components";
@@ -208,7 +208,8 @@ const WizardGeneral = (props) => {
     pendingTransaction,
     successTransaction,
     address,
-    rewriteOrgidJson
+    rewriteOrgidJson,
+    wizardOrgidJson
   } = props;
   const classes = styles();
   const [activeStep, setActiveStep] = useState(0);
@@ -226,7 +227,8 @@ const WizardGeneral = (props) => {
   const [hotelProfileLoading, setHotelProfileLoading] = useState(false);
   const {
     connect: connectTo,
-    hotelId
+    hotelId,
+    redirect_uri
   } = queryString.parse(history.location.search || {});
 
   useEffect(() => {
@@ -246,22 +248,65 @@ const WizardGeneral = (props) => {
   }, [connectTo, hotelId]);
 
   useEffect(() => {
+    const idSolt = generateSolt();
+    setSolt(idSolt);
+
+    if (hotelProfile) {
+      rewriteOrgidJson({
+        id: createIdWithSolt(address, idSolt),
+        created: new Date().toJSON(),
+        [wizardType]: skeletons[wizardType],
+        legalEntity: {
+          legalName: hotelProfile.name,
+          ...(hotelProfile.imageUrl
+            ? {
+              media: {
+                logo: hotelProfile.imageUrl
+              }
+            }
+            : {}),
+          ...(hotelProfile.email
+            ? {
+              contacts: [
+                {
+                  email: hotelProfile.email
+                }
+              ]
+            }
+            : {}),
+          registeredAddress: {
+            ...(hotelProfile.location.lat
+              ? {
+                gps: `${hotelProfile.location.lat},${hotelProfile.location.lng}`
+              }
+              : {})
+          }
+        }
+      });
+    } else {
+      rewriteOrgidJson({
+        id: createIdWithSolt(address, idSolt),
+        created: new Date().toJSON(),
+        [wizardType]: skeletons[wizardType]
+      })
+    }
+  }, [wizardType, address, rewriteOrgidJson, hotelProfile]);
+
+  useEffect(() => {
     if(id) {
-      rewriteOrgidJson(jsonContent)
+      rewriteOrgidJson(jsonContent);
     }
   }, [id, rewriteOrgidJson, jsonContent]);
 
-  useEffect(() => {
-    const idSolt = generateSolt();
-    setSolt(idSolt);
-    rewriteOrgidJson({
-      id: createIdWithSolt(address, idSolt),
-      created: new Date().toJSON(),
-      [wizardType]: skeletons[wizardType]
-    })
-  }, [wizardType, address, rewriteOrgidJson]);
-
-  // console.log('@@@@@@@@@@@@@@@', solt);
+  // useEffect(() => {
+  //   const idSolt = generateSolt();
+  //   setSolt(idSolt);
+    // rewriteOrgidJson({
+    //   id: createIdWithSolt(address, idSolt),
+    //   created: new Date().toJSON(),
+    //   [wizardType]: skeletons[wizardType]
+    // })
+  // }, [wizardType, address, rewriteOrgidJson]);
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -348,7 +393,7 @@ const WizardGeneral = (props) => {
         <CircularProgress color="inherit" />
       </Backdrop>
       <Snackbar
-        anchorOrigin={{ vertical: 'center', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={!!hotelProfileError}
         autoHideDuration={6000}
         onClose={() => setHotelProfileError(null)}
@@ -413,9 +458,25 @@ const WizardGeneral = (props) => {
                   </div>
                   <Grid container justify={'space-between'} alignItems={'center'} wrap={'nowrap'}>
                     <Grid item lg={6}>
-                      <Button className={[classes.pendingButton, classes.successButton].join(' ')} onClick={() => history.push('/trust/general')}>
+                      {/* <Button className={[classes.pendingButton, classes.successButton].join(' ')} onClick={() => history.push('/trust/general')}>
                         <Typography variant={'caption'} className={[classes.pendingButtonLabel, classes.successButtonLabel].join(' ')}>Improve trust level</Typography>
-                      </Button>
+                      </Button> */}
+                      {connectTo === 'rooms' &&
+                        <Button
+                          className={[classes.pendingButton, classes.successButton].join(' ')}
+                          onClick={() => {
+                            const orgId = wizardOrgidJson.id.split(':')[2];
+                            window.location.href = `${redirect_uri}/${orgId}`;
+                          }}
+                        >
+                          <Typography
+                            variant={'caption'}
+                            className={[classes.pendingButtonLabel, classes.successButtonLabel].join(' ')}
+                          >
+                            Back to the Rooms
+                          </Typography>
+                        </Button>
+                      }
                     </Grid>
                     <Grid item lg={7}>
                       <Button className={classes.pendingButton} onClick={() => history.push('/my-organizations')}>
@@ -460,7 +521,8 @@ const mapStateToProps = state => {
   return {
     pendingTransaction: selectPendingState(state),
     successTransaction: selectSuccessState(state),
-    address: selectSignInAddress(state)
+    address: selectSignInAddress(state),
+    wizardOrgidJson: selectWizardOrgidJson(state)
   }
 };
 

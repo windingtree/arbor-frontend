@@ -199,7 +199,7 @@ const skeletons = {
 };
 
 const fetchHotelProfile = profileId => api(
-  `/rooms/hotel/${profileId}`,
+  `rooms/hotel/${profileId}`,
   'GET'
 );
 

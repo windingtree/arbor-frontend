@@ -273,7 +273,10 @@ const Edit = (props) => {
 
   useEffect(() => {
     if(orgid) {
-      rewriteOrgidJson(jsonContent)
+      rewriteOrgidJson({
+        ...jsonContent,
+        id: `did:orgid:${orgid}`
+      })
     }
   }, [orgid, rewriteOrgidJson, jsonContent]);
 

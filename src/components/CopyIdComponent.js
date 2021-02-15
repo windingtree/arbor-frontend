@@ -49,7 +49,7 @@ const LightTooltip = withStyles({
 
 export default function CopyIdComponent(props) {
   const classes = styles();
-  const { leftElement, id, fontWeight, fontSize, color, width, title } = props;
+  const { leftElement = null, id, fontWeight, fontSize, color, width, title } = props;
 
   const [open, setOpen] = useState(false);
 

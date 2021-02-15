@@ -18,7 +18,8 @@ import history from '../../redux/history';
 import TopNavigation from "./Components/TopNavigation";
 import Directories from './Components/Directories';
 import PublicDirectories from './Components/PublicDirectories';
-import Agents from "./Components/Agents";
+import Agents from './Components/Agents';
+import Personnel from './Components/Personnel';
 import Services from "./Components/Services";
 import Payments from "./Components/Payments";
 import Info from "./Components/Info";
@@ -152,6 +153,11 @@ function Organization (props) {
           orgid={orgId}
           owner={owner}
           agents={agents}
+        />
+      }
+      {canManage &&
+        <Personnel
+          orgid={orgId}
         />
       }
       {canManage &&

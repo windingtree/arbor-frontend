@@ -68,7 +68,8 @@ const styles = makeStyles({
     fontWeight: 400,
     fontSize: '14px',
     color: colors.greyScale.dark,
-    padding: '20px 0'
+    padding: '20px 0',
+    marginBottom: '40px'
   },
   agentsTitleWrapper: {
     fontSize: '24px',
@@ -91,7 +92,7 @@ const styles = makeStyles({
     fontSize: '18px',
     color: colors.greyScale.darkest,
   },
-  deleteAgentButton: {
+  deleteButton: {
     fontSize: '14px',
     fontWeight: 500,
     lineHeight: 1.3,
@@ -546,7 +547,7 @@ function Agents(props) {
                               <Typography>{agent.note}</Typography>
                             </Grid>
                             <Grid item xs={2}>
-                              <Button onClick={() => handleDeleteAgent(index)} className={classes.deleteAgentButton}>
+                              <Button onClick={() => handleDeleteAgent(index)} className={classes.deleteButton}>
                                 <Typography variant={'inherit'}>Remove key</Typography>
                               </Button>
                             </Grid>

@@ -134,15 +134,10 @@ const styles = makeStyles({
   }
 });
 
-const callFetchPersonsApi = async orgid => {
-
-  return [
-    {
-      name: 'Cool Guy',
-      ipfsHash: 'QmS4ustL54uo8FzR9455qaxZwuMiUhyvMcX9Ba8nUH4uVv'
-    }
-  ];
-};
+const callFetchPersonsApi = orgid => api(
+  `trustedPerson/orgId/${orgid}`,
+  'GET'
+);
 
 const callSavePersonsApi = token => api(
   'trustedPerson',
@@ -155,6 +150,12 @@ const callSavePersonsApi = token => api(
       'Content-Type': 'application/json'
     }
   }
+);
+
+const callDeletePersonApi = (ipfsHash, options) => api(
+  `trustedPerson/${ipfsHash}`,
+  'DELETE',
+  options
 );
 
 const accountsTemplate = [
@@ -484,6 +485,7 @@ const Personnel = props => {
     try {
       setPersonsLoading(true);
       const records = await callFetchPersonsApi(orgid);
+      console.log('Persons:', typeof records, records);
       setPersons(records);
       setPersonsLoading(false);
     } catch (error) {
@@ -501,7 +503,31 @@ const Personnel = props => {
     fetchPersons(orgid);
   };
 
-  const handleDeletePerson = index => {};
+  const handleDeletePerson = async index => {
+    try {
+      const token = await createToken(
+        web3,
+        {
+          algorithm: 'ETH',
+          expiration: 60,
+          issuerDidValue: `did:orgid:${orgid}`,
+          from: address
+        }
+      );
+      await callDeletePersonApi(
+        persons[index].ipfs,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+      console.log('Person deleted');
+      await fetchPersons(orgid);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -552,7 +578,7 @@ const Personnel = props => {
                           </Grid>
                           <Grid item xs={6}>
                             <CopyIdComponent
-                              id={person.ipfsHash}
+                              id={person.ipfs}
                               fontSize={'14px'}
                               width={18}
                               title='Copied to clipboard'

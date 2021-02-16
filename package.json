@@ -21,7 +21,7 @@
     "@web3-react/injected-connector": "6.0.7",
     "@windingtree/org.json-schema": "0.4.3",
     "esri-leaflet-geocoder": "2.3.3",
-    "formik": "2.2.6",
+    "formik": "2.2.0",
     "history": "4.10.1",
     "js-sha3": "0.8.0",
     "jsonschema": "1.2.6",

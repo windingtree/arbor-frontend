@@ -438,7 +438,7 @@ function Info(props) {
     return `https://${url.hostname}${url.pathname !== '' ? url.pathname : ''}`;
   }
 
-  const fixOldLogoUrl = logo => logo.replace('arbor.fm', 'marketplace.windingtree.com');
+  const fixOldLogoUrl = logo => logo ? logo.replace('arbor.fm', 'marketplace.windingtree.com') : logo;
 
   const icon = (socialNetwork) => {
     switch (socialNetwork) {

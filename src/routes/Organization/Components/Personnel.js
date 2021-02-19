@@ -11,7 +11,7 @@ import {
 } from '@material-ui/core';
 import { Formik } from 'formik';
 import { makeStyles } from '@material-ui/core/styles';
-import AddIcon from '@material-ui/icons/Add';
+// import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import colors from '../../../styles/colors';
 import CopyIdComponent from '../../../components/CopyIdComponent';
@@ -64,6 +64,14 @@ const styles = makeStyles({
     borderRadius: '8px',
     padding: '20px 0'
   },
+  addButton: {
+    width: '64px',
+    fontSize: '14px',
+    color: 'rgba(255, 255, 255, 0.9)',
+    background: 'linear-gradient(180deg, #99D7C5 0%, #3A9492 98.96%)',
+    borderRadius: '6px',
+    marginLeft: '8px'
+  },
   deleteButton: {
     fontSize: '14px',
     fontWeight: 500,
@@ -97,18 +105,18 @@ const styles = makeStyles({
     position: 'relative',
     marginTop: '20px',
     paddingTop: '8px',
-    borderTop: '1px solid grey',
-    backgroundColor: 'rgba(0,0,0,.05)',
-    paddingLeft: '6px',
     paddingBottom: '4px'
   },
   dialogButtonWrapper: {
-    display: 'table',
+    display: 'flex',
     paddingTop: '10px',
-    margin: '20px auto 0 auto'
+    margin: '20px auto 0 auto',
+    alignItems: 'stretch',
+    alignContent: 'stretch',
+    flexDirection: 'column'
   },
   dialogButton: {
-    height: '44px',
+    height: '50px',
     border: `1px solid ${colors.primary.accent}`,
     borderRadius: '8px',
     backgroundImage: colors.gradients.orange,
@@ -131,6 +139,19 @@ const styles = makeStyles({
     fontWeight: 600,
     marginTop: '20px',
     marginBottom: '8px'
+  },
+  signNote: {
+    marginTop: '18px',
+    '& > p': {
+      fontSize: '14px',
+      marginBottom: '14px',
+      color: '#8F999F'
+    }
+  },
+  errorWrapper: {
+    marginTop: '20px',
+    fontSize: '16px',
+    color: 'black'
   }
 });
 
@@ -220,6 +241,7 @@ const AddForm = props => {
     web3,
     address
   } = props;
+  const [error, setError] = useState(null);
   const [selectedAccountType, setSelectedAccountType] = useState(null);
   const addAccountOptions = accountsTemplate.reduce(
     (a, v, i) => ({
@@ -303,7 +325,7 @@ const AddForm = props => {
     >
       <div className={classes.dialogContent}>
         <Typography variant={'caption'} className={classes.dialogTitle}>
-          Add Trusted Person
+          Trusted Person
         </Typography>
         <Formik
           initialValues={{
@@ -336,6 +358,7 @@ const AddForm = props => {
             return errors;
           }}
           onSubmit={async values => {
+            setError(null);
             // Create token
             // Upload file to the IPFS
             // Save data to the database
@@ -349,6 +372,7 @@ const AddForm = props => {
               handleClose();
             } catch (error) {
               console.log(error);
+              setError(error.message);
             }
           }}
         >
@@ -421,7 +445,7 @@ const AddForm = props => {
               }
 
               <div className={classes.addAccountCmpWrapper}>
-                <Grid container>
+                <Grid container alignItems='stretch' alignContent='center'>
                   <Grid item xs>
                     <SelectField
                       name='party'
@@ -436,17 +460,29 @@ const AddForm = props => {
                       }}
                     />
                   </Grid>
-                  <Grid item>
-                    <IconButton
+                  <Grid item style={{display: 'flex'}}>
+                    <Button
+                      className={classes.addButton}
                       onClick={() => {
                         setValues(handleAddAccount(values));
                       }}
                       disabled={selectedAccountType === null}
                     >
-                      <AddIcon />
-                    </IconButton>
+                      Add
+                    </Button>
                   </Grid>
                 </Grid>
+              </div>
+              <div className={classes.signNote}>
+                <p>
+                  You can add as many social accounts as you want here and then save, approving your action with Metamask signature.
+                </p>
+                <p>
+                  This creates a JSON file and automatically stores it on the IPFS network.
+                </p>
+                <p>
+                  You would be given the link to this file once the file is thereYour representative could use the given link when he needs to prove it’s him and not somebody else in the Internet
+                </p>
               </div>
               <div className={classes.dialogButtonWrapper}>
                 <Button
@@ -458,10 +494,14 @@ const AddForm = props => {
                     variant={'caption'}
                     className={classes.dialogButtonLabel}
                   >
-                    Sign and Add
+                    Sign
                   </Typography>
                 </Button>
               </div>
+
+              {error &&
+                <div className={classes.errorWrapper}>{error}</div>
+              }
             </form>
           )}
         </Formik>

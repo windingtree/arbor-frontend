@@ -242,7 +242,7 @@ const DropzoneField = (props) => {
   );
 
   useEffect(() => {
-    if (value.match(/^http|https/gi)) {
+    if (value && value.match(/^http|https/gi)) {
       setTabValue(1);
     }
   }, [value]);

@@ -438,6 +438,8 @@ function Info(props) {
     return `https://${url.hostname}${url.pathname !== '' ? url.pathname : ''}`;
   }
 
+  const fixOldLogoUrl = logo => logo.replace('arbor.fm', 'marketplace.windingtree.com');
+
   const icon = (socialNetwork) => {
     switch (socialNetwork) {
       case 'twitter':
@@ -481,12 +483,12 @@ function Info(props) {
           <Grid item className={classes.orgImageContainer}>
             <div className={classes.orgImageWrapper}>
               <img
-                alt={`Organization Logo cannot be loaded. URI: ${logo}`}
+                alt={`${name}`}
                 className={classes.orgImage}
                 onError={e => imgError(e)}
                 src={
-                  logo
-                    ? logo
+                  fixOldLogoUrl(logo)
+                    ? fixOldLogoUrl(logo)
                     : setRandomDefaultImage(id || '0xLOADING', directory || 'hotel')
                 }
               />

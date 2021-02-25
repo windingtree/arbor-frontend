@@ -1007,6 +1007,7 @@ function* rewriteOrgidJsonSaga({
 }) {
   try {
     const result = yield call((data) => data, payload);
+    console.log('Rewrite request', result);
 
     yield put(rewriteOrgidJsonSuccess(result));
   } catch (error) {

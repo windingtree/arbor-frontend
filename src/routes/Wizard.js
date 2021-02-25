@@ -11,11 +11,14 @@ import {
   Step,
   StepLabel,
   Grid,
-  CircularProgress
+  CircularProgress,
+  Backdrop,
+  Snackbar
 } from "@material-ui/core";
 
 import history from '../redux/history';
-import { rewriteOrgidJson, selectPendingState, selectSuccessState } from "../ducks/wizard";
+import queryString from 'query-string';
+import { rewriteOrgidJson, selectPendingState, selectSuccessState, selectWizardOrgidJson } from "../ducks/wizard";
 import { selectSignInAddress } from '../ducks/signIn';
 
 import { WizardStep, WizardStepHosting, WizardStepMetaMask } from "../components";
@@ -29,6 +32,8 @@ import ArrowLeftIcon from '../assets/SvgComponents/ArrowLeftIcon';
 import PendingTransactionIllustration from '../assets/SvgComponents/org-creation-illustration.svg';
 import SuccessTransactionIllustration from '../assets/SvgComponents/detailsIllustration.svg';
 import colors from '../styles/colors';
+
+import { api } from '../redux/api';
 
 
 const styles = makeStyles({
@@ -141,6 +146,12 @@ const styles = makeStyles({
   },
   progress: {
     marginLeft: '20px',
+  },
+  backdrop: {
+    zIndex: 99999
+  },
+  snackCloseBtn: {
+    color: 'white'
   }
 });
 
@@ -187,12 +198,18 @@ const skeletons = {
   }
 };
 
+const fetchHotelProfile = profileId => api(
+  `rooms/hotel/${profileId}`,
+  'GET'
+);
+
 const WizardGeneral = (props) => {
   const {
     pendingTransaction,
     successTransaction,
     address,
-    rewriteOrgidJson
+    rewriteOrgidJson,
+    wizardOrgidJson
   } = props;
   const classes = styles();
   const [activeStep, setActiveStep] = useState(0);
@@ -205,24 +222,91 @@ const WizardGeneral = (props) => {
   const actionLabel = (action === 'create') ? 'Create' : 'Edit';
   const types = { legalEntity, organizationalUnit };
   const wizardConfig = types[wizardType];
+  const [hotelProfileError, setHotelProfileError] = useState(null);
+  const [hotelProfile, setHotelProfile] = useState(null);
+  const [hotelProfileLoading, setHotelProfileLoading] = useState(false);
+  const {
+    connect: connectTo,
+    hotelId,
+    redirect_uri
+  } = queryString.parse(history.location.search || {});
 
   useEffect(() => {
-    if(id) {
-      rewriteOrgidJson(jsonContent)
+    if (connectTo === 'rooms') {
+      setHotelProfileLoading(true);
+      fetchHotelProfile(hotelId)
+        .then(result => {
+          setHotelProfile(result);
+          setHotelProfileLoading(false);
+        })
+        .catch(error => {
+          console.log(error);
+          setHotelProfileError('Unable to fetch the hotel profile');
+          setHotelProfileLoading(false);
+        });
     }
-  }, [id, rewriteOrgidJson, jsonContent]);
+  }, [connectTo, hotelId]);
 
   useEffect(() => {
     const idSolt = generateSolt();
     setSolt(idSolt);
-    rewriteOrgidJson({
-      id: createIdWithSolt(address, idSolt),
-      created: new Date().toJSON(),
-      [wizardType]: skeletons[wizardType]
-    })
-  }, [wizardType, address, rewriteOrgidJson]);
 
-  // console.log('@@@@@@@@@@@@@@@', solt);
+    if (hotelProfile) {
+      rewriteOrgidJson({
+        id: createIdWithSolt(address, idSolt),
+        created: new Date().toJSON(),
+        [wizardType]: skeletons[wizardType],
+        legalEntity: {
+          legalName: hotelProfile.name,
+          ...(hotelProfile.imageUrl
+            ? {
+              media: {
+                logo: hotelProfile.imageUrl
+              }
+            }
+            : {}),
+          ...(hotelProfile.email
+            ? {
+              contacts: [
+                {
+                  email: hotelProfile.email
+                }
+              ]
+            }
+            : {}),
+          registeredAddress: {
+            ...(hotelProfile.location.lat
+              ? {
+                gps: `${hotelProfile.location.lat},${hotelProfile.location.lng}`
+              }
+              : {})
+          }
+        }
+      });
+    } else {
+      rewriteOrgidJson({
+        id: createIdWithSolt(address, idSolt),
+        created: new Date().toJSON(),
+        [wizardType]: skeletons[wizardType]
+      })
+    }
+  }, [wizardType, address, rewriteOrgidJson, hotelProfile]);
+
+  useEffect(() => {
+    if(id) {
+      rewriteOrgidJson(jsonContent);
+    }
+  }, [id, rewriteOrgidJson, jsonContent]);
+
+  // useEffect(() => {
+  //   const idSolt = generateSolt();
+  //   setSolt(idSolt);
+    // rewriteOrgidJson({
+    //   id: createIdWithSolt(address, idSolt),
+    //   created: new Date().toJSON(),
+    //   [wizardType]: skeletons[wizardType]
+    // })
+  // }, [wizardType, address, rewriteOrgidJson]);
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -304,97 +388,132 @@ const WizardGeneral = (props) => {
   const steps = wizardConfig.map(step => step.name);
 
   return (
-    <div className={classes.mainContainer}>
-      <Container>
-        <div className={classes.screenHeading}>
-          <div className={classes.buttonWrapper}>
-            <Button onClick={activeStep === 0 ? history.goBack : handleBack}>
-              <Typography variant={'caption'} className={classes.buttonLabel}>
-                <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
-                {
-                  activeStep === 0 ? 'My Companies' : 'Previous Step'
-                }
-              </Typography>
-            </Button>
-          </div>
-        </div>
-      </Container>
-      <Container className={classes.mainContent}>
-        <Container maxWidth="sm" className={classes.formContainer}>
-          {
-            !!pendingTransaction ? (
-              <div className={classes.pendingContentWrapper}>
-                <img src={PendingTransactionIllustration} alt={'illustration'} className={classes.pendingIllustration}/>
-                <div className={classes.pendingTextContainer}>
-                  <Grid container alignItems={'center'}>
-                    <Grid item>
-                      <Typography variant={'h3'} className={classes.pendingTitle}>Almost there!</Typography>
-                    </Grid>
-                    <Grid item>
-                      <CircularProgress
-                        className={classes.progress}
-                        variant='indeterminate'
-                        size={20}
-                        thickness={4}
-                      />
-                    </Grid>
-                  </Grid>
-                  <Typography variant={'subtitle2'} className={classes.pendingSubtitle}>Creating your organization profile might take some time. You can wait here or add another organization in the meantime. We will let you know once everything is ready. </Typography>
-                </div>
-                <div className={classes.pendingButtonWrapper}>
-                  <Button className={classes.pendingButton} onClick={() => history.push('/my-organizations')}>
-                    <Typography variant={'caption'} className={classes.pendingButtonLabel}>Go to my organizations <ArrowLeftIcon viewBox={'0 0 12 12'} className={classes.pendingButtonIcon}/></Typography>
-                  </Button>
-                </div>
-              </div>
-            ) : !!successTransaction ? (
-              <div className={classes.pendingContentWrapper}>
-                <img src={SuccessTransactionIllustration} alt={'illustration'} className={classes.pendingIllustration}/>
-                <div className={classes.pendingTextContainer}>
-                  <Typography variant={'h3'} className={classes.pendingTitle}>Your organization profile is live!</Typography>
-                  <Typography variant={'subtitle2'} className={classes.pendingSubtitle}>Your organization is already in our registry and can be discovered by other community members. Now you can create another organization profile or go ahead and  improve your trust level.</Typography>
-                </div>
-                <Grid container justify={'space-between'} alignItems={'center'} wrap={'nowrap'}>
-                  <Grid item lg={6}>
-                    <Button className={[classes.pendingButton, classes.successButton].join(' ')} onClick={() => history.push('/trust/general')}>
-                      <Typography variant={'caption'} className={[classes.pendingButtonLabel, classes.successButtonLabel].join(' ')}>Improve trust level</Typography>
-                    </Button>
-                  </Grid>
-                  <Grid item lg={7}>
-                    <Button className={classes.pendingButton} onClick={() => history.push('/my-organizations')}>
-                      <Typography variant={'caption'} className={classes.pendingButtonLabel} noWrap>Go to my organizations <ArrowLeftIcon viewBox={'0 0 12 12'} className={classes.pendingButtonIcon}/></Typography>
-                    </Button>
-                  </Grid>
-                </Grid>
-              </div>
-            ) : (
-              <div className={classes.formContentWrapper}>
-                <div>
-                  <Typography variant={'h2'} className={classes.formTitle}>
-                    {
-                      `${actionLabel} ${wizardType === 'legalEntity' ? 'Company Account' : 'Business Unit'}`
-                    }
-                  </Typography>
+    <>
+      <Backdrop className={classes.backdrop} open={hotelProfileLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        open={!!hotelProfileError}
+        autoHideDuration={6000}
+        onClose={() => setHotelProfileError(null)}
+        message={hotelProfileError}
+        action={(
+          <Button
+            className={classes.snackCloseBtn}
+            onClick={() => setHotelProfileError(null)}>
+            Close
+          </Button>
+        )}
+      />
+      <div className={classes.mainContainer}>
+        <Container>
+          <div className={classes.screenHeading}>
+            <div className={classes.buttonWrapper}>
+              <Button onClick={activeStep === 0 ? history.goBack : handleBack}>
+                <Typography variant={'caption'} className={classes.buttonLabel}>
+                  <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
                   {
-                    wizardType !== 'legalEntity' ? (
-                      <Typography variant={'caption'} className={classes.formSubtitle}>Operated by {parent.name}</Typography>
-                    ) : null
+                    activeStep === 0 ? 'My Companies' : 'Previous Step'
                   }
-                </div>
-                <Stepper alternativeLabel activeStep={activeStep} connector={<StepperStyles/>}>
-                  {steps.map((label, index) => (
-                    <Step key={index}>
-                      <StepLabel StepIconComponent={StepStyle}><p>{`${index + 1}.`}</p>{label}</StepLabel>
-                    </Step>
-                  ))}
-                </Stepper>
-                {stepsContent(activeStep, parent)}
-              </div>
-            )
-          }
+                </Typography>
+              </Button>
+            </div>
+          </div>
         </Container>
-      </Container>
-    </div>
+        <Container className={classes.mainContent}>
+          <Container maxWidth="sm" className={classes.formContainer}>
+            {
+              !!pendingTransaction ? (
+                <div className={classes.pendingContentWrapper}>
+                  <img src={PendingTransactionIllustration} alt={'illustration'} className={classes.pendingIllustration}/>
+                  <div className={classes.pendingTextContainer}>
+                    <Grid container alignItems={'center'}>
+                      <Grid item>
+                        <Typography variant={'h3'} className={classes.pendingTitle}>Almost there!</Typography>
+                      </Grid>
+                      <Grid item>
+                        <CircularProgress
+                          className={classes.progress}
+                          variant='indeterminate'
+                          size={20}
+                          thickness={4}
+                        />
+                      </Grid>
+                    </Grid>
+                    <Typography variant={'subtitle2'} className={classes.pendingSubtitle}>Creating your organization profile might take some time. You can wait here or add another organization in the meantime. We will let you know once everything is ready. </Typography>
+                  </div>
+                  <div className={classes.pendingButtonWrapper}>
+                    <Button className={classes.pendingButton} onClick={() => history.push('/my-organizations')}>
+                      <Typography variant={'caption'} className={classes.pendingButtonLabel}>Go to my organizations <ArrowLeftIcon viewBox={'0 0 12 12'} className={classes.pendingButtonIcon}/></Typography>
+                    </Button>
+                  </div>
+                </div>
+              ) : !!successTransaction ? (
+                <div className={classes.pendingContentWrapper}>
+                  <img src={SuccessTransactionIllustration} alt={'illustration'} className={classes.pendingIllustration}/>
+                  <div className={classes.pendingTextContainer}>
+                    <Typography variant={'h3'} className={classes.pendingTitle}>Your organization profile is live!</Typography>
+                    <Typography variant={'subtitle2'} className={classes.pendingSubtitle}>Your organization is already in our registry and can be discovered by other community members. Now you can create another organization profile or go ahead and  improve your trust level.</Typography>
+                  </div>
+                  <Grid container justify={'space-between'} alignItems={'center'} wrap={'nowrap'}>
+                    <Grid item lg={6}>
+                      {/* <Button className={[classes.pendingButton, classes.successButton].join(' ')} onClick={() => history.push('/trust/general')}>
+                        <Typography variant={'caption'} className={[classes.pendingButtonLabel, classes.successButtonLabel].join(' ')}>Improve trust level</Typography>
+                      </Button> */}
+                      {connectTo === 'rooms' &&
+                        <Button
+                          className={[classes.pendingButton, classes.successButton].join(' ')}
+                          onClick={() => {
+                            const orgId = wizardOrgidJson.id.split(':')[2];
+                            window.location.href = `${redirect_uri}/${orgId}`;
+                          }}
+                        >
+                          <Typography
+                            variant={'caption'}
+                            className={[classes.pendingButtonLabel, classes.successButtonLabel].join(' ')}
+                          >
+                            Back to the Rooms
+                          </Typography>
+                        </Button>
+                      }
+                    </Grid>
+                    <Grid item lg={7}>
+                      <Button className={classes.pendingButton} onClick={() => history.push('/my-organizations')}>
+                        <Typography variant={'caption'} className={classes.pendingButtonLabel} noWrap>Go to my organizations <ArrowLeftIcon viewBox={'0 0 12 12'} className={classes.pendingButtonIcon}/></Typography>
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </div>
+              ) : (
+                <div className={classes.formContentWrapper}>
+                  <div>
+                    <Typography variant={'h2'} className={classes.formTitle}>
+                      {
+                        `${actionLabel} ${wizardType === 'legalEntity' ? 'Company Account' : 'Business Unit'}`
+                      }
+                    </Typography>
+                    {
+                      wizardType !== 'legalEntity' ? (
+                        <Typography variant={'caption'} className={classes.formSubtitle}>Operated by {parent.name}</Typography>
+                      ) : null
+                    }
+                  </div>
+                  <Stepper alternativeLabel activeStep={activeStep} connector={<StepperStyles/>}>
+                    {steps.map((label, index) => (
+                      <Step key={index}>
+                        <StepLabel StepIconComponent={StepStyle}><p>{`${index + 1}.`}</p>{label}</StepLabel>
+                      </Step>
+                    ))}
+                  </Stepper>
+                  {stepsContent(activeStep, parent)}
+                </div>
+              )
+            }
+          </Container>
+        </Container>
+      </div>
+    </>
   )
 };
 
@@ -402,7 +521,8 @@ const mapStateToProps = state => {
   return {
     pendingTransaction: selectPendingState(state),
     successTransaction: selectSuccessState(state),
-    address: selectSignInAddress(state)
+    address: selectSignInAddress(state),
+    wizardOrgidJson: selectWizardOrgidJson(state)
   }
 };
 

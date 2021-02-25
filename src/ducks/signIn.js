@@ -284,9 +284,16 @@ function* fetchSignInSaga({ payload }) {
     // Connection Success
     yield put(fetchSignInSuccess(payload));
 
-    const locationState = history.location.state;
-    if (locationState && locationState.follow) {
-      yield call(history.push, locationState.follow);
+    const {
+      follow,
+      search
+    } = history.location.state || {};
+    console.log('Location history:', history.location);
+    if (follow) {
+      yield call(history.push, {
+        pathname: follow,
+        search
+      });
     } else {
       yield call(history.push, '/my-organizations');
     }

@@ -227,9 +227,25 @@ const DropzoneField = (props) => {
   const classes = styles();
   const {saveMediaToArbor, extendOrgidJson, address, orgidJson, type, name, description, orgidJsonPath, index, helperText, required, values, errors, touched, handleChange, handleBlur} = props;
   const isError = _.get(errors, orgidJsonPath) && _.get(touched, orgidJsonPath);
-  const [tabValue, setTabValue] = useState(0);
+  let value = _.get(values, orgidJsonPath, '');
+  const [tabValue, setTabValue] = useState(value === '' ? 0 : 1);
   const [showPreviewOnly, setShowPreviewOnly] = useState(!!_.get(values, orgidJsonPath, false));
   const [files, setFiles] = useState([]);
+
+  const orgIdType = orgidJson.legalEntity ? 'legalEntity' : 'organizationalUnit';
+  let hideUpdateTabs = (
+    (
+      (orgidJson.media && orgidJson.media.logo) ||
+      (orgidJson[orgIdType] && orgidJson[orgIdType].media && orgidJson[orgIdType].media.logo)
+    ) &&
+    showPreviewOnly
+  );
+
+  useEffect(() => {
+    if (value && value.match(/^http|https/gi)) {
+      setTabValue(1);
+    }
+  }, [value]);
 
   /* useEffect(() => () => {
     // Make sure to revoke the data uris to avoid memory leaks
@@ -255,16 +271,6 @@ const DropzoneField = (props) => {
     props.saveMediaToArbor({address, id: orgidJson.id, file: null});
     setFiles([]);
   };
-
-  const orgIdType = orgidJson.legalEntity ? 'legalEntity' : 'organizationalUnit';
-  let hideUpdateTabs = (
-    (
-      (orgidJson.media && orgidJson.media.logo) ||
-      (orgidJson[orgIdType] && orgidJson[orgIdType].media && orgidJson[orgIdType].media.logo)
-    ) &&
-    showPreviewOnly
-  );
-  let value = _.get(values, orgidJsonPath, '');
 
   return (
     <div key={index} className={classes.tabsContainer}>

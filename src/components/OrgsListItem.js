@@ -178,6 +178,8 @@ export default function OrgsListItem(props) {
     return true;
   }, [classes, id, orgidType]);
 
+  const fixOldDomain = path => path.replace('arbor.fm', 'marketplace.windingtree.com');
+
   return (
     <Card className={classes.item}
           style={{ backgroundColor: error ? colors.secondary.error : colors.primary.white }}
@@ -194,7 +196,7 @@ export default function OrgsListItem(props) {
               {
                 logo ? (
                   <div className={classes.itemImgWrapper}>
-                    <img alt={'logo'} src={logo} className={classes.itemRealImg} onError={imgError}/>
+                    <img alt={'logo'} src={fixOldDomain(logo)} className={classes.itemRealImg} onError={imgError}/>
                   </div>
                 ) : error ? (
                   <div className={[classes.itemImgWrapper, classes.itemImgError].join(' ')}>

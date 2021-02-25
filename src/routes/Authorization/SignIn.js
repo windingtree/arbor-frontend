@@ -156,7 +156,7 @@ const SignInActionBox = (classes, props) => {
     };
 
     const handleChainId = async () => {
-      if (window.ethereum) {
+      if (window.ethereum && window.ethereum.chainId) {
         onChainChange(window.ethereum.chainId);
         window.ethereum.once('chainChanged', onChainChange);
       }
@@ -212,17 +212,6 @@ const SignInBox = (classes, props) => {
 
 const SignIn = props => {
   const classes = styles();
-  // const [isUploaded, setUploaded] = useState(false);
-  // const isInstalled = _.get(history, 'location.state.installed', false);
-
-  // useEffect(() => {
-  //   if(isInstalled) {
-  //     setTimeout(() => setUploaded(true), 2000);
-  //     if(isUploaded) {
-  //       alert('Reload page after you have MetaMask installed')
-  //     }
-  //   }
-  // });
 
   return (
     <Container className={classes.container}>

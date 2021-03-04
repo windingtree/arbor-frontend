@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { connect } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import {Container, Typography, Grid, Card, Box, Button, CircularProgress} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 // import moment from 'moment';
@@ -212,7 +213,8 @@ const styles = makeStyles({
 });
 
 const TrustLifStake = (props) => {
-  const orgid = (!!history.location.state && !!history.location.state.orgid) ? history.location.state.orgid : null;
+  const { orgId: orgid } = useParams();
+  // const orgid = (!!history.location.state && !!history.location.state.orgid) ? history.location.state.orgid : null;
   console.log('%cTrustLifStake(props)', 'background-color:yellow; color: black', 'orgid', orgid);
   const classes = styles();
   const {
@@ -236,21 +238,23 @@ const TrustLifStake = (props) => {
   const currentTimestamp = Date.now();
   let timeWithdrawalInUnixTimestamp = (new Date(orgIdLifWithdrawalTime)).toISOString().split('T')[0]; //moment(orgIdLifWithdrawalTime, 'MMM DD');
 
-  const makeDepositButtonEnabled = lifTokenAllowanceAmountForOrgId >= LIF_DEPOSIT_AMOUNT && 
+  console.log('@@@@@@@', lifTokenBalance);
+
+  const makeDepositButtonEnabled = lifTokenAllowanceAmountForOrgId >= LIF_DEPOSIT_AMOUNT &&
                                     (lifTokenBalance >= LIF_DEPOSIT_AMOUNT);
 
-  const requestWithdrawalButtonEnabled = !orgIdLifWithdrawalExist && 
+  const requestWithdrawalButtonEnabled = !orgIdLifWithdrawalExist &&
                                         (orgIdLifDepositAmount >= LIF_DEPOSIT_AMOUNT);
 
-  const allowDepositButtonEnabled = !requestWithdrawalButtonEnabled && 
-                                    !makeDepositButtonEnabled && 
+  const allowDepositButtonEnabled = !requestWithdrawalButtonEnabled &&
+                                    !makeDepositButtonEnabled &&
                                     (lifTokenBalance >= LIF_DEPOSIT_AMOUNT);
 
-  const makeWithdrawalButtonEnabled = orgIdLifWithdrawalExist && 
+  const makeWithdrawalButtonEnabled = orgIdLifWithdrawalExist &&
                                       orgIdLifWithdrawalValue > 0 &&
                                       (currentTimestamp >= orgIdLifWithdrawalTime);
 
-  const makeWithdrawalButtonWait = orgIdLifWithdrawalExist && 
+  const makeWithdrawalButtonWait = orgIdLifWithdrawalExist &&
                                     (currentTimestamp < orgIdLifWithdrawalTime);
 
   const [currentAction, setCurrentAction] = useState(null);
@@ -335,9 +339,9 @@ const TrustLifStake = (props) => {
 
               {/* LIF DEPOSIT */}
               <div className={classes.buttonsContainer}>
-                { 
+                {
                   // Enable Ropsten faucet
-                  (CHAIN_ID === '3') && 
+                  (CHAIN_ID === '3') &&
                   (
                     <div className={classes.buttonWrapper}>
                       <Button
@@ -393,7 +397,7 @@ const TrustLifStake = (props) => {
                 </div>
               </div>
               <div className={classes.errorContainer}>
-                {(error && ['requestFaucet', 'allowDeposit', 'makeDeposit'].includes(currentAction)) && 
+                {(error && ['requestFaucet', 'allowDeposit', 'makeDeposit'].includes(currentAction)) &&
                   <Typography className={classes.paragraphError}>
                     {error}
                   </Typography>
@@ -470,7 +474,7 @@ const TrustLifStake = (props) => {
                   )}
                 </div>
                 <div className={classes.errorContainer}>
-                  {(error && ['requestWithdrawal'].includes(currentAction)) && 
+                  {(error && ['requestWithdrawal'].includes(currentAction)) &&
                     <Typography className={classes.paragraphError}>
                       {error}
                     </Typography>

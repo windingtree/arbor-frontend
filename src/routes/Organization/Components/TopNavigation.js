@@ -4,8 +4,9 @@ import _ from 'lodash';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Button, Container, Hidden, Typography } from "@material-ui/core";
 import history from "../../../redux/history";
-import { ArrowLeftIcon, EyeIcon, EditIcon, TrustLevelIcon } from '../../../assets/SvgComponents';
+import { ArrowLeftIcon, EyeIcon, EditIcon, TrustLevelIcon, LifIcon3 } from '../../../assets/SvgComponents';
 import colors from '../../../styles/colors';
+import LifIcon from '../../../assets/SvgComponents/trust-g-lif.svg';
 
 // const LightTooltip = withStyles({
 //   tooltip: {
@@ -153,6 +154,10 @@ const styles = makeStyles({
     '&:hover': {
       backgroundColor: '#98CCB0'
     }
+  },
+  lifIcon: {
+    marginRight: '8px',
+    color: 'black'
   }
 });
 
@@ -174,17 +179,25 @@ function TopNavigation(props) {
             </Typography>
           </Button>
         </div>
-        <Hidden mdUp>
+        {/* <Hidden mdUp>
           <div className={classes.publicTrustLevelWrapper}>
             <Typography variant={'caption'} className={classes.itemTrustInfoTitle}
                         style={{color: colors.greyScale.common}}>Trust proofs: </Typography>
             <TrustLevelIcon className={classes.iconTrustLevel}/>
             <Typography variant={'caption'} className={classes.trustLevelValue}>{!!proofsQty ? proofsQty : '0'}</Typography>
           </div>
-        </Hidden>
+        </Hidden> */}
         {
           canManage ? (
             <div>
+
+              <Button onClick={() => history.push(`/my-organizations/${id}/lif-stake`, { id })}>
+                <img src={LifIcon} className={classes.lifIcon} alt='Lif stake' />
+                <Typography variant={'caption'} className={classes.buttonLabel} style={{ marginRight: '18px' }}>
+                  Líf&nbsp;stake
+                </Typography>
+              </Button>
+
               <Button onClick={() => history.push(`/organization/${id}`, {id})}>
                 <Typography variant={'caption'} className={classes.buttonLabel}>
                   <EyeIcon viewBox={'0 0 16 12'} className={[classes.itemActionButtonIcon, classes.eyeIcon].join(' ')}/>

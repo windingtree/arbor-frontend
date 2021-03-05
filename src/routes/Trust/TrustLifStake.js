@@ -325,16 +325,13 @@ const TrustLifStake = (props) => {
             </Grid>
             <Grid item style={{width: '45%'}}>
               <Typography variant={'h3'} className={classes.blockTitle}>
-                Participate in platform governance with Líf deposit
-              </Typography>
-              <Typography className={classes.paragraph}>Líf deposit gives every member of Winding Tree Marketplace community a possibility
-                to vote for particular features and upgrades in a democratic way. Eligible members can decide on adding
-                and removing directories, introducing upgrades and new governance rules as well as managing Líf
-                deposits.
+                Protect your organization from fraud with Lif stake.
               </Typography>
               <Typography className={classes.paragraph}>
-                Make sure that you have at least {LIF_DEPOSIT_AMOUNT} Líf in your wallet. Líf deposit will automatically
-                generate Lög tokens required for voting.
+                The LIF deposit is a way of showing that you are serious. By staking Lif, other organizations and individuals out there will know that your business is serious and can be trusted more than ones that don't.
+              </Typography>
+              <Typography className={classes.paragraph}>
+                A Lif deposit can be completed by staking {LIF_DEPOSIT_AMOUNT} Lif tokens in the ORGiD smart contract. Once completed other organizations will have an easier time of trusting you because of your investment in proving your organization.
               </Typography>
 
               {/* LIF DEPOSIT */}

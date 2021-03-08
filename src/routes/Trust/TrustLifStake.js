@@ -238,8 +238,6 @@ const TrustLifStake = (props) => {
   const currentTimestamp = Date.now();
   let timeWithdrawalInUnixTimestamp = (new Date(orgIdLifWithdrawalTime)).toISOString().split('T')[0]; //moment(orgIdLifWithdrawalTime, 'MMM DD');
 
-  console.log('@@@@@@@', lifTokenBalance);
-
   const makeDepositButtonEnabled = lifTokenAllowanceAmountForOrgId >= LIF_DEPOSIT_AMOUNT &&
                                     (lifTokenBalance >= LIF_DEPOSIT_AMOUNT);
 
@@ -257,14 +255,33 @@ const TrustLifStake = (props) => {
   const makeWithdrawalButtonWait = orgIdLifWithdrawalExist &&
                                     (currentTimestamp < orgIdLifWithdrawalTime);
 
+  console.log('@@@@@@@', {
+    lifTokenBalance,
+    LIF_DEPOSIT_AMOUNT,
+    orgIdLifDepositAmount,
+    orgIdLifWithdrawalExist,
+    orgIdLifWithdrawalValue,
+    orgIdLifWithdrawalTime
+  });
+
+  console.log('=======', {
+    makeDepositButtonEnabled,
+    requestWithdrawalButtonEnabled,
+    allowDepositButtonEnabled,
+    makeWithdrawalButtonEnabled,
+    makeWithdrawalButtonWait
+  });
+
   const [currentAction, setCurrentAction] = useState(null);
 
   useEffect(() => {
       window.scrollTo(0, 0)
   }, []);
   useEffect(() => {
-    console.log('%cuseEffect, [address]', 'background-color:yellow; color: black', address);
-    enrichLifData({orgid});
+    if (orgid) {
+      console.log('%cuseEffect, [address]', 'background-color:yellow; color: black', address, orgid);
+      enrichLifData({orgid});
+    }
   }, [address, orgid, enrichLifData]);
 
   return (
@@ -419,8 +436,7 @@ const TrustLifStake = (props) => {
                 your Líf will be available to you after 30 days since your withdrawal request.
               </Typography>
               <Typography className={classes.paragraph}>
-                With your deposit withdrawal, you lose the right to participate in platform governance.
-                Your organization’s trust level will be decreased respectively.
+                With your deposit withdrawal, your organization’s trust level will be decreased respectively.
               </Typography>
               <Box>
                 <div className={classes.buttonsContainer}>

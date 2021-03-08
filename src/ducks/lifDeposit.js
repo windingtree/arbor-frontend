@@ -46,9 +46,9 @@ const initialState = {
   lifTokenAllowanceAmountForOrgId: 0,
   orgIdLifDepositAmount: 0,
   orgIdLifWithdrawalExist: false,
-  orgIdLifWithdrawalValue: null,
-  orgIdLifWithdrawalTime: null,
-  currentBlockNumber: null,
+  orgIdLifWithdrawalValue: 0,
+  orgIdLifWithdrawalTime: 0,
+  currentBlockNumber: 0,
 
   error: null,
 };

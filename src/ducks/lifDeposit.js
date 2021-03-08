@@ -42,7 +42,7 @@ const initialState = {
   isFetched: false,
   requiredOrgIdLifDeposit: LIF_DEPOSIT_AMOUNT,
 
-  lifTokenBalance: false,
+  lifTokenBalance: 0,
   lifTokenAllowanceAmountForOrgId: 0,
   orgIdLifDepositAmount: 0,
   orgIdLifWithdrawalExist: false,
@@ -102,7 +102,7 @@ export default function reducer(state = initialState, action) {
         error: error
       });
     default:
-      return initialState;
+      return state;
   }
 }
 // endregion
@@ -112,47 +112,47 @@ const stateSelector = state => state[moduleName];
 
 export const selectLifTokenBalance = createSelector(
   stateSelector,
-  deposit => deposit.lifTokenBalance
+  ({ lifTokenBalance }) => lifTokenBalance
 );
 
 export const selectLifDepositDataFetching = createSelector(
   stateSelector,
-  deposit => deposit.isFetching
+  ({ isFetching }) => isFetching
 );
 
 export const selectLifTokenAllowanceAmountForOrgId = createSelector(
   stateSelector,
-  deposit => deposit.lifTokenAllowanceAmountForOrgId
+  ({ lifTokenAllowanceAmountForOrgId }) => lifTokenAllowanceAmountForOrgId
 );
 
 export const selectOrgIdLifDepositAmount = createSelector(
   stateSelector,
-  deposit => deposit.orgIdLifDepositAmount
+  ({ orgIdLifDepositAmount }) => orgIdLifDepositAmount
 );
 
 export const selectOrgIdLifWithdrawalExist =  createSelector(
   stateSelector,
-  deposit => deposit.orgIdLifWithdrawalExist
+  ({ orgIdLifWithdrawalExist }) => orgIdLifWithdrawalExist
 );
 
 export const selectOrgIdLifWithdrawalValue =  createSelector(
   stateSelector,
-  deposit => deposit.orgIdLifWithdrawalValue
+  ({ orgIdLifWithdrawalValue }) => orgIdLifWithdrawalValue
 );
 
 export const selectOrgIdLifWithdrawalTime =  createSelector(
   stateSelector,
-  deposit => deposit.orgIdLifWithdrawalTime
+  ({ orgIdLifWithdrawalTime }) => orgIdLifWithdrawalTime
 );
 
 export const selectCurrentBlockNumber =  createSelector(
   stateSelector,
-  deposit => deposit.currentBlockNumber
+  ({ currentBlockNumber }) => currentBlockNumber
 );
 
 export const selectError = createSelector(
   stateSelector,
-  deposit => deposit.error ? deposit.error.message : deposit.error
+  ({ error }) => error ? error.message : error
 );
 
 
@@ -322,7 +322,6 @@ function* enrichLifDataSaga({payload}) {
     } = yield call(ApiGetOrgIdLifTokenWithdrawalRequest, web3, orgid);
 
     const currentBlockNumber = yield call(ApiGetCurrentBlockNumber, web3);
-
     yield put(enrichLifDataSuccess({
       lifTokenBalance: Number(lifTokenBalance),
       lifTokenAllowanceAmountForOrgId: Number(lifTokenAllowanceAmountForOrgId),

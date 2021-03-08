@@ -2,7 +2,7 @@ import React from "react";
 import _ from 'lodash';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Button, Container, Hidden, Typography } from "@material-ui/core";
+import { Box, Button, Container, Hidden, Typography, CircularProgress } from "@material-ui/core";
 import history from "../../../redux/history";
 import { ArrowLeftIcon, EyeIcon, EditIcon, TrustLevelIcon, LifIcon3 } from '../../../assets/SvgComponents';
 import colors from '../../../styles/colors';
@@ -191,29 +191,36 @@ function TopNavigation(props) {
           canManage ? (
             <div>
 
-              <Button onClick={() => history.push(`/my-organizations/${id}/lif-stake`, { id })}>
-                <img src={LifIcon} className={classes.lifIcon} alt='Lif stake' />
-                <Typography variant={'caption'} className={classes.buttonLabel} style={{ marginRight: '18px' }}>
-                  Líf&nbsp;stake
-                </Typography>
-              </Button>
+              {!id &&
+                <CircularProgress size={16} />
+              }
+              {id &&
+                <>
+                  <Button onClick={() => history.push(`/my-organizations/${id}/lif-stake`, { id })}>
+                    <img src={LifIcon} className={classes.lifIcon} alt='Lif stake' />
+                    <Typography variant={'caption'} className={classes.buttonLabel} style={{ marginRight: '18px' }}>
+                      Líf&nbsp;stake
+                    </Typography>
+                  </Button>
 
-              <Button onClick={() => history.push(`/organization/${id}`, {id})}>
-                <Typography variant={'caption'} className={classes.buttonLabel}>
-                  <EyeIcon viewBox={'0 0 16 12'} className={[classes.itemActionButtonIcon, classes.eyeIcon].join(' ')}/>
-                  Public view
-                </Typography>
-              </Button> {/*View*/}
+                  <Button onClick={() => history.push(`/organization/${id}`, {id})}>
+                    <Typography variant={'caption'} className={classes.buttonLabel}>
+                      <EyeIcon viewBox={'0 0 16 12'} className={[classes.itemActionButtonIcon, classes.eyeIcon].join(' ')}/>
+                      Public view
+                    </Typography>
+                  </Button> {/*View*/}
 
-              <Button
-                onClick={() => history.push(`/my-organizations/${id}/edit`, editState)}
-                className={classes.itemActionButton}>
-                <Typography variant={'caption'} className={classes.buttonLabel}>
-                  <EditIcon viewBox={'0 0 14 14 '}
-                            className={[classes.itemActionButtonIcon, classes.editIcon].join(' ')}/>
-                  Edit company profile
-                </Typography>
-              </Button> {/*Edit*/}
+                  <Button
+                    onClick={() => history.push(`/my-organizations/${id}/edit`, editState)}
+                    className={classes.itemActionButton}>
+                    <Typography variant={'caption'} className={classes.buttonLabel}>
+                      <EditIcon viewBox={'0 0 14 14 '}
+                                className={[classes.itemActionButtonIcon, classes.editIcon].join(' ')}/>
+                      Edit company profile
+                    </Typography>
+                  </Button> {/*Edit*/}
+                </>
+              }
             </div>
           ) : null
         }

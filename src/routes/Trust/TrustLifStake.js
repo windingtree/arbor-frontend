@@ -213,12 +213,9 @@ const styles = makeStyles({
 });
 
 const TrustLifStake = (props) => {
-  const { orgId: orgid } = useParams();
-  // const orgid = (!!history.location.state && !!history.location.state.orgid) ? history.location.state.orgid : null;
-  console.log('%cTrustLifStake(props)', 'background-color:yellow; color: black', 'orgid', orgid);
   const classes = styles();
+  const { orgId: orgid } = useParams();
   const {
-    address,
     lifTokenBalance,
     lifTokenAllowanceAmountForOrgId,
     orgIdLifDepositAmount,
@@ -234,55 +231,37 @@ const TrustLifStake = (props) => {
     requestWithdrawal,
     withdrawDeposit
   } = props;
+  const [currentAction, setCurrentAction] = useState(null);
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, []);
+  useEffect(() => {
+    if (orgid) {
+      console.log('%cuseEffect, [address]', 'background-color:yellow; color: black', orgid);
+      enrichLifData({ orgid });
+    }
+  }, [orgid, enrichLifData]);
 
   const currentTimestamp = Date.now();
   let timeWithdrawalInUnixTimestamp = (new Date(orgIdLifWithdrawalTime)).toISOString().split('T')[0]; //moment(orgIdLifWithdrawalTime, 'MMM DD');
 
   const makeDepositButtonEnabled = lifTokenAllowanceAmountForOrgId >= LIF_DEPOSIT_AMOUNT &&
-                                    (lifTokenBalance >= LIF_DEPOSIT_AMOUNT);
+    (lifTokenBalance >= LIF_DEPOSIT_AMOUNT);
 
   const requestWithdrawalButtonEnabled = !orgIdLifWithdrawalExist &&
-                                        (orgIdLifDepositAmount >= LIF_DEPOSIT_AMOUNT);
+    (orgIdLifDepositAmount >= LIF_DEPOSIT_AMOUNT);
 
   const allowDepositButtonEnabled = !requestWithdrawalButtonEnabled &&
-                                    !makeDepositButtonEnabled &&
-                                    (lifTokenBalance >= LIF_DEPOSIT_AMOUNT);
+    !makeDepositButtonEnabled &&
+    (lifTokenBalance >= LIF_DEPOSIT_AMOUNT);
 
   const makeWithdrawalButtonEnabled = orgIdLifWithdrawalExist &&
-                                      orgIdLifWithdrawalValue > 0 &&
-                                      (currentTimestamp >= orgIdLifWithdrawalTime);
+    orgIdLifWithdrawalValue > 0 &&
+    (currentTimestamp >= orgIdLifWithdrawalTime);
 
   const makeWithdrawalButtonWait = orgIdLifWithdrawalExist &&
-                                    (currentTimestamp < orgIdLifWithdrawalTime);
-
-  console.log('@@@@@@@', {
-    lifTokenBalance,
-    LIF_DEPOSIT_AMOUNT,
-    orgIdLifDepositAmount,
-    orgIdLifWithdrawalExist,
-    orgIdLifWithdrawalValue,
-    orgIdLifWithdrawalTime
-  });
-
-  console.log('=======', {
-    makeDepositButtonEnabled,
-    requestWithdrawalButtonEnabled,
-    allowDepositButtonEnabled,
-    makeWithdrawalButtonEnabled,
-    makeWithdrawalButtonWait
-  });
-
-  const [currentAction, setCurrentAction] = useState(null);
-
-  useEffect(() => {
-      window.scrollTo(0, 0)
-  }, []);
-  useEffect(() => {
-    if (orgid) {
-      console.log('%cuseEffect, [address]', 'background-color:yellow; color: black', address, orgid);
-      enrichLifData({orgid});
-    }
-  }, [address, orgid, enrichLifData]);
+    (currentTimestamp < orgIdLifWithdrawalTime);
 
   return (
     <div>
@@ -351,65 +330,64 @@ const TrustLifStake = (props) => {
                 A Lif deposit can be completed by staking {LIF_DEPOSIT_AMOUNT} Lif tokens in the ORGiD smart contract. Once completed other organizations will have an easier time of trusting you because of your investment in proving your organization.
               </Typography>
 
-              {/* LIF DEPOSIT */}
-              <div className={classes.buttonsContainer}>
-                {
-                  // Enable Ropsten faucet
-                  (CHAIN_ID === '3') &&
-                  (
-                    <div className={classes.buttonWrapper}>
-                      <Button
-                          onClick={() => {
-                            setCurrentAction('requestFaucet');
-                            requestFaucet({ orgid });
-                          }}
-                          className={classes.buttonPurchaseWithdraw}>
-                        <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
-                          Get Líf
-                        </Typography>
-                        {isFetching && currentAction === 'requestFaucet' &&
-                          <CircularProgress size={18} color={'secondary'} />
+                <div className={classes.buttonsContainer}>
+                  {
+                    // Enable Ropsten faucet
+                    (CHAIN_ID === '3') &&
+                    (
+                      <div className={classes.buttonWrapper}>
+                        <Button
+                            onClick={() => {
+                              setCurrentAction('requestFaucet');
+                              requestFaucet({ orgid });
+                            }}
+                            className={classes.buttonPurchaseWithdraw}>
+                          <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
+                            Get Líf
+                          </Typography>
+                          {isFetching && currentAction === 'requestFaucet' &&
+                            <CircularProgress size={18} color={'secondary'} />
+                          }
+                        </Button>
+                      </div>
+                    )
+                  }
+                  <div className={classes.buttonWrapper}>
+                    {/* LIF DEPOSIT: Allow deposit */}
+                    <Button disabled={!allowDepositButtonEnabled}
+                            onClick={() => {
+                              setCurrentAction('allowDeposit');
+                              allowDeposit({ orgid });
+                            }}
+                            className={ !allowDepositButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
+                      <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
+                        {
+                          lifTokenAllowanceAmountForOrgId > 0 && <img src={checkIcon} alt={'allow'} className={classes.checkIcon}/>
                         }
-                      </Button>
-                    </div>
-                  )
-                }
-                <div className={classes.buttonWrapper}>
-                  {/* LIF DEPOSIT: Allow deposit */}
-                  <Button disabled={!allowDepositButtonEnabled}
-                          onClick={() => {
-                            setCurrentAction('allowDeposit');
-                            allowDeposit({ orgid });
-                          }}
-                          className={ !allowDepositButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
-                    <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
-                      {
-                        lifTokenAllowanceAmountForOrgId > 0 && <img src={checkIcon} alt={'allow'} className={classes.checkIcon}/>
+                        Allow deposit
+                      </Typography>
+                      {(isFetching && currentAction === 'allowDeposit' && allowDepositButtonEnabled) &&
+                        <CircularProgress size={18} color={'secondary'} />
                       }
-                      Allow deposit
-                    </Typography>
-                    {(isFetching && currentAction === 'allowDeposit' && allowDepositButtonEnabled) &&
-                      <CircularProgress size={18} color={'secondary'} />
-                    }
-                  </Button>
+                    </Button>
+                  </div>
+                  <div className={classes.buttonWrapper}>
+                    {/* LIF DEPOSIT: Make deposit */}
+                    <Button disabled={!makeDepositButtonEnabled}
+                            onClick={() => {
+                              setCurrentAction('makeDeposit');
+                              makeDeposit({ orgid });
+                            }}
+                            className={ !makeDepositButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
+                      <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
+                        Make deposit
+                      </Typography>
+                      {(isFetching && currentAction === 'makeDeposit' && makeDepositButtonEnabled) &&
+                        <CircularProgress size={18} color={'secondary'} />
+                      }
+                    </Button>
+                  </div>
                 </div>
-                <div className={classes.buttonWrapper}>
-                  {/* LIF DEPOSIT: Make deposit */}
-                  <Button disabled={!makeDepositButtonEnabled}
-                          onClick={() => {
-                            setCurrentAction('makeDeposit');
-                            makeDeposit({ orgid });
-                          }}
-                          className={ !makeDepositButtonEnabled ? [classes.buttonPurchaseWithdraw, classes.buttonDisabled].join(' ') : classes.buttonPurchaseWithdraw}>
-                    <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
-                      Make deposit
-                    </Typography>
-                    {(isFetching && currentAction === 'makeDeposit' && makeDepositButtonEnabled) &&
-                      <CircularProgress size={18} color={'secondary'} />
-                    }
-                  </Button>
-                </div>
-              </div>
               <div className={classes.errorContainer}>
                 {(error && ['requestFaucet', 'allowDeposit', 'makeDeposit'].includes(currentAction)) &&
                   <Typography className={classes.paragraphError}>
@@ -417,7 +395,6 @@ const TrustLifStake = (props) => {
                   </Typography>
                 }
               </div>
-              {/* END LIF DEPOSIT */}
 
             </Grid>
           </Grid>
@@ -506,20 +483,18 @@ const TrustLifStake = (props) => {
   )
 };
 
-const mapStateToProps = state => {
-  return {
-    address: selectSignInAddress(state),
-    lifTokenBalance: selectLifTokenBalance(state),
-    lifTokenAllowanceAmountForOrgId: selectLifTokenAllowanceAmountForOrgId(state),
-    orgIdLifDepositAmount: selectOrgIdLifDepositAmount(state),
-    orgIdLifWithdrawalExist: selectOrgIdLifWithdrawalExist(state),
-    orgIdLifWithdrawalValue: selectOrgIdLifWithdrawalValue(state),
-    orgIdLifWithdrawalTime: selectOrgIdLifWithdrawalTime(state),
-    currentBlockNumber: selectCurrentBlockNumber(state),
-    isFetching: selectLifDepositDataFetching(state),
-    error: selectError(state)
-  }
-};
+const mapStateToProps = state => ({
+  address: selectSignInAddress(state),
+  lifTokenBalance: selectLifTokenBalance(state),
+  lifTokenAllowanceAmountForOrgId: selectLifTokenAllowanceAmountForOrgId(state),
+  orgIdLifDepositAmount: selectOrgIdLifDepositAmount(state),
+  orgIdLifWithdrawalExist: selectOrgIdLifWithdrawalExist(state),
+  orgIdLifWithdrawalValue: selectOrgIdLifWithdrawalValue(state),
+  orgIdLifWithdrawalTime: selectOrgIdLifWithdrawalTime(state),
+  currentBlockNumber: selectCurrentBlockNumber(state),
+  isFetching: selectLifDepositDataFetching(state),
+  error: selectError(state)
+});
 
 const mapDispatchToProps = {
   enrichLifData,

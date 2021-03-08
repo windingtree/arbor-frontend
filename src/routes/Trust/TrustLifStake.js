@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { connect } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import {Container, Typography, Grid, Card, Box, Button, CircularProgress} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 // import moment from 'moment';
@@ -212,7 +213,8 @@ const styles = makeStyles({
 });
 
 const TrustLifStake = (props) => {
-  const orgid = (!!history.location.state && !!history.location.state.orgid) ? history.location.state.orgid : null;
+  const { orgId: orgid } = useParams();
+  // const orgid = (!!history.location.state && !!history.location.state.orgid) ? history.location.state.orgid : null;
   console.log('%cTrustLifStake(props)', 'background-color:yellow; color: black', 'orgid', orgid);
   const classes = styles();
   const {
@@ -236,22 +238,39 @@ const TrustLifStake = (props) => {
   const currentTimestamp = Date.now();
   let timeWithdrawalInUnixTimestamp = (new Date(orgIdLifWithdrawalTime)).toISOString().split('T')[0]; //moment(orgIdLifWithdrawalTime, 'MMM DD');
 
-  const makeDepositButtonEnabled = lifTokenAllowanceAmountForOrgId >= LIF_DEPOSIT_AMOUNT && 
+  const makeDepositButtonEnabled = lifTokenAllowanceAmountForOrgId >= LIF_DEPOSIT_AMOUNT &&
                                     (lifTokenBalance >= LIF_DEPOSIT_AMOUNT);
 
-  const requestWithdrawalButtonEnabled = !orgIdLifWithdrawalExist && 
+  const requestWithdrawalButtonEnabled = !orgIdLifWithdrawalExist &&
                                         (orgIdLifDepositAmount >= LIF_DEPOSIT_AMOUNT);
 
-  const allowDepositButtonEnabled = !requestWithdrawalButtonEnabled && 
-                                    !makeDepositButtonEnabled && 
+  const allowDepositButtonEnabled = !requestWithdrawalButtonEnabled &&
+                                    !makeDepositButtonEnabled &&
                                     (lifTokenBalance >= LIF_DEPOSIT_AMOUNT);
 
-  const makeWithdrawalButtonEnabled = orgIdLifWithdrawalExist && 
+  const makeWithdrawalButtonEnabled = orgIdLifWithdrawalExist &&
                                       orgIdLifWithdrawalValue > 0 &&
                                       (currentTimestamp >= orgIdLifWithdrawalTime);
 
-  const makeWithdrawalButtonWait = orgIdLifWithdrawalExist && 
+  const makeWithdrawalButtonWait = orgIdLifWithdrawalExist &&
                                     (currentTimestamp < orgIdLifWithdrawalTime);
+
+  console.log('@@@@@@@', {
+    lifTokenBalance,
+    LIF_DEPOSIT_AMOUNT,
+    orgIdLifDepositAmount,
+    orgIdLifWithdrawalExist,
+    orgIdLifWithdrawalValue,
+    orgIdLifWithdrawalTime
+  });
+
+  console.log('=======', {
+    makeDepositButtonEnabled,
+    requestWithdrawalButtonEnabled,
+    allowDepositButtonEnabled,
+    makeWithdrawalButtonEnabled,
+    makeWithdrawalButtonWait
+  });
 
   const [currentAction, setCurrentAction] = useState(null);
 
@@ -259,8 +278,10 @@ const TrustLifStake = (props) => {
       window.scrollTo(0, 0)
   }, []);
   useEffect(() => {
-    console.log('%cuseEffect, [address]', 'background-color:yellow; color: black', address);
-    enrichLifData({orgid});
+    if (orgid) {
+      console.log('%cuseEffect, [address]', 'background-color:yellow; color: black', address, orgid);
+      enrichLifData({orgid});
+    }
   }, [address, orgid, enrichLifData]);
 
   return (
@@ -321,23 +342,20 @@ const TrustLifStake = (props) => {
             </Grid>
             <Grid item style={{width: '45%'}}>
               <Typography variant={'h3'} className={classes.blockTitle}>
-                Participate in platform governance with Líf deposit
-              </Typography>
-              <Typography className={classes.paragraph}>Líf deposit gives every member of Winding Tree Marketplace community a possibility
-                to vote for particular features and upgrades in a democratic way. Eligible members can decide on adding
-                and removing directories, introducing upgrades and new governance rules as well as managing Líf
-                deposits.
+                Protect your organization from fraud with Lif stake.
               </Typography>
               <Typography className={classes.paragraph}>
-                Make sure that you have at least {LIF_DEPOSIT_AMOUNT} Líf in your wallet. Líf deposit will automatically
-                generate Lög tokens required for voting.
+                The LIF deposit is a way of showing that you are serious. By staking Lif, other organizations and individuals out there will know that your business is serious and can be trusted more than ones that don't.
+              </Typography>
+              <Typography className={classes.paragraph}>
+                A Lif deposit can be completed by staking {LIF_DEPOSIT_AMOUNT} Lif tokens in the ORGiD smart contract. Once completed other organizations will have an easier time of trusting you because of your investment in proving your organization.
               </Typography>
 
               {/* LIF DEPOSIT */}
               <div className={classes.buttonsContainer}>
-                { 
+                {
                   // Enable Ropsten faucet
-                  (CHAIN_ID === '3') && 
+                  (CHAIN_ID === '3') &&
                   (
                     <div className={classes.buttonWrapper}>
                       <Button
@@ -393,7 +411,7 @@ const TrustLifStake = (props) => {
                 </div>
               </div>
               <div className={classes.errorContainer}>
-                {(error && ['requestFaucet', 'allowDeposit', 'makeDeposit'].includes(currentAction)) && 
+                {(error && ['requestFaucet', 'allowDeposit', 'makeDeposit'].includes(currentAction)) &&
                   <Typography className={classes.paragraphError}>
                     {error}
                   </Typography>
@@ -418,8 +436,7 @@ const TrustLifStake = (props) => {
                 your Líf will be available to you after 30 days since your withdrawal request.
               </Typography>
               <Typography className={classes.paragraph}>
-                With your deposit withdrawal, you lose the right to participate in platform governance.
-                Your organization’s trust level will be decreased respectively.
+                With your deposit withdrawal, your organization’s trust level will be decreased respectively.
               </Typography>
               <Box>
                 <div className={classes.buttonsContainer}>
@@ -470,7 +487,7 @@ const TrustLifStake = (props) => {
                   )}
                 </div>
                 <div className={classes.errorContainer}>
-                  {(error && ['requestWithdrawal'].includes(currentAction)) && 
+                  {(error && ['requestWithdrawal'].includes(currentAction)) &&
                     <Typography className={classes.paragraphError}>
                       {error}
                     </Typography>

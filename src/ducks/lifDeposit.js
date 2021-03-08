@@ -1,10 +1,10 @@
 import { createSelector } from 'reselect';
 import { all, call, put, takeEvery, select } from 'redux-saga/effects';
-import { appName, LIF_DEPOSIT_AMOUNT, ORGID_PROXY_ADDRESS } from '../utils/constants';
+import { appName, LIF_DEPOSIT_AMOUNT, LIF_DEPOSIT_ADDRESS } from '../utils/constants';
 import {
   ApiGetGasPrice,
-  getOrgidContract,
   getLifTokenContract,
+  getLifDepositContract,
   getCurrentBlockNumber,
 } from './utils/ethereum';
 import { selectSignInAddress, selectWeb3 } from "./signIn";
@@ -46,9 +46,9 @@ const initialState = {
   lifTokenAllowanceAmountForOrgId: 0,
   orgIdLifDepositAmount: 0,
   orgIdLifWithdrawalExist: false,
-  orgIdLifWithdrawalValue: null,
-  orgIdLifWithdrawalTime: null,
-  currentBlockNumber: null,
+  orgIdLifWithdrawalValue: 0,
+  orgIdLifWithdrawalTime: 0,
+  currentBlockNumber: 0,
 
   error: null,
 };
@@ -308,6 +308,7 @@ function* enrichLifDataSaga({payload}) {
       // lifTokenAllowanceAmountForOrgId
       console.log('>>>', 'yield call(lifTokenAllowanceAmountForOrgId, web3, userAddress)');
       lifTokenAllowanceAmountForOrgId = yield call(ApiGetLifTokenAllowanceAmountForOrgId, web3, userAddress);
+      console.log('lifTokenAllowanceAmountForOrgId', lifTokenAllowanceAmountForOrgId);
     }
 
     // OrgIdLifTokenDepositedAmount
@@ -451,7 +452,7 @@ const ApiGetLifTokenBalance = (web3, userAddress) => {
 }
 
 // Get the LIF Spending allowance for the user (ERC20 function)
-const ApiGetLifTokenAllowanceAmountForOrgId = (web3, _owner, _spender = ORGID_PROXY_ADDRESS) => {
+const ApiGetLifTokenAllowanceAmountForOrgId = (web3, _owner, _spender = LIF_DEPOSIT_ADDRESS) => {
   console.log('[.]', 'ApiGetLifTokenAllowanceAmountForOrgId');
   let lifContract = getLifTokenContract(web3);
 
@@ -469,14 +470,14 @@ const ApiGetLifTokenAllowanceAmountForOrgId = (web3, _owner, _spender = ORGID_PR
 // Get the LIF Deposit amount for the Org.ID
 const ApiGetOrgIdLifTokenDepositedAmount = (web3, orgId) => {
   console.log('[.]', 'ApiGetOrgIdLifTokenDepositedAmount', orgId);
-  let orgidContract = getOrgidContract(web3);
+  let lifDepositContract = getLifDepositContract(web3);
 
   return new Promise((resolve, reject) => {
-    orgidContract.methods.getOrganization(orgId)
+    lifDepositContract.methods.balanceOf(orgId)
     .call()
-    .then(organization => {
-      console.log('<<< orgidContract.getOrganization', organization);
-      resolve(web3.utils.fromWei(organization.deposit));
+    .then(balance => {
+      console.log('<<< lifDepositContract.balanceOf', balance);
+      resolve(web3.utils.fromWei(balance));
     })
     .catch(error => reject(error));
   });
@@ -485,13 +486,13 @@ const ApiGetOrgIdLifTokenDepositedAmount = (web3, orgId) => {
 // Check if a withdrawal request exists
 const ApiGetOrgIdLifTokenWithdrawalRequest = (web3, orgid) => {
   console.log('[.]', 'ApiGetOrgIdLifTokenWithdrawalRequest');
-  let orgidContract = getOrgidContract(web3);
+  let lifDepositContract = getLifDepositContract(web3);
 
   return new Promise((resolve, reject) => {
-    orgidContract.methods.getWithdrawalRequest(orgid)
+    lifDepositContract.methods.getWithdrawalRequest(orgid)
     .call()
     .then(withdrawalRequest => {
-      console.log('<<< orgidContract.getWithdrawalRequest', withdrawalRequest);
+      console.log('<<< lifDepositContract.getWithdrawalRequest', withdrawalRequest);
       resolve({
         exist: withdrawalRequest.exist,
         value: web3.utils.fromWei(withdrawalRequest.value),
@@ -511,7 +512,7 @@ const ApiIncreaseAllowance = (web3, userAddress, gasPrice) => {
 
   return new Promise((resolve, reject) => {
     lifContract.methods.increaseApproval(
-      ORGID_PROXY_ADDRESS,
+      LIF_DEPOSIT_ADDRESS,
       allowedTokens
     )
     .send({
@@ -560,10 +561,11 @@ const ApiCheckFaucetBalance = async (web3, userAddress) => {
 
 // Add a deposit on the contract
 const ApiAddDeposit = (web3, userAddress, orgid, gasPrice) => {
-  const orgidContract = getOrgidContract(web3);
+  let lifDepositContract = getLifDepositContract(web3);
 
   return new Promise((resolve, reject) => {
-    orgidContract.methods.addDeposit(
+    console.log('Start addDeposit', orgid, web3.utils.toWei(String(LIF_DEPOSIT_AMOUNT)));
+    lifDepositContract.methods.addDeposit(
       orgid,
       web3.utils.toWei(String(LIF_DEPOSIT_AMOUNT))
     )
@@ -582,11 +584,11 @@ const ApiAddDeposit = (web3, userAddress, orgid, gasPrice) => {
 
 // Create a withdrawal request
 const ApiPostWithdrawalRequest = (web3, userAddress, orgid, gasPrice) => {
-  const orgidContract = getOrgidContract(web3);
+  let lifDepositContract = getLifDepositContract(web3);
   console.log('[..]', 'Post Withdrawal request');
 
   return new Promise((resolve, reject) => {
-    orgidContract.methods.submitWithdrawalRequest(
+    lifDepositContract.methods.submitWithdrawalRequest(
       orgid,
       web3.utils.toWei(String(LIF_DEPOSIT_AMOUNT))
     )
@@ -604,11 +606,11 @@ const ApiPostWithdrawalRequest = (web3, userAddress, orgid, gasPrice) => {
 }
 
 const ApiPostWithdrawDeposit = (web3, userAddress, orgid, gasPrice) => {
-  const orgidContract = getOrgidContract(web3);
+  let lifDepositContract = getLifDepositContract(web3);
   console.log('[..]', 'Post Withdraw deposit');
 
   return new Promise((resolve, reject) => {
-    orgidContract.methods.withdrawDeposit(
+    lifDepositContract.methods.withdrawDeposit(
       orgid
     )
     .send({

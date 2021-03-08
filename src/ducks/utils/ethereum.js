@@ -4,13 +4,14 @@ import {
   ORGID_PROXY_ADDRESS,
   LIF_TOKEN_ABI,
   LIF_TOKEN_PROXY_ADDRESS,
+  LIF_DEPOSIT_ADDRESS,
   DIR_INDEX_ABI,
   DIRECTORIES_INDEX_ADDRESS,
   ARBITRATOR_ADDRESS,
   ARB_DIR_ABI,
   DIR_ABI,
   ARBITRATOR_ABI,
-
+  DEPOSIT_ABI
 } from '../../utils/constants';
 
 const toBN = value => Web3.utils.toBN(value);
@@ -44,6 +45,8 @@ export const getDirContract = (web3, address) => new web3.eth.Contract(DIR_ABI, 
 
 // Get EnhancedAppealableArbitrator contract
 export const getArbitratorContract = web3 => new web3.eth.Contract(ARBITRATOR_ABI, ARBITRATOR_ADDRESS);
+
+export const getLifDepositContract = web3 => new web3.eth.Contract(DEPOSIT_ABI, LIF_DEPOSIT_ADDRESS);
 
 // Get block
 export const getBlock = async (web3, typeOrNumber = 'latest', checkEmptyBlocks = true) => {

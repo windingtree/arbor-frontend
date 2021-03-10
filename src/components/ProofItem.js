@@ -155,7 +155,7 @@ const ProofItem = props => {
 
     return (
         <Grid className={classes.item} container justify='space-between' alignItems='center'>
-            <Grid item xs={4} className={classes.alignRow}>
+            <Grid item xs={6} className={classes.alignRow}>
                 <ProofIcon icon={icon} />
                 {!assertion.proof &&
                     <Typography
@@ -178,25 +178,25 @@ const ProofItem = props => {
                             {title}
                         </a>
                     </Typography>
-                    
-                }        
+
+                }
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={5}>
                 {(deployed && !verified) &&
                     <State classes={{ state: 'not-verified' }}>Not verified</State>
                 }
                 {(deployed && verified) &&
                     <State classes={{ state: 'verified' }}>Verified</State>
                 }
-                {(deployed && assertion.proof && assertion.type === 'domain' && sslVerified) &&
+                {/* {(deployed && assertion.proof && assertion.type === 'domain' && sslVerified) &&
                     <State classes={{ state: 'verified' }}>, SSL verified</State>
                 }
                 {(deployed && assertion.proof && assertion.type === 'domain' && !sslVerified) &&
                     <State classes={{ state: 'not-verified' }}>, SSL not verified</State>
-                }
+                } */}
                 {removed &&
                     <State classes={{ state: 'not-verified' }}>
-                        Removed                        
+                        Removed
                     </State>
                 }
                 {((!deployed && assertion.type) || removed) &&
@@ -215,7 +215,7 @@ const ProofItem = props => {
                     </State>
                 }
             </Grid>
-            <Grid item xs={1}>
+            <Grid item xs={1} style={{ display: 'flex' }} justify='flex-end'>
                 {((deployed || removed) && canManage) &&
                     <IconDelete
                         className={
@@ -240,7 +240,7 @@ const mapStateToProps = state => {
         pendingTransaction: selectPendingState(state)
     };
   };
-  
+
 const mapDispatchToProps = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProofItem);

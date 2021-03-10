@@ -59,8 +59,7 @@ const styles = makeStyles({
     position: 'relative',
     fontWeight: 400,
     fontSize: '14px',
-    color: colors.greyScale.dark,
-    padding: '40px 0'
+    color: colors.greyScale.dark
   },
   servicesTitleWrapper: {
     fontSize: '24px',
@@ -175,7 +174,8 @@ function Services(props) {
     fetchOrganizationInfo,
     resetTransactionStatus,
     addService,
-    removeService
+    removeService,
+    canManage
   } = props;
 
   const fragments = services.reduce(
@@ -430,18 +430,22 @@ function Services(props) {
         <div className={classes.servicesTitleWrapper}>
           <Typography variant={'inherit'}>APIs: Application Programming Interfaces</Typography>
         </div>
-        <div>
-          <Typography variant={'inherit'} className={classes.servicesSubtitle}>
-            APIs that you would like to expose on Winding Tree Marketplace. E.g. a hotel booking API, NDC API, etc.
-          </Typography>
-        </div>
-        <div className={classes.servicesListContainer}>
-          <div className={classes.buttonWrapper}>
-            <Button onClick={() => handleAdd()} className={classes.button}>
-              <Typography variant={'inherit'}>Add API</Typography>
-            </Button>
-            {addAgentKeyDialog()}
+        {canManage &&
+          <div>
+            <Typography variant={'inherit'} className={classes.servicesSubtitle}>
+              APIs that you would like to expose on Winding Tree Marketplace. E.g. a hotel booking API, NDC API, etc.
+            </Typography>
           </div>
+        }
+        <div className={classes.servicesListContainer}>
+          {canManage &&
+            <div className={classes.buttonWrapper}>
+              <Button onClick={() => handleAdd()} className={classes.button}>
+                <Typography variant={'inherit'}>Add API</Typography>
+              </Button>
+              {addAgentKeyDialog()}
+            </div>
+          }
           {
             services.length !== 0 && (
               <div>
@@ -452,6 +456,9 @@ function Services(props) {
                         <li key={index.toString()} className={classes.agentItemWrapper}>
                           <Grid container justify={'space-between'} alignItems={'center'}>
                             <Grid item xs={4}>
+                              <Typography>{service.description || service.type}</Typography>
+                            </Grid>
+                            <Grid item xs={6}>
                               <CopyIdComponent
                                 id={service.serviceEndpoint}
                                 leftElement={(<VpnKeyIcon className={classes.keyIcon}/>)}
@@ -461,13 +468,12 @@ function Services(props) {
                                 color={colors.greyScale.dark}
                               />
                             </Grid>
-                            <Grid item xs={6}>
-                              <Typography>{service.description || service.type}</Typography>
-                            </Grid>
                             <Grid item xs={2}>
-                              <Button onClick={() => handleDeleteAgent(index)} className={classes.deleteAgentButton}>
-                                <Typography variant={'inherit'}>Delete API</Typography>
-                              </Button>
+                              {canManage &&
+                                <Button onClick={() => handleDeleteAgent(index)} className={classes.deleteAgentButton}>
+                                  <Typography variant={'inherit'}>Delete API</Typography>
+                                </Button>
+                              }
                             </Grid>
                           </Grid>
                         </li>

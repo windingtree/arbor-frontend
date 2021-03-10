@@ -524,12 +524,13 @@ function Info(props) {
               {addressString &&
               <div>
                 <p className={classes.orgAddress}>
-                  {addressString}<br />
+                  {addressString}
+                  {/* <br />
                   <a href={`https://www.openstreetmap.org/search?query=${addressString}`}
                      className={classes.mapLink}
                      rel="noopener noreferrer"
                      target="_blank"
-                     >show on the map</a>
+                     >show on the map</a> */}
                 </p>
               </div>
               }

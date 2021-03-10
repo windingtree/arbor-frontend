@@ -27,26 +27,24 @@ import {
   selectError
 } from '../../ducks/lifDeposit';
 
+import Info from '../Organization/Components/Info';
 import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
 import trustTopIllustration from '../../assets/SvgComponents/lif-deposit-illustration.svg';
 import lifWithdrawIllustration from '../../assets/SvgComponents/lif-deposit-withdraw.svg';
 import { checkIcon, LifIcon1, LifIcon2, LifIcon3 } from '../../assets/SvgComponents';
 import colors from '../../styles/colors';
+import { selectItem } from "../../ducks/fetchOrganizationInfo";
 
 const styles = makeStyles({
   topDiv: {
     backgroundColor: colors.greyScale.moreLighter
-  },
-  topSectionWrapper: {
-    padding: '30px 40px 75px 40px',
   },
   screenHeader: {
     width: '100%',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  backButtonWrapper: {
+    marginTop: '20px',
     marginLeft: '-8px'
   },
   backButtonLabel: {
@@ -216,6 +214,7 @@ const TrustLifStake = (props) => {
   const classes = styles();
   const { orgId: orgid } = useParams();
   const {
+    organization,
     lifTokenBalance,
     lifTokenAllowanceAmountForOrgId,
     orgIdLifDepositAmount,
@@ -265,19 +264,21 @@ const TrustLifStake = (props) => {
 
   return (
     <div>
+      <Container>
+        <Box className={classes.screenHeader}>
+          <Button onClick={() => {
+            history.push(`/my-organizations/${orgid}`, { id: orgid });
+          }}>
+            <Typography className={classes.backButtonLabel}>
+              <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
+              Back to organization profile
+            </Typography>
+          </Button>
+        </Box>
+      </Container>
+      <Info organization={organization} canManage={true}/>
       <div className={classes.topDiv}>
-        <Container className={classes.topSectionWrapper}
-                   style={{backgroundColor: colors.greyScale.moreLighter}}>
-          <Box className={classes.screenHeader}>
-            <div className={classes.backButtonWrapper}>
-              <Button onClick={history.goBack}>
-                <Typography className={classes.backButtonLabel}>
-                  <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
-                  Back to organization profile
-                </Typography>
-              </Button>
-            </div>
-          </Box>
+        <Container className={classes.topDiv}>
           <Grid container>
             <Grid item xs={12} lg={6}>
               <Typography className={classes.mainTitle} variant={'h1'}>Submit your Líf
@@ -493,7 +494,8 @@ const mapStateToProps = state => ({
   orgIdLifWithdrawalTime: selectOrgIdLifWithdrawalTime(state),
   currentBlockNumber: selectCurrentBlockNumber(state),
   isFetching: selectLifDepositDataFetching(state),
-  error: selectError(state)
+  error: selectError(state),
+  organization: selectItem(state)
 });
 
 const mapDispatchToProps = {

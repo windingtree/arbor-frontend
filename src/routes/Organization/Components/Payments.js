@@ -566,7 +566,7 @@ const Payments = props => {
                               <Typography className={classes.upperCase}>{payment.currency.join(', ')}</Typography>
                             </Grid>
                             {payment.type === 'crypto' &&
-                              <Grid item xs={3}>
+                              <Grid item xs={4}>
                                 <CopyIdComponent
                                   id={payment.address}
                                   leftElement={(<Fragment/>)}
@@ -578,7 +578,7 @@ const Payments = props => {
                               </Grid>
                             }
                             {payment.type === 'bank' &&
-                              <Grid item xs={3}>
+                              <Grid item xs={4}>
                                 <Grid container alignItems={'center'}>
                                   {(payment.swift && payment.swift !== '') &&
                                     <Grid>
@@ -608,7 +608,7 @@ const Payments = props => {
                               </Grid>
                             }
                             {payment.type === 'simard' &&
-                              <Grid item xs={3}>
+                              <Grid item xs={4}>
                                 <Typography>simard</Typography>
                               </Grid>
                             }

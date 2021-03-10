@@ -196,12 +196,12 @@ function TopNavigation(props) {
               }
               {id &&
                 <>
-                  <Button onClick={() => history.push(`/my-organizations/${id}/lif-stake`, { id })}>
+                  {/* <Button onClick={() => history.push(`/my-organizations/${id}/lif-stake`, { id })}>
                     <img src={LifIcon} className={classes.lifIcon} alt='Lif stake' />
                     <Typography variant={'caption'} className={classes.buttonLabel} style={{ marginRight: '18px' }}>
                       Líf&nbsp;stake
                     </Typography>
-                  </Button>
+                  </Button> */}
 
                   <Button onClick={() => history.push(`/organization/${id}`, {id})}>
                     <Typography variant={'caption'} className={classes.buttonLabel}>
@@ -225,25 +225,7 @@ function TopNavigation(props) {
           ) : null
         }
       </Box>
-      {
-        canManage && (
-          <div className={classes.itemTrustInfoContainer}>
-            <div className={classes.itemTrustInfoBase}>
-              <Typography variant={'caption'} className={classes.itemTrustInfoTitle}>Trust </Typography>
-              <TrustLevelIcon className={classes.iconTrustLevel}/>
-              <Typography variant={'caption'} className={classes.trustLevelValue}>{!!proofsQty ? proofsQty : '0'}</Typography>
-            </div>
-            <div>
-              <Button
-                onClick={scrollToRef}
-                className={classes.goTrust}
-              >
-                Get Verified
-              </Button>
-            </div>
-          </div>
-        )
-      }
+
     </Container>
   )
 }

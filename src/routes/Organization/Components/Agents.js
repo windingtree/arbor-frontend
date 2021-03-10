@@ -192,7 +192,8 @@ function Agents(props) {
     pendingTransaction,
     successTransaction,
     fetchOrganizationInfo,
-    resetTransactionStatus
+    resetTransactionStatus,
+    canManage
   } = props;
 
   const fragments = agents.reduce(
@@ -502,30 +503,19 @@ function Agents(props) {
   return (
     <Container>
       <div className={classes.agentsContent}>
-        <div className={classes.agentsTitleWrapper}>
-          <Typography variant={'inherit'}>Owner</Typography>
-        </div>
-        <div className={classes.ownerInfoWrapper}>
-          <div className={classes.ownerInfo}>
-            <CopyIdComponent
-              id={owner || '0xLOADING'}
-              leftElement={(<VpnKeyIcon className={classes.keyIcon}/>)}
-              fontSize={'14px'}
-              color={colors.greyScale.dark}
-            />
-          </div>
-        </div>
 
         <div className={classes.agentsTitleWrapper}>
           <Typography variant={'inherit'}>Public Keys</Typography>
         </div>
         <div className={classes.agentsListContainer}>
-          <div className={classes.buttonWrapper}>
-            <Button onClick={() => handleAdd()} className={classes.button}>
-              <Typography variant={'inherit'}>Add Public Key</Typography>
-            </Button>
-            {addAgentKeyDialog()}
-          </div>
+          {canManage &&
+            <div className={classes.buttonWrapper}>
+              <Button onClick={() => handleAdd()} className={classes.button}>
+                <Typography variant={'inherit'}>Add Public Key</Typography>
+              </Button>
+              {addAgentKeyDialog()}
+            </div>
+          }
           {
             agents.length !== 0 && (
               <div>
@@ -535,21 +525,24 @@ function Agents(props) {
                       return (
                         <li key={index.toString()} className={classes.agentItemWrapper}>
                           <Grid container justify={'space-between'} alignItems={'center'}>
-                            <Grid item xs={2}>
+                            <Grid item xs={4}>
+                              <Typography>{agent.note}</Typography>
+                            </Grid>
+                            <Grid item xs={6}>
                               <CopyIdComponent
                                 id={agent.publicKeyPem}
                                 leftElement={(<VpnKeyIcon className={classes.keyIcon}/>)}
                                 fontSize={'14px'}
                                 color={colors.greyScale.dark}
+                                width={14}
                               />
                             </Grid>
-                            <Grid item xs={8}>
-                              <Typography>{agent.note}</Typography>
-                            </Grid>
                             <Grid item xs={2}>
-                              <Button onClick={() => handleDeleteAgent(index)} className={classes.deleteButton}>
-                                <Typography variant={'inherit'}>Remove key</Typography>
-                              </Button>
+                              {canManage &&
+                                <Button onClick={() => handleDeleteAgent(index)} className={classes.deleteButton}>
+                                  <Typography variant={'inherit'}>Remove key</Typography>
+                                </Button>
+                              }
                             </Grid>
                           </Grid>
                         </li>

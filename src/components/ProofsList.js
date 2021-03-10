@@ -19,10 +19,12 @@ import {
     resetTransactionStatus
 } from '../ducks/wizard';
 import iconInfo from '../assets/SvgComponents/info.svg';
+import { TrustLevelIcon } from '../assets/SvgComponents';
+import colors from '../styles/colors';
 
 const useStyles = makeStyles({
     container : {
-        marginBottom: 120
+        marginBottom: '40px'
     },
     title: {
         display: 'block',
@@ -65,6 +67,27 @@ const useStyles = makeStyles({
         '&:hover': {
             cursor: 'pointer'
         }
+    },
+    trustLevelValue: {
+        fontSize: '14px',
+        fontWeight: 600,
+        lineHeight: 1,
+        color: colors.primary.black
+    },
+    itemTrustInfoTitle: {
+        fontSize: '14px',
+        fontWeight: 400,
+    },
+    iconTrustLevel: {
+        width: '13px',
+        height: '16px',
+        color: colors.secondary.yellow,
+        margin: '0 4px 0 14px'
+    },
+    evidenceTitle: {
+        marginBottom: '18px',
+        fontSize: '16px',
+        fontWeight: 500
     }
 });
 
@@ -210,7 +233,8 @@ const applyExtensions = (
 
 // ProofsList component
 const ProofsList = props => {
-    const { canManage, title, orgid, assertions, verifications, fetchOrganizationInfo } = props;
+    const { canManage, title, orgid, organization, assertions, verifications, fetchOrganizationInfo } = props;
+    const { proofsQty } = organization;
     const [isOpen, toggleModalOpenState] = useState(false);
     const [chosenProof, setProof] = useState();
     const [updatedProofs, setUpdatedProofs] = useState({});
@@ -293,18 +317,37 @@ const ProofsList = props => {
                 handleClose={updatedProof => onWizardClose(updatedProof)}
             />
             <Box className={classes.titleLine}>
-                <Typography
-                    className={classes.title}
-                >
-                    {title}
-                </Typography>
-                <img
-                    onClick={() => history.push('/trust/general')}
-                    className={classes.infoIcon}
-                    src={iconInfo}
-                    alt={'Info'}
-                />
+                <Grid container alignItems='center'>
+                    <Grid item xs={6} style={{ display: 'flex' }}>
+                        <Typography
+                            className={classes.title}
+                        >
+                            {title}
+                        </Typography>
+                        <img
+                            onClick={() => history.push('/trust/general')}
+                            className={classes.infoIcon}
+                            src={iconInfo}
+                            alt={'Info'}
+                        />
+                    </Grid>
+                    <Grid item xs={6} style={{ display: 'flex' }}>
+                        {proofsQty
+                            ? (
+                                <>
+                                    <Typography variant={'caption'} className={classes.itemTrustInfoTitle}>Trust </Typography>
+                                    <TrustLevelIcon className={classes.iconTrustLevel}/>
+                                    <Typography variant={'caption'} className={classes.trustLevelValue}>{!!proofsQty ? proofsQty : '0'}</Typography>
+                                </>
+                            )
+                            : ''
+                        }
+                    </Grid>
+                </Grid>
             </Box>
+            <Typography className={classes.evidenceTitle}>
+                Internet Evidence
+            </Typography>
             <Box className={classes.proofsBlock}>
                 {/* <LifDepositValue canManage={canManage} /> */}
                 {proofsList.map((proof, key) => (

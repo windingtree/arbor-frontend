@@ -11,10 +11,11 @@ import IconLinkedin from './icons/IconLinkedin';
 import {
     selectPendingState
 } from '../ducks/wizard';
+import { strCenterEllipsis } from '../utils/helpers';
 
 const useStyles = makeStyles({
     item: {
-        marginBottom: '24px',
+        marginBottom: '8px',
         '&:last-child': {
             marginBottom: 0
         }
@@ -22,7 +23,23 @@ const useStyles = makeStyles({
     alignRow: {
         display: 'flex',
         flexDirection: 'row',
-        alignItems: 'row'
+        alignItems: 'center',
+    },
+    adaptive: {
+        '&> .long': {
+            display: 'inherit'
+        },
+        '&> .short': {
+            display: 'none'
+        },
+        ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+          '&> .long': {
+            display: 'none'
+          },
+          '&> .short': {
+            display: 'inherit'
+          }
+        }
     },
     label: {
         fontFamily: 'Inter',
@@ -85,6 +102,7 @@ const useStyles = makeStyles({
         fontWeight: 500,
         fontSize: 16,
         lineHeight: '28px',
+        marginLeft: '52px',
         color: 'black',
         '&.verified': {
             color: '#4E9D96'
@@ -103,6 +121,13 @@ const useStyles = makeStyles({
         marginLeft: '12px',
         marginBottom: '-4px',
         color: '#5E666A'
+    },
+    actionBlock: {
+        display: 'flex',
+        ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+            justifyContent: 'flex-start',
+            paddingLeft: '48px'
+        }
     }
 });
 
@@ -141,7 +166,6 @@ const ProofItem = props => {
         canManage,
         title,
         verified,
-        sslVerified,
         deployed,
         assertion,
         removed,
@@ -155,7 +179,7 @@ const ProofItem = props => {
 
     return (
         <Grid className={classes.item} container justify='space-between' alignItems='center'>
-            <Grid item xs={6} className={classes.alignRow}>
+            <Grid item xs={12} sm={6} className={classes.alignRow}>
                 <ProofIcon icon={icon} />
                 {!assertion.proof &&
                     <Typography
@@ -174,14 +198,16 @@ const ProofItem = props => {
                             href={assertion.proof}
                             target='_blank'
                             rel='noopener noreferrer'
+                            className={classes.adaptive}
                         >
-                            {title}
+                            <span className={'long'}>{title}</span>
+                            <span className={'short'}>{strCenterEllipsis(title, 10)}</span>
                         </a>
                     </Typography>
 
                 }
             </Grid>
-            <Grid item xs={5}>
+            <Grid item xs={12} sm={5}>
                 {(deployed && !verified) &&
                     <State classes={{ state: 'not-verified' }}>Not verified</State>
                 }
@@ -215,7 +241,7 @@ const ProofItem = props => {
                     </State>
                 }
             </Grid>
-            <Grid item xs={1} style={{ display: 'flex' }} justify='flex-end'>
+            <Grid item xs={12} sm={1} justify='flex-end' className={classes.actionBlock}>
                 {((deployed || removed) && canManage) &&
                     <IconDelete
                         className={

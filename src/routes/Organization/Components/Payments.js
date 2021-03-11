@@ -93,9 +93,11 @@ const styles = makeStyles({
     fontSize: '14px',
     fontWeight: 500,
     lineHeight: 1.3,
-    float: 'right',
     color: colors.secondary.peach,
     textTransform: 'none',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      marginLeft: '-8px'
+    }
   },
   dialogContent: {
     width: '440px'
@@ -162,6 +164,35 @@ const styles = makeStyles({
   },
   upperCase: {
     textTransform: 'uppercase'
+  },
+  line: {
+    marginBottom: '5px',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      justifyContent: 'flex-start',
+      marginBottom: '10px',
+    }
+  },
+  lineTitle: {
+    display: 'none',
+    marginRight: '5px',
+    textTransform: 'none',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      display: 'inline'
+    }
+  },
+  actionBlock: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      justifyContent: 'flex-start',
+      marginTop: 0,
+      marginBottom: '10px',
+      '&> .MuiButton-text': {
+        padding: 0,
+        marginTop: '3px',
+        marginLeft: 0
+      }
+    }
   }
 });
 
@@ -559,14 +590,27 @@ const Payments = props => {
                       return (
                         <li key={index.toString()} className={classes.agentItemWrapper}>
                           <Grid container justify={'space-between'} alignItems={'center'}>
-                            <Grid item xs={1}>
-                              <Typography className={classes.upperCase}>{payment.type}</Typography>
+                            <Grid item xs={12} sm={1} className={classes.line}>
+                              <Typography className={classes.upperCase}>
+                                <span className={classes.lineTitle}>
+                                  Type:
+                                </span>
+                                {payment.type}
+                              </Typography>
                             </Grid>
-                            <Grid item xs={1}>
-                              <Typography className={classes.upperCase}>{payment.currency.join(', ')}</Typography>
+                            <Grid item xs={12} sm={1} className={classes.line}>
+                              <Typography className={classes.upperCase}>
+                                <span className={classes.lineTitle}>
+                                  Currency:
+                                </span>
+                                {payment.currency.join(', ')}
+                              </Typography>
                             </Grid>
                             {payment.type === 'crypto' &&
-                              <Grid item xs={4}>
+                              <Grid item xs={12} sm={4} className={classes.line}>
+                                <Typography className={classes.lineTitle}>
+                                  Address:
+                                </Typography>
                                 <CopyIdComponent
                                   id={payment.address}
                                   leftElement={(<Fragment/>)}
@@ -578,7 +622,7 @@ const Payments = props => {
                               </Grid>
                             }
                             {payment.type === 'bank' &&
-                              <Grid item xs={4}>
+                              <Grid item xs={12} sm={4} className={classes.line}>
                                 <Grid container alignItems={'center'}>
                                   {(payment.swift && payment.swift !== '') &&
                                     <Grid>
@@ -608,14 +652,19 @@ const Payments = props => {
                               </Grid>
                             }
                             {payment.type === 'simard' &&
-                              <Grid item xs={4}>
+                              <Grid item xs={12} sm={4} className={classes.line}>
                                 <Typography>simard</Typography>
                               </Grid>
                             }
-                            <Grid item xs={2}>
-                              <Typography>{payment.description}</Typography>
+                            <Grid item xs={12} sm={2} className={classes.line}>
+                              <Typography>
+                                <span className={classes.lineTitle}>
+                                  Description:
+                                </span>
+                                {payment.description}
+                              </Typography>
                             </Grid>
-                            <Grid item xs={1}>
+                            <Grid item xs={12} sm={2} className={classes.actionBlock}>
                               <Button
                                 onClick={() => handleDelete(index)}
                                 className={classes.deleteAgentButton}

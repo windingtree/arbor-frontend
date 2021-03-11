@@ -27,7 +27,9 @@ import { wizardConfig } from '../../../utils/legalEntity';
 
 import { WizardStepHosting, WizardStepMetaMask } from '../../../components';
 import DialogComponent from '../../../components/Dialog';
-import CopyIdComponent from "../../../components/CopyIdComponent";
+// import CopyIdComponent from "../../../components/CopyIdComponent";
+import { strCenterEllipsis } from '../../../utils/helpers';
+import CopyTextComponent from "../../../components/CopyTextComponent";
 import VpnKeyIcon from "@material-ui/icons/VpnKey";
 
 const styles = makeStyles({
@@ -89,9 +91,11 @@ const styles = makeStyles({
     fontSize: '14px',
     fontWeight: 500,
     lineHeight: 1.3,
-    float: 'right',
     color: colors.secondary.peach,
     textTransform: 'none',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      marginLeft: '-8px'
+    }
   },
   dialogContent: {
     width: '440px',
@@ -158,6 +162,27 @@ const styles = makeStyles({
   progressWrapper: {
     display: 'table',
     margin: '0 auto'
+  },
+  serviceLine: {
+    marginBottom: '5px',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      justifyContent: 'flex-start',
+      marginBottom: '10px',
+    }
+  },
+  actionBlock: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      justifyContent: 'flex-start',
+      marginTop: 0,
+      marginBottom: '10px',
+      '&> .MuiButton-text': {
+        padding: 0,
+        marginTop: '5px',
+        marginLeft: 0
+      }
+    }
   }
 });
 
@@ -455,20 +480,28 @@ function Services(props) {
                       return (
                         <li key={index.toString()} className={classes.agentItemWrapper}>
                           <Grid container justify={'space-between'} alignItems={'center'}>
-                            <Grid item xs={4}>
+                            <Grid item xs={12} sm={4} className={classes.serviceLine}>
                               <Typography>{service.description || service.type}</Typography>
                             </Grid>
-                            <Grid item xs={6}>
-                              <CopyIdComponent
+                            <Grid item xs={12} sm={6} className={classes.serviceLine}>
+                              {/* <CopyIdComponent
                                 id={service.serviceEndpoint}
                                 leftElement={(<VpnKeyIcon className={classes.keyIcon}/>)}
                                 fontSize={'14px'}
                                 width={18}
                                 title='Copied to clipboard'
                                 color={colors.greyScale.dark}
+                              /> */}
+                              <CopyTextComponent
+                                title='Service endpoint is copied to clipboard'
+                                text={service.serviceEndpoint}
+                                label={strCenterEllipsis(service.serviceEndpoint, 16)}
+                                color='rgb(94, 102, 106)'
+                                fontWeight='500'
+                                fontSize='14px'
                               />
                             </Grid>
-                            <Grid item xs={2}>
+                            <Grid item xs={12} sm={2} className={classes.actionBlock}>
                               {canManage &&
                                 <Button onClick={() => handleDeleteAgent(index)} className={classes.deleteAgentButton}>
                                   <Typography variant={'inherit'}>Delete API</Typography>

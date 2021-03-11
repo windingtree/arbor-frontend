@@ -32,9 +32,9 @@ import Gps from './Components/Gps';
 import {
   DIRECTORIES_ENABLED
 } from '../../utils/constants';
-import SaveButton from '../../components/buttons/Save';
+// import SaveButton from '../../components/buttons/Save';
 import { makeStyles } from '@material-ui/core/styles';
-import trustLifDeposit from '../../assets/SvgComponents/trust-lif-deposit.svg';
+// import trustLifDeposit from '../../assets/SvgComponents/trust-lif-deposit.svg';
 
 
 const styles = makeStyles({
@@ -153,7 +153,7 @@ function Organization (props) {
         verifications={verifications}
         organization={organization}
       />
-      {canManage &&
+      {/* {canManage &&
         <div className={classes.greyDiv}>
           <Container className={classes.lifContent}>
             <Grid container alignItems={'center'}>
@@ -176,7 +176,7 @@ function Organization (props) {
             </Grid>
           </Container>
         </div>
-      }
+      } */}
       {DIRECTORIES_ENABLED && canManage &&
         <Directories />
       }

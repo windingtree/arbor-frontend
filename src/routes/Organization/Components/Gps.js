@@ -11,6 +11,9 @@ import PositionDialog from '../../../components/PositionDialog';
 import ShowMap from '../../../components/ShowMap';
 import CopyTextComponent from '../../../components/CopyTextComponent';
 import CopyIcon from '../../../assets/SvgComponents/copy-icon.svg';
+import {
+  strCenterEllipsis
+} from "../../../utils/helpers";
 
 const styles = makeStyles({
   content: {
@@ -18,7 +21,7 @@ const styles = makeStyles({
     fontWeight: 400,
     fontSize: '14px',
     color: colors.greyScale.dark,
-    padding: '20px 0',
+    // padding: '20px 0',
     marginBottom: '40px'
   },
   titleWrapper: {
@@ -77,6 +80,8 @@ const Gps = props => {
     return null;
   }
 
+  const gpsLabel = strCenterEllipsis(organization.jsonContent[organization.orgidType][addressKey].gps, 12);
+
   return (
     <Container>
       <div className={classes.content}>
@@ -95,10 +100,10 @@ const Gps = props => {
               <CopyTextComponent
                 title='Coordinates are copied to clipboard'
                 text={organization.jsonContent[organization.orgidType][addressKey].gps}
-                label={organization.jsonContent[organization.orgidType][addressKey].gps}
-                color='#42424F'
+                label={gpsLabel}
+                color='rgb(94, 102, 106)'
                 fontWeight='500'
-                fontSize='18px'
+                fontSize='14px'
                 icon={CopyIcon}
               />
             </div>

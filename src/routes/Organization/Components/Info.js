@@ -1,7 +1,12 @@
-import React, {useState, useCallback} from "react";
-import {Button, Collapse, Container, Fade, Grid, Hidden, Typography} from "@material-ui/core";
-import CopyIdComponent from "../../../components/CopyIdComponent";
-import {setRandomDefaultImage} from "../../../utils/helpers";
+import React, { useState, useCallback } from "react";
+import _ from "lodash";
+import { makeStyles } from "@material-ui/core/styles";
+import {Button, Collapse, Container, Fade, Grid, Hidden, Typography, CircularProgress} from "@material-ui/core";
+import CopyTextComponent from "../../../components/CopyTextComponent";
+import {
+  setRandomDefaultImage,
+  strCenterEllipsis
+} from "../../../utils/helpers";
 
 import colors from "../../../styles/colors";
 import {
@@ -16,16 +21,15 @@ import {
   InstagramSocialIcon,
   DetailsIllustration,
   MaximizeIcon,
-  MinimizeIcon
+  MinimizeIcon,
 } from '../../../assets/SvgComponents';
-
-import _ from "lodash";
-import {makeStyles} from "@material-ui/core/styles";
+import CopyIcon from '../../../assets/SvgComponents/copy-icon.svg';
 
 const styles = makeStyles({
   itemMainInfo: {
     position: 'relative',
-    paddingBottom: '20px'
+    marginTop: '20px',
+    paddingBottom: '40px'
   },
   itemTrustInfoTitle: {
     fontSize: '14px',
@@ -49,7 +53,6 @@ const styles = makeStyles({
     marginRight: '12px'
   },
   orgMainInfoWrapper: {
-    padding: '10px 0',
     flexWrap: 'nowrap',
     ['@media (max-width:1069px)']: { // eslint-disable-line no-useless-computed-key
       flexWrap: 'wrap'
@@ -77,6 +80,7 @@ const styles = makeStyles({
     height: '200px',
     overflow: 'hidden',
     borderRadius: '4px',
+    border: '1px solid #8f999f4d',
     ['@media (max-width:1069px)']: { // eslint-disable-line no-useless-computed-key
       width: '100%',
       height: '290px'
@@ -96,6 +100,8 @@ const styles = makeStyles({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop: '8px',
+    marginBottom: '20px',
     ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
       flexWrap: 'wrap',
     },
@@ -139,14 +145,14 @@ const styles = makeStyles({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
+    overflow: 'hidden'
   },
   orgInfoFieldWrapper: {
-    width: '50%',
-    margin: '5px 0',
+    width: '100%',
+    margin: '0 0 10px 0',
     ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
-      width: '100%',
-      margin: '6px 0'
+
     },
   },
   orgInfoLegalEntityFieldWrapper: {
@@ -162,6 +168,9 @@ const styles = makeStyles({
     fontWeight: 500,
     lineHeight: 1.3,
     color: colors.greyScale.dark,
+    '&> a,span': {
+      textOverflow: 'ellipsis'
+    },
     ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
       color: colors.greyScale.darkest,
     },
@@ -169,7 +178,21 @@ const styles = makeStyles({
   orgInfoField: {
     textDecoration: 'none',
     fontWeight: 400,
-    color: colors.greyScale.common
+    '&> .long': {
+      display: 'inherit'
+    },
+    '&> .short': {
+      display: 'none'
+    },
+    color: colors.greyScale.common,
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      '&> .long': {
+        display: 'none'
+      },
+      '&> .short': {
+        display: 'inherit'
+      }
+    }
   },
   entityInfoItem: {
     display: 'flex',
@@ -192,9 +215,10 @@ const styles = makeStyles({
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginTop: '42px',
+    marginTop: '20px',
     ['@media (max-width:1069px)']: { // eslint-disable-line no-useless-computed-key
       marginTop: '0',
+      marginLeft: '-8px'
     },
   },
   socialLink: {
@@ -498,8 +522,21 @@ function Info(props) {
           {/* TOP-RIGHT-BLOCK: INFO =================================================================================*/}
           <Grid item className={classes.orgInfoContainer}>
             <div className={classes.idInfoContainer}>
-              <CopyIdComponent id={id || '0xLOADING'} leftElement={''} fontWeight={500}/>
-              {
+              {!id &&
+                <CircularProgress size='18' />
+              }
+              {id &&
+                <CopyTextComponent
+                  title='ORGiD is copied to clipboard'
+                  label={strCenterEllipsis((id || '').toLowerCase().split('x')[1], 8) || '...'}
+                  text={id}
+                  color='#8F999F'
+                  fontWeight='500'
+                  fontSize='14px'
+                  icon={CopyIcon}
+                />
+              }
+              {/* {
                 canManage || (
                   <div className={classes.publicTrustLevelWrapper}>
                     <Typography variant={'caption'} className={classes.itemTrustInfoTitle}
@@ -508,12 +545,12 @@ function Info(props) {
                     <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{proofsQty}</Typography>
                   </div>
                 )
-              }
+              } */}
             </div>
             <div className={classes.orgNameWrapper}>
               <Typography variant={'h6'} className={classes.orgName} noWrap>{name}</Typography>
             </div>
-            {!organization.state &&
+            {organization && !organization.state &&
               <div className={classes.orgNameWrapper}>
                 <Typography variant={'h6'} className={classes.orgAddress} noWrap>
                   Active Status: <span className={classes.statusDisabled}>Disabled</span>
@@ -556,14 +593,20 @@ function Info(props) {
               </div>
               }
               {contacts.website &&
-              <div className={classes.orgInfoFieldWrapper} style={{width: '100%'}}>
-                <Typography variant={'caption'} className={classes.orgInfoFieldTitle} noWrap>
-                  {'Website: '}
-                  <a href={sanitizeLink(contacts.website)} target={'_blank'} className={classes.orgInfoField} rel="noopener noreferrer">{contacts.website}</a>
+                <div className={classes.orgInfoFieldWrapper}>
+                  <Typography variant={'caption'} className={classes.orgInfoFieldTitle}>
+                    {'Website: '}
+                  </Typography>
+                  <Typography variant={'caption'} className={classes.orgInfoFieldTitle} noWrap>
+                    <a href={sanitizeLink(contacts.website)} target={'_blank'} className={classes.orgInfoField} rel="noopener noreferrer">
+                      <span className={'short'}>{strCenterEllipsis(contacts.website, 12)}</span>
+                      <span className={'long'}>{contacts.website}</span>
+                    </a>
+                  </Typography>
                   {isWebsiteProved &&
-                  <TrustLevelIcon className={classes.iconTrustLevel} style={{verticalAlign: 'text-bottom'}}/>}
-                </Typography>
-              </div>
+                    <TrustLevelIcon className={classes.iconTrustLevel} style={{verticalAlign: 'text-bottom'}}/>
+                  }
+                </div>
               }
               {
                 isSub ? (
@@ -582,37 +625,39 @@ function Info(props) {
                   </div>
                 ) : null
               }
+
+              {/* SOCIAL NETWORK LINKS ====================================================================================*/}
+              { socials.length > 0 && (
+                <div className={classes.socialInline}>
+                  {
+                    socials.map((social, index) => {
+                      return (
+                        <a key={index.toString()} href={sanitizeLink(social.link)} target={'_blank'} className={classes.socialLink} rel="noopener noreferrer">
+                          <Hidden xsDown>
+                            {icon(social.network)}
+                          </Hidden>
+                          <Hidden smUp>
+                            <div className={classes.mobileSocialWrapper}>
+                              {icon(social.network)}
+                              {social.verified &&
+                              <TrustLevelIcon
+                                className={[classes.iconTrustLevel, classes.iconVerify, classes.mobileIconVerify].join(' ')}/>}
+                            </div>
+                          </Hidden>
+                          <Typography variant={'caption'} className={classes.socialTitle}>{social.network}</Typography>
+                          {social.verified &&
+                          <TrustLevelIcon className={[classes.iconTrustLevel, classes.iconVerify].join(' ')}/>}
+                        </a>
+                      )
+                    })
+                  }
+                </div>
+              )}
             </div>
           </Grid>
         </Grid>
 
-        {/* SOCIAL NETWORK LINKS ====================================================================================*/}
-        { socials.length > 0 && (
-          <div className={classes.socialInline}>
-            {
-              socials.map((social, index) => {
-                return (
-                  <a key={index.toString()} href={sanitizeLink(social.link)} target={'_blank'} className={classes.socialLink} rel="noopener noreferrer">
-                    <Hidden xsDown>
-                      {icon(social.network)}
-                    </Hidden>
-                    <Hidden smUp>
-                      <div className={classes.mobileSocialWrapper}>
-                        {icon(social.network)}
-                        {social.verified &&
-                        <TrustLevelIcon
-                          className={[classes.iconTrustLevel, classes.iconVerify, classes.mobileIconVerify].join(' ')}/>}
-                      </div>
-                    </Hidden>
-                    <Typography variant={'caption'} className={classes.socialTitle}>{social.network}</Typography>
-                    {social.verified &&
-                    <TrustLevelIcon className={[classes.iconTrustLevel, classes.iconVerify].join(' ')}/>}
-                  </a>
-                )
-              })
-            }
-          </div>
-        )}
+
         {canManage && isSub && (description || longDescription) && (
           <Fade in={!isOpen}>
             <div className={classes.toggleOpenDetailsButtonContainer}>

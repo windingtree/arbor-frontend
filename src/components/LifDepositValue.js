@@ -25,7 +25,8 @@ const useStyles = makeStyles({
     alignRow: {
         display: 'flex',
         flexDirection: 'row',
-        alignItems: 'row'
+        alignItems: 'row',
+        marginBottom: '10px',
     },
     label: {
         fontFamily: 'Inter',
@@ -47,10 +48,10 @@ const useStyles = makeStyles({
         fontSize: '16px',
         fontWeight: 500,
         lineHeight: '20px',
-        color: 'black',
         textDecoration: 'none',
         cursor: 'pointer',
-        marginLeft: 0
+        marginLeft: '52px',
+        color: 'rgb(94, 102, 106)'
     },
     labelPub: {
         fontFamily: 'Inter',
@@ -113,18 +114,23 @@ const useStyles = makeStyles({
         }
     },
     progress: {
-        marginLeft: '12px',
-        marginBottom: '-4px',
         color: '#5E666A'
     },
     withdrawalLabel: {
         color: '#F8997A'
+    },
+    actionBlock: {
+        display: 'flex',
+        ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+            justifyContent: 'flex-start',
+            paddingLeft: '48px'
+        }
     }
 });
 
-const LifDepostValue = props => {
+const LifDepositValue = props => {
     const {
-        orgid: id,
+        orgid,
         canManage,
         isFetching,
         deposit,
@@ -134,7 +140,6 @@ const LifDepostValue = props => {
         enrichLifData
     } = props;
     const classes = useStyles();
-    const orgid = id || (history.location.state ? history.location.state.id : history.location.pathname.split('/')[2]);
 
     useEffect(() => {
         enrichLifData({ orgid });
@@ -142,54 +147,53 @@ const LifDepostValue = props => {
 
     return (
         <Grid className={classes.item} container justify='space-between' alignItems='center'>
-            <Grid item xs={4} className={classes.alignRow}>
+            <Grid item xs={12} sm={6} className={classes.alignRow}>
                 <IconLif />
                 <Typography className={classes.labelProof}>
                     {canManage &&
-                        <span onClick={() => history.push({
-                            pathname: '/trust/lif-stake',
-                            state: {
-                                orgid
-                            }
-                        })}
+                        <span onClick={() => {
+                            history.push(`/my-organizations/${orgid}/lif-stake`, { id: orgid })
+                        }}
                         >
-                            Líf tokens deposit
+                            Líf stake
                         </span>
                     }
                     {!canManage &&
-                        <>Líf tokens deposit</>
+                        <>Líf stake</>
                     }
                 </Typography>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={12} sm={5} className={classes.alignRow}>
                 {isFetching &&
-                    <CircularProgress
-                        className={classes.progress}
-                        variant='indeterminate'
-                        size={18}
-                        thickness={4}
-                    />
+                    <Typography className={classes.lifLabel}>
+                        <CircularProgress
+                            className={classes.progress}
+                            variant='indeterminate'
+                            size={18}
+                        />
+                    </Typography>
                 }
                 {!isFetching &&
                     <Typography className={classes.lifLabel}>
-                        {deposit} Líf
+                        {deposit} deposited
                     </Typography>
                 }
                 {withdrawalExist &&
                     <Typography className={[classes.lifLabel, classes.withdrawalLabel].join(' ')}>
-                        (withdrawal requested: {withdrawalValue} Líf at {(new Date(withdrawalTime)).toISOString().split('T')[0]}) 
+                        (withdrawal requested: {withdrawalValue} Líf at {(new Date(withdrawalTime)).toISOString().split('T')[0]})
                     </Typography>
                 }
             </Grid>
-            <Grid item xs={1}>
-                <div onClick={!isFetching 
-                    ? () => enrichLifData({ orgid })
-                    : () => {}
-                }>
-                    <IconRestart style={{marginLeft: '4px'}} stroke='#F79A8B' />
-                </div>
-                
-            </Grid>                
+            <Grid item xs={12} sm={1} justify='flex-end' className={classes.actionBlock}>
+                {canManage &&
+                    <div onClick={!isFetching
+                        ? () => enrichLifData({ orgid })
+                        : () => {}
+                    }>
+                        <IconRestart style={{marginLeft: '4px'}} stroke='#F79A8B' />
+                    </div>
+                }
+            </Grid>
         </Grid>
     );
 };
@@ -203,9 +207,9 @@ const mapStateToProps = state => {
         withdrawalTime: selectOrgIdLifWithdrawalTime(state)
     }
   };
-  
+
   const mapDispatchToProps = {
     enrichLifData
   };
-  
-  export default connect(mapStateToProps, mapDispatchToProps)(LifDepostValue);
+
+  export default connect(mapStateToProps, mapDispatchToProps)(LifDepositValue);

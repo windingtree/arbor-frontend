@@ -14,7 +14,9 @@ import { makeStyles } from '@material-ui/core/styles';
 // import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import colors from '../../../styles/colors';
-import CopyIdComponent from '../../../components/CopyIdComponent';
+// import CopyIdComponent from '../../../components/CopyIdComponent';
+import { strCenterEllipsis } from '../../../utils/helpers';
+import CopyTextComponent from "../../../components/CopyTextComponent";
 import DialogComponent from '../../../components/Dialog';
 import SelectField from '../../../components/Fields/SelectField';
 import match from '../../../utils/regex';
@@ -36,7 +38,6 @@ const styles = makeStyles({
     fontWeight: 400,
     fontSize: '14px',
     color: colors.greyScale.dark,
-    padding: '20px 0',
     marginBottom: '40px'
   },
   title: {
@@ -50,7 +51,7 @@ const styles = makeStyles({
   },
   buttonWrapper: {
     width: '100%',
-    margin: '20px 0'
+    margin: '20px 0 25px 0'
   },
   button: {
     width: '100%',
@@ -76,12 +77,16 @@ const styles = makeStyles({
     fontSize: '14px',
     fontWeight: 500,
     lineHeight: 1.3,
-    float: 'right',
     color: colors.secondary.peach,
-    textTransform: 'none'
+    textTransform: 'none',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      marginLeft: '-8px'
+    }
   },
   listContainer: {},
-  listItemWrapper: {},
+  listItemWrapper: {
+    marginBottom: '10px'
+  },
   dialogContent: {
     width: '440px',
     paddingBottom: '40px'
@@ -152,6 +157,27 @@ const styles = makeStyles({
     marginTop: '20px',
     fontSize: '16px',
     color: 'black'
+  },
+  personLine: {
+    marginBottom: '5px',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      justifyContent: 'flex-start',
+      marginBottom: '10px',
+    }
+  },
+  actionBlock: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      justifyContent: 'flex-start',
+      marginTop: 0,
+      marginBottom: '10px',
+      '&> .MuiButton-text': {
+        padding: 0,
+        marginTop: '3px',
+        marginLeft: 0
+      }
+    }
   }
 });
 
@@ -612,20 +638,28 @@ const Personnel = props => {
                   {persons.map(
                     (person, index) => (
                       <li key={index.toString()} className={classes.listItemWrapper}>
-                        <Grid container justify={'space-between'} alignItems={'center'}>
-                          <Grid item xs={4}>
+                        <Grid container alignItems='center'>
+                          <Grid item xs={12} sm={4} className={classes.personLine}>
                             {person.name}
                           </Grid>
-                          <Grid item xs={6}>
-                            <CopyIdComponent
+                          <Grid item xs={12} sm={6} className={classes.personLine}>
+                            {/* <CopyIdComponent
                               id={person.ipfs}
                               fontSize={'14px'}
-                              width={18}
+                              width={15}
                               title='Copied to clipboard'
                               color={colors.greyScale.dark}
+                            /> */}
+                            <CopyTextComponent
+                              title='IPFS hash is copied to clipboard'
+                              text={person.ipfs}
+                              label={strCenterEllipsis(person.ipfs, 14)}
+                              color='rgb(94, 102, 106)'
+                              fontWeight='500'
+                              fontSize='14px'
                             />
                           </Grid>
-                          <Grid item xs={2}>
+                          <Grid item xs={12} sm={2} className={classes.actionBlock}>
                             <Button onClick={() => handleDeletePerson(index)} className={classes.deleteButton}>
                               <Typography variant={'inherit'}>Remove person</Typography>
                             </Button>

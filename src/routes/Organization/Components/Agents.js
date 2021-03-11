@@ -28,12 +28,13 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import colors from "../../../styles/colors";
 
-import { copyStrToClipboard } from '../../../utils/helpers';
+import { copyStrToClipboard, strCenterEllipsis } from '../../../utils/helpers';
 import { wizardConfig } from '../../../utils/legalEntity';
 
 import { WizardStepHosting, WizardStepMetaMask } from '../../../components';
 import DialogComponent from '../../../components/Dialog';
-import CopyIdComponent from "../../../components/CopyIdComponent";
+// import CopyIdComponent from "../../../components/CopyIdComponent";
+import CopyTextComponent from "../../../components/CopyTextComponent";
 import VpnKeyIcon from "@material-ui/icons/VpnKey";
 import CopyIcon from '../../../assets/SvgComponents/CopyIcon';
 import SelectField from '../../../components/Fields/SelectField';
@@ -48,7 +49,7 @@ const styles = makeStyles({
     color: colors.greyScale.common,
     verticalAlign: 'sub',
     opacity: .5,
-    marginRight: '14px'
+    marginRight: '5px'
   },
   button: {
     width: '100%',
@@ -68,7 +69,6 @@ const styles = makeStyles({
     fontWeight: 400,
     fontSize: '14px',
     color: colors.greyScale.dark,
-    padding: '20px 0',
     marginBottom: '40px'
   },
   agentsTitleWrapper: {
@@ -96,9 +96,11 @@ const styles = makeStyles({
     fontSize: '14px',
     fontWeight: 500,
     lineHeight: 1.3,
-    float: 'right',
     color: colors.secondary.peach,
     textTransform: 'none',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      marginLeft: '-8px'
+    }
   },
   dialogContent: {
     width: '440px',
@@ -163,6 +165,34 @@ const styles = makeStyles({
   progressWrapper: {
     display: 'table',
     margin: '0 auto'
+  },
+  personLine: {
+    marginBottom: '5px',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      justifyContent: 'flex-start',
+      marginBottom: '10px',
+    }
+  },
+  actionBlock: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      justifyContent: 'flex-start',
+      marginTop: 0,
+      marginBottom: '10px',
+      '&> .MuiButton-text': {
+        padding: 0,
+        marginLeft: 0
+      }
+    }
+  },
+  lineTitle: {
+    display: 'none',
+    marginRight: '5px',
+    textTransform: 'none',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      display: 'inline'
+    }
   }
 });
 
@@ -525,19 +555,36 @@ function Agents(props) {
                       return (
                         <li key={index.toString()} className={classes.agentItemWrapper}>
                           <Grid container justify={'space-between'} alignItems={'center'}>
-                            <Grid item xs={4}>
+                            <Grid item xs={12} sm={4} className={classes.personLine}>
                               <Typography>{agent.note}</Typography>
                             </Grid>
-                            <Grid item xs={6}>
-                              <CopyIdComponent
+                            <Grid item xs={12} sm={2} className={classes.personLine}>
+                              <Typography noWrap>
+                                <span className={classes.lineTitle}>
+                                  Key type:
+                                </span>
+                                {agent.type}
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={12} sm={4} className={classes.personLine}>
+                              {/* <CopyIdComponent
                                 id={agent.publicKeyPem}
                                 leftElement={(<VpnKeyIcon className={classes.keyIcon}/>)}
                                 fontSize={'14px'}
                                 color={colors.greyScale.dark}
-                                width={14}
+                                width={12}
+                              /> */}
+                              <VpnKeyIcon className={classes.keyIcon}/>
+                              <CopyTextComponent
+                                title='Public key is copied to clipboard'
+                                text={agent.publicKeyPem}
+                                label={strCenterEllipsis(agent.publicKeyPem, 11)}
+                                color='rgb(94, 102, 106)'
+                                fontWeight='500'
+                                fontSize='14px'
                               />
                             </Grid>
-                            <Grid item xs={2}>
+                            <Grid item xs={12} sm={2} className={classes.actionBlock}>
                               {canManage &&
                                 <Button onClick={() => handleDeleteAgent(index)} className={classes.deleteButton}>
                                   <Typography variant={'inherit'}>Remove key</Typography>

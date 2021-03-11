@@ -5,11 +5,15 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 const styles = makeStyles({
   mapContainer: {
     width: '100%',
-    height: '300px'
+    height: '300px',
+    zIndex: 1,
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      height: '200px'
+    }
   }
 });
 
-export default props => {
+const ShowMap = props => {
   const classes = styles();
   const {
     position
@@ -34,3 +38,5 @@ export default props => {
     </MapContainer>
   );
 };
+
+export default ShowMap;

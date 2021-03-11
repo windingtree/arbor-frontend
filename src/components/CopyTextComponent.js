@@ -4,6 +4,7 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 
 import { copyStrToClipboard } from '../utils/helpers';
 import colors from '../styles/colors';
+import CopyIcon from '../assets/SvgComponents/copy-icon.svg';
 
 const styles = makeStyles({
   text: {
@@ -45,7 +46,7 @@ export default props => {
     fontSize,
     color,
     textDecoration,
-    icon
+    icon = 'default'
   } = props;
 
   const [open, setOpen] = useState(false);
@@ -96,9 +97,17 @@ export default props => {
               }}
             >
               {label}
-              {icon &&
+              {icon !== 'default' &&
                 <img
                   src={icon}
+                  width='16px' height='16px'
+                  alt='Copy'
+                  className={classes.iconCopy}
+                />
+              }
+              {icon === 'default' &&
+                <img
+                  src={CopyIcon}
                   width='16px' height='16px'
                   alt='Copy'
                   className={classes.iconCopy}

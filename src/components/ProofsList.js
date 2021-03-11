@@ -4,7 +4,7 @@ import history from '../redux/history';
 import { Container, Grid, Box, Typography } from "@material-ui/core";
 import { makeStyles } from '@material-ui/core/styles';
 import ProofItem from './ProofItem';
-// import LifDepositValue from './LifDepositValue';
+import LifDepositValue from './LifDepositValue';
 import ProofsWizard from './ProofsWizard';
 import ProofsSaver from './ProofsSaver';
 import RefreshButton from './buttons/Refresh';
@@ -34,8 +34,6 @@ const useStyles = makeStyles({
         fontSize: '24px',
         lineHeight: '28px',
         color: '#42424F',
-        marginBottom: '20px',
-        marginTop: '20px',
         textDecoration: 'none',
         cursor: 'auto',
         '&:hover': {
@@ -57,11 +55,10 @@ const useStyles = makeStyles({
     },
     titleLine: {
         display: 'flex',
-        alignItems: 'start'
+        alignItems: 'start',
+        marginBottom: '20px',
     },
     infoIcon: {
-        marginTop: '26px',
-        marginLeft: '10px',
         width: '18px',
         height: '18px',
         '&:hover': {
@@ -85,6 +82,12 @@ const useStyles = makeStyles({
         margin: '0 4px 0 14px'
     },
     evidenceTitle: {
+        marginBottom: '20px',
+        fontSize: '16px',
+        fontWeight: 500
+    },
+    stakeTitle: {
+        marginTop: '20px',
         marginBottom: '18px',
         fontSize: '16px',
         fontWeight: 500
@@ -234,7 +237,7 @@ const applyExtensions = (
 // ProofsList component
 const ProofsList = props => {
     const { canManage, title, orgid, organization, assertions, verifications, fetchOrganizationInfo } = props;
-    const { proofsQty } = organization;
+    // const { proofsQty } = organization;
     const [isOpen, toggleModalOpenState] = useState(false);
     const [chosenProof, setProof] = useState();
     const [updatedProofs, setUpdatedProofs] = useState({});
@@ -317,13 +320,15 @@ const ProofsList = props => {
                 handleClose={updatedProof => onWizardClose(updatedProof)}
             />
             <Box className={classes.titleLine}>
-                <Grid container alignItems='center'>
-                    <Grid item xs={6} style={{ display: 'flex' }}>
+                <Grid container alignItems='center' spacing={2}>
+                    <Grid item>
                         <Typography
                             className={classes.title}
                         >
                             {title}
                         </Typography>
+                    </Grid>
+                    <Grid item>
                         <img
                             onClick={() => history.push('/trust/general')}
                             className={classes.infoIcon}
@@ -331,7 +336,7 @@ const ProofsList = props => {
                             alt={'Info'}
                         />
                     </Grid>
-                    <Grid item xs={6} style={{ display: 'flex' }}>
+                    {/* <Grid item xs={6} style={{ display: 'flex' }}>
                         {proofsQty
                             ? (
                                 <>
@@ -342,14 +347,13 @@ const ProofsList = props => {
                             )
                             : ''
                         }
-                    </Grid>
+                    </Grid> */}
                 </Grid>
             </Box>
             <Typography className={classes.evidenceTitle}>
                 Internet Evidence
             </Typography>
             <Box className={classes.proofsBlock}>
-                {/* <LifDepositValue canManage={canManage} /> */}
                 {proofsList.map((proof, key) => (
                     <ProofItem
                         key={key}
@@ -397,6 +401,12 @@ const ProofsList = props => {
                     }
                 </Box>
             }
+            <Typography className={classes.stakeTitle}>
+                Stake
+            </Typography>
+            <Box className={classes.proofsBlock}>
+                <LifDepositValue orgid={orgid} canManage={canManage} />
+            </Box>
         </Container>
     );
 };

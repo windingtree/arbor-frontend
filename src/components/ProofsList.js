@@ -354,7 +354,9 @@ const ProofsList = props => {
                 Internet Evidence
             </Typography>
             <Box className={classes.proofsBlock}>
-                {proofsList.map((proof, key) => (
+                {proofsList
+                .filter(p => p.subtype !== 'facebook')
+                .map((proof, key) => (
                     <ProofItem
                         key={key}
                         canManage={canManage}

@@ -505,8 +505,18 @@ function Info(props) {
 
           {/* TOP-LEFT-BLOCK: IMAGE =================================================================================*/}
           <Grid item className={classes.orgImageContainer}>
-            <div className={classes.orgImageWrapper}>
-              <img
+            <div
+              className={classes.orgImageWrapper}
+              onError={e => imgError(e)}
+              title={name}
+              style={{
+                backgroundImage: `url(${fixOldLogoUrl(logo) || setRandomDefaultImage(id || '0xLOADING', directory || 'hotel')})`,
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: 'cover'
+              }}
+            >
+              {/* <img
                 alt={`${name}`}
                 className={classes.orgImage}
                 onError={e => imgError(e)}
@@ -515,7 +525,7 @@ function Info(props) {
                     ? fixOldLogoUrl(logo)
                     : setRandomDefaultImage(id || '0xLOADING', directory || 'hotel')
                 }
-              />
+              /> */}
             </div>
           </Grid>
 

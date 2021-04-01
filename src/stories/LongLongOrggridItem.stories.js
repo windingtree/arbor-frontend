@@ -1,29 +1,20 @@
 import React from 'react';
 import { Grid, Container } from '@material-ui/core';
 import { storiesOf } from '@storybook/react';
-import {withKnobs, boolean} from '@storybook/addon-knobs';
+import {SAMPLE_ORGANISATION_SIMARD} from "./fixtures.data"
 
 import OrgsGridItem from '../components/OrgsGridItem';
+import {withMemoryRouter} from "./addon-memoryrouter";
 
 storiesOf('ORG ID/Grid Item', module)
-  .addDecorator(withKnobs)
-  .add('Long Long Long Grid Item', () => {
-    const isSub = boolean('is SubOrganization', false);
-    const subs = ['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1',  ];
-
+    .addDecorator(withMemoryRouter)
+    .add('Long Long Long Grid Item', () => {
     return (
       <Container>
         <Grid container>
           <Grid lg={3} sm={4} xs={10} item>
             <OrgsGridItem
-              id={'0xnfjrfh774854nre7ns8r8f8fd'}
-              isSub={isSub}
-              type={'Hotel'}
-              trustLevel={'4'}
-              name={'Extremely very enormous and long default organization name with lot of characters'}
-              subs={subs}
-              entityName={'entityName'}
-              entityTrustLevel={'4'}
+                organization={Object.assign({},SAMPLE_ORGANISATION_SIMARD,{name:'very very very very very very long name'})}
             />
           </Grid>
         </Grid>

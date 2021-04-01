@@ -513,7 +513,7 @@ function Info(props) {
                 backgroundImage: `url(${fixOldLogoUrl(logo) || setRandomDefaultImage(id || '0xLOADING', directory || 'hotel')})`,
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
-                backgroundSize: 'cover'
+                backgroundSize: 'auto'
               }}
             >
               {/* <img
@@ -536,15 +536,20 @@ function Info(props) {
                 <CircularProgress size='18' />
               }
               {id &&
-                <CopyTextComponent
-                  title='ORGiD is copied to clipboard'
-                  label={strCenterEllipsis((id || '').toLowerCase().split('x')[1], 8) || '...'}
-                  text={id}
-                  color='#8F999F'
-                  fontWeight='500'
-                  fontSize='14px'
-                  icon={CopyIcon}
-                />
+                <div className={classes.orgInfoFieldWrapper}>
+                  <Typography variant={'caption'} className={classes.orgInfoFieldTitle} noWrap>
+                    {'ORGiD: '}
+                    <CopyTextComponent
+                        title='ORGiD is copied to clipboard'
+                        label={strCenterEllipsis((id || '').toLowerCase().split('x')[1], 8) || '...'}
+                        text={id}
+                        color='#8F999F'
+                        fontWeight='500'
+                        fontSize='14px'
+                        icon={CopyIcon}
+                    />
+                  </Typography>
+                </div>
               }
               {/* {
                 canManage || (

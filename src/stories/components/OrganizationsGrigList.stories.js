@@ -3,7 +3,7 @@ import { Grid, Container } from '@material-ui/core';
 import { storiesOf } from '@storybook/react';
 import {ORGANISATIONS_SEARCH_RESULT} from "../fixtures.data"
 import OrgsGridItem from '../../components/OrgsGridItem';
-import {withMemoryRouter} from "../addon-memoryrouter";
+import {withMemoryRouter} from "../addon-router-decorator";
 
 storiesOf('ORG ID/Components/Grid Item', module)
     .addDecorator(withMemoryRouter)

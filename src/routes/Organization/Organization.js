@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { Grid, Container, Typography } from '@material-ui/core';
 import {
   fetchOrganizationInfo,
   fetchOrganizationSubsInfo,
@@ -147,7 +146,7 @@ function Organization (props) {
       }
       <ProofsList
         canManage={canManage}
-        title='Get Verified'
+        title='Trust assertions'
         orgid={orgId}
         assertions={assertions}
         verifications={verifications}

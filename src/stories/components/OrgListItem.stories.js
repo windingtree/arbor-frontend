@@ -3,7 +3,7 @@ import { Container } from '@material-ui/core';
 import { storiesOf } from '@storybook/react';
 import {SAMPLE_ORGANISATION_SIMARD, SAMPLE_ORGANISATION_ROOMS} from "../fixtures.data"
 import OrgsListItem from '../../components/OrgsListItem';
-import {withMemoryRouter} from "../addon-memoryrouter";
+import {withMemoryRouter} from "../addon-router-decorator";
 
 storiesOf('ORG ID/Components/List Item', module)
   .addDecorator(withMemoryRouter)

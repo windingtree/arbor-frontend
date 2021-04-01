@@ -513,7 +513,7 @@ function Info(props) {
                 backgroundImage: `url(${fixOldLogoUrl(logo) || setRandomDefaultImage(id || '0xLOADING', directory || 'hotel')})`,
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
-                backgroundSize: 'auto'
+                backgroundSize: 'contain'
               }}
             >
               {/* <img

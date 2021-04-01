@@ -19,7 +19,6 @@ import {
     resetTransactionStatus
 } from '../ducks/wizard';
 import iconInfo from '../assets/SvgComponents/info.svg';
-import { TrustLevelIcon } from '../assets/SvgComponents';
 import colors from '../styles/colors';
 
 const useStyles = makeStyles({
@@ -235,7 +234,7 @@ const applyExtensions = (
 );
 
 // ProofsList component
-const ProofsList = props => {
+export const ProofsList = props => {
     const { canManage, title, orgid, organization, assertions, verifications, fetchOrganizationInfo } = props;
     // const { proofsQty } = organization;
     const [isOpen, toggleModalOpenState] = useState(false);
@@ -303,7 +302,7 @@ const ProofsList = props => {
     );
 
     const notDeployedCount = Object.keys(updatedProofs).length;
-
+    console.log('OrgId',orgid)
     if (!orgid) {
         return false;
     }

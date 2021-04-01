@@ -4,7 +4,7 @@ import { storiesOf } from '@storybook/react';
 import {SAMPLE_ORGANISATION_SIMARD} from "../fixtures.data"
 
 import OrgsGridItem from '../../components/OrgsGridItem';
-import {withMemoryRouter} from "../addon-memoryrouter";
+import {withMemoryRouter} from "../addon-router-decorator";
 
 storiesOf('ORG ID/Components/Grid Item', module)
     .addDecorator(withMemoryRouter)

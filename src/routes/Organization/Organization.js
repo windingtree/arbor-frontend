@@ -29,12 +29,13 @@ import ProofsList from '../../components/ProofsList';
 import SimardAccounts from './Components/SimardAccounts';
 import Gps from './Components/Gps';
 import {
-  DIRECTORIES_ENABLED
+  DIRECTORIES_ENABLED, LIF_DEPOSIT_AMOUNT
 } from '../../utils/constants';
-// import SaveButton from '../../components/buttons/Save';
 import { makeStyles } from '@material-ui/core/styles';
-// import trustLifDeposit from '../../assets/SvgComponents/trust-lif-deposit.svg';
-
+import {Container, Grid, Typography} from "@material-ui/core";
+import trustTopIllustration from '../../assets/SvgComponents/lif-deposit-illustration.svg';
+import colors from "../../styles/colors";
+import {selectLifDepositDataFetching, selectOrgIdLifDepositAmount} from "../../ducks/lifDeposit";
 
 const styles = makeStyles({
   pageWrapper: {
@@ -65,6 +66,29 @@ const styles = makeStyles({
     color: '#5E666A',
     marginBottom: '19px',
     lineHeight: '28px'
+  },
+  topDiv: {
+    backgroundColor: colors.greyScale.moreLighter
+  },
+  mainTitle: {
+    fontSize: '40px',
+    fontWeight: 500,
+    lineHeight: 1.14,
+    color: colors.greyScale.darkest,
+    margin: '107px 0 25px 0'
+  },
+  topText: {
+    color: colors.greyScale.dark,
+    marginBottom: '19px',
+    lineHeight: '28px'
+  },
+  line: {
+    display: 'inline-block',
+    verticalAlign: 'middle',
+    height: '2px',
+    width: '36px',
+    marginRight: '12px',
+    backgroundColor: colors.primary.accent,
   }
 });
 
@@ -81,7 +105,9 @@ function Organization (props) {
     fetchOrganizationInfo,
     setOrgId,
     resetOrgId,
-    walletAddress
+    walletAddress,
+    isFetchingDeposit,
+    orgIdLifDepositAmount
   } = props;
   const subsidiaries = _.get(organization, 'subsidiaries', []);
   const agents = _.get(organization, 'jsonContent.publicKey', []);
@@ -108,6 +134,8 @@ function Organization (props) {
       instagram: isSocialIGProved
     }
   };
+  const showLifDepositSection = canManage && (isFetchingDeposit === false) && (orgIdLifDepositAmount < LIF_DEPOSIT_AMOUNT);
+
   // const classes = styles();
 
   useEffect(() => {
@@ -152,6 +180,26 @@ function Organization (props) {
         verifications={verifications}
         organization={organization}
       />
+      {showLifDepositSection &&
+      <div className={classes.topDiv}>
+        <Container className={classes.topDiv}>
+          <Grid container>
+            <Grid item xs={12} lg={6}>
+              <Typography className={classes.mainTitle} variant={'h1'}>Submit your Líf
+                deposit</Typography>
+              <Typography className={classes.topText}>Líf deposit is a small amount of cryptocurrency that
+                is staked when you register your organization profile on Winding Tree Marketplace. This action minimizes
+                spam registrations and proves the seriousness of your intentions.</Typography>
+              <div className={classes.line}/>
+            </Grid>
+            <Grid item xs={12} lg={6}>
+              <img src={trustTopIllustration} alt={'illustration'}/>
+            </Grid>
+          </Grid>
+        </Container>
+      </div>
+      }
+
       {/* {canManage &&
         <div className={classes.greyDiv}>
           <Container className={classes.lifContent}>
@@ -227,7 +275,9 @@ const mapStateToProps = state => {
     organization: selectItem(state),
     subs: selectSubs(state),
     assertions: selectAssertions(state),
-    walletAddress: selectSignInAddress(state)
+    walletAddress: selectSignInAddress(state),
+    isFetchingDeposit: selectLifDepositDataFetching(state),
+    orgIdLifDepositAmount: selectOrgIdLifDepositAmount(state)
   }
 };
 

@@ -38,7 +38,7 @@ const styles = makeStyles({
     fontWeight: 400,
   },
   iconTrustLevel: {
-    width: '15px',
+    width: '20px',
     height: '20px',
     color: colors.secondary.yellow,
     margin: '0 4px 0 14px'

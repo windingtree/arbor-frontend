@@ -52,7 +52,7 @@ const useStyles = makeStyles({
         color: 'black',
         textDecoration: 'underline',
         cursor: 'pointer',
-        marginLeft: '27px',
+        // marginLeft: '27px',
         '&.removed': {
             color: '#5E666A',
             textDecoration: 'none',
@@ -67,7 +67,7 @@ const useStyles = makeStyles({
         color: 'black',
         textDecoration: 'none',
         cursor: 'auto',
-        marginLeft: '27px',
+        // marginLeft: '27px',
         '&.removed': {
             color: '#5E666A',
             textDecoration: 'none',
@@ -188,7 +188,7 @@ const ProofIcon = ({ icon }) => {
             iconElem = <div />;
             text=''
     }
-    return (<>{iconElem}<Typography className={classes.labelPub}>{text}</Typography></>);
+    return (<>{iconElem}<Typography className={classes.labelPub} style={{marginLeft: '27px'}}>{text}</Typography></>);
 }
 
 //if proof is verified - shows badge with 'checkmark'
@@ -216,21 +216,25 @@ const ProofExternalLinkIcon = ({ url }) => {
 }
 
 //proof title (either link or 'not connected')
-const ProofTitle = ({  title, proof, removed, canManage, onClick }) => {
+const ProofTitle = ({  title, proof, removed, canManage, verified, deployed, onClick }) => {
     const classes = useStyles();
     if(!proof){
-        return (<span
-            onClick={!removed ? onClick : () => {}}
-            className={canManage ? classes.label : classes.labelPub}
-            classes={{ root: removed ? 'removed' : undefined }}>
-            {title}
-        </span>)
+        return (
+            <span style={{marginLeft: '52px'}}>
+            <span
+                onClick={!removed ? onClick : () => {}}
+                className={canManage ? classes.label : classes.labelPub}>
+                {title}
+            </span></span>)
     }else{
         return (
-            <span className={classes.labelProof}>
-            <span className={classes.adaptive}>
-                <span className={'long'}>{title}</span>
-                <span className={'short'}>{strCenterEllipsis(title, 10)}</span>
+            <span style={{marginLeft: '52px'}}>
+                <ProofStatusBadge deployed={deployed} verified={verified}/>
+                <span className={classes.labelProof}>
+                <span className={classes.adaptive}>
+                    <span className={'long'}>{title}</span>
+                    <span className={'short'}>{strCenterEllipsis(title, 10)}</span>
+                </span>
             </span>
             </span>)
     }
@@ -258,8 +262,7 @@ const ProofItem = props => {
                 <ProofIcon icon={icon} />
             </Grid>
             <Grid item xs={12} sm={5}>
-                {deployed && <ProofStatusBadge deployed={deployed} verified={verified}/>}
-                <ProofTitle title={title} canManage={canManage} proof={assertion.proof} removed={removed} onClick={onClick}/>
+                <ProofTitle title={title} canManage={canManage} proof={assertion.proof} removed={removed} verified={verified} deployed={deployed} onClick={onClick}/>
                 {assertion.proof && <ProofExternalLinkIcon url={assertion.proof}/>}
 
 {/*

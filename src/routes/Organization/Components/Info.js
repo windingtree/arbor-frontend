@@ -90,6 +90,7 @@ const styles = makeStyles({
     ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
       height: '180px'
     },
+    marginTop:'20px'
   },
   orgImage: {
     position: 'absolute',

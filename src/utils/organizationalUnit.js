@@ -8,7 +8,7 @@ export const wizardConfig = [
     name: 'Unit Info',
     icon: StepperGeneralIcon,
     longName: 'Unit Information',
-    description: 'A business or organizational unit can be anything: a department within your company (legal, accounting, etc.), a business operated by it (Acme Anvils Main St.), etc. An Ethereum transaction will be required to create a business unit.',
+    description: 'A business or organizational unit can be anything: a department within your organization (legal, accounting, etc.), a business operated by it (Acme Anvils Main St.), etc. An Ethereum transaction will be required to create a business unit.',
     sections: [
       {
         name: 'Basics',

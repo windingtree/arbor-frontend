@@ -93,10 +93,10 @@ const proofsTemplate = [
     {
         id: 'd1',
         type: 'domain',
-        title: 'Verify company website',
+        title: 'Verify organization website',
         pubTitle: 'Not verified',
         notes: [
-            'Please upload this file to the root directory of your company website.',
+            'Please upload this file to the root directory of your organization website.',
             '>[ORGID]'
         ],
         icon: 'globe'
@@ -105,10 +105,10 @@ const proofsTemplate = [
         id: 's1',
         type: 'social',
         subtype: 'facebook',
-        title: 'Verify company Facebook account',
+        title: 'Verify organization Facebook account',
         pubTitle: 'Not verified',
         notes: [
-            'Verify your company\'s Facebook account by creating a post with the following text',
+            'Verify your organization\'s Facebook account by creating a post with the following text',
             '>Winding Tree Marketplace account: [ORGID]',
             'Once you have created the post, paste a link to it below'
         ],
@@ -142,10 +142,10 @@ const proofsTemplate = [
         id: 's4',
         type: 'social',
         subtype: 'linkedin',
-        title: 'Verify company LinkedIn account',
+        title: 'Verify organization LinkedIn account',
         pubTitle: 'Not verified',
         notes: [
-            'Verify your company LinkedIn account by creating a post with the following text',
+            'Verify your organization LinkedIn account by creating a post with the following text',
             '>Winding Tree Marketplace account: [ORGID]',
             'Paste the link to the post below'
         ],

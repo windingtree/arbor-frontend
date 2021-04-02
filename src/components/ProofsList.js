@@ -80,11 +80,7 @@ const useStyles = makeStyles({
         color: colors.secondary.yellow,
         margin: '0 4px 0 14px'
     },
-    evidenceTitle: {
-        marginBottom: '20px',
-        fontSize: '16px',
-        fontWeight: 500
-    },
+
     stakeTitle: {
         marginTop: '20px',
         marginBottom: '18px',
@@ -300,9 +296,7 @@ export const ProofsList = props => {
         updatedProofs,
         canManage
     );
-
     const notDeployedCount = Object.keys(updatedProofs).length;
-    console.log('OrgId',orgid)
     if (!orgid) {
         return false;
     }
@@ -321,11 +315,7 @@ export const ProofsList = props => {
             <Box className={classes.titleLine}>
                 <Grid container alignItems='center' spacing={2}>
                     <Grid item>
-                        <Typography
-                            className={classes.title}
-                        >
-                            {title}
-                        </Typography>
+                        <Typography className={classes.title}>{title}</Typography>
                     </Grid>
                     <Grid item>
                         <img
@@ -349,12 +339,8 @@ export const ProofsList = props => {
                     </Grid> */}
                 </Grid>
             </Box>
-            <Typography className={classes.evidenceTitle}>
-                Internet Evidence
-            </Typography>
             <Box className={classes.proofsBlock}>
                 {proofsList
-                .filter(p => p.subtype !== 'facebook')
                 .map((proof, key) => (
                     <ProofItem
                         key={key}

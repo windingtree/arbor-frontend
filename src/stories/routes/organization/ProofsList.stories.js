@@ -23,7 +23,7 @@ storiesOf('ORG ID/Routes/Organization/Components', module)
     return (
       <Container>
           <ProofsList
-              canManage={false}
+              canManage={true}
               title='Trust assertions'
               orgid={SAMPLE_ORGANISATION_SIMARD.orgid}
               assertions={assertions}

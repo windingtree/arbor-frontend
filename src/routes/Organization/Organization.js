@@ -92,7 +92,7 @@ const styles = makeStyles({
   }
 });
 
-function Organization (props) {
+export function Organization (props) {
   const classes = styles();
   const { orgId } = useParams();
   // const orgId = history.location.state ? history.location.state.orgId : history.location.pathname.split('/')[2];

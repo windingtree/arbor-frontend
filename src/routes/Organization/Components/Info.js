@@ -503,33 +503,7 @@ function Info(props) {
       <Container className={classes.itemMainInfo}>
         <Grid container className={classes.orgMainInfoWrapper}>
 
-          {/* TOP-LEFT-BLOCK: IMAGE =================================================================================*/}
-          <Grid item className={classes.orgImageContainer}>
-            <div
-              className={classes.orgImageWrapper}
-              onError={e => imgError(e)}
-              title={name}
-              style={{
-                backgroundImage: `url(${fixOldLogoUrl(logo) || setRandomDefaultImage(id || '0xLOADING', directory || 'hotel')})`,
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-                backgroundSize: 'contain'
-              }}
-            >
-              {/* <img
-                alt={`${name}`}
-                className={classes.orgImage}
-                onError={e => imgError(e)}
-                src={
-                  fixOldLogoUrl(logo)
-                    ? fixOldLogoUrl(logo)
-                    : setRandomDefaultImage(id || '0xLOADING', directory || 'hotel')
-                }
-              /> */}
-            </div>
-          </Grid>
-
-          {/* TOP-RIGHT-BLOCK: INFO =================================================================================*/}
+          {/* TOP-LEFT-BLOCK: INFO =================================================================================*/}
           <Grid item className={classes.orgInfoContainer}>
             <div className={classes.idInfoContainer}>
               {!id &&
@@ -551,16 +525,6 @@ function Info(props) {
                   </Typography>
                 </div>
               }
-              {/* {
-                canManage || (
-                  <div className={classes.publicTrustLevelWrapper}>
-                    <Typography variant={'caption'} className={classes.itemTrustInfoTitle}
-                                style={{color: colors.greyScale.common}}>Trust proofs: </Typography>
-                    <TrustLevelIcon className={classes.iconTrustLevel}/>
-                    <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{proofsQty}</Typography>
-                  </div>
-                )
-              } */}
             </div>
             <div className={classes.orgNameWrapper}>
               <Typography variant={'h6'} className={classes.orgName} noWrap>{name}</Typography>
@@ -670,6 +634,25 @@ function Info(props) {
               )}
             </div>
           </Grid>
+
+
+          {/* TOP-RIGHT-BLOCK: IMAGE =================================================================================*/}
+          <Grid item className={classes.orgImageContainer}>
+            <div
+                className={classes.orgImageWrapper}
+                onError={e => imgError(e)}
+                title={name}
+                style={{
+                  backgroundImage: `url(${fixOldLogoUrl(logo) || setRandomDefaultImage(id || '0xLOADING', directory || 'hotel')})`,
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: 'contain'
+                }}
+            >
+            </div>
+          </Grid>
+
+
         </Grid>
 
 

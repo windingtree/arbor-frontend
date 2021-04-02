@@ -655,3 +655,79 @@ export const ORGANISATIONS_SEARCH_RESULT = [{
     "country": "CH",
     "type": "orgid"
 }]
+
+
+export const SAMPLE_OGRANIZATION_TRIPS_COMMUNITY = {
+        "type": "orgid",
+        "subsidiaries": [],
+        "parent": null,
+        "jsonContent": {
+            "@context": ["https://www.w3.org/ns/did/v1", "https://windingtree.com/ns/orgid/v1"],
+            "id": "did:orgid:0x19967b48b54540081e17c8d3018d04cdadae8db09fdfb8758bb67967ce764d26",
+            "created": "2020-11-27T11:27:55.694Z",
+            "legalEntity": {
+                "contacts": [{
+                    "email": "info@tripscommunity.com",
+                    "website": "https://tripscommunity.com/",
+                    "facebook": "https://www.facebook.com/TripsCommunity/",
+                    "twitter": "https://twitter.com/tripscommunity",
+                    "instagram": "https://www.instagram.com/trips_community/"
+                }],
+                "locations": [],
+                "legalType": "Corporation",
+                "legalName": "Trips Community OÜ",
+                "legalIdentifier": "11761802",
+                "registeredAddress": {
+                    "subdivision": "Harju maakond",
+                    "locality": "Tallinn",
+                    "streetAddress": "Pärnu mnt 158",
+                    "postalCode": "11317",
+                    "country": "EE"
+                }
+            },
+            "publicKey": [],
+            "service": [],
+            "trust": {
+                "assertions": [{
+                    "type": "domain",
+                    "claim": "tripscommunity.com",
+                    "proof": "https://tripscommunity.com/0x19967b48b54540081e17c8d3018d04cdadae8db09fdfb8758bb67967ce764d26.txt"
+                }, {
+                    "type": "social",
+                    "claim": "facebook.com/TripsCommunity",
+                    "proof": "https://www.facebook.com/TripsCommunity/posts/2683036045290531"
+                }, {
+                    "type": "social",
+                    "claim": "linkedin.com/posts",
+                    "proof": "https://www.linkedin.com/posts/luca-de-giglio_winding-tree-marketplace-account-0x19967b48b54540081e17c8d3018d04cdadae8db09fdfb8758bb67967ce764d26-activity-6738055229004136448-XYW3"
+                }]
+            },
+            "updated": "2020-11-27T11:29:48.446Z",
+            "media": {"logo": "https://api.marketplace.windingtree.com/uploads/0x36666e1fdc526f6df4638491f087e907a542bcdf/mediaType/did:orgid:0x19967b48b54540081e17c8d3018d04cdadae8db09fdfb8758bb67967ce764d26/w0c0opwjh.png"}
+        },
+        "orgid": "0x19967b48b54540081e17c8d3018d04cdadae8db09fdfb8758bb67967ce764d26",
+        "owner": "0x36666e1fdC526f6df4638491F087e907A542BCdf",
+        "orgidType": "legalEntity",
+        "directory": "legalEntity",
+        "director": "0x0000000000000000000000000000000000000000",
+        "state": true,
+        "directorConfirmed": false,
+        "name": "Trips Community OÜ",
+        "logo": "https://api.marketplace.windingtree.com/uploads/0x36666e1fdc526f6df4638491f087e907a542bcdf/mediaType/did:orgid:0x19967b48b54540081e17c8d3018d04cdadae8db09fdfb8758bb67967ce764d26/w0c0opwjh.png",
+        "country": "EE",
+        "proofsQty": 1,
+        "isLifProved": false,
+        "isWebsiteProved": true,
+        "isSslProved": false,
+        "isSocialFBProved": false,
+        "isSocialTWProved": false,
+        "isSocialIGProved": false,
+        "isSocialLNProved": false,
+        "isJsonValid": true,
+        "orgJsonHash": "0xc198f83f6625d319f669ceed268024800812b94dbeea8a330116bd95bed09b8a",
+        "orgJsonUri": "https://api.marketplace.windingtree.com/uploads/0x36666e1fdc526f6df4638491f087e907a542bcdf/did:orgid:0x19967b48b54540081e17c8d3018d04cdadae8db09fdfb8758bb67967ce764d26/0xc198f83f6625d319f669ceed268024800812b94dbeea8a330116bd95bed09b8a.json",
+        "jsonCheckedAt": "2020-11-27T17:58:15.000Z",
+        "jsonUpdatedAt": "2020-11-27T17:58:15.000Z",
+        "createdAt": "2020-11-27T11:30:30.000Z",
+        "updatedAt": "2020-11-27T17:58:15.000Z"
+}

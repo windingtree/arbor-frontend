@@ -584,9 +584,9 @@ function Info(props) {
                       <span className={'long'}>{contacts.website}</span>
                     </a>
                   </Typography>
-                  {isWebsiteProved &&
+{/*                  {isWebsiteProved &&
                     <TrustLevelIcon className={classes.iconTrustLevel} style={{verticalAlign: 'text-bottom'}}/>
-                  }
+                  }*/}
                 </div>
               }
               <div className={classes.orgInfoFieldWrapper}>

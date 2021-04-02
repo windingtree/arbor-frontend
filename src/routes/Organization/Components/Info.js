@@ -24,6 +24,8 @@ import {
   MinimizeIcon,
 } from '../../../assets/SvgComponents';
 import CopyIcon from '../../../assets/SvgComponents/copy-icon.svg';
+import {TrustLevelNumericIcon} from "../../../assets/SvgComponents/TrustLevelIcon";
+import {LIF_DEPOSIT_AMOUNT} from "../../../utils/constants";
 
 const styles = makeStyles({
   itemMainInfo: {
@@ -36,8 +38,8 @@ const styles = makeStyles({
     fontWeight: 400,
   },
   iconTrustLevel: {
-    width: '13px',
-    height: '16px',
+    width: '15px',
+    height: '20px',
     color: colors.secondary.yellow,
     margin: '0 4px 0 14px'
   },
@@ -423,7 +425,7 @@ const getAddressString = (addressObj) => {
 function Info(props) {
   const classes = styles();
   const [isOpen, toggleOpen] = useState(false);
-  const {organization, canManage} = props;
+  const {organization, canManage, orgIdLifDepositAmount} = props;
   const { orgid: id, proofsQty, logo, name, parent, isWebsiteProved, directory } = organization;
 
   const isSub = !!parent;
@@ -587,6 +589,11 @@ function Info(props) {
                   }
                 </div>
               }
+              <div className={classes.orgInfoFieldWrapper}>
+                <Typography variant={'caption'} className={classes.orgInfoFieldTitle}>
+                  Trust level: <TrustLevelNumericIcon className={classes.iconTrustLevel} style={{verticalAlign: 'middle', color: orgIdLifDepositAmount<=LIF_DEPOSIT_AMOUNT?colors.secondary.yellow:colors.secondary.green}} level={proofsQty}/>
+                </Typography>
+              </div>
               {
                 isSub ? (
                   <div className={`${classes.orgInfoFieldWrapper} ${classes.orgInfoLegalEntityFieldWrapper}`}>

@@ -136,12 +136,13 @@ const useStyles = makeStyles({
     proofVerificationStatusIcon: {
         height: '16px',
         color: colors.secondary.yellow,
-        marginRight: '6px'
+        marginRight: '6px',
+        verticalAlign:'middle'
     },
     externalUrlIcon: {
         height: '16px',
         marginRight: '6px',
-        verticalAlign:'bottom'
+        verticalAlign:'middle'
     },
 });
 
@@ -215,10 +216,11 @@ const ProofExternalLinkIcon = ({ url }) => {
 }
 
 //proof title (either link or 'not connected')
-const ProofTitle = ({  title, proof, removed, canManage }) => {
+const ProofTitle = ({  title, proof, removed, canManage, onClick }) => {
     const classes = useStyles();
     if(!proof){
         return (<span
+            onClick={!removed ? onClick : () => {}}
             className={canManage ? classes.label : classes.labelPub}
             classes={{ root: removed ? 'removed' : undefined }}>
             {title}
@@ -257,7 +259,7 @@ const ProofItem = props => {
             </Grid>
             <Grid item xs={12} sm={5}>
                 {deployed && <ProofStatusBadge deployed={deployed} verified={verified}/>}
-                <ProofTitle title={title} canManage={canManage} proof={assertion.proof} removed={removed}/>
+                <ProofTitle title={title} canManage={canManage} proof={assertion.proof} removed={removed} onClick={onClick}/>
                 {assertion.proof && <ProofExternalLinkIcon url={assertion.proof}/>}
 
 {/*

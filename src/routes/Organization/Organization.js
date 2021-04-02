@@ -32,7 +32,7 @@ import {
   DIRECTORIES_ENABLED, LIF_DEPOSIT_AMOUNT
 } from '../../utils/constants';
 import { makeStyles } from '@material-ui/core/styles';
-import {Container, Grid, Typography} from "@material-ui/core";
+import {Button, Container, Grid, Typography} from "@material-ui/core";
 import trustTopIllustration from '../../assets/SvgComponents/lif-deposit-illustration.svg';
 import colors from "../../styles/colors";
 import {selectLifDepositDataFetching, selectOrgIdLifDepositAmount} from "../../ducks/lifDeposit";
@@ -82,14 +82,31 @@ const styles = makeStyles({
     marginBottom: '19px',
     lineHeight: '28px'
   },
-  line: {
-    display: 'inline-block',
-    verticalAlign: 'middle',
-    height: '2px',
-    width: '36px',
-    marginRight: '12px',
-    backgroundColor: colors.primary.accent,
-  }
+
+  buttonWrapper: {
+    marginRight: '20px',
+    '&:last-child': {
+      marginRight: '0'
+    },
+    marginBottom:'20px'
+  },
+  buttonStakeLif: {
+    display: 'flex',
+    alignContent: 'center',
+    height: '44px',
+    backgroundImage: colors.gradients.orange,
+    boxShadow: '0 2px 12px rgba(12, 64, 78, 0.1)',
+    border: `1px solid ${colors.primary.accent}`,
+    borderRadius: '8px'
+  },
+  buttonTitle: {
+    fontWeight: 600,
+    fontSize: '16px',
+    lineHeight: '24px',
+    color: colors.primary.white,
+    textTransform: 'none',
+    padding: '4px 14px'
+  },
 });
 
 export function Organization (props) {
@@ -166,7 +183,7 @@ export function Organization (props) {
         organization={organization}
         canManage={canManage}
       />
-      <Info organization={organization} canManage={canManage}/>
+      <Info organization={organization} canManage={canManage} orgIdLifDepositAmount={orgIdLifDepositAmount}/>
       {subsidiaries && subsidiaries.length > 0 &&
         <div style={{ marginBottom: '30px' }}>
           <SubOrganizations organization={organization} subs={subs} canManage={canManage} />
@@ -185,12 +202,19 @@ export function Organization (props) {
         <Container className={classes.topDiv}>
           <Grid container>
             <Grid item xs={12} lg={6}>
-              <Typography className={classes.mainTitle} variant={'h1'}>Submit your Líf
-                deposit</Typography>
+              <Typography className={classes.mainTitle} variant={'h1'}>Submit your Líf deposit</Typography>
               <Typography className={classes.topText}>Líf deposit is a small amount of cryptocurrency that
                 is staked when you register your organization profile on Winding Tree Marketplace. This action minimizes
                 spam registrations and proves the seriousness of your intentions.</Typography>
-              <div className={classes.line}/>
+              <div className={classes.buttonWrapper}>
+                <Button
+                    className={classes.buttonStakeLif}
+                    onClick={() => {history.push(`/my-organizations/${orgId}/lif-stake`, { id: orgId })}}>
+                  <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
+                    Submit Líf
+                  </Typography>
+                </Button>
+              </div>
             </Grid>
             <Grid item xs={12} lg={6}>
               <img src={trustTopIllustration} alt={'illustration'}/>

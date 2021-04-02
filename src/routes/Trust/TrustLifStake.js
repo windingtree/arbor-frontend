@@ -279,7 +279,7 @@ const TrustLifStake = (props) => {
           </Button>
         </Box>
       </Container>
-      <Info organization={organization} canManage={true}/>
+      <Info organization={organization} canManage={true} orgIdLifDepositAmount={lifTokenBalance}/>
      {/* <div className={classes.topDiv}>
         <Container className={classes.topDiv}>
           <Grid container>

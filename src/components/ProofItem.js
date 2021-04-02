@@ -12,9 +12,9 @@ import {
     selectPendingState
 } from '../ducks/wizard';
 import { strCenterEllipsis } from '../utils/helpers';
-import TrustLevelIcon from "../assets/SvgComponents/TrustLevelIcon";
 import colors from "../styles/colors";
 import ExternalUrlIcon from "../assets/SvgComponents/ExternalUrlIcon";
+import {TrustBadgeChecked} from "../assets/SvgComponents/TrustLevelIcon";
 
 const useStyles = makeStyles({
     item: {
@@ -135,7 +135,7 @@ const useStyles = makeStyles({
     },
     proofVerificationStatusIcon: {
         height: '16px',
-        color: colors.secondary.yellow,
+        color: colors.secondary.brightYellow,
         marginRight: '6px',
         verticalAlign:'middle'
     },
@@ -195,7 +195,7 @@ const ProofIcon = ({ icon }) => {
 const ProofStatusBadge = ({verified=false  }) => {
     const classes = useStyles();
     if(verified){
-        return <TrustLevelIcon className={classes.proofVerificationStatusIcon}/>
+        return <TrustBadgeChecked className={classes.proofVerificationStatusIcon}/>
     }
     return <></>
 }

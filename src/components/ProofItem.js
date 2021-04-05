@@ -159,7 +159,7 @@ const State = (props) => {
     );
 };
 
-const ProofIcon = ({ icon }) => {
+const ProofWebsiteNameAndIcon = ({ icon }) => {
     const classes = useStyles();
     let iconElem;
     let text;
@@ -259,7 +259,7 @@ const ProofItem = props => {
     return (
         <Grid className={classes.item} container justify='space-between' alignItems='center'>
             <Grid item xs={12} sm={6} className={classes.alignRow}>
-                <ProofIcon icon={icon} />
+                <ProofWebsiteNameAndIcon icon={icon} />
             </Grid>
             <Grid item xs={12} sm={5}>
                 <ProofTitle title={title} canManage={canManage} proof={assertion.proof} removed={removed} verified={verified} deployed={deployed} onClick={onClick}/>

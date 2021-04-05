@@ -68,7 +68,8 @@ const styles = makeStyles({
     lineHeight: '28px'
   },
   topDiv: {
-    backgroundColor: colors.greyScale.moreLighter
+    backgroundColor: colors.greyScale.moreLighter,
+    marginBottom: '19px',
   },
   mainTitle: {
     fontSize: '40px',
@@ -199,7 +200,7 @@ export function Organization (props) {
       />
       {showLifDepositSection &&
       <div className={classes.topDiv}>
-        <Container className={classes.topDiv}>
+        <Container>
           <Grid container>
             <Grid item xs={12} lg={6}>
               <Typography className={classes.mainTitle} variant={'h1'}>Submit your Líf deposit</Typography>

@@ -93,7 +93,7 @@ const proofsTemplate = [
     {
         id: 'd1',
         type: 'domain',
-        title: 'Verify organization website',
+        title: 'Verify website',
         pubTitle: 'Not verified',
         notes: [
             'Please upload this file to the root directory of your organization website.',
@@ -105,7 +105,7 @@ const proofsTemplate = [
         id: 's1',
         type: 'social',
         subtype: 'facebook',
-        title: 'Verify organization Facebook account',
+        title: 'Verify Facebook account',
         pubTitle: 'Not verified',
         notes: [
             'Verify your organization\'s Facebook account by creating a post with the following text',
@@ -142,7 +142,7 @@ const proofsTemplate = [
         id: 's4',
         type: 'social',
         subtype: 'linkedin',
-        title: 'Verify organization LinkedIn account',
+        title: 'Verify LinkedIn account',
         pubTitle: 'Not verified',
         notes: [
             'Verify your organization LinkedIn account by creating a post with the following text',

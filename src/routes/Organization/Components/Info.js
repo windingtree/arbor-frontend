@@ -24,6 +24,8 @@ import {
   MinimizeIcon,
 } from '../../../assets/SvgComponents';
 import CopyIcon from '../../../assets/SvgComponents/copy-icon.svg';
+import {TrustLevelNumericIcon} from "../../../assets/SvgComponents/TrustLevelIcon";
+import {LIF_DEPOSIT_AMOUNT} from "../../../utils/constants";
 
 const styles = makeStyles({
   itemMainInfo: {
@@ -36,8 +38,8 @@ const styles = makeStyles({
     fontWeight: 400,
   },
   iconTrustLevel: {
-    width: '13px',
-    height: '16px',
+    width: '20px',
+    height: '20px',
     color: colors.secondary.yellow,
     margin: '0 4px 0 14px'
   },
@@ -88,6 +90,7 @@ const styles = makeStyles({
     ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
       height: '180px'
     },
+    marginTop:'20px'
   },
   orgImage: {
     position: 'absolute',
@@ -423,7 +426,7 @@ const getAddressString = (addressObj) => {
 function Info(props) {
   const classes = styles();
   const [isOpen, toggleOpen] = useState(false);
-  const {organization, canManage} = props;
+  const {organization, canManage, orgIdLifDepositAmount} = props;
   const { orgid: id, proofsQty, logo, name, parent, isWebsiteProved, directory } = organization;
 
   const isSub = !!parent;
@@ -503,59 +506,28 @@ function Info(props) {
       <Container className={classes.itemMainInfo}>
         <Grid container className={classes.orgMainInfoWrapper}>
 
-          {/* TOP-LEFT-BLOCK: IMAGE =================================================================================*/}
-          <Grid item className={classes.orgImageContainer}>
-            <div
-              className={classes.orgImageWrapper}
-              onError={e => imgError(e)}
-              title={name}
-              style={{
-                backgroundImage: `url(${fixOldLogoUrl(logo) || setRandomDefaultImage(id || '0xLOADING', directory || 'hotel')})`,
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-                backgroundSize: 'cover'
-              }}
-            >
-              {/* <img
-                alt={`${name}`}
-                className={classes.orgImage}
-                onError={e => imgError(e)}
-                src={
-                  fixOldLogoUrl(logo)
-                    ? fixOldLogoUrl(logo)
-                    : setRandomDefaultImage(id || '0xLOADING', directory || 'hotel')
-                }
-              /> */}
-            </div>
-          </Grid>
-
-          {/* TOP-RIGHT-BLOCK: INFO =================================================================================*/}
+          {/* TOP-LEFT-BLOCK: INFO =================================================================================*/}
           <Grid item className={classes.orgInfoContainer}>
             <div className={classes.idInfoContainer}>
               {!id &&
                 <CircularProgress size='18' />
               }
               {id &&
-                <CopyTextComponent
-                  title='ORGiD is copied to clipboard'
-                  label={strCenterEllipsis((id || '').toLowerCase().split('x')[1], 8) || '...'}
-                  text={id}
-                  color='#8F999F'
-                  fontWeight='500'
-                  fontSize='14px'
-                  icon={CopyIcon}
-                />
+                <div className={classes.orgInfoFieldWrapper}>
+                  <Typography variant={'caption'} className={classes.orgInfoFieldTitle} noWrap>
+                    {'ORGiD: '}
+                    <CopyTextComponent
+                        title='ORGiD is copied to clipboard'
+                        label={strCenterEllipsis((id || '').toLowerCase().split('x')[1], 8) || '...'}
+                        text={id}
+                        color='#8F999F'
+                        fontWeight='500'
+                        fontSize='14px'
+                        icon={CopyIcon}
+                    />
+                  </Typography>
+                </div>
               }
-              {/* {
-                canManage || (
-                  <div className={classes.publicTrustLevelWrapper}>
-                    <Typography variant={'caption'} className={classes.itemTrustInfoTitle}
-                                style={{color: colors.greyScale.common}}>Trust proofs: </Typography>
-                    <TrustLevelIcon className={classes.iconTrustLevel}/>
-                    <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{proofsQty}</Typography>
-                  </div>
-                )
-              } */}
             </div>
             <div className={classes.orgNameWrapper}>
               <Typography variant={'h6'} className={classes.orgName} noWrap>{name}</Typography>
@@ -613,11 +585,16 @@ function Info(props) {
                       <span className={'long'}>{contacts.website}</span>
                     </a>
                   </Typography>
-                  {isWebsiteProved &&
+{/*                  {isWebsiteProved &&
                     <TrustLevelIcon className={classes.iconTrustLevel} style={{verticalAlign: 'text-bottom'}}/>
-                  }
+                  }*/}
                 </div>
               }
+              <div className={classes.orgInfoFieldWrapper}>
+                <Typography variant={'caption'} className={classes.orgInfoFieldTitle}>
+                  Trust level: <TrustLevelNumericIcon className={classes.iconTrustLevel} style={{verticalAlign: 'middle', color: orgIdLifDepositAmount<=LIF_DEPOSIT_AMOUNT?colors.secondary.yellow:colors.secondary.green}} level={proofsQty}/>
+                </Typography>
+              </div>
               {
                 isSub ? (
                   <div className={`${classes.orgInfoFieldWrapper} ${classes.orgInfoLegalEntityFieldWrapper}`}>
@@ -665,6 +642,25 @@ function Info(props) {
               )}
             </div>
           </Grid>
+
+
+          {/* TOP-RIGHT-BLOCK: IMAGE =================================================================================*/}
+          <Grid item className={classes.orgImageContainer}>
+            <div
+                className={classes.orgImageWrapper}
+                onError={e => imgError(e)}
+                title={name}
+                style={{
+                  backgroundImage: `url(${fixOldLogoUrl(logo) || setRandomDefaultImage(id || '0xLOADING', directory || 'hotel')})`,
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: 'contain'
+                }}
+            >
+            </div>
+          </Grid>
+
+
         </Grid>
 
 

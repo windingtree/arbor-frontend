@@ -6,6 +6,7 @@ export default {
     green: '#3E9693'
   },
   secondary: {
+    brightYellow: '#FCE8B6',
     yellow: '#FFB36B',
     yellowLight: '#FBF3E9',
     cyan: '#419D9A',

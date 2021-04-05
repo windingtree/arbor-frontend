@@ -228,7 +228,7 @@ const TrustSSL = () => {
               </Typography>
               <Typography className={classes.paragraph}>There are numerous Certificate
                 Authorities that can issue an Extended Validation
-                Certificate for your company. You are free to request a legal entity verification from
+                Certificate for your organization. You are free to request a legal entity verification from
                 an authority of your choice.
               </Typography>
               <Typography className={classes.paragraph}>

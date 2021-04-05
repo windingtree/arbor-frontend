@@ -607,11 +607,11 @@ const Personnel = props => {
       <Container>
         <div className={classes.content}>
           <div className={classes.title}>
-            <Typography variant={'inherit'}>Company Representatives</Typography>
+            <Typography variant={'inherit'}>Organization Representatives</Typography>
           </div>
           <div>
             <Typography variant={'inherit'} className={classes.subtitle}>
-            You may add social media accounts of official representatives of your company in order to prevent fraud
+            You may add social media accounts of official representatives of your organization in order to prevent fraud
             </Typography>
           </div>
           <div className={classes.listContainer}>

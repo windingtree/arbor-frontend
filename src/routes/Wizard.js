@@ -414,7 +414,7 @@ const WizardGeneral = (props) => {
                 <Typography variant={'caption'} className={classes.buttonLabel}>
                   <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
                   {
-                    activeStep === 0 ? 'My Companies' : 'Previous Step'
+                    activeStep === 0 ? 'My Organizations' : 'Previous Step'
                   }
                 </Typography>
               </Button>
@@ -490,7 +490,7 @@ const WizardGeneral = (props) => {
                   <div>
                     <Typography variant={'h2'} className={classes.formTitle}>
                       {
-                        `${actionLabel} ${wizardType === 'legalEntity' ? 'Company Account' : 'Business Unit'}`
+                        `${actionLabel} ${wizardType === 'legalEntity' ? 'Organization Account' : 'Business Unit'}`
                       }
                     </Typography>
                     {

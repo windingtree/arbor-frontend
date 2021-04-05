@@ -90,13 +90,13 @@ function Profile(props) {
     <Container className={classes.rootContainer}>
       <div className={classes.headingContainer}>
         <div className={classes.titleWrapper}>
-          <Typography variant={'h2'} className={classes.title}>My Companies</Typography>
+          <Typography variant={'h2'} className={classes.title}>My Organizations</Typography>
         </div>
         {
           (organizations.length !== 0 || Object.keys(joinOrganizations).length !== 0) && (
             <div>
               <Button onClick={() => history.push('/my-organizations/wizard', { type: 'legalEntity' })} className={classes.button}>
-                <Typography variant={'subtitle2'} className={classes.buttonLabel}>Register New Company</Typography>
+                <Typography variant={'subtitle2'} className={classes.buttonLabel}>Register New Organization</Typography>
               </Button>
             </div>
           )
@@ -116,7 +116,7 @@ function Profile(props) {
         <div className={classes.emptyListContent}>
           <img src={EmptyListIllustration} alt={'illustration'}/>
           <Button onClick={() => history.push('/my-organizations/wizard', {type: 'legalEntity'})} className={classes.button}>
-            <Typography variant={'subtitle2'} className={classes.buttonLabel}>Create Company Account</Typography>
+            <Typography variant={'subtitle2'} className={classes.buttonLabel}>Create Organization Account</Typography>
           </Button>
         </div>
       </div>

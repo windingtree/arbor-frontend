@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { Grid, Container, Typography } from '@material-ui/core';
 import {
   fetchOrganizationInfo,
   fetchOrganizationSubsInfo,
@@ -30,12 +29,13 @@ import ProofsList from '../../components/ProofsList';
 import SimardAccounts from './Components/SimardAccounts';
 import Gps from './Components/Gps';
 import {
-  DIRECTORIES_ENABLED
+  DIRECTORIES_ENABLED, LIF_DEPOSIT_AMOUNT
 } from '../../utils/constants';
-// import SaveButton from '../../components/buttons/Save';
 import { makeStyles } from '@material-ui/core/styles';
-// import trustLifDeposit from '../../assets/SvgComponents/trust-lif-deposit.svg';
-
+import {Button, Container, Grid, Typography} from "@material-ui/core";
+import trustTopIllustration from '../../assets/SvgComponents/lif-deposit-illustration.svg';
+import colors from "../../styles/colors";
+import {selectLifDepositDataFetching, selectOrgIdLifDepositAmount} from "../../ducks/lifDeposit";
 
 const styles = makeStyles({
   pageWrapper: {
@@ -66,10 +66,51 @@ const styles = makeStyles({
     color: '#5E666A',
     marginBottom: '19px',
     lineHeight: '28px'
-  }
+  },
+  topDiv: {
+    backgroundColor: colors.greyScale.moreLighter,
+    marginBottom: '19px',
+  },
+  mainTitle: {
+    fontSize: '40px',
+    fontWeight: 500,
+    lineHeight: 1.14,
+    color: colors.greyScale.darkest,
+    margin: '107px 0 25px 0'
+  },
+  topText: {
+    color: colors.greyScale.dark,
+    marginBottom: '19px',
+    lineHeight: '28px'
+  },
+
+  buttonWrapper: {
+    marginRight: '20px',
+    '&:last-child': {
+      marginRight: '0'
+    },
+    marginBottom:'20px'
+  },
+  buttonStakeLif: {
+    display: 'flex',
+    alignContent: 'center',
+    height: '44px',
+    backgroundImage: colors.gradients.orange,
+    boxShadow: '0 2px 12px rgba(12, 64, 78, 0.1)',
+    border: `1px solid ${colors.primary.accent}`,
+    borderRadius: '8px'
+  },
+  buttonTitle: {
+    fontWeight: 600,
+    fontSize: '16px',
+    lineHeight: '24px',
+    color: colors.primary.white,
+    textTransform: 'none',
+    padding: '4px 14px'
+  },
 });
 
-function Organization (props) {
+export function Organization (props) {
   const classes = styles();
   const { orgId } = useParams();
   // const orgId = history.location.state ? history.location.state.orgId : history.location.pathname.split('/')[2];
@@ -82,7 +123,9 @@ function Organization (props) {
     fetchOrganizationInfo,
     setOrgId,
     resetOrgId,
-    walletAddress
+    walletAddress,
+    isFetchingDeposit,
+    orgIdLifDepositAmount
   } = props;
   const subsidiaries = _.get(organization, 'subsidiaries', []);
   const agents = _.get(organization, 'jsonContent.publicKey', []);
@@ -109,6 +152,8 @@ function Organization (props) {
       instagram: isSocialIGProved
     }
   };
+  const showLifDepositSection = canManage && (isFetchingDeposit === false) && (orgIdLifDepositAmount < LIF_DEPOSIT_AMOUNT);
+
   // const classes = styles();
 
   useEffect(() => {
@@ -139,7 +184,7 @@ function Organization (props) {
         organization={organization}
         canManage={canManage}
       />
-      <Info organization={organization} canManage={canManage}/>
+      <Info organization={organization} canManage={canManage} orgIdLifDepositAmount={orgIdLifDepositAmount}/>
       {subsidiaries && subsidiaries.length > 0 &&
         <div style={{ marginBottom: '30px' }}>
           <SubOrganizations organization={organization} subs={subs} canManage={canManage} />
@@ -147,12 +192,39 @@ function Organization (props) {
       }
       <ProofsList
         canManage={canManage}
-        title='Get Verified'
+        title='Trust assertions'
         orgid={orgId}
         assertions={assertions}
         verifications={verifications}
         organization={organization}
       />
+      {showLifDepositSection &&
+      <div className={classes.topDiv}>
+        <Container>
+          <Grid container>
+            <Grid item xs={12} lg={6}>
+              <Typography className={classes.mainTitle} variant={'h1'}>Submit your Líf deposit</Typography>
+              <Typography className={classes.topText}>Líf deposit is a small amount of cryptocurrency that
+                is staked when you register your organization profile on Winding Tree Marketplace. This action minimizes
+                spam registrations and proves the seriousness of your intentions.</Typography>
+              <div className={classes.buttonWrapper}>
+                <Button
+                    className={classes.buttonStakeLif}
+                    onClick={() => {history.push(`/my-organizations/${orgId}/lif-stake`, { id: orgId })}}>
+                  <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
+                    Submit Líf
+                  </Typography>
+                </Button>
+              </div>
+            </Grid>
+            <Grid item xs={12} lg={6}>
+              <img src={trustTopIllustration} alt={'illustration'}/>
+            </Grid>
+          </Grid>
+        </Container>
+      </div>
+      }
+
       {/* {canManage &&
         <div className={classes.greyDiv}>
           <Container className={classes.lifContent}>
@@ -228,7 +300,9 @@ const mapStateToProps = state => {
     organization: selectItem(state),
     subs: selectSubs(state),
     assertions: selectAssertions(state),
-    walletAddress: selectSignInAddress(state)
+    walletAddress: selectSignInAddress(state),
+    isFetchingDeposit: selectLifDepositDataFetching(state),
+    orgIdLifDepositAmount: selectOrgIdLifDepositAmount(state)
   }
 };
 

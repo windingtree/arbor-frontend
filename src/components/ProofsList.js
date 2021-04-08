@@ -19,7 +19,6 @@ import {
     resetTransactionStatus
 } from '../ducks/wizard';
 import iconInfo from '../assets/SvgComponents/info.svg';
-import { TrustLevelIcon } from '../assets/SvgComponents';
 import colors from '../styles/colors';
 
 const useStyles = makeStyles({
@@ -81,11 +80,7 @@ const useStyles = makeStyles({
         color: colors.secondary.yellow,
         margin: '0 4px 0 14px'
     },
-    evidenceTitle: {
-        marginBottom: '20px',
-        fontSize: '16px',
-        fontWeight: 500
-    },
+
     stakeTitle: {
         marginTop: '20px',
         marginBottom: '18px',
@@ -98,10 +93,10 @@ const proofsTemplate = [
     {
         id: 'd1',
         type: 'domain',
-        title: 'Connect company website',
-        pubTitle: 'Not connected',
+        title: 'Verify website',
+        pubTitle: 'Not verified',
         notes: [
-            'Please upload this file to the root directory of your company website.',
+            'Please upload this file to the root directory of your organization website.',
             '>[ORGID]'
         ],
         icon: 'globe'
@@ -235,7 +230,7 @@ const applyExtensions = (
 );
 
 // ProofsList component
-const ProofsList = props => {
+export const ProofsList = props => {
     const { canManage, title, orgid, organization, assertions, verifications, fetchOrganizationInfo } = props;
     // const { proofsQty } = organization;
     const [isOpen, toggleModalOpenState] = useState(false);
@@ -301,9 +296,7 @@ const ProofsList = props => {
         updatedProofs,
         canManage
     );
-
     const notDeployedCount = Object.keys(updatedProofs).length;
-
     if (!orgid) {
         return false;
     }
@@ -322,11 +315,7 @@ const ProofsList = props => {
             <Box className={classes.titleLine}>
                 <Grid container alignItems='center' spacing={2}>
                     <Grid item>
-                        <Typography
-                            className={classes.title}
-                        >
-                            {title}
-                        </Typography>
+                        <Typography className={classes.title}>{title}</Typography>
                     </Grid>
                     <Grid item>
                         <img
@@ -350,12 +339,8 @@ const ProofsList = props => {
                     </Grid> */}
                 </Grid>
             </Box>
-            <Typography className={classes.evidenceTitle}>
-                Internet Evidence
-            </Typography>
             <Box className={classes.proofsBlock}>
                 {proofsList
-                .filter(p => p.subtype !== 'facebook')
                 .map((proof, key) => (
                     <ProofItem
                         key={key}

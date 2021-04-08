@@ -415,7 +415,7 @@ const Header = (props) => {
                               className={classes.navIcon}
                             />
                             <Typography variant={'caption'} className={classes.linkTitle} noWrap>
-                              My Companies
+                              My Organizations
                             </Typography>
                           </NavLink>
                         </div>

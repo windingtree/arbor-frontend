@@ -29,16 +29,18 @@ import {
 
 import Info from '../Organization/Components/Info';
 import ArrowLeftIcon from '../../assets/SvgComponents/ArrowLeftIcon';
-import trustTopIllustration from '../../assets/SvgComponents/lif-deposit-illustration.svg';
+// import trustTopIllustration from '../../assets/SvgComponents/lif-deposit-illustration.svg';
 import lifWithdrawIllustration from '../../assets/SvgComponents/lif-deposit-withdraw.svg';
 import { checkIcon, LifIcon1, LifIcon2, LifIcon3 } from '../../assets/SvgComponents';
 import colors from '../../styles/colors';
 import { selectItem } from "../../ducks/fetchOrganizationInfo";
 
 const styles = makeStyles({
+/*
   topDiv: {
     backgroundColor: colors.greyScale.moreLighter
   },
+*/
   screenHeader: {
     width: '100%',
     display: 'flex',
@@ -61,6 +63,7 @@ const styles = makeStyles({
     color: colors.primary.black,
     marginRight: '11px'
   },
+/*
   mainTitle: {
     fontSize: '40px',
     fontWeight: 500,
@@ -68,7 +71,7 @@ const styles = makeStyles({
     color: colors.greyScale.darkest,
     margin: '107px 0 25px 0'
   },
-  topText: {
+ topText: {
     color: colors.greyScale.dark,
     marginBottom: '19px',
     lineHeight: '28px'
@@ -80,7 +83,7 @@ const styles = makeStyles({
     width: '36px',
     marginRight: '12px',
     backgroundColor: colors.primary.accent,
-  },
+  },*/
   blockTitle: {
     lineHeight: '44px',
     fontSize: '32px',
@@ -276,8 +279,8 @@ const TrustLifStake = (props) => {
           </Button>
         </Box>
       </Container>
-      <Info organization={organization} canManage={true}/>
-      <div className={classes.topDiv}>
+      <Info organization={organization} canManage={true} orgIdLifDepositAmount={lifTokenBalance}/>
+     {/* <div className={classes.topDiv}>
         <Container className={classes.topDiv}>
           <Grid container>
             <Grid item xs={12} lg={6}>
@@ -293,7 +296,7 @@ const TrustLifStake = (props) => {
             </Grid>
           </Grid>
         </Container>
-      </div>
+      </div>*/}
       <Container className={classes.stepsSection}>
         <div>
           <Grid container justify={'space-between'}>

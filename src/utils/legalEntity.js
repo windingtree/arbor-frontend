@@ -5,13 +5,13 @@ import match from './regex';
 export const wizardConfig = [
   {
     type: 'step',
-    name: 'Company',
+    name: 'Organization',
     icon: StepperGeneralIcon,
-    longName: 'Company Information',
-    description: 'Please note that the final third step of creating a company account is to save a fingerprint of company data on the blockchain, which requires an Ethereum transaction. Please make sure you have enough funds in your wallet to cover the transaction fee.',
+    longName: 'Organization Information',
+    description: 'Please note that the final third step of creating a organization account is to save a fingerprint of organization data on the blockchain, which requires an Ethereum transaction. Please make sure you have enough funds in your wallet to cover the transaction fee.',
     sections: [
       {
-        name: 'Company Information',
+        name: 'Organization Information',
         type: 'section',
         fields: [
           {
@@ -38,7 +38,7 @@ export const wizardConfig = [
           },
           {
             type: 'input',
-            name: 'Company number in local business registry',
+            name: 'Organization number in local business registry',
             required: true,
             helperText: 'Number of your organization in the country-specific business registry',
             orgidJsonPath: 'legalEntity.legalIdentifier',
@@ -196,7 +196,7 @@ export const wizardConfig = [
         ]
       },
       {
-        name: 'Company Logo',
+        name: 'Organization Logo',
         type: 'section',
         fields: [
           {
@@ -245,7 +245,7 @@ export const wizardConfig = [
     name: 'Blockchain',
     icon: StepperMetaMaskIcon,
     longName: 'Save to Blockchain',
-    description: 'Almost done! You are about to save a fingerprint of your company data on Ethereum blockchain. Once you click the button below, your wallet window with transaction details will open.',
+    description: 'Almost done! You are about to save a fingerprint of your organization data on Ethereum blockchain. Once you click the button below, your wallet window with transaction details will open.',
     cta: 'Save'
   }
 ];

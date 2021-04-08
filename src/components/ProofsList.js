@@ -106,31 +106,31 @@ const proofsTemplate = [
         ],
         icon: 'globe'
     },
-    {
-        id: 's1',
-        type: 'social',
-        subtype: 'facebook',
-        title: 'Connect company Facebook account',
-        pubTitle: 'Not connected',
-        notes: [
-            'Connect your company\'s Facebook account by creating a post with the following text',
-            '>Winding Tree Marketplace account: [ORGID]',
-            'Once you have created the post, paste a link to it below'
-        ],
-        icon: 'facebook'
-    },
     // {
-    //     id: 's2',
+    //     id: 's1',
     //     type: 'social',
-    //     subtype: 'twitter',
-    //     title: 'Prove your Twitter account',
-    //     pubTitle: 'Twitter account proof not submitted yet',
+    //     subtype: 'facebook',
+    //     title: 'Connect company Facebook account',
+    //     pubTitle: 'Not connected',
     //     notes: [
-    //         'To prove that a Twitter account is yours copy this exactrly as it appears and create a post in your Twitter',
-    //         '>Verifying my ORG.ID identifier: [ORGID]'
+    //         'Connect your company\'s Facebook account by creating a post with the following text',
+    //         '>Winding Tree Marketplace account: [ORGID]',
+    //         'Once you have created the post, paste a link to it below'
     //     ],
-    //     icon: 'twitter'
+    //     icon: 'facebook'
     // },
+    {
+        id: 's2',
+        type: 'social',
+        subtype: 'twitter',
+        title: 'Prove your Twitter account',
+        pubTitle: 'Twitter account proof not submitted yet',
+        notes: [
+            'To prove that a Twitter account is yours copy this exactrly as it appears and create a post in your Twitter',
+            '>Verifying my ORG.ID identifier: [ORGID]'
+        ],
+        icon: 'twitter'
+    },
     // {
     //     id: 's3',
     //     type: 'social',
@@ -143,19 +143,19 @@ const proofsTemplate = [
     //     ],
     //     icon: 'instagram'
     // },
-    {
-        id: 's4',
-        type: 'social',
-        subtype: 'linkedin',
-        title: 'Connect company LinkedIn account',
-        pubTitle: 'Not connected',
-        notes: [
-            'Connect your company LinkedIn account by creating a post with the following text',
-            '>Winding Tree Marketplace account: [ORGID]',
-            'Paste the link to the post below'
-        ],
-        icon: 'linkedin'
-    }
+    // {
+    //     id: 's4',
+    //     type: 'social',
+    //     subtype: 'linkedin',
+    //     title: 'Connect company LinkedIn account',
+    //     pubTitle: 'Not connected',
+    //     notes: [
+    //         'Connect your company LinkedIn account by creating a post with the following text',
+    //         '>Winding Tree Marketplace account: [ORGID]',
+    //         'Paste the link to the post below'
+    //     ],
+    //     icon: 'linkedin'
+    // }
 ];
 
 // Extract specific assertion from the list

@@ -12,6 +12,23 @@ import { ApiGetGasPrice, getOrgidContract } from './utils/ethereum';
 
 import { resetJoin } from './join';
 
+const addOrUpdateObjByParam = (arr = [], obj, param) => {
+  let update;
+  arr = arr.map(
+    o => {
+      if (o[param] === obj[param]) {
+        o = obj;
+        update = true;
+      }
+      return o;
+    }
+  );
+  if (!update) {
+    arr.push(obj);
+  }
+  return arr;
+};
+
 //region == [Constants] ================================================================================================
 export const moduleName = 'wizard';
 const prefix = `${appName}/${moduleName}`;
@@ -386,15 +403,33 @@ export default function reducer(state = initialState, action) {
       });
 
     case ADD_ASSERTION_SUCCESS:
+      const newAssertion = {
+        type: payload.type,
+        claim: payload.claim,
+        proof: (
+          typeof payload.proof === 'object'
+            ? payload.proof.id
+            : payload.proof
+        )
+      };
+      const newCredential = (
+        typeof payload.proof === 'object'
+          ? payload.proof
+          : undefined
+      );
       const updatedJsonWithAddedAssertion = {
         ...state.orgidJson,
         trust: {
           ...state.orgidJson.trust,
-          assertions: Array.from(
-            new Set([
-              ...(state.orgidJson.trust.assertions || []),
-              ...[payload]
-            ])
+          assertions: addOrUpdateObjByParam(
+            state.orgidJson.trust.assertions || [],
+            newAssertion,
+            'claim'
+          ),
+          credentials: addOrUpdateObjByParam(
+            state.orgidJson.trust.credentials || [],
+            newCredential,
+            'id'
           )
         }
       };

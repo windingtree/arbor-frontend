@@ -590,11 +590,11 @@ function Info(props) {
                   }*/}
                 </div>
               }
-              <div className={classes.orgInfoFieldWrapper}>
+              {/* <div className={classes.orgInfoFieldWrapper}>
                 <Typography variant={'caption'} className={classes.orgInfoFieldTitle}>
                   Trust level: <TrustLevelNumericIcon className={classes.iconTrustLevel} style={{verticalAlign: 'middle', color: orgIdLifDepositAmount<=LIF_DEPOSIT_AMOUNT?colors.secondary.yellow:colors.secondary.green}} level={proofsQty}/>
                 </Typography>
-              </div>
+              </div> */}
               {
                 isSub ? (
                   <div className={`${classes.orgInfoFieldWrapper} ${classes.orgInfoLegalEntityFieldWrapper}`}>

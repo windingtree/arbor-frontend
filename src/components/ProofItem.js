@@ -8,6 +8,7 @@ import IconFacebook from './icons/IconFacebook';
 import IconTwitter from './icons/IconTwitter';
 import IconInstagram from './icons/IconInstagram';
 import IconLinkedin from './icons/IconLinkedin';
+import IconTelegram from './icons/IconTelegram';
 import {
     selectPendingState
 } from '../ducks/wizard';
@@ -184,6 +185,10 @@ const ProofWebsiteNameAndIcon = ({ icon }) => {
             iconElem =<IconLinkedin />;
             text='LinkedIn'
             break;
+        case 'telegram':
+            iconElem =<IconTelegram />;
+            text='Telegram'
+            break;
         default:
             iconElem = <div />;
             text=''
@@ -262,7 +267,15 @@ const ProofItem = props => {
                 <ProofWebsiteNameAndIcon icon={icon} />
             </Grid>
             <Grid item xs={12} sm={5}>
-                <ProofTitle title={title} canManage={canManage} proof={assertion.proof} removed={removed} verified={verified} deployed={deployed} onClick={onClick}/>
+                <ProofTitle
+                    title={title}
+                    canManage={canManage}
+                    proof={assertion.proof}
+                    removed={removed}
+                    verified={verified}
+                    deployed={deployed}
+                    onClick={onClick}
+                />
                 {assertion.proof && <ProofExternalLinkIcon url={assertion.proof}/>}
 
 {/*

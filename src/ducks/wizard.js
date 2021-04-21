@@ -441,12 +441,26 @@ export default function reducer(state = initialState, action) {
         error: null
       });
     case REMOVE_ASSERTION_SUCCESS:
+      let orgidJson = state.orgidJson;
+      // Remove credential in case of VC proof
+      if (payload.proof.match(/^did:orgid/)) {
+        orgidJson = {
+          ...orgidJson,
+          trust: {
+            ...orgidJson.trust,
+            credentials: orgidJson.trust.credentials.filter(
+              c => c.id !== payload.proof
+            )
+          }
+        };
+      }
       const updatedJsonWithRemovedAssertion = {
-        ...state.orgidJson,
+        ...orgidJson,
         trust: {
-          ...state.orgidJson.trust,
-          assertions: (state.orgidJson.trust.assertions || [])
-            .filter(a => JSON.stringify(a) !== JSON.stringify(payload))
+          ...orgidJson.trust,
+          assertions: (orgidJson.trust.assertions || []).filter(
+            a => JSON.stringify(a) !== JSON.stringify(payload)
+          )
         }
       };
       return Object.assign({}, state, {

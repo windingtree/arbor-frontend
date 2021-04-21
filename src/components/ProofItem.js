@@ -16,6 +16,8 @@ import { strCenterEllipsis } from '../utils/helpers';
 import colors from "../styles/colors";
 import ExternalUrlIcon from "../assets/SvgComponents/ExternalUrlIcon";
 import {TrustBadgeChecked} from "../assets/SvgComponents/TrustLevelIcon";
+import CopyIcon from '../assets/SvgComponents/copy-icon.svg';
+import CopyTextComponent from './CopyTextComponent';
 
 const useStyles = makeStyles({
     item: {
@@ -107,7 +109,7 @@ const useStyles = makeStyles({
         fontWeight: 500,
         fontSize: 16,
         lineHeight: '28px',
-        marginLeft: '52px',
+        marginLeft: '18px',
         color: 'black',
         '&.verified': {
             color: '#4E9D96'
@@ -209,8 +211,23 @@ const ProofStatusBadge = ({verified=false  }) => {
 //icon with link to a proof
 const ProofExternalLinkIcon = ({ url }) => {
     const classes = useStyles();
-    if(!url)
+    if (!url || typeof url === 'object') {
         return (<></>)
+    }
+    if (typeof url === 'string' && url.match(/^did:orgid:/)) {
+        return (
+            <CopyTextComponent
+                title='Proof copied to the clipboard'
+                label={''}
+                text={url}
+                color='#8F999F'
+                fontWeight='500'
+                fontSize='14px'
+                icon={CopyIcon}
+            />
+        );
+    }
+
     return (<a
         href={url}
         target='_blank'
@@ -236,11 +253,24 @@ const ProofTitle = ({  title, proof, removed, canManage, verified, deployed, onC
             <span style={{marginLeft: '52px'}}>
                 <ProofStatusBadge deployed={deployed} verified={verified}/>
                 <span className={classes.labelProof}>
-                <span className={classes.adaptive}>
-                    <span className={'long'}>{title}</span>
-                    <span className={'short'}>{strCenterEllipsis(title, 10)}</span>
+                    <span className={classes.adaptive}>
+                        <span className={'long'}>
+                            {title.match('^http')
+                                ? (
+                                    <a
+                                        href={title}
+                                        target='_blank'
+                                        rel='noopener noreferrer'
+                                        className={classes.adaptive}>
+                                            {title}
+                                    </a>
+                                )
+                                : title
+                            }
+                        </span>
+                        <span className={'short'}>{strCenterEllipsis(title, 10)}</span>
+                    </span>
                 </span>
-            </span>
             </span>)
     }
 }
@@ -308,7 +338,7 @@ const ProofItem = props => {
                             />
                         }
                         {(!pendingTransaction && !isRefreshing) &&
-                            <>{deployed || removed ? ', ': ''}In Queue</>
+                            <>In Queue</>
                         }
                     </State>
                 }

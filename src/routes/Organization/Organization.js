@@ -149,7 +149,7 @@ export function Organization (props) {
       facebook: isSocialFBProved,
       twitter: isSocialTWProved,
       linkedin: isSocialLNProved,
-      instagram: isSocialIGProved
+      telegram: isSocialIGProved
     }
   };
   const showLifDepositSection = canManage && (isFetchingDeposit === false) && (orgIdLifDepositAmount < LIF_DEPOSIT_AMOUNT);

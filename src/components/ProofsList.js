@@ -130,7 +130,7 @@ const proofsTemplate = [
     {
         id: 't1',
         type: 'social',
-        subtype: 'telegram',
+        subtype: 't.me',
         title: 'Prove your Telegram group',
         pubTitle: 'Telegram group account proof not submitted yet',
         notes: [
@@ -203,6 +203,7 @@ const applyExtensions = (
     p => {
         let subtype;
         const assertion = extractAssertion(p.type, p.subtype, assertions);
+        subtype = p.subtype ? p.subtype.replace('t.me', 'telegram') : p.subtype;
 
         if (!canManage) {
             p.title = p.pubTitle;
@@ -220,11 +221,8 @@ const applyExtensions = (
             case 'social':
                 p.assertion = assertion;
                 p.deployed = !!assertion.type;
-                subtype = assertion.claim.split('.')[0].toLowerCase();
-                if (p.subtype === subtype) {
-                    p.title = assertion.claim;
-                    p.verified = !!verifications.social[subtype];
-                }
+                p.title = assertion.claim;
+                p.verified = !!verifications.social[subtype];
                 break;
 
             default:
@@ -274,7 +272,6 @@ export const ProofsList = props => {
     };
 
     const openWizard = proof => {
-        console.log('@@@', proof);
         setProof(proof);
 
         if (proof.proofType && proof.proofType === 'vc') {

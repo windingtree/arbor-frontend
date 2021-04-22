@@ -61,7 +61,8 @@ const styles = makeStyles({
     position: 'relative',
     fontWeight: 400,
     fontSize: '14px',
-    color: colors.greyScale.dark
+    color: colors.greyScale.dark,
+    margin: '0 0 40px 0'
   },
   servicesTitleWrapper: {
     fontSize: '24px',

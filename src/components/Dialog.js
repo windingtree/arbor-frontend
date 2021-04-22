@@ -14,7 +14,8 @@ const DialogContent = withStyles({
   root: {
     '&:first-child': {
       paddingTop: '80px'
-    }
+    },
+    maxWidth: '800px'
   }
 })(MuiDialogContent);
 
@@ -22,7 +23,7 @@ const styles =  makeStyles({
   dialogContainer: {
     '& > .MuiDialog-paper > .MuiDialogContent-root:first-child': {
       paddingTop: '80px'
-    }
+    },
   },
   dialogContentWrapper: {
     position: 'relative',

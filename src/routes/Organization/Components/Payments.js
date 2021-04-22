@@ -63,7 +63,7 @@ const styles = makeStyles({
     fontWeight: 400,
     fontSize: '14px',
     color: colors.greyScale.dark,
-    padding: '40px 0'
+    margin: '0 0 40px 0'
   },
   servicesTitleWrapper: {
     fontSize: '24px',

@@ -60,27 +60,28 @@ const styles = makeStyles({
     fontWeight: 500,
     lineHeight: 1.14,
     color: '#42424F',
-    margin: '0 0 20px 0'
+    margin: '0 0 40px 0'
   },
   topSectionText: {
     color: '#5E666A',
-    marginBottom: '19px',
+    marginBottom: '40px',
     lineHeight: '28px'
   },
-  topDiv: {
+  lifDepBlock: {
     backgroundColor: colors.greyScale.moreLighter,
-    marginBottom: '19px',
+    margin: '0 0 40px 0',
+    padding: '60px 0 60px 0'
   },
   mainTitle: {
     fontSize: '40px',
     fontWeight: 500,
     lineHeight: 1.14,
     color: colors.greyScale.darkest,
-    margin: '107px 0 25px 0'
+    margin: '107px 0 40px 0'
   },
   topText: {
     color: colors.greyScale.dark,
-    marginBottom: '19px',
+    marginBottom: '40px',
     lineHeight: '28px'
   },
 
@@ -107,7 +108,7 @@ const styles = makeStyles({
     color: colors.primary.white,
     textTransform: 'none',
     padding: '4px 14px'
-  },
+  }
 });
 
 export function Organization (props) {
@@ -186,7 +187,7 @@ export function Organization (props) {
       />
       <Info organization={organization} canManage={canManage} orgIdLifDepositAmount={orgIdLifDepositAmount}/>
       {subsidiaries && subsidiaries.length > 0 &&
-        <div style={{ marginBottom: '30px' }}>
+        <div style={{ marginBottom: '40px' }}>
           <SubOrganizations organization={organization} subs={subs} canManage={canManage} />
         </div>
       }
@@ -199,7 +200,7 @@ export function Organization (props) {
         organization={organization}
       />
       {showLifDepositSection &&
-      <div className={classes.topDiv}>
+      <div className={`${classes.lifDepBlock} ${classes.bm80}`}>
         <Container>
           <Grid container>
             <Grid item xs={12} lg={6}>

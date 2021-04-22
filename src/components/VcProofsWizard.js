@@ -15,7 +15,7 @@ import SaveButton from './buttons/Save';
 
 const useStyles = makeStyles({
     root: {
-
+        maxWidth: '700px'
     },
     info: {
         fontFamily: 'Inter',

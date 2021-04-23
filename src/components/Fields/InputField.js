@@ -23,7 +23,7 @@ const styles = makeStyles({
 
 const InputField = (props) => {
   const classes = styles();
-  const {type, name, orgidJsonPath, index, helperText, icon, required, values, errors, touched, handleChange, handleBlur} = props;
+  const {type, label, name, orgidJsonPath, index, helperText, icon, required, values, errors, touched, handleChange, handleBlur} = props;
   const isError = _.get(errors, orgidJsonPath) && _.get(touched, orgidJsonPath);
 
   const socialIcon = () => {
@@ -43,7 +43,7 @@ const InputField = (props) => {
     <div key={index} className={classes.inputWrapper}>
       <TextField
         type={type}
-        label={name}
+        label={label || name}
         variant={'filled'}
         name={orgidJsonPath}
         value={_.get(values, orgidJsonPath, '')}

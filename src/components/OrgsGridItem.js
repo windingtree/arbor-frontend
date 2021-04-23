@@ -76,7 +76,7 @@ const styles = makeStyles({
     borderRadius: '4px',
     marginRight: '8px',
     padding: '5px 12px',
-    textTransform: 'capitalize'
+    textTransform: 'none'
   },
   itemMarkType: {
     backgroundColor: colors.primary.accent,
@@ -111,7 +111,7 @@ const styles = makeStyles({
     fontWeight: 500,
     height: '38px',
     overflow: 'hidden',
-    paddingTop: '8px'
+    paddingTop: '16px'
   },
   errorMessageWrapper: {
     fontSize: '14px',
@@ -236,25 +236,43 @@ export default function OrgsGridItem(props) {
         }} className={classes.linkToProfileView}
         >
           {
-            logo ? (
-              <CardMedia image={logo} className={classes.itemImg}/>
-            ) : error ? (
-              <div className={classes.itemErrorImage}>
-                <ImageErrorIcon viewbow={'0 0 22 22'} className={classes.itemImgErrorIcon}/>
-              </div>
-            ) : (
-              <CardMedia label={'Organization picture'} image={setRandomDefaultImage(orgid, directory)} className={classes.itemImg}/>
-            )
+            logo
+              ? (
+                <CardMedia image={logo} className={classes.itemImg}/>
+              )
+              : error
+                  ? (
+                    <div className={classes.itemErrorImage}>
+                      <ImageErrorIcon viewbow={'0 0 22 22'} className={classes.itemImgErrorIcon}/>
+                    </div>
+                  )
+                  : (
+                    <CardMedia label={'Organization picture'} image={setRandomDefaultImage(orgid, directory)} className={classes.itemImg}/>
+                  )
           }
         </Link>
-        {!error && isSub &&
-        <div className={classes.itemMarksWrapper}>
-          {directory &&
-          <Typography variant={'subtitle2'} className={classes.itemMark} style={{ backgroundColor: colors.secondary.green }}>
-            {directory === 'ota' ? 'Travel' : directory}
-          </Typography>
-          }
-        </div>
+        {(!error &&
+        directory &&
+        directory.match(/^\[[a-zA-Z0-9"', ]+\]/gm)) &&
+          <div className={classes.itemMarksWrapper}>
+            {
+            JSON.parse(directory).map((d, i) => {
+              if (d === 'legalEntity' || d === 'organizationalUnit') {
+                return null;
+              }
+              return (
+                <Typography
+                  key={i}
+                  variant={'subtitle2'}
+                  className={classes.itemMark}
+                  style={{ backgroundColor: colors.secondary.green }}
+                >
+                  {d}
+                </Typography>
+              );
+            })
+            }
+          </div>
         }
         {
           !error ? (

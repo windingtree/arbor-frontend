@@ -2,23 +2,10 @@ import React from "react";
 import _ from 'lodash';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Button, Container, Hidden, Typography } from "@material-ui/core";
+import { Box, Button, Container, Typography, CircularProgress, Grid } from "@material-ui/core";
 import history from "../../../redux/history";
-import { ArrowLeftIcon, EyeIcon, EditIcon, TrustLevelIcon } from '../../../assets/SvgComponents';
+import { ArrowLeftIcon, EyeIcon, EditIcon } from '../../../assets/SvgComponents';
 import colors from '../../../styles/colors';
-
-// const LightTooltip = withStyles({
-//   tooltip: {
-//     maxWidth: '240px',
-//     backgroundColor: colors.primary.white,
-//     boxShadow: '0px 2px 6px rgba(10, 23, 51, 0.04), 0px 4px 12px rgba(10, 23, 51, 0.04)',
-//     color: colors.greyScale.common,
-//     fontSize: '12px',
-//     fontWeight: 400,
-//     padding: '12px',
-//     boxSizing: 'border-box'
-//   }
-// })(Tooltip);
 
 const styles = makeStyles({
   itemTrustInfoContainer: {
@@ -98,14 +85,16 @@ const styles = makeStyles({
     width: '100%',
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingTop: '19px',
-    ['@media (max-width: 960px)']: { // eslint-disable-line no-useless-computed-key
-      paddingTop: '88px'
-    }
+    alignItems: 'flex-start',
+    padding: '20px 0 20px 0',
+    '&> .MUIbutton': {}
   },
-  buttonWrapper: {
-    marginLeft: '-8px'
+  viewModeContainer: {
+    ['@media (max-width: 768px)']: { // eslint-disable-line no-useless-computed-key
+      justifyContent: 'space-between',
+      marginTop: 0,
+      marginBottom: '-30px'
+    }
   },
   buttonLabel: {
     fontSize: '14px',
@@ -153,77 +142,70 @@ const styles = makeStyles({
     '&:hover': {
       backgroundColor: '#98CCB0'
     }
+  },
+  lifIcon: {
+    marginRight: '8px',
+    color: 'black'
   }
 });
 
 function TopNavigation(props) {
   const classes = styles();
-  const { organization, canManage, scrollToRef } = props;
-  const { orgid: id, jsonContent, proofsQty } = organization;
+  const { organization, canManage } = props;
+  const { orgid: id, jsonContent } = organization;
   const orgidType = _.get(organization, 'orgidType', '') === 'legalEntity' ? 'legalEntity' : 'organizationalUnit';
   const editState = {action: 'edit', type: orgidType, id, jsonContent};
+
+  if (!canManage) {
+    return null;
+  }
 
   return (
     <Container>
       <Box className={classes.screenHeader}>
-        <div className={classes.buttonWrapper}>
-          <Button onClick={history.goBack}>
-            <Typography variant={'caption'} className={classes.buttonLabel}>
-              <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
-              Back
-            </Typography>
-          </Button>
-        </div>
-        <Hidden mdUp>
-          <div className={classes.publicTrustLevelWrapper}>
-            <Typography variant={'caption'} className={classes.itemTrustInfoTitle}
-                        style={{color: colors.greyScale.common}}>Trust proofs: </Typography>
-            <TrustLevelIcon className={classes.iconTrustLevel}/>
-            <Typography variant={'caption'} className={classes.trustLevelValue}>{!!proofsQty ? proofsQty : '0'}</Typography>
-          </div>
-        </Hidden>
-        {
-          canManage ? (
-            <div>
-              <Button onClick={() => history.push(`/organization/${id}`, {id})}>
-                <Typography variant={'caption'} className={classes.buttonLabel}>
-                  <EyeIcon viewBox={'0 0 16 12'} className={[classes.itemActionButtonIcon, classes.eyeIcon].join(' ')}/>
-                  Public view
-                </Typography>
-              </Button> {/*View*/}
-
-              <Button
-                onClick={() => history.push(`/my-organizations/${id}/edit`, editState)}
-                className={classes.itemActionButton}>
-                <Typography variant={'caption'} className={classes.buttonLabel}>
-                  <EditIcon viewBox={'0 0 14 14 '}
-                            className={[classes.itemActionButtonIcon, classes.editIcon].join(' ')}/>
-                  Edit company profile
-                </Typography>
-              </Button> {/*Edit*/}
-            </div>
-          ) : null
-        }
+        <Grid container>
+          <Grid item xs={12} sm={6}>
+            <Button onClick={() => {
+              history.push('/my-organizations');
+            }}>
+              <Typography variant={'caption'} className={classes.buttonLabel}>
+                <ArrowLeftIcon viewBox={'0 0 13 12'} className={classes.backButtonIcon}/>
+                See all organizations
+              </Typography>
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            {!id &&
+              <CircularProgress size={16} />
+            }
+            {id &&
+              <Grid container justify='flex-end' spacing={4} className={classes.viewModeContainer}>
+                <Grid item>
+                  <Button
+                    onClick={() => history.push(`/organization/${id}`, {id})}
+                  >
+                    <Typography variant={'caption'} className={classes.buttonLabel}>
+                      <EyeIcon viewBox={'0 0 16 12'} className={[classes.itemActionButtonIcon, classes.eyeIcon].join(' ')}/>
+                      Public view
+                    </Typography>
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <Button
+                    onClick={() => history.push(`/my-organizations/${id}/edit`, editState)}
+                  >
+                    <Typography variant={'caption'} className={classes.buttonLabel}>
+                      <EditIcon viewBox={'0 0 14 14 '}
+                                className={[classes.itemActionButtonIcon, classes.editIcon].join(' ')}/>
+                      Edit profile
+                    </Typography>
+                  </Button>
+                </Grid>
+              </Grid>
+            }
+          </Grid>
+        </Grid>
       </Box>
-      {
-        canManage && (
-          <div className={classes.itemTrustInfoContainer}>
-            <div className={classes.itemTrustInfoBase}>
-              <Typography variant={'caption'} className={classes.itemTrustInfoTitle}>Trust </Typography>
-              <TrustLevelIcon className={classes.iconTrustLevel}/>
-              <Typography variant={'caption'} className={classes.trustLevelValue}>{!!proofsQty ? proofsQty : '0'}</Typography>
-            </div>
-            <div>
-              <Button
-                onClick={scrollToRef}
-                className={classes.goTrust}
-              >
-                Get Verified
-              </Button>
-            </div>
-          </div>
-        )
-      }
     </Container>
   )
 }

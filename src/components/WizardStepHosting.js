@@ -8,7 +8,8 @@ import {
   Radio,
   TextField,
   Button,
-  Tooltip
+  Tooltip,
+  CircularProgress
 } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
@@ -36,7 +37,10 @@ const useStyles = makeStyles({
     borderRadius: '8px',
     margin: '6px 0',
     padding: '12px',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    '&.hidden': {
+      display: 'none'
+    }
   },
   formControlTitle: {
     fontSize: '16px',
@@ -92,6 +96,10 @@ const useStyles = makeStyles({
     verticalAlign: 'middle',
     marginRight: '10px'
   },
+  inButtonProgress: {
+    marginLeft: '10px',
+    marginBottom: '-3px;'
+  }
 });
 
 const LightTooltip = withStyles({
@@ -178,7 +186,7 @@ const WizardStepHosting = (props) => {
 
             <FormControl component="fieldset" className={classes.formControlGroup}>
               <RadioGroup aria-label="hostingType" name="hostingType" value={values['hostingType']} onChange={handleChange}>
-                <div className={classes.formControlItem}>
+                <div className={classes.formControlItem + ' hidden'}>
                   <FormControlLabel value="default-hosting" control={<Radio color='primary' />} label="Winding Tree Marketplace" className={classes.radioItem}/>
                   <div>
                     <LightTooltip
@@ -191,7 +199,7 @@ const WizardStepHosting = (props) => {
                     </LightTooltip>
                   </div>
                 </div>
-                <div className={classes.formControlItem}>
+                {/* <div className={classes.formControlItem}>
                   <FormControlLabel value="self-hosting" control={<Radio color='primary' />} label="Your server" className={classes.radioItem}/>
                   <div>
                     <LightTooltip
@@ -203,11 +211,11 @@ const WizardStepHosting = (props) => {
                       </button>
                     </LightTooltip>
                   </div>
-                </div>
+                </div> */}
               </RadioGroup>
             </FormControl>
 
-            {
+            {/* {
               values['hostingType'] === 'self-hosting' ?
                 <div>
                   <div className={classes.selfHostingSubtitleWrapper}>
@@ -246,12 +254,17 @@ const WizardStepHosting = (props) => {
                 </div>
                 :
                 <div/>
-            }
+            } */}
 
             <div className={inheritClasses.buttonWrapper}>
               {!error &&
                 <Button type="submit" disabled={isStarted} className={inheritClasses.button}>
-                  <Typography variant={'caption'} className={inheritClasses.buttonLabel}>{action === 'edit' ? 'Next' : `${cta}`}</Typography>
+                  <Typography variant={'caption'} className={inheritClasses.buttonLabel}>
+                    {action === 'edit' ? 'Next' : `${cta}`}
+                    {isStarted &&
+                      <CircularProgress size={18} color={'secondary'} className={classes.inButtonProgress} />
+                    }
+                  </Typography>
                 </Button>
               }
               {error &&

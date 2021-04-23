@@ -429,11 +429,11 @@ function TrustGeneral() {
         <Container className={classes.topSectionWrapper}>
           <Grid container spacing={5} direction="row">
             <Grid item xs={12} md={6}>
-              <div><Typography className={classes.mainTitle} variant={'h1'}>How can I prove that my company is
+              <div><Typography className={classes.mainTitle} variant={'h1'}>How can I prove that my organization is
                 <b style={{color: colors.secondary.peach}}> trustworthy</b>
               </Typography>
                 <Typography className={classes.topText}>Why are you here? Probably, you own a business or
-                  work at a company that wants to participate in the global economy and find reliable
+                  work at a organization that wants to participate in the global economy and find reliable
                   partners to scale and prosper.
                 </Typography>
                 <div className={classes.line}/>
@@ -493,7 +493,7 @@ function TrustGeneral() {
                 partners?
               </Typography>
               <Typography className={classes.paragraph}>
-                In most cases, you need to perform a lengthy KYB check to confirm that a company is
+                In most cases, you need to perform a lengthy KYB check to confirm that a organization is
                 registered in a certain country or region, is engaged in a certain type of legitimate
                 business and is represented by a real affiliated employee.
               </Typography>
@@ -588,7 +588,7 @@ function TrustGeneral() {
               <div className={classes.rightFrame}>
                 <Typography className={classes.grayTitleSm} variant={'h1'}>Request an Extended Validation Certificate</Typography>
                 <Typography className={classes.topSectionText}>
-                  There are numerous Certificate Authorities that can issue an Extended Validation Certificate for your company. You are free to request a legal entity verification from the Authority of your choice.
+                  There are numerous Certificate Authorities that can issue an Extended Validation Certificate for your organization. You are free to request a legal entity verification from the Authority of your choice.
                 </Typography>
                 <Typography className={classes.topSectionText}>
                   Here is what will be verified:

@@ -1,5 +1,6 @@
 import { countries } from './countries';
 import { StepperGeneralIcon, StepperHostingIcon, StepperMetaMaskIcon } from '../assets/SvgComponents';
+import match from './regex';
 
 export const wizardConfig = [
   {
@@ -7,7 +8,7 @@ export const wizardConfig = [
     name: 'Unit Info',
     icon: StepperGeneralIcon,
     longName: 'Unit Information',
-    description: 'A business or organizational unit can be anything: a department within your company (legal, accounting, etc.), a business operated by it (Acme Anvils Main St.), etc. An Ethereum transaction will be required to create a business unit.',
+    description: 'A business or organizational unit can be anything: a department within your organization (legal, accounting, etc.), a business operated by it (Acme Anvils Main St.), etc. An Ethereum transaction will be required to create a business unit.',
     sections: [
       {
         name: 'Basics',
@@ -99,7 +100,7 @@ export const wizardConfig = [
             name: 'Phone',
             orgidJsonPath: 'organizationalUnit.contacts[0].phone',
             validate: value => {
-              if (value && !value.trim().match(/^([+]{0,1})([0-9- ]+)$/)) {
+              if (value && !value.trim().match(match.phone)) {
                 return 'Wrong phone number format';
               }
             }
@@ -110,7 +111,7 @@ export const wizardConfig = [
             name: 'Website',
             orgidJsonPath: 'organizationalUnit.contacts[0].website',
             validate: value => {
-              if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+              if (value && !value.trim().match(match.url)) {
                 return 'Wrong website URL';
               }
             }
@@ -121,7 +122,7 @@ export const wizardConfig = [
             name: 'Email',
             orgidJsonPath: 'organizationalUnit.contacts[0].email',
             validate: value => {
-              if (value && !value.trim().match(/^[\w.-]+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) {
+              if (value && !value.trim().match(match.email)) {
                 return 'Wrong email format';
               }
             }
@@ -138,7 +139,7 @@ export const wizardConfig = [
             icon: 'facebook',
             orgidJsonPath: 'organizationalUnit.contacts[0].facebook',
             validate: value => {
-              if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+              if (value && !value.trim().match(match.url)) {
                 return 'Wrong URL';
               }
             }
@@ -149,7 +150,7 @@ export const wizardConfig = [
             icon: 'twitter',
             orgidJsonPath: 'organizationalUnit.contacts[0].twitter',
             validate: value => {
-              if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+              if (value && !value.trim().match(match.url)) {
                 return 'Wrong URL';
               }
             }
@@ -160,7 +161,7 @@ export const wizardConfig = [
             icon: 'instagram',
             orgidJsonPath: 'organizationalUnit.contacts[0].instagram',
             validate: value => {
-              if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+              if (value && !value.trim().match(match.url)) {
                 return 'Wrong URL';
               }
             }
@@ -168,11 +169,11 @@ export const wizardConfig = [
           {
             name: 'Logo',
             type: 'dropzone',
-            orgidJsonPath: 'media.logo',
+            orgidJsonPath: 'organizationalUnit.media.logo',
             description: '',
             helperText: 'Recommended dimensions: 908х400 (minimal: 454x200)\nFormat: JPG, PNG',
             validate: value => {
-              if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+              if (value && !value.trim().match(match.url)) {
                 return 'Media URI contains forbidden symbols';
               }
             }

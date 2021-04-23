@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Link } from 'react-router-dom';
 import history from '../redux/history';
 import { Card, CardContent, Grid, Typography, Button, Collapse } from '@material-ui/core';
@@ -169,6 +169,16 @@ export default function OrgsListItem(props) {
   const {canManage, organization, error} = props;
   const {orgid: id, logo, name, proofsQty, subs, orgidType } = organization;
 
+  const imgError = useCallback(function onImgError(e) {
+    if (e.target) {
+      e.target.onerror = null;
+      e.target.className = classes.itemImg;
+      e.target.src = setRandomDefaultImage(id, orgidType || 'hotel');
+    }
+    return true;
+  }, [classes, id, orgidType]);
+
+  const fixOldDomain = path => path.replace('arbor.fm', 'marketplace.windingtree.com');
 
   return (
     <Card className={classes.item}
@@ -186,7 +196,7 @@ export default function OrgsListItem(props) {
               {
                 logo ? (
                   <div className={classes.itemImgWrapper}>
-                    <img alt={'logo'} src={logo} className={classes.itemRealImg}/>
+                    <img alt={'logo'} src={fixOldDomain(logo)} className={classes.itemRealImg} onError={imgError}/>
                   </div>
                 ) : error ? (
                   <div className={[classes.itemImgWrapper, classes.itemImgError].join(' ')}>

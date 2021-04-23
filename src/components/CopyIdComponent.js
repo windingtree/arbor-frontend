@@ -49,7 +49,17 @@ const LightTooltip = withStyles({
 
 export default function CopyIdComponent(props) {
   const classes = styles();
-  const { leftElement, id, fontWeight, fontSize, color, width, title } = props;
+  const {
+    leftElement = null,
+    noEllipsis = null,
+    idClass = null,
+    id,
+    fontWeight,
+    fontSize,
+    color,
+    width,
+    title
+  } = props;
 
   const [open, setOpen] = useState(false);
 
@@ -70,8 +80,18 @@ export default function CopyIdComponent(props) {
 
   return (
     <div className={classes.idInfo}>
-      <Typography variant={'subtitle2'} className={classes.id} style={{ fontWeight: fontWeight, fontSize: fontSize }}>
-        <Hidden mdDown>{leftElement}</Hidden><Typography variant={'inherit'} className={classes.subtitle} style={{ color: color }}>{hiddenId}</Typography>
+      <Typography
+        variant={'subtitle2'}
+        className={classes.id}
+        style={{ fontWeight: fontWeight, fontSize: fontSize }}
+      >
+        <Hidden mdDown>{leftElement}</Hidden>
+        <Typography
+          variant={'inherit'}
+          className={idClass ? idClass : classes.subtitle}
+          style={{ color: color }}>
+            {noEllipsis ? id : hiddenId}
+        </Typography>
       </Typography>
       <ClickAwayListener
         onClickAway={handleTooltipClose}

@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import DialogComponent from './Dialog';
 import { Formik } from 'formik';
 import {
-    TextareaAutosize,
     TextField,
     Typography
 } from "@material-ui/core";
@@ -12,19 +11,43 @@ import {
     addAssertion
 } from '../ducks/wizard';
 import SaveButton from './buttons/Save';
+import CopyIdComponent from '../components/CopyIdComponent';
 
 const useStyles = makeStyles({
-    root: {
-
+    root: {},
+    formTitle: {
+        fontSize: '20px',
+        lineHeight: '20px',
+        color: '#3E9693',
+        marginBottom: '40px'
     },
-    info: {
-        fontFamily: 'Inter',
-        fontDtyle: 'normal',
-        fontWeight: 'normal',
+    noteTitleNum: {
+        fontWeight: 600,
         fontSize: '16px',
-        lineHeight: '28px',
-        color: '#8F999F',
-        marginBottom: '20px'
+        color: '#42424F',
+        marginBottom: '20px',
+        margin: '10px 0 0 0'
+    },
+    noteTitle: {
+        fontWeight: 600,
+        fontSize: '16px',
+        color: '#42424F',
+        margin: '20px 0 0 0'
+    },
+    noteLine: {
+        fontWeight: 400,
+        fontSize: '18px',
+        color: '#5e666a',
+        marginBottom: '10px'
+    },
+    idClass: {
+        display: 'inline-block',
+        fontSize: '16px',
+        color: '#42424F !important',
+        padding: '10px',
+        backgroundColor: 'rgba(0,0,0,0.03)',
+        borderRadius: '6px',
+        margin: '20px 0 20px 0'
     },
     textarea: {
         width: '100%',
@@ -36,7 +59,7 @@ const useStyles = makeStyles({
         resize: 'none',
         '&:focus': {
             outline: 'none !important',
-            border: '1px solid #8F999F'
+            border: '1px solid #5e666a'
         }
     },
     save: {
@@ -102,22 +125,51 @@ const ProofForm = props => {
                 }) => (
                     <form onSubmit={handleSubmit}>
                         <div>
+                            <Typography className={classes.formTitle}>
+                                {proof.title}
+                            </Typography>
+                        </div>
+                        <div>
                             {proof.notes.map((n, i) => {
 
                                 if (n.match(/^>/)) {
                                     return (
-                                        <TextareaAutosize
+                                        <CopyIdComponent
                                             key={i}
-                                            className={classes.textarea}
-                                            value={n.replace(/^>/, '')}
+                                            title='ORGiD copied to clipboard'
+                                            id={n.replace(/^>/, '')}
+                                            idClass={classes.idClass}
+                                            noEllipsis
                                         />
+                                    );
+                                }
+
+                                if (n.match(/^\d/)) {
+                                    return (
+                                        <Typography
+                                            key={i}
+                                            className={classes.noteTitleNum}
+                                        >
+                                            {n}
+                                        </Typography>
+                                    );
+                                }
+
+                                if (n.match(/^!/)) {
+                                    return (
+                                        <Typography
+                                            key={i}
+                                            className={classes.noteTitle}
+                                        >
+                                            {n.replace('!', '')}
+                                        </Typography>
                                     );
                                 }
 
                                 return (
                                     <Typography
                                         key={i}
-                                        className={classes.info}
+                                        className={classes.noteLine}
                                     >
                                         {n}
                                     </Typography>
@@ -127,15 +179,17 @@ const ProofForm = props => {
                         <div>
                             <TextField
                                 type='input'
-                                label='https://...'
+                                variant='filled'
+                                label='Link to evidence'
                                 name='proofUri'
                                 value={values['proofUri']}
-                                helperText={errors['proofUri'] && touched['proofUri'] ? errors['proofUri'] : undefined}
+                                helperText={errors['proofUri'] && touched['proofUri'] ? errors['proofUri'] : values['proofUri'] === '' ? 'Put direct link to the evidence here' : undefined}
                                 required={true}
                                 error={errors['proofUri'] && touched['proofUri']}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 fullWidth
+                                autoFocus
                             />
                         </div>
                         <div className={classes.save}>
@@ -143,7 +197,7 @@ const ProofForm = props => {
                                 type='submit'
                                 disabled={isSubmitting}
                             >
-                                Save
+                                Done
                             </SaveButton>
                         </div>
                     </form>
@@ -164,7 +218,6 @@ const ProofsWizard = props => {
     return (
         <DialogComponent
             className={classes.root}
-            maxWidth='xs'
             handleClose={() => handleClose(null)}
             isOpen={isOpen}
             children={(

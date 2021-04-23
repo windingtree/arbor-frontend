@@ -124,14 +124,19 @@ function fetchOrganizationSubsInfoFailure(error) {
  * */
 const stateSelector = state => state[moduleName];
 
+export const isOrgInfoFetching = createSelector(
+  stateSelector,
+  ({ isFetching }) => isFetching
+);
+
 export const selectItem = createSelector(
   stateSelector,
-  orgInfo => orgInfo.item
+  ({ item }) => item
 );
 
 export const selectSubs = createSelector(
   stateSelector,
-  orgInfo => orgInfo.subs
+  ({ subs }) => subs
 );
 
 export const selectAssertions = createSelector(

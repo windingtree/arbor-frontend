@@ -5,6 +5,9 @@ import { connect } from 'react-redux';
 import { Container, Grid, Typography, Box, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { MAINTENANCE, CHAIN_ID } from "../../utils/constants";
+import {
+  selectWeb3
+} from '../../ducks/signIn';
 
 import MetamaskOnboarding from '../../components/MetamaskOnboarding';
 import PortisOnboarding from '../../components/PortisOnboarding';
@@ -148,28 +151,19 @@ const SignInActionBox = (classes, props) => {
 
   // Update the Chain ID
   useEffect(() => {
-    const web3 = window.web3;
-
     const onChainChange = chainId => {
       setChainId(parseInt(chainId, 16));
     };
 
     const handleChainId = async () => {
-      if (web3 && web3.currentProvider) {
-        const chainId = parseInt(web3.currentProvider.chainId, 16);
-        onChainChange(chainId);
-        web3.currentProvider.on('chainChanged', onChainChange);
+      if (window.ethereum && window.ethereum.chainId) {
+        onChainChange(window.ethereum.chainId);
+        window.ethereum.once('chainChanged', onChainChange);
       }
     };
 
     try {
       handleChainId();
-
-      return () => {
-        if (web3 && web3.currentProvider) {
-          web3.currentProvider.off('chainChanged', onChainChange);
-        }
-      }
     } catch (error) {
       console.log(error);
     }
@@ -218,17 +212,6 @@ const SignInBox = (classes, props) => {
 
 const SignIn = props => {
   const classes = styles();
-  // const [isUploaded, setUploaded] = useState(false);
-  // const isInstalled = _.get(history, 'location.state.installed', false);
-
-  // useEffect(() => {
-  //   if(isInstalled) {
-  //     setTimeout(() => setUploaded(true), 2000);
-  //     if(isUploaded) {
-  //       alert('Reload page after you have MetaMask installed')
-  //     }
-  //   }
-  // });
 
   return (
     <Container className={classes.container}>
@@ -244,7 +227,9 @@ const SignIn = props => {
 )
 };
 
-const mapStateToProps = state => ({});
+const mapStateToProps = state => ({
+  web3: selectWeb3(state)
+});
 
 const mapDispatchToProps = {};
 

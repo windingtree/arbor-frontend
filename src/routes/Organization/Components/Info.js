@@ -1,7 +1,12 @@
-import React, {useState} from "react";
-import {Button, Collapse, Container, Fade, Grid, Hidden, Typography} from "@material-ui/core";
-import CopyIdComponent from "../../../components/CopyIdComponent";
-import {setRandomDefaultImage} from "../../../utils/helpers";
+import React, { useState, useCallback } from "react";
+import _ from "lodash";
+import { makeStyles } from "@material-ui/core/styles";
+import {Button, Collapse, Container, Fade, Grid, Hidden, Typography, CircularProgress} from "@material-ui/core";
+import CopyTextComponent from "../../../components/CopyTextComponent";
+import {
+  setRandomDefaultImage,
+  strCenterEllipsis
+} from "../../../utils/helpers";
 
 import colors from "../../../styles/colors";
 import {
@@ -16,24 +21,25 @@ import {
   InstagramSocialIcon,
   DetailsIllustration,
   MaximizeIcon,
-  MinimizeIcon
+  MinimizeIcon,
 } from '../../../assets/SvgComponents';
-
-import _ from "lodash";
-import {makeStyles} from "@material-ui/core/styles";
+import CopyIcon from '../../../assets/SvgComponents/copy-icon.svg';
+import {TrustLevelNumericIcon} from "../../../assets/SvgComponents/TrustLevelIcon";
+import {LIF_DEPOSIT_AMOUNT} from "../../../utils/constants";
 
 const styles = makeStyles({
   itemMainInfo: {
     position: 'relative',
-    paddingBottom: '20px'
+    marginTop: '20px',
+    paddingBottom: '40px'
   },
   itemTrustInfoTitle: {
     fontSize: '14px',
     fontWeight: 400,
   },
   iconTrustLevel: {
-    width: '13px',
-    height: '16px',
+    width: '20px',
+    height: '20px',
     color: colors.secondary.yellow,
     margin: '0 4px 0 14px'
   },
@@ -49,7 +55,6 @@ const styles = makeStyles({
     marginRight: '12px'
   },
   orgMainInfoWrapper: {
-    padding: '10px 0',
     flexWrap: 'nowrap',
     ['@media (max-width:1069px)']: { // eslint-disable-line no-useless-computed-key
       flexWrap: 'wrap'
@@ -77,6 +82,7 @@ const styles = makeStyles({
     height: '200px',
     overflow: 'hidden',
     borderRadius: '4px',
+    border: '1px solid #8f999f4d',
     ['@media (max-width:1069px)']: { // eslint-disable-line no-useless-computed-key
       width: '100%',
       height: '290px'
@@ -84,6 +90,7 @@ const styles = makeStyles({
     ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
       height: '180px'
     },
+    marginTop:'20px'
   },
   orgImage: {
     position: 'absolute',
@@ -96,6 +103,8 @@ const styles = makeStyles({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop: '8px',
+    marginBottom: '20px',
     ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
       flexWrap: 'wrap',
     },
@@ -139,14 +148,14 @@ const styles = makeStyles({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
+    overflow: 'hidden'
   },
   orgInfoFieldWrapper: {
-    width: '50%',
-    margin: '5px 0',
+    width: '100%',
+    margin: '0 0 10px 0',
     ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
-      width: '100%',
-      margin: '6px 0'
+
     },
   },
   orgInfoLegalEntityFieldWrapper: {
@@ -162,6 +171,9 @@ const styles = makeStyles({
     fontWeight: 500,
     lineHeight: 1.3,
     color: colors.greyScale.dark,
+    '&> a,span': {
+      textOverflow: 'ellipsis'
+    },
     ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
       color: colors.greyScale.darkest,
     },
@@ -169,7 +181,21 @@ const styles = makeStyles({
   orgInfoField: {
     textDecoration: 'none',
     fontWeight: 400,
-    color: colors.greyScale.common
+    '&> .long': {
+      display: 'inherit'
+    },
+    '&> .short': {
+      display: 'none'
+    },
+    color: colors.greyScale.common,
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      '&> .long': {
+        display: 'none'
+      },
+      '&> .short': {
+        display: 'inherit'
+      }
+    }
   },
   entityInfoItem: {
     display: 'flex',
@@ -192,9 +218,10 @@ const styles = makeStyles({
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginTop: '42px',
+    marginTop: '20px',
     ['@media (max-width:1069px)']: { // eslint-disable-line no-useless-computed-key
       marginTop: '0',
+      marginLeft: '-8px'
     },
   },
   socialLink: {
@@ -399,7 +426,7 @@ const getAddressString = (addressObj) => {
 function Info(props) {
   const classes = styles();
   const [isOpen, toggleOpen] = useState(false);
-  const {organization, canManage} = props;
+  const {organization, canManage, orgIdLifDepositAmount} = props;
   const { orgid: id, proofsQty, logo, name, parent, isWebsiteProved, directory } = organization;
 
   const isSub = !!parent;
@@ -428,21 +455,17 @@ function Info(props) {
   });
 
   const sanitizeLink = link => {
-    console.log('>>>>>>>', link, '======', link
-    .replace(/(https|http[:]{0,1})(\/\/)/, '')
-    .replace(/^[\/]{1,}/, '')
-    .replace(/\/$/, ''));
-    return link
-    .replace(/(https|http[:]{0,1})(\/\/)/, '')
-    .replace(/^[\/]{1,}/, '')
-    .replace(/\/$/, '');
+    console.log('>>>>>>>', link, '======');
+    const url = new URL(
+      `https://${link
+        .replace(/^(http|https):\d{0,}\/\//, '')
+        .replace(/^[\/]{1,}/, '')
+        .replace(/\/$/, '')}`
+    );
+    return `https://${url.hostname}${url.pathname !== '' ? url.pathname : ''}`;
   }
 
-  //check if website valid
-  const website = () => {
-    // let reg = /^((https?|ftp|smtp):\/\/)?(www.)?[a-z0-9]+\.[a-z]+(\/[a-zA-Z0-9#]+\/?)*$/;
-    return `https://${sanitizeLink(contacts.website)}`
-  };
+  const fixOldLogoUrl = logo => logo ? logo.replace('arbor.fm', 'marketplace.windingtree.com') : logo;
 
   const icon = (socialNetwork) => {
     switch (socialNetwork) {
@@ -470,43 +493,46 @@ function Info(props) {
     return classNameBase;
   };
 
+  const imgError = useCallback(function onImgError(e) {
+    if (e.target) {
+      e.target.onerror = null;
+      e.target.src = setRandomDefaultImage(id || '0xLOADING', directory || 'hotel');
+    }
+    return true;
+  }, [id, directory]);
+
   return (
     <div>
       <Container className={classes.itemMainInfo}>
         <Grid container className={classes.orgMainInfoWrapper}>
 
-          {/* TOP-LEFT-BLOCK: IMAGE =================================================================================*/}
-          <Grid item className={classes.orgImageContainer}>
-            <div className={classes.orgImageWrapper}>
-              {
-                logo ? (
-                  <img className={classes.orgImage} src={logo} alt={`Organization Logo cannot be loaded. URI: ${logo}`}/>
-                ) : (
-                  <img className={classes.orgImage} src={setRandomDefaultImage(id || '0xLOADING', directory || 'hotel')} alt={`Organization from directory: ${directory}`}/>
-                )
-              }
-            </div>
-          </Grid>
-
-          {/* TOP-RIGHT-BLOCK: INFO =================================================================================*/}
+          {/* TOP-LEFT-BLOCK: INFO =================================================================================*/}
           <Grid item className={classes.orgInfoContainer}>
             <div className={classes.idInfoContainer}>
-              <CopyIdComponent id={id || '0xLOADING'} leftElement={''} fontWeight={500}/>
-              {
-                canManage || (
-                  <div className={classes.publicTrustLevelWrapper}>
-                    <Typography variant={'caption'} className={classes.itemTrustInfoTitle}
-                                style={{color: colors.greyScale.common}}>Trust proofs: </Typography>
-                    <TrustLevelIcon className={classes.iconTrustLevel}/>
-                    <Typography variant={'subtitle2'} className={classes.trustLevelValue}>{proofsQty}</Typography>
-                  </div>
-                )
+              {!id &&
+                <CircularProgress size='18' />
+              }
+              {id &&
+                <div className={classes.orgInfoFieldWrapper}>
+                  <Typography variant={'caption'} className={classes.orgInfoFieldTitle} noWrap>
+                    {'ORGiD: '}
+                    <CopyTextComponent
+                        title='ORGiD is copied to clipboard'
+                        label={strCenterEllipsis((id || '').toLowerCase().split('x')[1], 8) || '...'}
+                        text={id}
+                        color='#8F999F'
+                        fontWeight='500'
+                        fontSize='14px'
+                        icon={CopyIcon}
+                    />
+                  </Typography>
+                </div>
               }
             </div>
             <div className={classes.orgNameWrapper}>
               <Typography variant={'h6'} className={classes.orgName} noWrap>{name}</Typography>
             </div>
-            {!organization.state &&
+            {organization && !organization.state &&
               <div className={classes.orgNameWrapper}>
                 <Typography variant={'h6'} className={classes.orgAddress} noWrap>
                   Active Status: <span className={classes.statusDisabled}>Disabled</span>
@@ -517,12 +543,13 @@ function Info(props) {
               {addressString &&
               <div>
                 <p className={classes.orgAddress}>
-                  {addressString}<br />
+                  {addressString}
+                  {/* <br />
                   <a href={`https://www.openstreetmap.org/search?query=${addressString}`}
                      className={classes.mapLink}
                      rel="noopener noreferrer"
                      target="_blank"
-                     >show on the map</a>
+                     >show on the map</a> */}
                 </p>
               </div>
               }
@@ -548,15 +575,26 @@ function Info(props) {
               </div>
               }
               {contacts.website &&
-              <div className={classes.orgInfoFieldWrapper} style={{width: '100%'}}>
-                <Typography variant={'caption'} className={classes.orgInfoFieldTitle} noWrap>
-                  {'Website: '}
-                  <a href={website()} target={'_blank'} className={classes.orgInfoField} rel="noopener noreferrer">{contacts.website}</a>
-                  {isWebsiteProved &&
-                  <TrustLevelIcon className={classes.iconTrustLevel} style={{verticalAlign: 'text-bottom'}}/>}
-                </Typography>
-              </div>
+                <div className={classes.orgInfoFieldWrapper}>
+                  <Typography variant={'caption'} className={classes.orgInfoFieldTitle}>
+                    {'Website: '}
+                  </Typography>
+                  <Typography variant={'caption'} className={classes.orgInfoFieldTitle} noWrap>
+                    <a href={sanitizeLink(contacts.website)} target={'_blank'} className={classes.orgInfoField} rel="noopener noreferrer">
+                      <span className={'short'}>{strCenterEllipsis(contacts.website, 12)}</span>
+                      <span className={'long'}>{contacts.website}</span>
+                    </a>
+                  </Typography>
+{/*                  {isWebsiteProved &&
+                    <TrustLevelIcon className={classes.iconTrustLevel} style={{verticalAlign: 'text-bottom'}}/>
+                  }*/}
+                </div>
               }
+              {/* <div className={classes.orgInfoFieldWrapper}>
+                <Typography variant={'caption'} className={classes.orgInfoFieldTitle}>
+                  Trust level: <TrustLevelNumericIcon className={classes.iconTrustLevel} style={{verticalAlign: 'middle', color: orgIdLifDepositAmount<=LIF_DEPOSIT_AMOUNT?colors.secondary.yellow:colors.secondary.green}} level={proofsQty}/>
+                </Typography>
+              </div> */}
               {
                 isSub ? (
                   <div className={`${classes.orgInfoFieldWrapper} ${classes.orgInfoLegalEntityFieldWrapper}`}>
@@ -574,37 +612,58 @@ function Info(props) {
                   </div>
                 ) : null
               }
+
+              {/* SOCIAL NETWORK LINKS ====================================================================================*/}
+              { socials.length > 0 && (
+                <div className={classes.socialInline}>
+                  {
+                    socials.map((social, index) => {
+                      return (
+                        <a key={index.toString()} href={sanitizeLink(social.link)} target={'_blank'} className={classes.socialLink} rel="noopener noreferrer">
+                          <Hidden xsDown>
+                            {icon(social.network)}
+                          </Hidden>
+                          <Hidden smUp>
+                            <div className={classes.mobileSocialWrapper}>
+                              {icon(social.network)}
+                              {social.verified &&
+                              <TrustLevelIcon
+                                className={[classes.iconTrustLevel, classes.iconVerify, classes.mobileIconVerify].join(' ')}/>}
+                            </div>
+                          </Hidden>
+                          <Typography variant={'caption'} className={classes.socialTitle}>{social.network}</Typography>
+                          {social.verified &&
+                          <TrustLevelIcon className={[classes.iconTrustLevel, classes.iconVerify].join(' ')}/>}
+                        </a>
+                      )
+                    })
+                  }
+                </div>
+              )}
             </div>
           </Grid>
+
+
+          {/* TOP-RIGHT-BLOCK: IMAGE =================================================================================*/}
+          <Grid item className={classes.orgImageContainer}>
+            <div
+                className={classes.orgImageWrapper}
+                onError={e => imgError(e)}
+                title={name}
+                style={{
+                  backgroundImage: `url(${fixOldLogoUrl(logo) || setRandomDefaultImage(id || '0xLOADING', directory || 'hotel')})`,
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: 'contain'
+                }}
+            >
+            </div>
+          </Grid>
+
+
         </Grid>
 
-        {/* SOCIAL NETWORK LINKS ====================================================================================*/}
-        { socials.length > 0 && (
-          <div className={classes.socialInline}>
-            {
-              socials.map((social, index) => {
-                return (
-                  <a key={index.toString()} href={sanitizeLink(social.link)} target={'_blank'} className={classes.socialLink} rel="noopener noreferrer">
-                    <Hidden xsDown>
-                      {icon(social.network)}
-                    </Hidden>
-                    <Hidden smUp>
-                      <div className={classes.mobileSocialWrapper}>
-                        {icon(social.network)}
-                        {social.verified &&
-                        <TrustLevelIcon
-                          className={[classes.iconTrustLevel, classes.iconVerify, classes.mobileIconVerify].join(' ')}/>}
-                      </div>
-                    </Hidden>
-                    <Typography variant={'caption'} className={classes.socialTitle}>{social.network}</Typography>
-                    {social.verified &&
-                    <TrustLevelIcon className={[classes.iconTrustLevel, classes.iconVerify].join(' ')}/>}
-                  </a>
-                )
-              })
-            }
-          </div>
-        )}
+
         {canManage && isSub && (description || longDescription) && (
           <Fade in={!isOpen}>
             <div className={classes.toggleOpenDetailsButtonContainer}>

@@ -202,7 +202,7 @@ const WizardStep = (props) => {
       setDepositTransaction(paymentStatus.transactionHash);
       watchTransaction(paymentStatus.transactionHash);
     } catch (error) {
-      setError(error.message);
+      setError(error);
       console.log(error);
     }
   };
@@ -255,7 +255,7 @@ const WizardStep = (props) => {
               </Typography>
               <div className={inheritClasses.subtitleWrapper}>
                 <Typography variant={'subtitle1'} className={inheritClasses.subtitle}>
-                A transaction must be submitted to the Ethereum blockchain in order to register your company information. The cost of this action is estimated to {gasFee[0]} ETH (${gasFee[1]}).
+                A transaction must be submitted to the Ethereum blockchain in order to register your organization information. The cost of this action is estimated to {gasFee[0]} ETH (${gasFee[1]}).
                 </Typography>
                 <Typography variant={'subtitle1'} className={inheritClasses.subtitle}>
                 Please, top up your wallet with enough ETH or pay the transaction fee with your Payment Card.
@@ -308,7 +308,7 @@ const WizardStep = (props) => {
               </Typography>
               <div className={inheritClasses.subtitleWrapper}>
                 <Typography variant={'subtitle1'} className={inheritClasses.subtitle}>
-                  { action === 'edit' ? 'In order to save your company data, a blockchain transaction is required. Please confirm it in your wallet.' : description}
+                  { action === 'edit' ? 'In order to save your organization data, a blockchain transaction is required. Please confirm it in your wallet.' : description}
                 </Typography>
               </div>
               <div className={inheritClasses.buttonWrapper}>

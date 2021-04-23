@@ -8,13 +8,20 @@ import IconFacebook from './icons/IconFacebook';
 import IconTwitter from './icons/IconTwitter';
 import IconInstagram from './icons/IconInstagram';
 import IconLinkedin from './icons/IconLinkedin';
+import IconTelegram from './icons/IconTelegram';
 import {
     selectPendingState
 } from '../ducks/wizard';
+import { strCenterEllipsis } from '../utils/helpers';
+import colors from "../styles/colors";
+import ExternalUrlIcon from "../assets/SvgComponents/ExternalUrlIcon";
+import {TrustBadgeChecked} from "../assets/SvgComponents/TrustLevelIcon";
+import CopyIcon from '../assets/SvgComponents/copy-icon.svg';
+import CopyTextComponent from './CopyTextComponent';
 
 const useStyles = makeStyles({
     item: {
-        marginBottom: '24px',
+        marginBottom: '8px',
         '&:last-child': {
             marginBottom: 0
         }
@@ -22,7 +29,23 @@ const useStyles = makeStyles({
     alignRow: {
         display: 'flex',
         flexDirection: 'row',
-        alignItems: 'row'
+        alignItems: 'center'
+    },
+    adaptive: {
+        '&> .long': {
+            display: 'inherit'
+        },
+        '&> .short': {
+            display: 'none'
+        },
+        ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+          '&> .long': {
+            display: 'none'
+          },
+          '&> .short': {
+            display: 'inherit'
+          }
+        }
     },
     label: {
         fontFamily: 'Inter',
@@ -32,7 +55,7 @@ const useStyles = makeStyles({
         color: 'black',
         textDecoration: 'underline',
         cursor: 'pointer',
-        marginLeft: '27px',
+        // marginLeft: '27px',
         '&.removed': {
             color: '#5E666A',
             textDecoration: 'none',
@@ -47,7 +70,7 @@ const useStyles = makeStyles({
         color: 'black',
         textDecoration: 'none',
         cursor: 'auto',
-        marginLeft: '27px',
+        // marginLeft: '27px',
         '&.removed': {
             color: '#5E666A',
             textDecoration: 'none',
@@ -62,7 +85,8 @@ const useStyles = makeStyles({
         textDecoration: 'none',
         color: '#969696',
         cursor: 'pointer',
-        marginLeft: '27px',
+        marginLeft: '2px',
+        marginRight: '2px',
         '& a': {
             color: '#969696',
             textDecoration: 'none',
@@ -85,6 +109,7 @@ const useStyles = makeStyles({
         fontWeight: 500,
         fontSize: 16,
         lineHeight: '28px',
+        marginLeft: '18px',
         color: 'black',
         '&.verified': {
             color: '#4E9D96'
@@ -103,7 +128,25 @@ const useStyles = makeStyles({
         marginLeft: '12px',
         marginBottom: '-4px',
         color: '#5E666A'
-    }
+    },
+    actionBlock: {
+        display: 'flex',
+        ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+            justifyContent: 'flex-start',
+            paddingLeft: '48px'
+        }
+    },
+    proofVerificationStatusIcon: {
+        height: '16px',
+        color: colors.secondary.brightYellow,
+        marginRight: '6px',
+        verticalAlign:'middle'
+    },
+    externalUrlIcon: {
+        height: '16px',
+        marginRight: '6px',
+        verticalAlign:'middle'
+    },
 });
 
 const State = (props) => {
@@ -119,20 +162,116 @@ const State = (props) => {
     );
 };
 
-const ProofIcon = ({ icon }) => {
+const ProofWebsiteNameAndIcon = ({ icon }) => {
+    const classes = useStyles();
+    let iconElem;
+    let text;
     switch (icon) {
         case 'globe':
-            return <IconGlobe />;
+            iconElem=<IconGlobe />;
+            text='Website'
+            break;
         case 'facebook':
-            return <IconFacebook />;
+            iconElem = <IconFacebook />;
+            text='Facebook'
+            break;
         case 'twitter':
-            return <IconTwitter />;
+            iconElem =<IconTwitter />;
+            text='Twitter'
+            break;
         case 'instagram':
-            return <IconInstagram />;
+            iconElem =<IconInstagram />;
+            text='Instagram'
+            break;
         case 'linkedin':
-            return <IconLinkedin />;
+            iconElem =<IconLinkedin />;
+            text='LinkedIn'
+            break;
+        case 'telegram':
+            iconElem =<IconTelegram />;
+            text='Telegram'
+            break;
         default:
-            return <div />;
+            iconElem = <div />;
+            text=''
+    }
+    return (<>{iconElem}<Typography className={classes.labelPub} style={{marginLeft: '27px'}}>{text}</Typography></>);
+}
+
+//if proof is verified - shows badge with 'checkmark'
+const ProofStatusBadge = ({verified=false  }) => {
+    const classes = useStyles();
+    if(verified){
+        return <TrustBadgeChecked className={classes.proofVerificationStatusIcon}/>
+    }
+    return <></>
+}
+
+
+//icon with link to a proof
+const ProofExternalLinkIcon = ({ url }) => {
+    const classes = useStyles();
+    if (!url || typeof url === 'object') {
+        return (<></>)
+    }
+    if (typeof url === 'string' && url.match(/^did:orgid:/)) {
+        return (
+            <CopyTextComponent
+                title='Proof copied to the clipboard'
+                label={''}
+                text={url}
+                color='#8F999F'
+                fontWeight='500'
+                fontSize='14px'
+                icon={CopyIcon}
+            />
+        );
+    }
+
+    return (<a
+        href={url}
+        target='_blank'
+        rel='noopener noreferrer'
+        className={classes.adaptive}>
+        <ExternalUrlIcon className={classes.externalUrlIcon}/>
+    </a>)
+}
+
+//proof title (either link or 'not connected')
+const ProofTitle = ({  title, proof, removed, canManage, verified, deployed, onClick }) => {
+    const classes = useStyles();
+    if(!proof){
+        return (
+            <span style={{marginLeft: '52px'}}>
+            <span
+                onClick={!removed ? onClick : () => {}}
+                className={canManage ? classes.label : classes.labelPub}>
+                {title}
+            </span></span>)
+    }else{
+        return (
+            <span style={{marginLeft: '52px'}}>
+                <ProofStatusBadge deployed={deployed} verified={verified}/>
+                <span className={classes.labelProof}>
+                    <span className={classes.adaptive}>
+                        <span className={'long'}>
+                            {title.match('^http')
+                                ? (
+                                    <a
+                                        href={title}
+                                        target='_blank'
+                                        rel='noopener noreferrer'
+                                        className={classes.adaptive}>
+                                            {title}
+                                    </a>
+                                )
+                                : title
+                            }
+                        </span>
+                        <span className={'short'}>{strCenterEllipsis(title, 10)}</span>
+                    </span>
+                </span>
+            </span>)
     }
 }
 
@@ -141,7 +280,6 @@ const ProofItem = props => {
         canManage,
         title,
         verified,
-        sslVerified,
         deployed,
         assertion,
         removed,
@@ -155,48 +293,38 @@ const ProofItem = props => {
 
     return (
         <Grid className={classes.item} container justify='space-between' alignItems='center'>
-            <Grid item xs={4} className={classes.alignRow}>
-                <ProofIcon icon={icon} />
-                {!assertion.proof &&
-                    <Typography
-                        onClick={!removed ? onClick : () => {}}
-                        className={canManage ? classes.label : classes.labelPub}
-                        classes={{ root: removed ? 'removed' : undefined }}
-                    >
-                        {title}
-                    </Typography>
-                }
-                {assertion.proof &&
-                    <Typography
-                        className={classes.labelProof}
-                    >
-                        <a
-                            href={assertion.proof}
-                            target='_blank'
-                            rel='noopener noreferrer'
-                        >
-                            {title}
-                        </a>
-                    </Typography>
-                    
-                }        
+            <Grid item xs={12} sm={6} className={classes.alignRow}>
+                <ProofWebsiteNameAndIcon icon={icon} />
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={12} sm={5}>
+                <ProofTitle
+                    title={title}
+                    canManage={canManage}
+                    proof={assertion.proof}
+                    removed={removed}
+                    verified={verified}
+                    deployed={deployed}
+                    onClick={onClick}
+                />
+                {assertion.proof && <ProofExternalLinkIcon url={assertion.proof}/>}
+
+{/*
                 {(deployed && !verified) &&
                     <State classes={{ state: 'not-verified' }}>Not verified</State>
                 }
                 {(deployed && verified) &&
                     <State classes={{ state: 'verified' }}>Verified</State>
                 }
-                {(deployed && assertion.proof && assertion.type === 'domain' && sslVerified) &&
+*/}
+                {/* {(deployed && assertion.proof && assertion.type === 'domain' && sslVerified) &&
                     <State classes={{ state: 'verified' }}>, SSL verified</State>
                 }
                 {(deployed && assertion.proof && assertion.type === 'domain' && !sslVerified) &&
                     <State classes={{ state: 'not-verified' }}>, SSL not verified</State>
-                }
+                } */}
                 {removed &&
                     <State classes={{ state: 'not-verified' }}>
-                        Removed                        
+                        Removed
                     </State>
                 }
                 {((!deployed && assertion.type) || removed) &&
@@ -210,12 +338,12 @@ const ProofItem = props => {
                             />
                         }
                         {(!pendingTransaction && !isRefreshing) &&
-                            <>{deployed || removed ? ', ': ''}In Queue</>
+                            <>In Queue</>
                         }
                     </State>
                 }
             </Grid>
-            <Grid item xs={1}>
+            <Grid item xs={12} sm={1} justify='flex-end' className={classes.actionBlock}>
                 {((deployed || removed) && canManage) &&
                     <IconDelete
                         className={
@@ -240,7 +368,7 @@ const mapStateToProps = state => {
         pendingTransaction: selectPendingState(state)
     };
   };
-  
+
 const mapDispatchToProps = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProofItem);

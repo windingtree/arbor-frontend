@@ -5,7 +5,8 @@ export const createToken = (web3, options) => new Promise((resolve, reject) => {
     issuerDidValue,
     audienceDidValue,
     scope,
-    from
+    from,
+    subject
   } = options;
 
   // Build the header
@@ -23,7 +24,8 @@ export const createToken = (web3, options) => new Promise((resolve, reject) => {
     iss: issuerDidValue,
     aud: audienceDidValue,
     exp: expiry,
-    scope: scope
+    scope: scope,
+    sub: subject
   };
 
   // console.log('@@@', payload);

@@ -8,6 +8,7 @@ import fetchLifDeposit, { moduleName as depositModule } from '../ducks/lifDeposi
 import backendStatus, { moduleName as backendStatusModule } from '../ducks/backendStatus';
 import joinOrganisations, {moduleName as joinOrganisationsModule} from '../ducks/join';
 import orgActiveStatus, {moduleName as orgActiveStatusModule} from '../ducks/orgActiveStatus';
+import directories, { moduleName as directoriesModule } from '../ducks/directories';
 
 //Add all reducers here
 export default combineReducers({
@@ -19,5 +20,6 @@ export default combineReducers({
   [depositModule]: fetchLifDeposit,
   [backendStatusModule]: backendStatus,
   [joinOrganisationsModule]: joinOrganisations,
-  [orgActiveStatusModule]: orgActiveStatus
+  [orgActiveStatusModule]: orgActiveStatus,
+  [directoriesModule]: directories
 });

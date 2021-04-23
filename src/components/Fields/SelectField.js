@@ -22,8 +22,8 @@ const styles = makeStyles({
 
 const SelectField = (props) => {
   const classes = styles();
-  const {name, label, variant, orgidJsonPath, index, options, required, 
-    values, errors, touched, handleChange, handleBlur, helperText} = props;
+  const {name, label, variant, orgidJsonPath, index, options, required, disabled,
+    values, errors, touched, handleChange, handleBlur, helperText, styleWrapperOverride} = props;
   const optionsObj = Array.isArray(options) ? options.reduce((o, key) => Object.assign(o, {[key]: key}), {}) : options;
   const isError = (_.get(errors, orgidJsonPath) && _.get(touched, orgidJsonPath)) || helperText;
 
@@ -58,7 +58,7 @@ const SelectField = (props) => {
   };
 
   return (
-    <div key={index} className={classes.selectWrapper}>
+    <div key={index} className={styleWrapperOverride || classes.selectWrapper}>
       <FormControl className={classes.formControl}>
         {label &&
           <InputLabel>{label}{required ? ' *' : ''}</InputLabel>
@@ -78,6 +78,7 @@ const SelectField = (props) => {
           open={open}
           onClose={handleClose}
           onOpen={handleOpen}
+          disabled={disabled}
         >
           <MenuItem value={''} key={''}/>
           {

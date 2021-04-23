@@ -1,34 +1,29 @@
 import {countries} from './countries';
 import { StepperGeneralIcon, StepperHostingIcon, StepperMetaMaskIcon } from '../assets/SvgComponents';
+import match from './regex';
 
 export const wizardConfig = [
   {
     type: 'step',
-    name: 'Company',
+    name: 'Organization',
     icon: StepperGeneralIcon,
-    longName: 'Company Information',
-    description: 'Please note that the final third step of creating a company account is to save a fingerprint of company data on the blockchain, which requires an Ethereum transaction. Please make sure you have enough funds in your wallet to cover the transaction fee.',
+    longName: 'Organization Information',
+    description: 'Please note that the final third step of creating a organization account is to save a fingerprint of organization data on the blockchain, which requires an Ethereum transaction. Please make sure you have enough funds in your wallet to cover the transaction fee.',
     sections: [
       {
-        name: 'Company Information',
+        name: 'Organization Information',
         type: 'section',
         fields: [
           {
-            type: 'select',
+            type: 'input',
             name: 'Legal entity type',
-            options: [
-              'Cooperative',
-              'Corporation',
-              'Individual Entrepreneur (Sole Trader)',
-              'Limited Liability Company',
-              'NGO',
-              'Nonprofit',
-              'Partnership',
-              'Sole Proprietorship',
-              'Trust'
-            ],
             required: true,
-            orgidJsonPath: 'legalEntity.legalType'
+            orgidJsonPath: 'legalEntity.legalType',
+            validate: value => {
+              if (!value) {
+                return 'Required field';
+              }
+            }
           },
           {
             type: 'input',
@@ -43,7 +38,7 @@ export const wizardConfig = [
           },
           {
             type: 'input',
-            name: 'Company number in local business registry',
+            name: 'Organization number in local business registry',
             required: true,
             helperText: 'Number of your organization in the country-specific business registry',
             orgidJsonPath: 'legalEntity.legalIdentifier',
@@ -132,7 +127,7 @@ export const wizardConfig = [
             name: 'Phone',
             orgidJsonPath: 'legalEntity.contacts[0].phone',
             validate: value => {
-              if (value && !value.trim().match(/^([+]{0,1})([0-9- ]+)$/)) {
+              if (value && !value.trim().match(match.phone)) {
                 return 'Wrong phone number format';
               }
             }
@@ -143,7 +138,7 @@ export const wizardConfig = [
             name: 'Website',
             orgidJsonPath: 'legalEntity.contacts[0].website',
             validate: value => {
-              if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+              if (value && !value.trim().match(match.url)) {
                 return 'Wrong website URL';
               }
             }
@@ -154,7 +149,7 @@ export const wizardConfig = [
             name: 'Email',
             orgidJsonPath: 'legalEntity.contacts[0].email',
             validate: value => {
-              if (value && !value.trim().match(/^[\w.-]+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) {
+              if (value && !value.trim().match(match.email)) {
                 return 'Wrong email format';
               }
             }
@@ -171,7 +166,7 @@ export const wizardConfig = [
             icon: 'facebook',
             orgidJsonPath: 'legalEntity.contacts[0].facebook',
             validate: value => {
-              if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+              if (value && !value.trim().match(match.url)) {
                 return 'Wrong URL';
               }
             }
@@ -182,7 +177,7 @@ export const wizardConfig = [
             icon: 'twitter',
             orgidJsonPath: 'legalEntity.contacts[0].twitter',
             validate: value => {
-              if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+              if (value && !value.trim().match(match.url)) {
                 return 'Wrong URL';
               }
             }
@@ -193,7 +188,7 @@ export const wizardConfig = [
             icon: 'instagram',
             orgidJsonPath: 'legalEntity.contacts[0].instagram',
             validate: value => {
-              if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+              if (value && !value.trim().match(match.url)) {
                 return 'Wrong URL';
               }
             }
@@ -201,17 +196,17 @@ export const wizardConfig = [
         ]
       },
       {
-        name: 'Company Logo',
+        name: 'Organization Logo',
         type: 'section',
         fields: [
           {
             name: 'Logo',
             type: 'dropzone',
             description: 'Add a logo or any image that represents your organization. It will help you stand out in search results.',
-            orgidJsonPath: 'media.logo',
+            orgidJsonPath: 'legalEntity.media.logo',
             helperText: 'Recommended dimensions: 908х400 (at least 454x200) Format: JPG, PNG, SVG',
             validate: value => {
-              if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+              if (value && !value.trim().match(match.url)) {
                 return 'Media URI contains forbidden symbols';
               }
             }
@@ -225,8 +220,8 @@ export const wizardConfig = [
     type: 'step_hosting',
     name: 'Hosting',
     icon: StepperHostingIcon,
-    longName: 'Choose Data Store',
-    description: 'Please choose where to store your data',
+    longName: 'Decentralized Storage',
+    description: 'Your organization data is going to be stored in the IPFS decentralized storage and accessible publicly. By saving your data, you acknowledge that the data you provided will be public and does not contain personal or sensitive information',
     sections: [
       {
         name: 'Choose type of JSON hosting',
@@ -243,14 +238,14 @@ export const wizardConfig = [
         ]
       }
     ],
-    cta: 'Confirm'
+    cta: 'Save'
   },
   {
     type: 'step_metamask',
     name: 'Blockchain',
     icon: StepperMetaMaskIcon,
     longName: 'Save to Blockchain',
-    description: 'Almost done! You are about to save a fingerprint of your company data on Ethereum blockchain. Once you click the button below, your wallet window with transaction details will open.',
+    description: 'Almost done! You are about to save a fingerprint of your organization data on Ethereum blockchain. Once you click the button below, your wallet window with transaction details will open.',
     cta: 'Save'
   }
 ];

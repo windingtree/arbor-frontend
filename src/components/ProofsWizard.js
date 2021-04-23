@@ -197,7 +197,7 @@ const ProofForm = props => {
                                 type='submit'
                                 disabled={isSubmitting}
                             >
-                                Save
+                                Done
                             </SaveButton>
                         </div>
                     </form>

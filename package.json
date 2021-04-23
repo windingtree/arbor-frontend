@@ -1,6 +1,6 @@
 {
   "name": "arbor-frontend",
-  "version": "1.6.4",
+  "version": "1.6.5",
   "private": true,
   "dependencies": {
     "@brainhubeu/react-carousel": "1.19.26",

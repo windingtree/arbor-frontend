@@ -4,11 +4,11 @@ import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles({
     root: {
-        background: 'linear-gradient(180deg, #FFB36B -140%, #F58F7F 100%)',
-        border: '1px solid #F58F7F',
+        background: 'linear-gradient(180deg, #99D7C5 -25%, #3A9492 103.57%)',
+        border: '1px solid #99D7C5',
         boxShadow: '0px 2px 12px rgba(12, 64, 78, 0.1)',
         boxSizing: 'border-box',
-        borderRadius: 8,
+        borderRadius: '6px',
         color: 'white',
         width: 'auto',
         height: 40,

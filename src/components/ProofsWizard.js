@@ -14,15 +14,19 @@ import SaveButton from './buttons/Save';
 import CopyIdComponent from '../components/CopyIdComponent';
 
 const useStyles = makeStyles({
-    root: {
-
+    root: {},
+    formTitle: {
+        fontSize: '20px',
+        lineHeight: '20px',
+        color: '#3E9693',
+        marginBottom: '40px'
     },
     noteTitleNum: {
         fontWeight: 600,
         fontSize: '16px',
         color: '#42424F',
         marginBottom: '20px',
-        margin: '10px 0 0 -16px'
+        margin: '10px 0 0 0'
     },
     noteTitle: {
         fontWeight: 600,
@@ -121,6 +125,11 @@ const ProofForm = props => {
                 }) => (
                     <form onSubmit={handleSubmit}>
                         <div>
+                            <Typography className={classes.formTitle}>
+                                {proof.title}
+                            </Typography>
+                        </div>
+                        <div>
                             {proof.notes.map((n, i) => {
 
                                 if (n.match(/^>/)) {
@@ -170,10 +179,11 @@ const ProofForm = props => {
                         <div>
                             <TextField
                                 type='input'
-                                label='https://...'
+                                variant='filled'
+                                label='Link to evidence'
                                 name='proofUri'
                                 value={values['proofUri']}
-                                helperText={errors['proofUri'] && touched['proofUri'] ? errors['proofUri'] : undefined}
+                                helperText={errors['proofUri'] && touched['proofUri'] ? errors['proofUri'] : values['proofUri'] === '' ? 'Put direct link to the evidence here' : undefined}
                                 required={true}
                                 error={errors['proofUri'] && touched['proofUri']}
                                 onChange={handleChange}

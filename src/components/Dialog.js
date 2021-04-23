@@ -15,7 +15,7 @@ const DialogContent = withStyles({
     '&:first-child': {
       paddingTop: '80px'
     },
-    maxWidth: '800px'
+    maxWidth: '900px'
   }
 })(MuiDialogContent);
 

@@ -2,28 +2,30 @@ import React from 'react';
 import { connect } from 'react-redux';
 import DialogComponent from './Dialog';
 import { Formik } from 'formik';
-import {
-    TextField,
-    TextareaAutosize,
-    Typography
-} from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import { makeStyles } from '@material-ui/core/styles';
 import {
     addAssertion
 } from '../ducks/wizard';
+import DropTextFile from '../components/DropTextFile';
 import SaveButton from './buttons/Save';
 import CopyIdComponent from '../components/CopyIdComponent';
 
 const useStyles = makeStyles({
-    root: {
-        maxWidth: '700px'
+    root: {},
+    formTitle: {
+        fontSize: '20px',
+        lineHeight: '20px',
+        color: '#3E9693',
+        marginBottom: '40px'
     },
     noteTitleNum: {
         fontWeight: 600,
         fontSize: '16px',
+        lineHeight: '18px',
         color: '#42424F',
         marginBottom: '20px',
-        margin: '10px 0 0 -16px'
+        margin: '10px 0 0 0'
     },
     noteTitle: {
         fontWeight: 600,
@@ -66,6 +68,9 @@ const useStyles = makeStyles({
         margin: '20px 0 0 0',
         display: 'block',
         overflow: 'hidden'
+    },
+    dropTextWrapper: {
+        marginTop: '26px'
     }
 });
 
@@ -130,6 +135,11 @@ const ProofForm = props => {
                 }) => (
                     <form onSubmit={handleSubmit}>
                         <div>
+                            <Typography className={classes.formTitle}>
+                                {proof.title}
+                            </Typography>
+                        </div>
+                        <div>
                             {proof.notes.map((n, i) => {
 
                                 if (n.match(/^>/)) {
@@ -176,22 +186,15 @@ const ProofForm = props => {
                                 );
                             })}
                         </div>
-                        <div>
-                            <TextField
-                                className={classes.vcContentField}
-                                label='VC content'
+                        <div className={classes.dropTextWrapper}>
+                            <DropTextFile
+                                label='Verifiable Credential content'
                                 name='vc'
-                                multiline
-                                filled
-                                rows={5}
                                 value={values['vc']}
-                                helperText={errors['vc'] && touched['vc'] ? errors['vc'] : undefined}
-                                required={true}
+                                helperText={errors['vc'] && touched['vc'] ? errors['vc'] : values['vc'] === '' ? 'Put your credential content here' : undefined}
                                 error={errors['vc'] && touched['vc']}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
-                                fullWidth
-                                autoFocus
                             />
                         </div>
                         <div className={classes.save}>
@@ -199,7 +202,7 @@ const ProofForm = props => {
                                 type='submit'
                                 disabled={isSubmitting}
                             >
-                                Save
+                                Done
                             </SaveButton>
                         </div>
                     </form>

@@ -1,5 +1,6 @@
 import Portis from '@portis/web3';
 import Web3 from 'web3';
+import { REHYDRATE } from 'redux-persist';
 import {
   appName,
   INFURA_PROVIDER_WSS,
@@ -43,6 +44,8 @@ export default function reducer( state = initialState, action ) {
   const { type, payload, error } = action;
 
   switch (type) {
+    case REHYDRATE: 
+      return { ...state, isAuthenticated: payload && payload.isAuthenticated }
     case FETCH_SIGN_IN_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
@@ -51,7 +54,7 @@ export default function reducer( state = initialState, action ) {
         error: null
       });
     case SET_DEFAULT_WEB3:
-      return {
+      return {...state,
         web3: payload.web3,
         error: null
       };

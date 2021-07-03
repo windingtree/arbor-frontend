@@ -45,7 +45,7 @@ export default function reducer( state = initialState, action ) {
 
   switch (type) {
     case REHYDRATE: 
-      return { ...state, isAuthenticated: payload && payload.isAuthenticated }
+      return { ...state, isAuthenticated: payload && payload.isAuthenticated && window.ethereum.isConnected() } // TODO: Set appropriate checks to make sure Wallet is connected with the right address
     case FETCH_SIGN_IN_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
@@ -218,6 +218,7 @@ export const subscribeMetamaskEventChannel = web3 => {
 
     window.ethereum.on('accountsChanged', handleNewAccounts);
     window.ethereum.on('chainChanged', handleChainChange);
+    window.ethereum.on('disconnect', handleNewAccounts);
 
     return () => {};
   });
@@ -233,9 +234,20 @@ const openPortisPopUp = async () => {
 
 function* setDefaultWeb3Saga() {
   try {
+    const provider = yield select(selectProvider);
+    const address = yield select(selectSignInAddress);
+    
+    const web3Instance = new Web3(INFURA_PROVIDER_WSS)
     yield put(setDefaultWeb3({
-      web3: new Web3(INFURA_PROVIDER_WSS)
+      web3: web3Instance
     }));
+
+    const ethAccounts = yield call(window.ethereum.request, {method: 'eth_accounts'})
+    if(ethAccounts[0] === address) {
+      yield put(fetchSignInSuccess({provider, web3: web3Instance, address}));
+    } else {
+      yield put(fetchSignInFailure((new Error('Address mismatch'))));
+    }
   } catch (error) {
     // Connection Failure
     yield put(fetchSignInFailure(error));

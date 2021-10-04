@@ -70,7 +70,8 @@ const Gps = props => {
     addressKey = organization.orgidType === 'legalEntity'
       ? 'registeredAddress'
       : 'address';
-    isCoordinates = organization.jsonContent[organization.orgidType][addressKey] &&
+    isCoordinates = organization.jsonContent[organization.orgidType] &&
+      organization.jsonContent[organization.orgidType][addressKey] &&
       organization.jsonContent[organization.orgidType][addressKey].gps;
   } else {
     return null;
@@ -80,7 +81,11 @@ const Gps = props => {
     return null;
   }
 
-  const gpsLabel = strCenterEllipsis(organization.jsonContent[organization.orgidType][addressKey].gps, 12);
+  let gpsLabel = '';
+
+  if (isCoordinates) {
+    gpsLabel = strCenterEllipsis(organization.jsonContent[organization.orgidType][addressKey].gps, 12);
+  }
 
   return (
     <Container>

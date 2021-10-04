@@ -82,6 +82,7 @@ const OnboardingButton = props => {
             window.ethereum.autoRefreshOnNetworkChange = false;
             web3 = new Web3(window.ethereum);
             console.log('Ethereum provider detected.');
+            window.w3 = web3;
           }
 
           fetchSignInRequest({

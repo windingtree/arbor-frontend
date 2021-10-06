@@ -456,6 +456,7 @@ const ApiGetLifTokenAllowanceAmountForOrgId = (web3, _owner, _spender = LIF_DEPO
   let lifContract = getLifTokenContract(web3);
 
   return new Promise((resolve, reject) => {
+    console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$', _owner, _spender);
       lifContract.methods.allowance(_owner, _spender)
       .call()
       .then(allowance => {
@@ -468,14 +469,14 @@ const ApiGetLifTokenAllowanceAmountForOrgId = (web3, _owner, _spender = LIF_DEPO
 
 // Get the LIF Deposit amount for the Org.ID
 const ApiGetOrgIdLifTokenDepositedAmount = (web3, orgId) => {
-  console.log('[.]', 'ApiGetOrgIdLifTokenDepositedAmount', orgId);
   let lifDepositContract = getLifDepositContract(web3);
 
   return new Promise((resolve, reject) => {
+    console.log('[.]', '@@@@@@@@@@@@@@@@ ApiGetOrgIdLifTokenDepositedAmount', orgId);
     lifDepositContract.methods.balanceOf(orgId)
     .call()
     .then(balance => {
-      console.log('<<< lifDepositContract.balanceOf', balance);
+      console.log('<<<<<< lifDepositContract.balanceOf', orgId, balance);
       resolve(web3.utils.fromWei(balance));
     })
     .catch(error => reject(error));
@@ -493,7 +494,7 @@ const ApiGetOrgIdLifTokenWithdrawalRequest = (web3, orgid) => {
     .then(withdrawalRequest => {
       console.log('<<< lifDepositContract.getWithdrawalRequest', withdrawalRequest);
       resolve({
-        exist: withdrawalRequest.exist,
+        exist: withdrawalRequest.exists,
         value: web3.utils.fromWei(withdrawalRequest.value),
         withdrawTime: withdrawalRequest.withdrawTime
       });

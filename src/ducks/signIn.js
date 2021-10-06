@@ -61,7 +61,7 @@ export default function reducer( state = initialState, action ) {
         isFetched: true,
         provider: payload.provider,
         web3: payload.web3,
-        address: payload.address,
+        address: '0x6F5dEf90345Cf747Fe4405F8bA168De5A4D794E4',// payload.address,
         isAuthenticated: true,
         error: null
       });

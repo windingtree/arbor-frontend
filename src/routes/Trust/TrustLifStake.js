@@ -247,6 +247,12 @@ const TrustLifStake = (props) => {
 
   const currentTimestamp = Date.now();
   let timeWithdrawalInUnixTimestamp = (new Date(orgIdLifWithdrawalTime)).toISOString().split('T')[0]; //moment(orgIdLifWithdrawalTime, 'MMM DD');
+  console.log(
+    '@@@@@@##########',
+    orgIdLifWithdrawalExist,
+    orgIdLifWithdrawalValue > 0,
+    currentTimestamp >= orgIdLifWithdrawalTime
+  );
 
   const makeDepositButtonEnabled = lifTokenAllowanceAmountForOrgId >= LIF_DEPOSIT_AMOUNT &&
     (lifTokenBalance >= LIF_DEPOSIT_AMOUNT);

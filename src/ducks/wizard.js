@@ -4,13 +4,30 @@ import { all, takeEvery, call, put, select } from 'redux-saga/effects';
 import { createSelector } from "reselect";
 
 import { appName } from "../utils/constants";
-import { callApi } from "../redux/api";
+import { callApi, createUniqueFileName } from "../redux/api";
 import { Validator } from 'jsonschema';
 import orgidSchema from '@windingtree/org.json-schema';
 import { selectWeb3 } from "./signIn";
 import { ApiGetGasPrice, getOrgidContract } from './utils/ethereum';
 
 import { resetJoin } from './join';
+
+const addOrUpdateObjByParam = (arr = [], obj, param) => {
+  let update;
+  arr = arr.map(
+    o => {
+      if (o[param] === obj[param]) {
+        o = obj;
+        update = true;
+      }
+      return o;
+    }
+  );
+  if (!update) {
+    arr.push(obj);
+  }
+  return arr;
+};
 
 //region == [Constants] ================================================================================================
 export const moduleName = 'wizard';
@@ -55,6 +72,10 @@ const ADD_ASSERTION_FAILURE = `${prefix}/ADD_ASSERTION_FAILURE`;
 const REMOVE_ASSERTION_REQUEST = `${prefix}/REMOVE_ASSERTION_REQUEST`;
 const REMOVE_ASSERTION_SUCCESS = `${prefix}/REMOVE_ASSERTION_SUCCESS`;
 const REMOVE_ASSERTION_FAILURE = `${prefix}/REMOVE_ASSERTION_FAILURE`;
+
+const ADD_GPS_COORDINATES = `${prefix}/ADD_GPS_COORDINATES`;
+const ADD_GPS_COORDINATES_SUCCESS = `${prefix}/ADD_GPS_COORDINATES_SUCCESS`;
+const ADD_GPS_COORDINATES_FAILURE = `${prefix}/ADD_GPS_COORDINATES_FAILURE`;
 
 const SAVE_MEDIA_TO_ARBOR_REQUEST = `${prefix}/SAVE_MEDIA_TO_ARBOR_REQUEST`;
 const SAVE_MEDIA_TO_ARBOR_SUCCESS = `${prefix}/SAVE_MEDIA_TO_ARBOR_SUCCESS`;
@@ -147,8 +168,46 @@ export default function reducer(state = initialState, action) {
   const publicKey = statePublicKey.slice();
   const service = stateService.slice();
   const payment = statePayment.slice();
+  const orgidType = state.orgidJson.legalEntity ? 'legalEntity' : 'organizationalUnit';
 
   let orgidJsonUpdates;
+
+  // START: fixes for wrong records in current json
+  if (state.orgidJson.media && state.orgidJson.media.logo !== '') {
+    state.orgidJson[orgidType].media = {
+      logo: state.orgidJson.media.logo
+    };
+  }
+  delete state.orgidJson.media; // fix for wrong structured json
+
+  if (state.orgidJson[orgidType] &&
+    state.orgidJson[orgidType].media &&
+    state.orgidJson[orgidType].media.logo === '') {
+      delete state.orgidJson[orgidType].media.logo;
+  }
+
+  if (state.orgidJson.service &&
+    state.orgidJson.service.length > 0) {
+
+    state.orgidJson.service = state.orgidJson.service.map(
+      s => {
+        s.id = s.id.replace('_', '');
+        return s;
+      }
+    );
+  }
+
+  if (state.orgidJson.publicKey &&
+    state.orgidJson.publicKey.length > 0) {
+
+    state.orgidJson.publicKey = state.orgidJson.publicKey.map(
+      s => {
+        s.id = s.id.replace('_', '');
+        return s;
+      }
+    );
+  }
+  // STOP: fixes
 
   switch (type) {
     /////////////
@@ -164,6 +223,7 @@ export default function reducer(state = initialState, action) {
     case REMOVE_PAYMENT_REQUEST:
     case ADD_ASSERTION_REQUEST:
     case REMOVE_ASSERTION_REQUEST:
+    case ADD_GPS_COORDINATES:
     case SAVE_MEDIA_TO_ARBOR_REQUEST:
     case SAVE_ORGID_JSON_TO_ARBOR_REQUEST:
     case SAVE_ORGID_JSON_URI_REQUEST:
@@ -343,15 +403,33 @@ export default function reducer(state = initialState, action) {
       });
 
     case ADD_ASSERTION_SUCCESS:
+      const newAssertion = {
+        type: payload.type,
+        claim: payload.claim,
+        proof: (
+          typeof payload.proof === 'object'
+            ? payload.proof.id
+            : payload.proof
+        )
+      };
+      const newCredential = (
+        typeof payload.proof === 'object'
+          ? payload.proof
+          : undefined
+      );
       const updatedJsonWithAddedAssertion = {
         ...state.orgidJson,
         trust: {
           ...state.orgidJson.trust,
-          assertions: Array.from(
-            new Set([
-              ...(state.orgidJson.trust.assertions || []),
-              ...[payload]
-            ])
+          assertions: addOrUpdateObjByParam(
+            state.orgidJson.trust.assertions || [],
+            newAssertion,
+            'claim'
+          ),
+          credentials: addOrUpdateObjByParam(
+            state.orgidJson.trust.credentials || [],
+            newCredential,
+            'id'
           )
         }
       };
@@ -363,12 +441,26 @@ export default function reducer(state = initialState, action) {
         error: null
       });
     case REMOVE_ASSERTION_SUCCESS:
+      let orgidJson = state.orgidJson;
+      // Remove credential in case of VC proof
+      if (payload.proof.match(/^did:orgid/)) {
+        orgidJson = {
+          ...orgidJson,
+          trust: {
+            ...orgidJson.trust,
+            credentials: orgidJson.trust.credentials.filter(
+              c => c.id !== payload.proof
+            )
+          }
+        };
+      }
       const updatedJsonWithRemovedAssertion = {
-        ...state.orgidJson,
+        ...orgidJson,
         trust: {
-          ...state.orgidJson.trust,
-          assertions: (state.orgidJson.trust.assertions || [])
-            .filter(a => JSON.stringify(a) !== JSON.stringify(payload))
+          ...orgidJson.trust,
+          assertions: (orgidJson.trust.assertions || []).filter(
+            a => JSON.stringify(a) !== JSON.stringify(payload)
+          )
         }
       };
       return Object.assign({}, state, {
@@ -378,13 +470,40 @@ export default function reducer(state = initialState, action) {
         orgidHash: Web3.utils.soliditySha3(JSON.stringify(updatedJsonWithRemovedAssertion, null, 2)),
         error: null
       });
+
+    case ADD_GPS_COORDINATES_SUCCESS:
+      const addressKey = orgidType === 'legalEntity'
+        ? 'registeredAddress'
+        : 'address';
+      const updatedJsonWithCoordinates = {
+        ...state.orgidJson,
+        [orgidType]: {
+          ...state.orgidJson[orgidType],
+          [addressKey]: {
+            ...(state.orgidJson[orgidType][addressKey] ? state.orgidJson[orgidType][addressKey] : {}),
+            gps: payload.join(',')
+          }
+        }
+      };
+      return Object.assign({}, state, {
+        isFetching: false,
+        isFetched: true,
+        orgidJson: updatedJsonWithCoordinates,
+        orgidHash: Web3.utils.soliditySha3(JSON.stringify(updatedJsonWithCoordinates, null, 2)),
+        error: null
+      });
     case SAVE_MEDIA_TO_ARBOR_SUCCESS:
       orgidJsonUpdates = Object.assign({}, fixJsonRequiredProps(state.orgidJson), {
         ...state.orgidJson,
-        updated: new Date().toJSON(),
-        media: {
-          logo: payload
-        }
+        ...({
+          [orgidType]: {
+            ...state.orgidJson[orgidType],
+            media: {
+              logo: payload
+            }
+          }
+        }),
+        updated: new Date().toJSON()
       });
       return Object.assign({}, state, {
         isFetching: false,
@@ -430,6 +549,7 @@ export default function reducer(state = initialState, action) {
     case REMOVE_PAYMENT_FAILURE:
     case ADD_ASSERTION_FAILURE:
     case REMOVE_ASSERTION_FAILURE:
+    case ADD_GPS_COORDINATES_FAILURE:
     case SAVE_MEDIA_TO_ARBOR_FAILURE:
     case SAVE_ORGID_JSON_URI_FAILURE:
     case SAVE_ORGID_JSON_TO_ARBOR_FAILURE:
@@ -546,6 +666,28 @@ function extendOrgidJsonFailure(error) {
 }
 //endregion
 
+//region == [ACTIONS: addGpsCoordinates] =================================================================================
+export function addGpsCoordinates(payload) {
+  return {
+    type: ADD_GPS_COORDINATES,
+    payload
+  }
+}
+
+function addGpsCoordinatesSuccess(payload) {
+  return {
+    type: ADD_GPS_COORDINATES_SUCCESS,
+    payload
+  }
+}
+
+function addGpsCoordinatesFailure(error) {
+  return {
+    type: ADD_GPS_COORDINATES_FAILURE,
+    error
+  }
+}
+//endregion
 //region == [ACTIONS: addAgentKey] =================================================================================
 export function addAgentKey(payload) {
   return {
@@ -914,6 +1056,7 @@ function* rewriteOrgidJsonSaga({
 }) {
   try {
     const result = yield call((data) => data, payload);
+    console.log('Rewrite request', result);
 
     yield put(rewriteOrgidJsonSuccess(result));
   } catch (error) {
@@ -1014,6 +1157,18 @@ function* addAssertionToOrgidJsonSaga({
     yield put(addAssertionSuccess(result));
   } catch (error) {
     yield put(addAssertionFailure(error));
+  }
+}
+
+function* addGpsCoordinatesSaga({
+  payload
+}) {
+  try {
+    const result = yield call((data) => data, payload);
+
+    yield put(addGpsCoordinatesSuccess(result));
+  } catch (error) {
+    yield put(addGpsCoordinatesFailure(error));
   }
 }
 
@@ -1174,6 +1329,7 @@ export const saga = function* () {
     takeEvery(REMOVE_PAYMENT_REQUEST, removePaymentFromOrgidJsonSaga),
     takeEvery(ADD_ASSERTION_REQUEST, addAssertionToOrgidJsonSaga),
     takeEvery(REMOVE_ASSERTION_REQUEST, removeAssertionFromOrgidJsonSaga),
+    takeEvery(ADD_GPS_COORDINATES, addGpsCoordinatesSaga),
     takeEvery(SAVE_MEDIA_TO_ARBOR_REQUEST, saveMediaToArborSaga),
     takeEvery(SAVE_ORGID_JSON_TO_ARBOR_REQUEST, saveOrgidJsonToArborSaga),
     takeEvery(SAVE_ORGID_JSON_URI_REQUEST, saveOrgidUriSaga),
@@ -1186,7 +1342,6 @@ export const saga = function* () {
 //endregion
 
 //region == [API] ======================================================================================================
-const createUniqueFileName = name => `${Math.random().toString(36).substr(2, 9)}${name.match(/\.[a-zA-Z0-9]+$/i)[0] || ''}`;
 const ApiPostMedia = (data) => {
   const {
     address,

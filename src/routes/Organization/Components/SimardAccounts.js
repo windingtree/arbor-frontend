@@ -33,14 +33,14 @@ const styles = makeStyles({
     marginTop: '10px'
   },
   content: {
-    marginBottom: '60px'
+    marginBottom: '40px'
   },
   header: {
     position: 'relative',
     fontWeight: 400,
     fontSize: '14px',
     color: colors.greyScale.dark,
-    padding: '40px 0 0 0'
+    padding: '0 0 0 0'
   },
   headerTitle: {
     fontSize: '24px',

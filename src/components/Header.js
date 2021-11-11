@@ -7,6 +7,9 @@ import {makeStyles} from '@material-ui/core/styles';
 import { fadeIn } from 'react-animations';
 import Radium, { StyleRoot } from 'radium';
 import Address from '../routes/Authorization/Address';
+import {
+  DIRECTORIES_ENABLED
+} from '../utils/constants';
 
 import {
   getBackendConnectionStatus
@@ -333,12 +336,16 @@ const Header = (props) => {
         <div className={classes.mobileAddressLinkWrapper}>
           <Address />
         </div>
-        <div className={classes.mobileNavLinkWrapper}>
-          <Link to={'/directories'} className={classes.mobileNavLink} onClick={handleMobileMenuOpenState}>
-            <Typography variant={'caption'} className={classes.mobileNavLinkLabel}>Directories</Typography>
-          </Link>
-        </div>
-        <ul>{directoriesNavLinks}</ul>
+        {DIRECTORIES_ENABLED &&
+          <>
+            <div className={classes.mobileNavLinkWrapper}>
+              <Link to={'/directories'} className={classes.mobileNavLink} onClick={handleMobileMenuOpenState}>
+                <Typography variant={'caption'} className={classes.mobileNavLinkLabel}>Directories</Typography>
+              </Link>
+            </div>
+            <ul>{directoriesNavLinks}</ul>
+          </>
+        }
         <div className={classes.mobileNavLinkWrapper}>
           <Link to={'/search'} className={classes.mobileNavLink} onClick={handleMobileMenuOpenState}>
             <Typography variant={'caption'} className={classes.mobileNavLinkLabel}>Search</Typography>
@@ -364,13 +371,15 @@ const Header = (props) => {
                   <div className={classes.navLinksContainer}>
                     <div className={classes.navLinksDirectoriesSearch}>
                       <Address />
-                      <NavLink
-                        to="/directories"
-                        className={classes.navLink}
-                        activeClassName={classes.activeNavLink}
-                      >
-                        <Typography variant={'caption'} className={classes.linkTitle}>Directories</Typography>
-                      </NavLink>
+                      {DIRECTORIES_ENABLED &&
+                        <NavLink
+                          to="/directories"
+                          className={classes.navLink}
+                          activeClassName={classes.activeNavLink}
+                        >
+                          <Typography variant={'caption'} className={classes.linkTitle}>Directories</Typography>
+                        </NavLink>
+                      }
                       <NavLink
                         to="/search"
                         className={classes.navLink}
@@ -406,7 +415,7 @@ const Header = (props) => {
                               className={classes.navIcon}
                             />
                             <Typography variant={'caption'} className={classes.linkTitle} noWrap>
-                              My Companies
+                              My Organizations
                             </Typography>
                           </NavLink>
                         </div>

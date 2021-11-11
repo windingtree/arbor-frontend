@@ -273,7 +273,10 @@ const Edit = (props) => {
 
   useEffect(() => {
     if(orgid) {
-      rewriteOrgidJson(jsonContent)
+      rewriteOrgidJson({
+        ...jsonContent,
+        id: `did:orgid:${orgid}`
+      })
     }
   }, [orgid, rewriteOrgidJson, jsonContent]);
 
@@ -454,6 +457,7 @@ const Edit = (props) => {
           validate={validateForm}
           onSubmit={(values, {setSubmitting}) => {
             setSubmitting(false);
+            console.log('++++', values);
             props.extendOrgidJson(values);
             handleOpenModal();
           }}
@@ -496,7 +500,7 @@ const Edit = (props) => {
                     </div>
                   </Grid>
                   <Grid item sm={3} className={classes.editButtonContainer}>
-                    <Button type="submit" disabled={isSubmitting || Object.keys(touched).length === 0} className={classes.editButton}>
+                    <Button type="submit" disabled={isSubmitting} className={classes.editButton}>
                       <Typography variant={'caption'} className={classes.editButtonLabel}>{'Save and Update'}</Typography>
                     </Button>
                   </Grid>

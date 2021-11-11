@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { connect } from 'react-redux';
 import { Button, Typography, CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import { fetchSignInRequest, selectSignInStatus } from '../ducks/signIn';
+import { fetchSignInRequest, selectSignInStatus, selectWeb3 } from '../ducks/signIn';
 
 import metamaskIcon from '../assets/images/metamask.png';
 
@@ -46,7 +46,7 @@ const styles = makeStyles({
 });
 
 const OnboardingButton = props => {
-  const { fetchSignInRequest, loggedIn } = props;
+  const { fetchSignInRequest, loggedIn, web3: web3Default } = props;
   const classes = styles();
   const [buttonText, setButtonText] = useState(ONBOARD_TEXT);
   const [loginStarted, setLoginStart] = useState(false);
@@ -76,19 +76,13 @@ const OnboardingButton = props => {
 
       connectMethod
         .then(accounts => {
-          // Ethereum user detected
-          let web3;
+          let web3 = web3Default;
 
           if (typeof window.ethereum !== 'undefined') {
             window.ethereum.autoRefreshOnNetworkChange = false;
             web3 = new Web3(window.ethereum);
             console.log('Ethereum provider detected.');
-          }
-
-          // Check for injected web3 (old browsers or extensions)
-          else if (typeof window.web3 !== 'undefined') {
-            web3 = window.web3;
-            console.log('Injected web3 detected.');
+            window.w3 = web3;
           }
 
           fetchSignInRequest({
@@ -96,7 +90,8 @@ const OnboardingButton = props => {
             web3,
             provider: 'metamask'
           });
-        });
+        })
+        .catch(console.log);
     } else {
       onboarding.current.startOnboarding();
     }
@@ -120,7 +115,8 @@ const OnboardingButton = props => {
 }
 
 const mapStateToProps = state => ({
-  loggedIn: selectSignInStatus(state)
+  loggedIn: selectSignInStatus(state),
+  web3: selectWeb3(state)
 });
 
 const mapDispatchToProps = {

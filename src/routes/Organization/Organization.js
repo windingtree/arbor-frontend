@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import _ from 'lodash';
 import { connect } from 'react-redux';
-// import { Container, Typography, Grid } from '@material-ui/core';
+import { useParams } from 'react-router-dom';
 import {
   fetchOrganizationInfo,
   fetchOrganizationSubsInfo,
@@ -9,53 +9,125 @@ import {
   selectSubs,
   selectAssertions
 } from '../../ducks/fetchOrganizationInfo';
+import {
+  setOrgId,
+  resetOrgId
+} from '../../ducks/directories';
+import { selectSignInAddress } from '../../ducks/signIn';
 import history from '../../redux/history';
 import TopNavigation from "./Components/TopNavigation";
-import Agents from "./Components/Agents";
+import Directories from './Components/Directories';
+import PublicDirectories from './Components/PublicDirectories';
+import Agents from './Components/Agents';
+import Owner from './Components/Owner';
+import Personnel from './Components/Personnel';
 import Services from "./Components/Services";
 import Payments from "./Components/Payments";
 import Info from "./Components/Info";
 import SubOrganizations from './Components/SubOrganizations';
 import ProofsList from '../../components/ProofsList';
-import SimardAccounts from './Components/SimardAccounts'
-// import SaveButton from '../../components/buttons/Save';
-// import { makeStyles } from '@material-ui/core/styles';
-// import trustLifDeposit from '../../assets/SvgComponents/trust-lif-deposit.svg';
+import SimardAccounts from './Components/SimardAccounts';
+import Gps from './Components/Gps';
+import {
+  DIRECTORIES_ENABLED, LIF_DEPOSIT_AMOUNT
+} from '../../utils/constants';
+import { makeStyles } from '@material-ui/core/styles';
+import {Button, Container, Grid, Typography} from "@material-ui/core";
+import trustTopIllustration from '../../assets/SvgComponents/lif-deposit-illustration.svg';
+import colors from "../../styles/colors";
+import {selectLifDepositDataFetching, selectOrgIdLifDepositAmount} from "../../ducks/lifDeposit";
 
-// const styles = makeStyles({
-//   greyDiv: {
-//     width: '100%',
-//     backgroundColor: '#FAFBFC',
-//     paddingTop: '80px',
-//     paddingBottom: '80px',
-//     marginBottom: '50px',
-//     ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
-//       paddingBottom: '30px'
-//     }
-//   },
-//   lifContent: {
-//     position: 'relative',
-//     display: 'flex',
-//     justifyContent: 'space-between'
-//   },
-//   grayTitle: {
-//     fontSize: '40px',
-//     fontWeight: 500,
-//     lineHeight: 1.14,
-//     color: '#42424F',
-//     margin: '0 0 20px 0'
-//   },
-//   topSectionText: {
-//     color: '#5E666A',
-//     marginBottom: '19px',
-//     lineHeight: '28px'
-//   }
-// });
+const styles = makeStyles({
+  pageWrapper: {
+    paddingBottom: '80px'
+  },
+  greyDiv: {
+    width: '100%',
+    backgroundColor: '#FAFBFC',
+    paddingBottom: '80px',
+    marginBottom: '50px',
+    ['@media (max-width:767px)']: { // eslint-disable-line no-useless-computed-key
+      paddingBottom: '30px'
+    }
+  },
+  lifContent: {
+    position: 'relative',
+    display: 'flex',
+    justifyContent: 'space-between'
+  },
+  grayTitle: {
+    fontSize: '40px',
+    fontWeight: 500,
+    lineHeight: 1.14,
+    color: '#42424F',
+    margin: '0 0 40px 0'
+  },
+  topSectionText: {
+    color: '#5E666A',
+    marginBottom: '40px',
+    lineHeight: '28px'
+  },
+  lifDepBlock: {
+    backgroundColor: colors.greyScale.moreLighter,
+    margin: '0 0 40px 0',
+    padding: '60px 0 60px 0'
+  },
+  mainTitle: {
+    fontSize: '40px',
+    fontWeight: 500,
+    lineHeight: 1.14,
+    color: colors.greyScale.darkest,
+    margin: '107px 0 40px 0'
+  },
+  topText: {
+    color: colors.greyScale.dark,
+    marginBottom: '40px',
+    lineHeight: '28px'
+  },
 
-function Organization (props) {
-  const id = history.location.state ? history.location.state.id : history.location.pathname.split('/')[2];
-  const canManage = history.location.pathname !== `/organization/${id}`;
-  const { organization, subs, assertions, fetchOrganizationSubsInfo, fetchOrganizationInfo } = props;
+  buttonWrapper: {
+    marginRight: '20px',
+    '&:last-child': {
+      marginRight: '0'
+    },
+    marginBottom:'20px'
+  },
+  buttonStakeLif: {
+    display: 'flex',
+    alignContent: 'center',
+    height: '44px',
+    backgroundImage: colors.gradients.orange,
+    boxShadow: '0 2px 12px rgba(12, 64, 78, 0.1)',
+    border: `1px solid ${colors.primary.accent}`,
+    borderRadius: '8px'
+  },
+  buttonTitle: {
+    fontWeight: 600,
+    fontSize: '16px',
+    lineHeight: '24px',
+    color: colors.primary.white,
+    textTransform: 'none',
+    padding: '4px 14px'
+  }
+});
+
+export function Organization (props) {
+  const classes = styles();
+  const { orgId } = useParams();
+  // const orgId = history.location.state ? history.location.state.orgId : history.location.pathname.split('/')[2];
+  const canManage = history.location.pathname !== `/organization/${orgId}`;
+  const {
+    organization,
+    subs,
+    assertions,
+    fetchOrganizationSubsInfo,
+    fetchOrganizationInfo,
+    setOrgId,
+    resetOrgId,
+    walletAddress,
+    isFetchingDeposit,
+    orgIdLifDepositAmount
+  } = props;
   const subsidiaries = _.get(organization, 'subsidiaries', []);
   const agents = _.get(organization, 'jsonContent.publicKey', []);
   const services = _.get(organization, 'jsonContent.service', []);
@@ -78,60 +150,82 @@ function Organization (props) {
       facebook: isSocialFBProved,
       twitter: isSocialTWProved,
       linkedin: isSocialLNProved,
-      instagram: isSocialIGProved
+      telegram: isSocialIGProved
     }
   };
+  const showLifDepositSection = canManage && (isFetchingDeposit === false) && (orgIdLifDepositAmount < LIF_DEPOSIT_AMOUNT);
+
   // const classes = styles();
 
-  const proofsRef = useRef(null);
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, []);
 
   useEffect(() => {
-    fetchOrganizationInfo({ id });
-  }, [id, fetchOrganizationInfo]);
+    fetchOrganizationInfo({ id: orgId });
+  }, [orgId, fetchOrganizationInfo]);
 
   useEffect(() => {
-    subsidiaries && subsidiaries.length && fetchOrganizationSubsInfo({ id });
-  }, [id, subsidiaries, fetchOrganizationSubsInfo]);
+    if (orgId) {
+      setOrgId(orgId);
+    }
+
+    return () => {
+      resetOrgId();
+    };
+  }, [setOrgId, resetOrgId, orgId, walletAddress]);
+
+  useEffect(() => {
+    subsidiaries && subsidiaries.length && fetchOrganizationSubsInfo({ id: orgId });
+  }, [orgId, subsidiaries, fetchOrganizationSubsInfo]);
 
   return (
-    <div>
+    <div className={classes.pageWrapper}>
       <TopNavigation
         organization={organization}
         canManage={canManage}
-        scrollToRef={() => proofsRef.current.scrollIntoView({behavior: 'smooth'})}
       />
-      <Info organization={organization} canManage={canManage}/>
+      <Info organization={organization} canManage={canManage} orgIdLifDepositAmount={orgIdLifDepositAmount}/>
       {subsidiaries && subsidiaries.length > 0 &&
-        <div style={{ marginBottom: '30px' }}>
+        <div style={{ marginBottom: '40px' }}>
           <SubOrganizations organization={organization} subs={subs} canManage={canManage} />
         </div>
       }
-      {canManage &&
-        <Agents
-          orgid={id}
-          owner={owner}
-          agents={agents}
-        />
+      <ProofsList
+        canManage={canManage}
+        title='Trust assertions'
+        orgid={orgId}
+        assertions={assertions}
+        verifications={verifications}
+        organization={organization}
+      />
+      {showLifDepositSection &&
+      <div className={`${classes.lifDepBlock} ${classes.bm80}`}>
+        <Container>
+          <Grid container>
+            <Grid item xs={12} lg={6}>
+              <Typography className={classes.mainTitle} variant={'h1'}>Submit your Líf deposit</Typography>
+              <Typography className={classes.topText}>Líf deposit is a small amount of cryptocurrency that
+                is staked when you register your organization profile on Winding Tree Marketplace. This action minimizes
+                spam registrations and proves the seriousness of your intentions.</Typography>
+              <div className={classes.buttonWrapper}>
+                <Button
+                    className={classes.buttonStakeLif}
+                    onClick={() => {history.push(`/my-organizations/${orgId}/lif-stake`, { id: orgId })}}>
+                  <Typography variant={'inherit'} noWrap className={classes.buttonTitle}>
+                    Submit Líf
+                  </Typography>
+                </Button>
+              </div>
+            </Grid>
+            <Grid item xs={12} lg={6}>
+              <img src={trustTopIllustration} alt={'illustration'}/>
+            </Grid>
+          </Grid>
+        </Container>
+      </div>
       }
-      {canManage &&
-        <Services
-          orgid={id}
-          owner={owner}
-          services={services}
-        />
-      }
-      {canManage &&
-        <SimardAccounts
-          orgid={id}
-        />
-      }
-      {canManage && 
-        <Payments
-          orgid={id}
-          owner={owner}
-          payments={payments}
-        />
-      }
+
       {/* {canManage &&
         <div className={classes.greyDiv}>
           <Container className={classes.lifContent}>
@@ -141,17 +235,11 @@ function Organization (props) {
                   Submit your Líf deposit
                 </Typography>
                 <Typography className={classes.topSectionText}>
-                  Líf deposit is a small amount of cryptocurrency that is staked when you register your organization profile on Winding Tree Marketplace.
-                  This action minimizes spam registrations and proves your commitment to the cause.
+                  Líf deposit is a small amount of cryptocurrency that is staked when you register your organization profile on the Marketplace. This action minimizes spam registrations and proves your commitment to the cause.
                 </Typography>
                 <div style={{ marginTop: '30px'}}>
-                  <SaveButton onClick={() => history.push({
-                      pathname: '/trust/lif-stake',
-                      state: {
-                        orgid: id
-                      }
-                    })}>
-                    Submit Líf
+                  <SaveButton onClick={() => history.push(`/my-organizations/${orgId}/lif-stake`, { id: orgId })}>
+                    Manage Líf Stake
                   </SaveButton>
                 </div>
               </Grid>
@@ -162,14 +250,48 @@ function Organization (props) {
           </Container>
         </div>
       } */}
-      <div ref={proofsRef} />
-      <ProofsList
+      {DIRECTORIES_ENABLED && canManage &&
+        <Directories />
+      }
+      {DIRECTORIES_ENABLED && !canManage &&
+        <PublicDirectories />
+      }
+      <Gps
         canManage={canManage}
-        title='Get Verified'
-        orgid={id}
-        assertions={assertions}
-        verifications={verifications}
+        organization={organization}
       />
+      <Owner owner={owner} />
+      {canManage &&
+        <Personnel
+          orgid={orgId}
+        />
+      }
+      <Agents
+        canManage={canManage}
+        orgid={orgId}
+        owner={owner}
+        agents={agents}
+      />
+      <Services
+        orgid={orgId}
+        owner={owner}
+        services={services}
+        canManage={canManage}
+      />
+      {canManage &&
+        <SimardAccounts
+          orgid={orgId}
+        />
+      }
+      {canManage &&
+        <Payments
+          orgid={orgId}
+          owner={owner}
+          payments={payments}
+        />
+      }
+
+
     </div>
   )
 }
@@ -178,13 +300,18 @@ const mapStateToProps = state => {
   return {
     organization: selectItem(state),
     subs: selectSubs(state),
-    assertions: selectAssertions(state)
+    assertions: selectAssertions(state),
+    walletAddress: selectSignInAddress(state),
+    isFetchingDeposit: selectLifDepositDataFetching(state),
+    orgIdLifDepositAmount: selectOrgIdLifDepositAmount(state)
   }
 };
 
 const mapDispatchToProps = {
   fetchOrganizationInfo,
-  fetchOrganizationSubsInfo
+  fetchOrganizationSubsInfo,
+  setOrgId,
+  resetOrgId
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Organization);

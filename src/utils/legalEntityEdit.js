@@ -1,4 +1,5 @@
 import {countries} from './countries';
+import match from './regex';
 // import _ from 'lodash';
 // import validators from "./validators";
 // import { entityTypes } from './constants';
@@ -134,7 +135,7 @@ export const config = [
             {
               name: 'Profile image',
               type: 'dropzone',
-              orgidJsonPath: 'media.logo',
+              orgidJsonPath: 'legalEntity.media.logo',
               description: 'Add a logo or any image that represents your organization. It will help you stand out in search results.',
               helperText: 'Recommended dimensions: 908х400 (minimal: 454x200)\nFormat: JPG, PNG'
             }
@@ -158,7 +159,7 @@ export const config = [
               name: 'Phone',
               orgidJsonPath: 'legalEntity.contacts[0].phone',
               validate: value => {
-                if (value && !value.trim().match(/^([+]{0,1})([0-9- ]+)$/)) {
+                if (value && !value.trim().match(match.phone)) {
                   return 'Wrong phone number format';
                 }
               }
@@ -169,7 +170,7 @@ export const config = [
               name: 'Website',
               orgidJsonPath: 'legalEntity.contacts[0].website',
               validate: value => {
-                if (value && !value.trim().match(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/)) {
+                if (value && !value.trim().match(match.url)) {
                   return 'Wrong website URL';
                 }
               }
@@ -182,7 +183,7 @@ export const config = [
               name: 'Email',
               orgidJsonPath: 'legalEntity.contacts[0].email',
               validate: value => {
-                if (value && !value.trim().match(/^[\w.-]+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) {
+                if (value && !value.trim().match(match.email)) {
                   return 'Wrong email format';
                 }
               }
@@ -202,7 +203,7 @@ export const config = [
               icon: 'facebook',
               orgidJsonPath: 'legalEntity.contacts[0].facebook',
               validate: value => {
-                if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+                if (value && !value.trim().match(match.url)) {
                   return 'Wrong URL';
                 }
               }
@@ -214,7 +215,7 @@ export const config = [
               icon: 'twitter',
               orgidJsonPath: 'legalEntity.contacts[0].twitter',
               validate: value => {
-                if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+                if (value && !value.trim().match(match.url)) {
                   return 'Wrong URL';
                 }
               }
@@ -226,7 +227,7 @@ export const config = [
               icon: 'instagram',
               orgidJsonPath: 'legalEntity.contacts[0].instagram',
               validate: value => {
-                if (value && !value.trim().match(/^(?:^|\s)((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)$/)) {
+                if (value && !value.trim().match(match.url)) {
                   return 'Wrong URL';
                 }
               }

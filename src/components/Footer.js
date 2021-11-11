@@ -12,6 +12,10 @@ import GitHubSocialIcon from '../assets/SvgComponents/GitHubSocialIcon';
 import TelegramSocialIcon from '../assets/SvgComponents/TelegramSocialIcon';
 import MediumSocialIcon from '../assets/SvgComponents/MediumSocialIcon';
 
+import {
+  DIRECTORIES_ENABLED
+} from '../utils/constants';
+
 import colors from '../styles/colors';
 
 const styles = makeStyles({
@@ -152,14 +156,15 @@ export default function Footer(props) {
             <Link to={'/search'} className={classes.navLink}>Search</Link>
             <Link to={'/my-organizations/wizard'} className={classes.navLink}>Create account</Link>
           </Grid>
+          {DIRECTORIES_ENABLED &&
+            <Grid container direction="column" item xs={12} md={2} className={classes.xsVisible}>
+              <Typography variant={'h4'} className={classes.columnTitle}>Directories</Typography>
 
-          <Grid container direction="column" item xs={12} md={2} className={classes.xsVisible}>
-            <Typography variant={'h4'} className={classes.columnTitle}>Directories</Typography>
-
-            <Link to={'/directories/airline'} className={classes.navLink}>Airlines</Link>
-            <Link to={'/directories/hotel'} className={classes.navLink}>Hotels</Link>
-            <Link to={'/directories/ota'} className={classes.navLink}>Travel Agencies</Link>
-          </Grid>
+              <Link to={'/directories/airline'} className={classes.navLink}>Airlines</Link>
+              <Link to={'/directories/hotel'} className={classes.navLink}>Hotels</Link>
+              <Link to={'/directories/ota'} className={classes.navLink}>Travel Agencies</Link>
+            </Grid>
+          }
 
           <Grid container direction="column" item xs={12} md={3} className={classes.xsVisible}>
             <Typography variant={'h4'} className={classes.columnTitle}>Contact</Typography>

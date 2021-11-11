@@ -14,7 +14,8 @@ const DialogContent = withStyles({
   root: {
     '&:first-child': {
       paddingTop: '80px'
-    }
+    },
+    maxWidth: '900px'
   }
 })(MuiDialogContent);
 
@@ -22,7 +23,7 @@ const styles =  makeStyles({
   dialogContainer: {
     '& > .MuiDialog-paper > .MuiDialogContent-root:first-child': {
       paddingTop: '80px'
-    }
+    },
   },
   dialogContentWrapper: {
     position: 'relative',
@@ -58,7 +59,7 @@ export default function DialogComponent(props) {
             <CloseIcon className={classes.dialogCloseButtonIcon}/>
           </Button>
         </DialogActions>
-        {children}
+        {isOpen ? children: null}
       </DialogContent>
     </Dialog>
   )

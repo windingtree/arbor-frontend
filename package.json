@@ -22,7 +22,7 @@
     "jsonschema": "1.2.6",
     "leaflet": "1.7.1",
     "lodash": "4.17.21",
-    "moment": "2.29.1",
+    "moment": "2.29.4",
     "node-sass": "5.0.0",
     "prop-types": "15.7.2",
     "query-string": "6.14.0",
